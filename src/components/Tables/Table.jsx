@@ -27,9 +27,11 @@ function Table({
   handelDelete,
   isFilter,
 }) {
+  console.log({ rows });
+
   const { t, i18n } = useTranslation();
   const [isAllSelected, setIsAllSelected] = useState(false);
-  const [selectedRows, setSelectedRows] = useState(rows.map(() => false));
+  const [selectedRows, setSelectedRows] = useState(rows?.map(() => false));
   const [currentPage, setCurrentPage] = useState(1); // الصفحة الحالية
   const [rowsPerPage, setRowsPerPage] = useState(5); // عدد الصفوف لكل صفحة
   const [dropdownOpen, setDropdownOpen] = useDropdown();
@@ -39,7 +41,7 @@ function Table({
   const handleHeaderCheckboxChange = () => {
     setIsAllSelected((prev) => !prev);
     setSelectedRows((prev) =>
-      prev.map((_, index) =>
+      prev?.map((_, index) =>
         index >= (currentPage - 1) * rowsPerPage &&
         index < currentPage * rowsPerPage
           ? !isAllSelected
@@ -168,7 +170,7 @@ function Table({
                 )}
 
                 {/* Ensure data is rendered properly */}
-                {row.cells.map((cell, cellIndex) => (
+                {row?.cells?.map((cell, cellIndex) => (
                   <td
                     key={cellIndex}
                     className="px-2 text-sm py-6 text-start max-w-10 sm:max-w-24 text-nowrap truncate overflow-hidden"
@@ -216,7 +218,7 @@ function Table({
               className="cursor-pointer dark:text-gray-400"
             />
             <div className={"flex pages-numbers gap-1 text-sm"}>
-              {Array.from({ length: totalPages }).map((_, index) => (
+              {Array.from({ length: totalPages })?.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => handlePageChange(index + 1)}
