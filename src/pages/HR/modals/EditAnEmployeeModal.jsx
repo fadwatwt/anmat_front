@@ -102,8 +102,7 @@ function EditAnEmployeeModal({ isOpen, onClose, employee }) {
                 : ""
             }
           />
-          {console.log(formik.values)}
-          <InputAndLabel
+          {/* <InputAndLabel
             title="Phone"
             name="phone"
             value={formik.values.phone}
@@ -115,7 +114,7 @@ function EditAnEmployeeModal({ isOpen, onClose, employee }) {
                 ? formik.errors.phone
                 : ""
             }
-          />
+          /> */}
           <InputAndLabel
             title="Password"
             type="password"
