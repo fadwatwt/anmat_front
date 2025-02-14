@@ -107,6 +107,7 @@ function DepartmentsTab() {
       />
 
       {/* Edit Success Alert */}
+
       <Alert
         type="success"
         title={t("Department Updated")}
