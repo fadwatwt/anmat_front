@@ -27,11 +27,9 @@ function Table({
   handelDelete,
   isFilter,
 }) {
-  console.log({ rows });
-
   const { t, i18n } = useTranslation();
   const [isAllSelected, setIsAllSelected] = useState(false);
-  const [selectedRows, setSelectedRows] = useState(rows?.map(() => false));
+  const [selectedRows, setSelectedRows] = useState(rows.map(() => false));
   const [currentPage, setCurrentPage] = useState(1); // الصفحة الحالية
   const [rowsPerPage, setRowsPerPage] = useState(5); // عدد الصفوف لكل صفحة
   const [dropdownOpen, setDropdownOpen] = useDropdown();
@@ -41,7 +39,7 @@ function Table({
   const handleHeaderCheckboxChange = () => {
     setIsAllSelected((prev) => !prev);
     setSelectedRows((prev) =>
-      prev?.map((_, index) =>
+      prev.map((_, index) =>
         index >= (currentPage - 1) * rowsPerPage &&
         index < currentPage * rowsPerPage
           ? !isAllSelected
@@ -153,11 +151,14 @@ function Table({
           <tbody>
             {currentRows.map((row, rowIndex) => (
               <tr
-                key={row.id} // Use unique id for key
+                key={rowIndex + startIndex}
                 className="hover:bg-gray-100 w-full dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-700"
               >
                 {isCheckInput && (
-                  <td className="px-1 py-6 w-2">
+                  <td
+                    className="px-1 py-6 w-2 "
+                    style={{ borderBottomLeftRadius: "8px" }}
+                  >
                     <input
                       className={"checkbox-custom"}
                       type="checkbox"
@@ -169,20 +170,18 @@ function Table({
                   </td>
                 )}
 
-                {/* Ensure data is rendered properly */}
-                {row?.cells?.map((cell, cellIndex) => (
+                {row.map((cell, cellIndex) => (
                   <td
                     key={cellIndex}
                     className="px-2 text-sm py-6 text-start max-w-10 sm:max-w-24 text-nowrap truncate overflow-hidden"
                     style={{
                       borderBottomRightRadius:
-                        cellIndex === row.cells.length - 1 ? "8px" : "",
+                        cellIndex === row.length - 1 ? "8px" : "",
                     }}
                   >
                     {cell}
                   </td>
                 ))}
-
                 {isActions && (
                   <td className={"dropdown-container"}>
                     <PiDotsThreeVerticalBold
@@ -191,8 +190,8 @@ function Table({
                     />
                     {dropdownOpen === rowIndex && (
                       <ActionsBtns
-                        handleEdit={() => handelEdit(row.id)}
-                        handleDelete={() => handelDelete(row.id)}
+                        handleEdit={() => handelEdit(rowIndex)}
+                        handleDelete={() => handelDelete(rowIndex)}
                         className={`${
                           i18n.language === "ar" ? "left-0" : "right-0"
                         }`}
@@ -218,7 +217,7 @@ function Table({
               className="cursor-pointer dark:text-gray-400"
             />
             <div className={"flex pages-numbers gap-1 text-sm"}>
-              {Array.from({ length: totalPages })?.map((_, index) => (
+              {Array.from({ length: totalPages }).map((_, index) => (
                 <button
                   key={index}
                   onClick={() => handlePageChange(index + 1)}
@@ -281,12 +280,7 @@ Table.propTypes = {
       width: PropTypes.string,
     })
   ).isRequired,
-  rows: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      cells: PropTypes.arrayOf(PropTypes.node).isRequired,
-    })
-  ).isRequired,
+  rows: PropTypes.arrayOf(PropTypes.array).isRequired,
   isFilter: PropTypes.bool,
   isCheckInput: PropTypes.bool,
   isTitle: PropTypes.bool,

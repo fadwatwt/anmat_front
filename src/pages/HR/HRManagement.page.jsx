@@ -3,6 +3,7 @@ import Tabs from "../../components/Tabs.jsx";
 import EmployeesTap from "./Tabs/Employees.tap.jsx";
 import { useState } from "react";
 import AddingAnEmployeeModal from "./modals/AddingAnEmployeeModal.jsx";
+import DepartmentsTab from "./Tabs/DepartmentsTab.jsx";
 
 function HrManagementPage() {
   const [isAddEmployeeModal, setIsAddEmployeeModal] = useState(false);
@@ -13,7 +14,7 @@ function HrManagementPage() {
     },
     {
       title: "Departments",
-      content: <div>Departments</div>,
+      content: <DepartmentsTab />,
     },
     {
       title: "Rotation",

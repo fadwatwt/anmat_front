@@ -1,5 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchEmployees, updateEmployee, deleteEmployee } from "./employeeAPI";
+import {
+  fetchEmployees,
+  createEmployee,
+  updateEmployee,
+  deleteEmployee,
+} from "./employeeAPI";
 
 const initialState = {
   employees: [],
@@ -23,6 +28,20 @@ const employeeSlice = createSlice({
         state.employees = action.payload;
       })
       .addCase(fetchEmployees.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // Create Employee
+      .addCase(createEmployee.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createEmployee.fulfilled, (state, action) => {
+        state.loading = false;
+        state.employees.push(action.payload);
+      })
+      .addCase(createEmployee.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })

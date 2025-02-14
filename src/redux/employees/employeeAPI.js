@@ -15,12 +15,25 @@ export const fetchEmployees = createAsyncThunk(
   }
 );
 
+// Create a new employee
+export const createEmployee = createAsyncThunk(
+  "employees/create",
+  async (employeeData, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${RootRoute}/employees`, employeeData);
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 // Update employee
 export const updateEmployee = createAsyncThunk(
   "employees/update",
   async ({ id, employeeData }, { rejectWithValue }) => {
     try {
-      const response = await axios.put(
+      const response = await axios.patch(
         `${RootRoute}/employees/${id}`,
         employeeData
       );

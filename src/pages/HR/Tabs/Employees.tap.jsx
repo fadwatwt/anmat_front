@@ -44,25 +44,27 @@ function EmployeesTap() {
         )}`}
         account={{
           name: employee.name,
-          department: employee.department.name,
-          role: employee.role,
-          imageProfile: employee.imageProfile,
+          rule: employee.role?.name || "N/A",
+          //   imageProfile: employee.profilePicture
+          //     ? `${BASE_URL}${employee.profilePicture}`
+          //     : defaultProfileImage,
         }}
       />,
-
       <p key={`department-${index}`} className={"text-sm dark:text-sub-300"}>
-        {employee.department?.name || "No Department"}
+        {employee.department?.name || "N/A"}
       </p>,
       <p key={`jobType-${index}`} className={"text-sm dark:text-sub-300"}>
-        {employee.jobType}
+        {employee.workingDays?.length >= 3 ? "Full-time" : "Part-time"}
       </p>,
       <p key={`salary-${index}`} className={"text-sm dark:text-sub-300"}>
-        {employee.salary}
+        {employee.financial?.salary ? `$${employee.financial.salary}` : "$0"}
       </p>,
-      <Rating key={`rating-${index}`} value={employee.rating} />,
+      <Rating
+        key={`rating-${index}`}
+        value={employee.averageLateness * 10 || 0}
+      />,
     ]);
   };
-
   const handelEditEmployeeModal = (employee) => {
     setSelectedEmployee(employee);
     setIsEditEmployeeModal(true);
