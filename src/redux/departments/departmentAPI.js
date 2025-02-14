@@ -22,7 +22,7 @@ export const updateDepartment = createAsyncThunk(
     try {
       console.log({ departmentData });
 
-      const response = await axios.put(
+      const response = await axios.patch(
         `${RootRoute}/departments/${id}`,
         departmentData
       );

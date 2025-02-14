@@ -8,19 +8,21 @@ import {
   fetchDepartments,
   deleteDepartment,
 } from "../../../redux/departments/departmentAPI";
+import * as Yup from "yup";
 
 function DepartmentsTab() {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const { departments, loading, error } = useSelector(
     (state) => state.departments
   );
-  const { t } = useTranslation();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [selectedDeleteDepartment, setSelectedDeleteDepartment] =
     useState(null);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
+  const [isEditSuccessAlertOpen, setIsEditSuccessAlertOpen] = useState(false);
 
   const headers = [
     { label: t("Name"), width: "200px" },
@@ -36,38 +38,16 @@ function DepartmentsTab() {
 
   const DepartmentRowTable = () => {
     return departments?.map((dept, index) => [
-      <p key={`name-${index}`} className="text-sm dark:text-sub-300">
-        {dept.name}
-      </p>,
-      <p key={`manager-${index}`} className="text-sm dark:text-sub-300">
-        {dept.manager?.name || t("Not assigned")}
-      </p>,
-      <p key={`count-${index}`} className="text-sm dark:text-sub-300">
-        {dept.employeeCount || 0}
-      </p>,
-      <p key={`desc-${index}`} className="text-sm dark:text-sub-300">
-        {dept.description || t("No description")}
-      </p>,
+      dept.name,
+      dept.manager?.name || t("Not assigned"),
+      dept.employeeCount || 0,
+      dept.description || t("No description"),
     ]);
   };
 
-  const handleEdit = (department) => {
-    setSelectedDepartment(department);
-    setIsEditModalOpen(true);
-  };
-
-  const handleDelete = (department) => {
-    setSelectedDeleteDepartment(department);
-    setIsDeleteAlertOpen(true);
-  };
-
-  const handleDeleteConfirmation = (isConfirmed) => {
-    if (isConfirmed && selectedDeleteDepartment) {
-      dispatch(deleteDepartment(selectedDeleteDepartment._id))
-        .then(() => setIsSuccessAlertOpen(true))
-        .catch((error) => console.error("Delete failed:", error));
-    }
-    setIsDeleteAlertOpen(false);
+  const handleEditSuccess = () => {
+    setIsEditSuccessAlertOpen(true);
+    dispatch(fetchDepartments());
   };
 
   return (
@@ -77,8 +57,14 @@ function DepartmentsTab() {
           <Table
             title={t("Departments")}
             headers={headers}
-            handelDelete={(index) => handleDelete(departments[index])}
-            handelEdit={(index) => handleEdit(departments[index])}
+            handelDelete={(index) => {
+              setSelectedDeleteDepartment(departments[index]);
+              setIsDeleteAlertOpen(true);
+            }}
+            handelEdit={(index) => {
+              setSelectedDepartment(departments[index]);
+              setIsEditModalOpen(true);
+            }}
             isActions={true}
             rows={DepartmentRowTable()}
             isFilter={true}
@@ -90,13 +76,22 @@ function DepartmentsTab() {
         isOpen={isEditModalOpen}
         department={selectedDepartment}
         onClose={() => setIsEditModalOpen(false)}
+        onSuccess={handleEditSuccess}
       />
 
+      {/* Delete Alerts */}
       <Alert
         type="warning"
         title={t("Delete Department?")}
         message={t("Are you sure you want to delete this department?")}
-        onSubmit={handleDeleteConfirmation}
+        onSubmit={(confirmed) => {
+          if (confirmed && selectedDeleteDepartment) {
+            dispatch(deleteDepartment(selectedDeleteDepartment._id))
+              .then(() => setIsSuccessAlertOpen(true))
+              .catch(console.error);
+          }
+          setIsDeleteAlertOpen(false);
+        }}
         titleCancelBtn={t("Cancel")}
         titleSubmitBtn={t("Delete")}
         isOpen={isDeleteAlertOpen}
@@ -109,6 +104,15 @@ function DepartmentsTab() {
         message={t("The department has been successfully deleted.")}
         isOpen={isSuccessAlertOpen}
         onClose={() => setIsSuccessAlertOpen(false)}
+      />
+
+      {/* Edit Success Alert */}
+      <Alert
+        type="success"
+        title={t("Department Updated")}
+        message={t("The department has been successfully updated.")}
+        isOpen={isEditSuccessAlertOpen}
+        onClose={() => setIsEditSuccessAlertOpen(false)}
       />
     </>
   );
