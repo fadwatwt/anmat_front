@@ -4,7 +4,7 @@ import {useTranslation} from "react-i18next";
 function WordTheMiddleAndLine({word,classNameText}) {
     const {t} = useTranslation()
     return (
-        <div className="flex items-center my-4">
+        <div className="w-full flex items-center my-4">
             <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
             {
                 word ?

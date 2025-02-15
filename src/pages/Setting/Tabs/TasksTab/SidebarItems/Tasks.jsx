@@ -3,13 +3,13 @@ import DefaultButton from "../../../../../components/Form/DefaultButton.jsx";
 import WordTheMiddleAndLine from "../../../../../components/Subcomponents/WordTheMiddleAndLine.jsx";
 import InputAndLabel from "../../../../../components/Form/InputAndLabel.jsx";
 
-function TasksSidebar() {
+function Tasks() {
     const {t} = useTranslation()
 
 
     return (
         <div className={"w-full md:py-2 flex flex-col gap-5"}>
-            <div className={"flex flex-col gap-2"}>
+            <div className={" flex flex-col gap-2"}>
                 <div className={"flex flex-col text-start gap-1"}>
                     <p className={"dark:text-gray-200 text-black"}>{t("Tasks Preferences")}</p>
                     <p className={"text-sm dark:text-gray-200 text-gray-500"}>{t("Customize tasks settings")}</p>
@@ -27,4 +27,4 @@ function TasksSidebar() {
     );
 }
 
-export default TasksSidebar;
+export default Tasks;

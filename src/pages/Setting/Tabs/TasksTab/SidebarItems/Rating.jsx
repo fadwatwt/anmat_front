@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import BtnAddOutline from "../../../../../components/Form/BtnAddOutline.jsx";
 import { useState } from "react";
 
-function RatingSidebar() {
+function Rating() {
     const { t } = useTranslation();
 
     // المصفوفة التي تحتوي على أنواع التقييم
@@ -42,4 +42,4 @@ function RatingSidebar() {
     );
 }
 
-export default RatingSidebar;
+export default Rating;

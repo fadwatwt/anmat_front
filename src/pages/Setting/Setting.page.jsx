@@ -6,6 +6,7 @@ import {useTranslation} from "react-i18next";
 import AttendanceTab from "./Tabs/Attendance.tab.jsx";
 import ConversationsTab from "./Tabs/Conversations.tab.jsx";
 import TasksTab from "./Tabs/TasksTab/Tasks.tab.jsx";
+import ProfileSecurityTab from "./Tabs/Profile&SecurityTab/ProfileSecurity.tab.jsx";
 
 
 function SettingPage() {
@@ -33,7 +34,7 @@ function SettingPage() {
         },
         {
             title: "Privacy & Security",
-            content: <div>Youtube content goes here</div>,
+            content: <ProfileSecurityTab />,
         },
     ];
     return (

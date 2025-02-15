@@ -1,35 +1,32 @@
-
-import Sidebar from "../../../../components/Subcomponents/Sidebar.jsx";
-import {SlGlobe} from "react-icons/sl";
-import {IoSunnyOutline} from "react-icons/io5";
-import {useState} from "react";
 import {useTranslation} from "react-i18next";
+import {useState} from "react";
+import Sidebar from "../../../../components/Subcomponents/Sidebar.jsx";
 import TabModal from "../../../../components/Modal/TabsContener/TabModal.jsx";
-import Tasks from "./SidebarItems/Tasks.jsx";
-import Rating from "./SidebarItems/Rating.jsx";
+import {RiLock2Line, RiUserLine} from "@remixicon/react";
+import PersonalInformation from "./SidebarItems/PersonalInformation.jsx";
+import ChangePassword from "./SidebarItems/ChangePassword.jsx";
 
-
-function TasksTab() {
+function ProfileSecurityTab() {
     const {t} = useTranslation()
     const listSideBar = [
-        {id:"tasks",title:"Tasks",icon:<SlGlobe/>},
-        {id:"rating",title:"Rating",icon:<IoSunnyOutline />}
+        {id: "personalInformation", title: "Personal information", icon: <RiUserLine  />},
+        {id: "changePassword", title:"Change Password",icon:<RiLock2Line />}
     ]
-    const [activeTab, setActiveTab] = useState('tasks');
+    const [activeTab, setActiveTab] = useState('personalInformation');
 
     const handelChangeActiveTab = (activeTap) => {
         setActiveTab(activeTap);
     }
     const tabsData = [
         {
-            title: "Tasks Preferences",
-            content: <Tasks />,
-            icon:<SlGlobe/>
+            title: "Personal information",
+            content: <PersonalInformation />,
+            icon:""
         },
         {
-            title: "Adding Rating Categories",
-            content:<Rating />,
-            icon:<IoSunnyOutline />,
+            title: "Change Password",
+            content:<ChangePassword />,
+            icon:"",
         },
     ];
     return (
@@ -47,7 +44,7 @@ function TasksTab() {
 
                 <div className={"hidden md:block"}>
                     {
-                        activeTab === 'tasks' ? <Tasks/> : <Rating />
+                        activeTab === 'personalInformation' ? <PersonalInformation/> : <ChangePassword />
                     }
                 </div>
             </div>
@@ -57,4 +54,4 @@ function TasksTab() {
     );
 }
 
-export default TasksTab;
+export default ProfileSecurityTab;
