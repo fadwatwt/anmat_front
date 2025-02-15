@@ -42,7 +42,7 @@ function GeneralSettingsTab() {
             </div>
             <div className={"md:p-5 p-2 rounded-2xl bg-white dark:bg-gray-800 lg:w-[39%]"}>
                 <div className={"md:hidden block"}>
-                    <TabModal classNameItem={"justify-start mx-1 "} classNameContent={"h-[30rem]"} tabs={tabsData}/>
+                    <TabModal classNameItem={"justify-start mx-1 "} classNameContent={"h-[20rem]"} tabs={tabsData}/>
                 </div>
 
                 <div className={"hidden md:block"}>

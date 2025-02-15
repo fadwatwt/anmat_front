@@ -73,7 +73,6 @@ function ChangePassword() {
                                         className={`flex-1 h-full rounded-2xl ${passwordStrength.length && passwordStrength.uppercase && passwordStrength.number ? "bg-green-500" : "bg-gray-200"}`}></div>
                                 </div>
 
-                                {/* 🔹 شروط كلمة المرور */}
                                 <p className="text-xs text-sub-500">Password must contain:</p>
 
                                 <div className="flex items-center gap-1">
@@ -110,7 +109,6 @@ function ChangePassword() {
                                 </div>
                             </div>
 
-                            {/* 🔘 الأزرار */}
                             <div className="w-full flex flex-col items-start gap-4">
                                 <div className="w-full justify-start flex gap-2">
                                     <DefaultButton type="button" title="Cancel"
