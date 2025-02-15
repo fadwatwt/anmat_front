@@ -74,7 +74,14 @@ function NotificationPreferences() {
           ))}
         </div>
       </div>
-
+      <div className="flex items-center justify-between w-full  h-9 bg-[#EBF1FF] rounded-lg px-3 mx-auto">
+        <div className="flex items-center gap-2">
+          <FiInfo className="text-blue-500 w-4 h-4" />
+          <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400">
+            Maximize your app usage by leaving notification settings active.
+          </p>
+        </div>
+      </div>
       <div className="flex gap-3 mt-4 w-full">
         <DefaultButton
           type="button"
