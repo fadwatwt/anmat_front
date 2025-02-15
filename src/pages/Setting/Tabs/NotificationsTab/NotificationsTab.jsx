@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import Sidebar from "../../../../components/Subcomponents/Sidebar.jsx";
-import { FiBell, FiMail } from "react-icons/fi";
+import { IoOptionsOutline } from "react-icons/io5";
+import { RiNotification2Line } from "react-icons/ri";
 import TabModal from "../../../../components/Modal/TabsContener/TabModal.jsx";
 import NotificationPreferences from "./NotificationPreferences.jsx";
 import NotificationMethods from "./NotificationMethods.jsx";
@@ -15,12 +16,12 @@ function NotificationsTab() {
       {
         id: "notification-preferences",
         title: t("Notification Preferences"),
-        icon: <FiBell />,
+        icon: <IoOptionsOutline />,
       },
       {
         id: "notification-methods",
         title: t("Notification Methods"),
-        icon: <FiMail />,
+        icon: <RiNotification2Line />,
       },
     ],
     [t]
@@ -32,13 +33,13 @@ function NotificationsTab() {
         id: "notification-preferences",
         title: t("Notification Preferences"),
         content: <NotificationPreferences />,
-        icon: <FiBell />,
+        icon: <IoOptionsOutline />,
       },
       {
         id: "notification-methods",
         title: t("Notification Methods"),
         content: <NotificationMethods />,
-        icon: <FiMail />,
+        icon: <RiNotification2Line />,
       },
     ],
     [t]
