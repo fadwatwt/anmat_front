@@ -3,6 +3,9 @@ import GeneralSettingsTab from "./Tabs/GeneralSettings.tab.jsx";
 import {IoSettingsOutline} from "react-icons/io5";
 import {FiPlus} from "react-icons/fi";
 import {useTranslation} from "react-i18next";
+import AttendanceTab from "./Tabs/Attendance.tab.jsx";
+import ConversationsTab from "./Tabs/Conversations.tab.jsx";
+import TasksTab from "./Tabs/TasksTab/Tasks.tab.jsx";
 
 
 function SettingPage() {
@@ -17,16 +20,16 @@ function SettingPage() {
             content: <div>Twitter content goes here</div>,
         },
         {
-            title: "Rotation",
-            content: <div>Instagram content goes here</div>,
+            title: "Attendance",
+            content: <AttendanceTab />,
         },
         {
-            title: "Attendance",
-            content: <div>Gmail content goes here</div>,
+            title: "Conversations",
+            content: <ConversationsTab />,
         },
         {
             title: "Tasks",
-            content: <div>Youtube content goes here</div>,
+            content: <TasksTab />,
         },
         {
             title: "Privacy & Security",
