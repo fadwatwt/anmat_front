@@ -26,6 +26,14 @@ function Table({
   handelEdit,
   handelDelete,
   isFilter,
+  //
+  showControlBar = false,
+  viewMode,
+  onViewModeChange,
+  selectedDepartment,
+  onDepartmentChange,
+  currentDate,
+  neededOptions = [],
 }) {
   const { t, i18n } = useTranslation();
   const [isAllSelected, setIsAllSelected] = useState(false);
@@ -81,35 +89,75 @@ function Table({
     >
       {isTitle && (
         <div className={"flex justify-between items-baseline"}>
-          <p
-            className={
-              "text-gray-800 text-start text-sm dark:text-gray-400 w-7/12"
-            }
-          >
-            {t(title)}
-          </p>
-          <div className={"flex gap-2 w-full justify-end "}>
+          <div className="flex items-center gap-4">
+            <p
+              className={
+                "text-gray-800 text-start text-sm dark:text-gray-400 w-7/12"
+              }
+            >
+              {t(title)}
+            </p>
+            {/* Control bar */}
+            {showControlBar && (
+              <div className="flex items-center gap-4">
+                <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+                  <button
+                    className={`px-4 py-2 rounded-md ${
+                      viewMode === "week"
+                        ? "bg-white dark:bg-gray-600 shadow-sm"
+                        : "bg-transparent"
+                    }`}
+                    onClick={() => onViewModeChange("week")}
+                  >
+                    Week
+                  </button>
+                  <button
+                    className={`px-4 py-2 rounded-md ${
+                      viewMode === "month"
+                        ? "bg-white dark:bg-gray-600 shadow-sm"
+                        : "bg-transparent"
+                    }`}
+                    onClick={() => onViewModeChange("month")}
+                  >
+                    Month
+                  </button>
+                </div>
+                <button
+                  disabled
+                  className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-600 opacity-50"
+                >
+                  Today
+                </button>
+                <div className="text-gray-600 dark:text-gray-300">
+                  {currentDate.toLocaleString("default", { month: "long" })}{" "}
+                  {currentDate.getFullYear()}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="flex gap-2">
+            {/* SearchInput */}
             <SearchInput />
-            <div className={"flex gap-2"}>
-              {isFilter && (
-                <SelectWithoutLabel
-                  title={"Filter by"}
-                  className={"w-[94px] h-[36px]"}
-                />
-              )}
-              <button
-                className={
-                  "flex dark:text-gray-400 text-sm items-baseline p-2  gap-2 rounded-lg border border-gray-200 dark:border-gray-600"
-                }
-              >
-                <TfiImport size={15} />
-                {t("Export")}
-              </button>
-            </div>
+            {showControlBar && (
+              <SelectWithoutLabel
+                options={neededOptions}
+                value={selectedDepartment}
+                onChange={onDepartmentChange}
+                className="w-44"
+              />
+            )}
+            <button
+              className={
+                "flex dark:text-gray-400 text-sm items-baseline p-2  gap-2 rounded-lg border border-gray-200 dark:border-gray-600"
+              }
+            >
+              <TfiImport size={15} />
+              {t("Export")}
+            </button>
           </div>
         </div>
       )}
-
       <div
         className={
           "flex flex-col gap-5 justify-center dark:bg-gray-800 w-full dark:text-gray-400"
@@ -284,6 +332,13 @@ Table.propTypes = {
   isFilter: PropTypes.bool,
   isCheckInput: PropTypes.bool,
   isTitle: PropTypes.bool,
+  //
+  showControlBar: PropTypes.bool,
+  viewMode: PropTypes.oneOf(["week", "month"]),
+  onViewModeChange: PropTypes.func,
+  selectedDepartment: PropTypes.string,
+  onDepartmentChange: PropTypes.func,
+  currentDate: PropTypes.instanceOf(Date),
 };
 
 export default Table;

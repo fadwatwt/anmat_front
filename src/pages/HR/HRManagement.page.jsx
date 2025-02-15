@@ -4,6 +4,7 @@ import EmployeesTap from "./Tabs/Employees.tap.jsx";
 import { useState } from "react";
 import AddingAnEmployeeModal from "./modals/AddingAnEmployeeModal.jsx";
 import DepartmentsTab from "./Tabs/DepartmentsTab.jsx";
+import RotationTap from "./Tabs/RotationTap.jsx";
 
 function HrManagementPage() {
   const [isAddEmployeeModal, setIsAddEmployeeModal] = useState(false);
@@ -18,7 +19,7 @@ function HrManagementPage() {
     },
     {
       title: "Rotation",
-      content: <div>Instagram content goes here</div>,
+      content: <RotationTap  />,
     },
     {
       title: "Attendance",
