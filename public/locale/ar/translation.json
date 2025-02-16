@@ -246,6 +246,10 @@
   "Add a Permission": "إضافة إذن",
   "Permissions": "الأذونات",
   "Edit a Permission": "تعديل إذن",
-  "Name": "الاسم"
+  "Name": "الاسم",
+  "hours": "ساعات",
+  "min": "دقيقة",
+  "Admins": "المسؤولون",
+  "Admins&Employees": "المسؤولون&الموظفون"
 
 }

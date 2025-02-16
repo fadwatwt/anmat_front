@@ -5,18 +5,18 @@ import DefaultSelect from "../../../components/Form/DefaultSelect.jsx";
 function AttendanceTab() {
     const {t} = useTranslation()
     const minutesBeforeSentOptions = [
-        {id: "60", value: "60 min"},
-        {id: "40", value: "40 min"},
-        {id: "30", value: "30 min"},
-        {id: "20", value: "20 min"},
-        {id: "10", value: "10 min"},
+        {id: "60", value: `60 ${t("min")}`},
+        {id: "40", value: `40 ${t("min")}`},
+        {id: "30", value: `30 ${t("min")}`},
+        {id: "20", value: `20 ${t("min")}`},
+        {id: "10", value: `10 ${t("min")}`},
     ]
     const numberDailyHoursOptions = [
-        {id: "8", value: "8 hours"},
-        {id: "6", value: "6 hours"},
-        {id: "4", value: "4 hours"},
-        {id: "2", value: "2 hours"},
-        {id: "1", value: "1 hours"},
+        {id: "8", value: `8 ${t("hours")}`},
+        {id: "6", value: `6 ${t("hours")}`},
+        {id: "4", value: `4 ${t("hours")}`},
+        {id: "2", value: `2 ${t("hours")}`},
+        {id: "1", value: `1 ${t("hours")}`},
     ]
     return (
         <div className={"flex  w-full justify-center "}>

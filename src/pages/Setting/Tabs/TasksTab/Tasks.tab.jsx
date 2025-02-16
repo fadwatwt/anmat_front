@@ -7,13 +7,14 @@ import {useTranslation} from "react-i18next";
 import TabModal from "../../../../components/Modal/TabsContener/TabModal.jsx";
 import Tasks from "./SidebarItems/Tasks.jsx";
 import Rating from "./SidebarItems/Rating.jsx";
+import {RiStarLine, RiTaskFill} from "@remixicon/react";
 
 
 function TasksTab() {
     const {t} = useTranslation()
     const listSideBar = [
-        {id:"tasks",title:"Tasks",icon:<SlGlobe/>},
-        {id:"rating",title:"Rating",icon:<IoSunnyOutline />}
+        {id:"tasks",title:"Tasks",icon:<RiTaskFill/>},
+        {id:"rating",title:"Rating",icon:<RiStarLine />}
     ]
     const [activeTab, setActiveTab] = useState('tasks');
 
@@ -24,12 +25,12 @@ function TasksTab() {
         {
             title: "Tasks Preferences",
             content: <Tasks />,
-            icon:<SlGlobe/>
+            icon:<RiTaskFill/>
         },
         {
             title: "Adding Rating Categories",
             content:<Rating />,
-            icon:<IoSunnyOutline />,
+            icon:<RiStarLine />,
         },
     ];
     return (

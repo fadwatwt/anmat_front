@@ -5,12 +5,12 @@ import DefaultSelect from "../../../components/Form/DefaultSelect.jsx";
 function ConversationsTab() {
     const {t} = useTranslation()
     const whoCreateGroupChatOptions = [
-        {id: "admins", value: "Admins"},
-        {id: "employees", value: "Admins & Employees"},
+        {id: "admins", value: `${t("Admins")}`},
+        {id: "employees", value: `${t("Admins&Employees")}`},
     ]
     const whoCreateMeetingOptions = [
-        {id: "employees", value: "Admins&Employees"},
-        {id: "admins", value: "Admins"},
+        {id: "employees", value:`${t("Admins&Employees")}`},
+        {id: "admins", value: `${t("Admins")}`},
     ]
     return (
         <div className={"flex  w-full justify-center "}>
@@ -23,7 +23,7 @@ function ConversationsTab() {
                         </div>
                         <div className={"flex flex-col gap-2"}>
                             <div className={"flex justify-between items-center gap-4"}>
-                                <div className={"flex flex-col items-start justify-center w-9/12 gap-1"}>
+                                <div className={"flex flex-col items-start justify-center w-[70%] gap-1"}>
                                     <p className={"text-sm text-black text-wrap text-start"}>{t("Who can create a group chat?")}</p>
                                     <p className={"text-xs text-gray-500 text-wrap text-start"}>{t("Specify which roles are allowed to initiate group chats.")}</p>
                                 </div>

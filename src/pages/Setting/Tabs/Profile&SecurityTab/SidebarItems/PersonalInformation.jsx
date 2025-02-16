@@ -29,7 +29,7 @@ function PersonalInformation() {
                     <div className={"flex flex-col gap-2 items-start"}>
                         <div className={"flex flex-col items-start gap-1"}>
                             <p className={"text-md text text-main-100"}>{t("Upload Image")}</p>
-                            <p className={"text-sm text-sub-500"}>{t("Min 400x400px, PNG or JPEG")}</p>
+                            <p className={"text-sm text-sub-500 text-wrap text-start"}>{t("Min 400x400px, PNG or JPEG")}</p>
                         </div>
                         <button
                             onClick={handelClickUploadBtn}
