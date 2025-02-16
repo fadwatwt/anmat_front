@@ -4,6 +4,7 @@ import DefaultButton from "../../../../../components/Form/DefaultButton.jsx";
 import { RiCheckboxCircleFill, RiCloseCircleFill, RiLock2Line } from "@remixicon/react";
 import PasswordInput from "../../../../../components/Form/PasswordInput.jsx";
 import { useState } from "react";
+import {useTranslation} from "react-i18next";
 
 function ChangePassword() {
     const [passwordStrength, setPasswordStrength] = useState({
@@ -11,6 +12,7 @@ function ChangePassword() {
         uppercase: false,
         number: false,
     });
+    const {t} = useTranslation()
 
     const validatePassword = (password) => {
         const strength = {
@@ -25,8 +27,8 @@ function ChangePassword() {
     return (
         <div className="flex flex-col justify-start gap-1 items-center p-3">
             <div className="w-full flex flex-col items-start gap-2">
-                <p className="text-md text-main-100">Change Password</p>
-                <p className="text-sm text-sub-500">Update password for enhanced account security.</p>
+                <p className="text-md text-main-100">{t("Change Password")}</p>
+                <p className="text-sm text-sub-500">{t("Update password for enhanced account security.")}</p>
             </div>
             <WordTheMiddleAndLine />
             <div className="w-full form">
@@ -73,7 +75,7 @@ function ChangePassword() {
                                         className={`flex-1 h-full rounded-2xl ${passwordStrength.length && passwordStrength.uppercase && passwordStrength.number ? "bg-green-500" : "bg-gray-200"}`}></div>
                                 </div>
 
-                                <p className="text-xs text-sub-500">Password must contain:</p>
+                                <p className="text-xs text-sub-500">{t("Weak password. Must contain at least")}</p>
 
                                 <div className="flex items-center gap-1">
                                     {passwordStrength.uppercase ?
@@ -82,7 +84,7 @@ function ChangePassword() {
                                     }
                                     <span
                                         className={`text-xs ${passwordStrength.uppercase ? "text-green-600" : "text-gray-500"}`}>
-                                        At least 1 uppercase letter
+                                        {t("At least 1 uppercase letter")}
                                     </span>
                                 </div>
 
@@ -93,7 +95,7 @@ function ChangePassword() {
                                     }
                                     <span
                                         className={`text-xs ${passwordStrength.number ? "text-green-600" : "text-gray-500"}`}>
-                                        At least 1 number
+                                        {t("At least 1 number")}
                                     </span>
                                 </div>
 
@@ -104,7 +106,7 @@ function ChangePassword() {
                                     }
                                     <span
                                         className={`text-xs ${passwordStrength.length ? "text-green-600" : "text-gray-500"}`}>
-                                        At least 8 characters
+                                        {t("At least 8 characters")}
                                     </span>
                                 </div>
                             </div>

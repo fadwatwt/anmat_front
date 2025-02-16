@@ -23,18 +23,18 @@ function ConversationsTab() {
                         </div>
                         <div className={"flex flex-col gap-2"}>
                             <div className={"flex justify-between items-center gap-4"}>
-                                <div className={"flex flex-col items-start justify-center w-9/12"}>
-                                    <p className={"text-sm text-black text-wrap text-start"}>Who can create a group chat?</p>
-                                    <p className={"text-xs text-gray-500 text-wrap text-start"}>Specify which roles are allowed to initiate group chats.</p>
+                                <div className={"flex flex-col items-start justify-center w-9/12 gap-1"}>
+                                    <p className={"text-sm text-black text-wrap text-start"}>{t("Who can create a group chat?")}</p>
+                                    <p className={"text-xs text-gray-500 text-wrap text-start"}>{t("Specify which roles are allowed to initiate group chats.")}</p>
                                 </div>
                                 <DefaultSelect classNameContainer={"flex-1"} classNameSelect={"text-black text-sm p-3"}
                                                onChange={() => {
                                                }} options={whoCreateGroupChatOptions}/>
                             </div>
                             <div className={"flex justify-between items-center gap-4"}>
-                                <div className={"flex flex-col items-start justify-center w-[70%]"}>
-                                    <p className={"text-sm text-black text-wrap text-start"}>Who can create a meeting?</p>
-                                    <p className={"text-xs text-gray-500 text-wrap text-start"}>Define which roles have permission to schedule meetings.</p>
+                                <div className={"flex flex-col items-start justify-center w-[70%] gap-1"}>
+                                    <p className={"text-sm text-black text-wrap text-start"}>{t("Who can create a meeting?")}</p>
+                                    <p className={"text-xs text-gray-500 text-wrap text-start"}>{t("Define which roles have permission to schedule meetings.")}</p>
                                 </div>
                                 <DefaultSelect classNameContainer={"flex-1"} classNameSelect={"text-black text-sm p-3"}
                                                onChange={() => {
@@ -44,8 +44,7 @@ function ConversationsTab() {
                     </div>
                     <div className={"flex gap-2"}>
                         <DefaultButton type={'button'} title={"Cancel"} className={"font-medium dark:text-gray-200"}/>
-                        <DefaultButton type={'button'} onClick={() => {
-                        }} title={"Apply Changes"}
+                        <DefaultButton type={'button'} onClick={() => {}} title={"Apply Changes"}
                                        className={"bg-primary-500 font-medium dark:bg-primary-200 dark:text-black text-white"}/>
                     </div>
                 </div>

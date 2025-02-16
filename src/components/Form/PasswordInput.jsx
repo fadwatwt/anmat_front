@@ -26,7 +26,7 @@ function PasswordInput({title,icon,id,name,onChange,value,placeholder,isRequired
                     value={value}
                     type={showPassword ? "text" : "password"}
                     onChange={onChange}
-                    className={" custom-date-input text-sm dark:bg-white-0 w-full py-3 px-2 outline-none appearance-none focus:outline-none peer " + (i18n.language === 'ar' && "text-end")}
+                    className={" custom-date-input text-sm dark:bg-white-0 w-full py-3 px-2 outline-none appearance-none focus:outline-none peer " + (i18n.language === 'ar' && "text-start")}
                     name={name}
                 />
                     <RiEyeLine className="cursor-pointer" onClick={handelShowPassword} />

@@ -29,6 +29,10 @@ function RegionalPreferences() {
         {id: "dd-month-yyyy", value: "DD Month YYYY"}, // مثال: 31 December 2024
         {id: "month-dd-yyyy", value: "Month DD, YYYY"}, // مثال: December 31, 2024
     ];
+    const handelSetLanguage = (language) => {
+        console.log("language", language);
+        setSelectedLanguage(language)
+    }
 
     const changeLanguage = (language) => {
         i18n.changeLanguage(language);
@@ -36,6 +40,7 @@ function RegionalPreferences() {
     };
 
     const handleApplyChanges = () => {
+        console.log(selectedLanguage)
         changeLanguage(selectedLanguage);
     };
     return (
@@ -47,7 +52,7 @@ function RegionalPreferences() {
                 </div>
                 <div className={"flex flex-col gap-2"}>
                     <DefaultSelect title={"Language"} options={langugeOptions}
-                                   onChange={(e) => setSelectedLanguage(e.target.value)}
+                                   onChange={handelSetLanguage}
                     />
                     <DefaultSelect title={"Timezone"} options={timezoneOptions}/>
                     <DefaultSelect title={"Time Format"} options={timeFormatOptions}/>

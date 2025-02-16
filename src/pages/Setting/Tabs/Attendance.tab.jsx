@@ -29,21 +29,19 @@ function AttendanceTab() {
                         </div>
                         <div className={"flex flex-col gap-2"}>
                             <div className={"flex justify-between items-center gap-4"}>
-                                <div className={"flex flex-col items-start justify-center w-9/12"}>
-                                    <p className={"text-sm text-black text-wrap text-start"}>Minutes before Warning Message
-                                        Sent</p>
-                                    <p className={"text-xs text-gray-500 text-wrap text-start"}>Time allowed for
-                                        lateness before sending a
-                                        warning.</p>
+                                <div className={"flex flex-col items-start justify-center w-9/12 gap-1"}>
+                                    <p className={"text-sm text-black text-wrap text-start"}>{t("Minutes before Warning Message Sent")}</p>
+                                    <p className={"text-xs text-gray-500 text-wrap text-start"}>
+                                        {t("Time allowed for lateness before sending a warning.")}</p>
                                 </div>
                                 <DefaultSelect classNameContainer={"flex-1"} classNameSelect={"text-black text-sm p-3"}
                                                onChange={() => {
                                                }} options={minutesBeforeSentOptions}/>
                             </div>
                             <div className={"flex justify-between items-center gap-4"}>
-                                <div className={"flex flex-col items-start justify-center w-9/12"}>
-                                    <p className={"text-sm text-black text-wrap text-start"}>Number of daily working hours for each employee</p>
-                                    <p className={"text-xs text-gray-500 text-wrap text-start"}>Standard daily working hours per employee.</p>
+                                <div className={"flex flex-col items-start justify-center w-9/12 gap-1"}>
+                                    <p className={"text-sm text-black text-wrap text-start"}>{t("Number of daily working hours for each employee")}</p>
+                                    <p className={"text-xs text-gray-500 text-wrap text-start"}>{t("Standard daily working hours per employee.")}</p>
                                 </div>
                                 <DefaultSelect classNameContainer={"flex-1"} classNameSelect={"text-black text-sm p-3"}
                                                onChange={() => {

@@ -6,8 +6,10 @@ import InputAndLabel from "../../../../../components/Form/InputAndLabel.jsx";
 import InlineAlert from "../../../../../components/InlineAlert.jsx";
 import DefaultButton from "../../../../../components/Form/DefaultButton.jsx";
 import {useRef} from "react";
+import {useTranslation} from "react-i18next";
 function PersonalInformation() {
     const uploadFileInput = useRef(null);
+    const {t} = useTranslation()
     const initialValues = {
         name: "Rawan Ahmed",
         age:"28",
@@ -26,12 +28,12 @@ function PersonalInformation() {
                          alt="user-profile-image"/>
                     <div className={"flex flex-col gap-2 items-start"}>
                         <div className={"flex flex-col items-start gap-1"}>
-                            <p className={"text-md text text-main-100"}>Upload Image</p>
-                            <p className={"text-sm text-sub-500"}>Min 400x400px, PNG or JPEG</p>
+                            <p className={"text-md text text-main-100"}>{t("Upload Image")}</p>
+                            <p className={"text-sm text-sub-500"}>{t("Min 400x400px, PNG or JPEG")}</p>
                         </div>
                         <button
                             onClick={handelClickUploadBtn}
-                            className={"p-1.5 bg-white rounded-md text-sm text-sub-500 border border-soft-200"}>Upload
+                            className={"p-1.5 bg-white rounded-md text-sm text-sub-500 border border-soft-200"}>{t("Upload")}
                         </button>
                         <input type={"file"} className={"hidden"} ref={uploadFileInput}/>
                     </div>

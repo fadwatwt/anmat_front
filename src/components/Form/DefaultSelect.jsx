@@ -6,7 +6,7 @@ import {useEffect, useState} from "react";
 
 
 function DefaultSelect({ title, options, onChange, classNameContainer,classNameSelect, isOption = false, defaultValue  }) {
-    const { t } = useTranslation();
+    const { t,i18n } = useTranslation();
 
     const [selectedValue, setSelectedValue] = useState(defaultValue);
 
@@ -48,7 +48,7 @@ function DefaultSelect({ title, options, onChange, classNameContainer,classNameS
                         </option>
                     ))}
                 </select>
-                <div className="absolute inset-y-0 right-3  flex items-center pointer-events-none">
+                <div className={`absolute inset-y-0 ${i18n.language === 'en' ? "right-3" :"left-3"}  flex items-center pointer-events-none`}>
                     <IoIosArrowDown />
                 </div>
             </div>
