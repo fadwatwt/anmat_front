@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import Table from "../../../components/Tables/Table.jsx";
-import AccountDetails from "../../Projects/Components/TableInfo/AccountDetails.jsx";
 import { employees } from "../../../functions/FactoryData.jsx";
 
 function RotationTap() {
@@ -70,7 +69,7 @@ function RotationTap() {
       : employee.department === selectedDepartment
   );
   const rows = filteredEmployees.map((employee) => [
-    <div className={`flex items-center gap-2`}>
+    <div key={employee.id}  className={`flex items-center gap-2`}>
       <img
         src={employee.imageProfile}
         alt={employee.name}
