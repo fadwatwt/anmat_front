@@ -18,16 +18,16 @@ function ProfileSecurityTab() {
         setActiveTab(activeTap);
     }
     const tabsData = [
-        {
-            title: "Personal information",
-            content: <PersonalInformation />,
-            icon:""
-        },
-        {
-            title: "Change Password",
-            content:<ChangePassword />,
-            icon:"",
-        },
+      {
+        title: "Personal information",
+        content: <PersonalInformation />,
+        icon: "",
+      },
+      {
+        title: "Change Password",
+        content: <ChangePassword />,
+        icon: "",
+      },
     ];
     return (
         <div className={"flex md:gap-32 gap-10 w-full md:flex-row flex-col"}>
