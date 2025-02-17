@@ -17,31 +17,50 @@ function RotationTap() {
   ]);
   // Generate day headers
   const daysOfWeek = [
-    "Sunday 1 ",
-    "Monday 2 ",
-    "Tuesday 3",
-    "Wednesday 4 ",
-    "Thursday 5 ",
-    "Friday 6 ",
-    "Saturday 7 ",
+    { day: "Sunday", number: 1 },
+    { day: "Monday", number: 2 },
+    { day: "Tuesday", number: 3 },
+    { day: "Wednesday", number: 4 },
+    { day: "Thursday", number: 5 },
+    { day: "Friday", number: 6 },
+    { day: "Saturday", number: 7 },
   ];
 
   const headers = [
     { label: "Employee", width: "200px" },
-    ...daysOfWeek.map((day) => ({ label: t(day), width: "150px" })),
+    ...daysOfWeek.map(({ day, number }) => ({
+      label: (
+        <div className="flex flex-col items-center">
+          <span className="">{day}</span>
+          <span className="text-lg text-start text-sm dark:bg-gray-900">
+            {number}
+          </span>
+        </div>
+      ),
+      width: "150px",
+    })),
   ];
 
   const OffBadge = () => (
-    <div className="flex items-center gap-1 w-14 h-6 px-1 py-1 bg-weak-100 dark:bg-gray-700 rounded text-gray-600 dark:text-gray-300 text-xs">
-      <div className="w-1.5 h-1.5 bg-gray-400 rounded-full" />
-      <span>OFF</span>
+    <div className="w-full flex justify-center">
+      <div className="flex items-center justify-center gap-1 w-14 h-6 px-1 py-1 bg-weak-100 dark:bg-gray-700 rounded text-gray-600 dark:text-gray-300 text-xs">
+        <div className="w-1.5 h-1.5 bg-gray-400 rounded-full" />
+        <span>OFF</span>
+      </div>
     </div>
   );
   // Mock shift data generator
   const generateShifts = () => {
-    return daysOfWeek.map((day) => {
+    return daysOfWeek.map(() => {
       const random = Math.random();
-      return random > 0.3 ? "10:00 AM - 6:00 PM" : <OffBadge />;
+      return random > 0.3 ? (
+        <div className="flex flex-col text-sm dark:text-sub-300 text-center">
+          <span>10:00 AM to</span>
+          <span>6:00 PM</span>
+        </div>
+      ) : (
+        <OffBadge />
+      );
     });
   };
 
@@ -50,20 +69,24 @@ function RotationTap() {
       ? true
       : employee.department === selectedDepartment
   );
-
   const rows = filteredEmployees.map((employee) => [
-    <AccountDetails
-      key={employee.id}
-      account={{
-        name: employee.name,
-        rule: employee.role,
-        imageProfile: employee.imageProfile,
-      }}
-    />,
+    <div className={`flex items-center gap-2`}>
+      <img
+        src={employee.imageProfile}
+        alt={employee.name}
+        className="w-8 h-8 rounded-full"
+      />
+      <div className="flex flex-col">
+        <span className="text-sm text-sub-500 dark:text-sub-300">
+          {employee.name}
+        </span>
+        <span className="text-gray-500 text-sm">{employee.role}</span>
+      </div>
+    </div>,
     ...generateShifts().map((shift, index) => (
-      <p key={index} className="text-sm dark:text-sub-300">
+      <div key={index} className="text-sm dark:text-sub-300 ">
         {shift}
-      </p>
+      </div>
     )),
   ]);
 
@@ -71,7 +94,6 @@ function RotationTap() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2 h-full">
         <Table
-          title="Rotation Schedule"
           headers={headers}
           rows={rows}
           isCheckInput={false}
