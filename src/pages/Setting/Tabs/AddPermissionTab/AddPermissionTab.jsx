@@ -38,7 +38,7 @@ function AddPermissionTab() {
           {/* Row 1: Projects */}
           <div className="flex justify-between items-center w-full">
             <div className="flex items-center gap-2">
-              <p className="text-sm md:text-base font-medium dark:text-[#0A0D14]">
+              <p className="text-sm md:text-base font-medium dark:text-gray-200">
                 {t("Projects")}
               </p>
             </div>
@@ -53,7 +53,7 @@ function AddPermissionTab() {
           {/* Row 2: Permission Name */}
           <div className="flex justify-between items-center w-full">
             <div className="flex items-center gap-2">
-              <p className="text-sm md:text-base font-medium dark:text-[#0A0D14]">
+              <p className="text-sm md:text-base font-medium dark:text-gray-200">
                 {t("Permission Name")}
               </p>
             </div>

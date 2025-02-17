@@ -28,12 +28,12 @@ function PersonalInformation() {
                          alt="user-profile-image"/>
                     <div className={"flex flex-col gap-2 items-start"}>
                         <div className={"flex flex-col items-start gap-1"}>
-                            <p className={"text-md text text-main-100"}>{t("Upload Image")}</p>
+                            <p className={"text-md text text-main-100 dark:text-gray-200"}>{t("Upload Image")}</p>
                             <p className={"text-sm text-sub-500 text-wrap text-start"}>{t("Min 400x400px, PNG or JPEG")}</p>
                         </div>
                         <button
                             onClick={handelClickUploadBtn}
-                            className={"p-1.5 bg-white rounded-md text-sm text-sub-500 border border-soft-200"}>{t("Upload")}
+                            className={"p-1.5 bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200 rounded-md text-sm text-sub-500 border border-soft-200"}>{t("Upload")}
                         </button>
                         <input type={"file"} className={"hidden"} ref={uploadFileInput}/>
                     </div>

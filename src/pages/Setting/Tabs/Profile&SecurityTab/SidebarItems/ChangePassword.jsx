@@ -27,7 +27,7 @@ function ChangePassword() {
     return (
         <div className="flex flex-col justify-start gap-1 items-center p-3">
             <div className="w-full flex flex-col items-start gap-2">
-                <p className="text-md text-main-100">{t("Change Password")}</p>
+                <p className="text-md text-main-100 dark:text-gray-200">{t("Change Password")}</p>
                 <p className="text-sm text-sub-500">{t("Update password for enhanced account security.")}</p>
             </div>
             <WordTheMiddleAndLine />
