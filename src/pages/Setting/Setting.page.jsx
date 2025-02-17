@@ -4,6 +4,7 @@ import { IoSettingsOutline } from "react-icons/io5";
 import { FiPlus } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import NotificationsTab from "./Tabs/NotificationsTab/NotificationsTab.jsx";
+import AddPermissionTab from "./Tabs/AddPermissionTab/AddPermissionTab.jsx";
 
 function SettingPage() {
   const { t } = useTranslation();
@@ -31,6 +32,10 @@ function SettingPage() {
     {
       title: "Privacy & Security",
       content: <div>Youtube content goes here</div>,
+    },
+    {
+      title: "Add Permission",
+      content: <AddPermissionTab />,
     },
   ];
   return (

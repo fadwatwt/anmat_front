@@ -36,7 +36,7 @@ function NotificationPreferences() {
     {
       key: "deadlineNotification",
       label: "Deadline Notification",
-      description: "Receive timely reminders before approaching deadlines.",
+      description: "Receive timely reminders before ",
     },
   ];
 
@@ -51,6 +51,7 @@ function NotificationPreferences() {
             {t("Choose what notifications you want to receive")}
           </p>
         </div>
+        <div className="w-full border-t-[1px] border-[#E2E4E9] dark:border-gray-700 my-2" />
 
         <div className="flex flex-col gap-3 w-full">
           {notificationOptions.map(({ key, label, description }) => (
@@ -74,10 +75,11 @@ function NotificationPreferences() {
           ))}
         </div>
       </div>
-      <div className="flex items-center justify-between w-full  h-9 bg-[#EBF1FF] rounded-lg px-3 mx-auto">
+
+      <div className="flex items-center justify-between w-full h-9 bg-[#EBF1FF] rounded-lg px-1 mx-auto overflow-hidden">
         <div className="flex items-center gap-2">
           <FiInfo className="text-blue-500 w-4 h-4" />
-          <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400">
+          <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap overflow-hidden text-ellipsis">
             Maximize your app usage by leaving notification settings active.
           </p>
         </div>
@@ -86,12 +88,12 @@ function NotificationPreferences() {
         <DefaultButton
           type="button"
           title={t("Cancel")}
-          className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200"
+          className="font-medium dark:text-gray-200"
         />
         <DefaultButton
           type="button"
           title={t("Save Changes")}
-          className="px-4 py-2 bg-primary-600 text-white hover:bg-primary-700 dark:bg-primary-200 dark:text-gray-900"
+          className="bg-primary-500 font-medium dark:bg-primary-200 dark:text-black text-white"
         />
       </div>
     </div>
