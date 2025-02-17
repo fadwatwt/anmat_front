@@ -29,9 +29,9 @@ function CreateProjectForm() {
     const [steps, setSteps] = useState(initialSteps);
 
     const handleAddTask = () => {
-        // const newStepNumber = steps.filter(step => step.title.startsWith('Task')).length + 1;
+        const taskCount = steps.filter(step => step.title.startsWith('Task')).length + 1;
         const newTaskStep = {
-            title: `Task`,
+            title: `Task ${taskCount}`,
             content: <CreateTaskForm />,
         };
         setSteps([...steps, newTaskStep]);
@@ -47,6 +47,7 @@ function CreateProjectForm() {
                 <StepsComponent
                     steps={steps}
                     handelCreateProject={handleCreateProject}
+                    initialValues={{dueDate:"",assignedDate:"",department:"",taskName:""}}
                     handelAddTask={handleAddTask}
                 />
             </div>

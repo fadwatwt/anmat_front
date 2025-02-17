@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 
 function Priority({ type, title }) {
   const { t } = useTranslation();
-  switch (title) {
+  switch (type || title) {
     case "Urgent and Important":
       return (
         <div className=" rounded-md text-nowrap text-xs bg-red-100 inline-flex py-1 px-2  gap-1 items-center">

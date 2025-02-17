@@ -20,7 +20,6 @@ function AccountDetails({ account, path }) {
         <div>
           <p className={"text-sm text-sub-500 dark:text-sub-300"}>
             {account.name}
-            dsadas
           </p>
           {/* <p className="text-xs text-sub-500 dark:text-sub-300">
             {account.rule}

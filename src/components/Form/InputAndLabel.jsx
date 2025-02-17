@@ -11,13 +11,14 @@ function InputAndLabel({
   onChange,
   onBlur,
   error,
+    isRequired
 }) {
   const { t } = useTranslation();
 
   return (
     <div className={`flex flex-col gap-1 w-full items-start ${className}`}>
       <label className="text-gray-900 dark:text-gray-200 text-sm">
-        {t(title)}
+        {t(title)}{isRequired && <span className={"text-red-500"}>*</span>}
       </label>
       <input
         type={type}
@@ -36,15 +37,17 @@ function InputAndLabel({
 }
 
 InputAndLabel.propTypes = {
-  title: PropTypes.string,
-  placeholder: PropTypes.string,
-  type: PropTypes.string,
-  className: PropTypes.string,
-  value: PropTypes.string,
-  name: PropTypes.string,
-  onChange: PropTypes.func,
+    title: PropTypes.string,
+    placeholder: PropTypes.string,
+    type: PropTypes.string,
+    className: PropTypes.string,
+    value:PropTypes.string,
+    name:PropTypes.string,
+    onChange: PropTypes.func,
+    isRequired: PropTypes.bool,
   onBlur: PropTypes.func,
   error: PropTypes.string,
-};
+
+}
 
 export default InputAndLabel;

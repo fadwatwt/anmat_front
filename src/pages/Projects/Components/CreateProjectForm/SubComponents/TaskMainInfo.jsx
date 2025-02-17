@@ -1,18 +1,16 @@
 import { useFormik } from "formik";
-import * as Yup from "yup";
 import InputAndLabel from "../../../../../components/Form/InputAndLabel.jsx";
 import TextAreaWithLabel from "../../../../../components/Form/TextAreaWithLabel.jsx";
 import DefaultSelect from "../../../../../components/Form/DefaultSelect.jsx";
 import FileUpload from "../../../../../components/Form/FileUpload.jsx";
 import DateInput from "../../../../../components/Form/DateInput.jsx";
-import UserSelect from "../../../../../components/Form/UserSelect.jsx";
 import ElementsSelect from "../../../../../components/Form/ElementsSelect.jsx";
 import Priority from "../../TableInfo/Priority.jsx";
 import Status from "../../TableInfo/Status.jsx";
 import { useTranslation } from "react-i18next";
 import PropTypes from "prop-types";
 
-function TaskMainInfo({ task, type = "task" }) {
+function TaskMainInfo({ task, type = "task",values,handleChange }) {
   const { t } = useTranslation();
 
   // Mock users (replace with actual API data)
@@ -50,6 +48,8 @@ function TaskMainInfo({ task, type = "task" }) {
     { id: "2", element: <Status type={"In Progress"} title={"In Progress"} /> },
     { id: "3", element: <Status type={"Completed"} title={"Completed"} /> },
   ];
+
+  console.log(values)
 
   // Priority options
   const optionsPriority = [
@@ -93,6 +93,9 @@ function TaskMainInfo({ task, type = "task" }) {
     },
   });
 
+  const valuesInputs = values || formik.values;
+  const handleChangeFunc = handleChange || formik.handleChange;
+
   // Handle dropdown selection
   const handleSelectChange = (name, value) => {
     formik.setFieldValue(name, value);
@@ -113,8 +116,8 @@ function TaskMainInfo({ task, type = "task" }) {
 
       {/* Task Name */}
       <InputAndLabel
-        value={formik.values.taskName}
-        onChange={formik.handleChange}
+        value={valuesInputs.taskName}
+        onChange={handleChangeFunc}
         name="taskName"
         type="text"
         title={type === "task" ? "Task Name" : "Project Name"}
@@ -123,8 +126,8 @@ function TaskMainInfo({ task, type = "task" }) {
 
       {/* Description */}
       <TextAreaWithLabel
-        value={formik.values.description}
-        onChange={formik.handleChange}
+        value={valuesInputs.description}
+        onChange={handleChangeFunc}
         name="description"
         title="Description"
         placeholder="Add a description"
@@ -134,7 +137,7 @@ function TaskMainInfo({ task, type = "task" }) {
       <DefaultSelect
         title="Department"
         options={optionsDepartment}
-        defaultValue={formik.values.department}
+        defaultValue={valuesInputs.department}
         onChange={(value) => handleSelectChange("department", value)}
         name="department"
       />
@@ -152,15 +155,15 @@ function TaskMainInfo({ task, type = "task" }) {
       {/* Dates */}
       <div className={"flex items-center justify-center gap-2"}>
         <DateInput
-          value={formik.values.assignedDate}
-          onChange={formik.handleChange}
+          value={valuesInputs.assignedDate}
+          onChange={handleChangeFunc}
           name="assignedDate"
           title="Assigned Date"
           className={"flex-1"}
         />
         <DateInput
-          value={formik.values.dueDate}
-          onChange={formik.handleChange}
+          value={valuesInputs.dueDate}
+          onChange={handleChangeFunc}
           name="dueDate"
           title="Due Date"
           className={"flex-1"}
@@ -172,7 +175,7 @@ function TaskMainInfo({ task, type = "task" }) {
         <ElementsSelect
           title="Status"
           options={optionsStatus}
-          defaultValue={formik.values.status} // Pass the selected ID directly
+          defaultValue={valuesInputs.status} // Pass the selected ID directly
           onChange={(value) => handleSelectChange("status", value)}
           name="status"
           classNameContainer={"flex-1"}
@@ -180,7 +183,7 @@ function TaskMainInfo({ task, type = "task" }) {
         <ElementsSelect
           title="Priority"
           options={optionsPriority}
-          defaultValue={formik.values.priority} // Pass the selected ID directly
+          defaultValue={valuesInputs.priority} // Pass the selected ID directly
           onChange={(value) => handleSelectChange("priority", value)}
           name="priority"
           classNameContainer={"flex-1"}
@@ -190,7 +193,7 @@ function TaskMainInfo({ task, type = "task" }) {
       {/* Dependent Department */}
       <DefaultSelect
         title="Dependent Department"
-        defaultValue={formik.values.dependentDepartment}
+        defaultValue={valuesInputs.dependentDepartment}
         onChange={(value) => handleSelectChange("dependentDepartment", value)}
         name="dependentDepartment"
         options={optionsDepartment}
@@ -205,6 +208,8 @@ function TaskMainInfo({ task, type = "task" }) {
 TaskMainInfo.propTypes = {
   task: PropTypes.object,
   type: PropTypes.string,
+  values: PropTypes.array,
+  handleChange: PropTypes.func,
 };
 
 export default TaskMainInfo;

@@ -30,7 +30,7 @@ const FileUpload = () => {
                     {t("Choose a file or drag & drop it here.")}
                 </p>
                 <p className="text-gray-700 text-xs dark:text-gray-300">{t(".txt format, up to 50 MB.")}</p>
-                <button className="mt-4 text-sm px-8 py-2 bg-white border-2 rounded-xl text-gray-900 hover:bg-gray-200">
+                <button type={"button"} className="mt-4 text-sm px-8 py-2 bg-white border-2 rounded-xl text-gray-900 hover:bg-gray-200">
                     {t("Browse File")}
                 </button>
             </div>

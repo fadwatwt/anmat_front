@@ -1,35 +1,32 @@
-
-import RegionalPreferences from "../components/RegionalPreferences.jsx";
-import Sidebar from "../../../components/Subcomponents/Sidebar.jsx";
-import {SlGlobe} from "react-icons/sl";
-import {IoSunnyOutline} from "react-icons/io5";
-import {useState} from "react";
-import ThemeOptions from "../components/ThemeOptions.jsx";
 import {useTranslation} from "react-i18next";
-import TabModal from "../../../components/Modal/TabsContener/TabModal.jsx";
+import {useState} from "react";
+import Sidebar from "../../../../components/Subcomponents/Sidebar.jsx";
+import TabModal from "../../../../components/Modal/TabsContener/TabModal.jsx";
+import {RiLock2Line, RiUserLine} from "@remixicon/react";
+import PersonalInformation from "./SidebarItems/PersonalInformation.jsx";
+import ChangePassword from "./SidebarItems/ChangePassword.jsx";
 
-
-function GeneralSettingsTab() {
+function ProfileSecurityTab() {
     const {t} = useTranslation()
     const listSideBar = [
-        {id:"regional-preferences",title:"Regional Preferences",icon:<SlGlobe/>},
-        {id:"theme-options",title:"Theme Options",icon:<IoSunnyOutline />}
+        {id: "personalInformation", title: "Personal information", icon: <RiUserLine  />},
+        {id: "changePassword", title:"Change Password",icon:<RiLock2Line />}
     ]
-    const [activeTab, setActiveTab] = useState('regional-preferences');
+    const [activeTab, setActiveTab] = useState('personalInformation');
 
     const handelChangeActiveTab = (activeTap) => {
         setActiveTab(activeTap);
     }
     const tabsData = [
         {
-            title: "Regional Preferences",
-            content: <RegionalPreferences />,
-            icon:<SlGlobe/>
+            title: "Personal information",
+            content: <PersonalInformation />,
+            icon:""
         },
         {
-            title: "Theme Options",
-            content:<ThemeOptions />,
-            icon:<IoSunnyOutline />,
+            title: "Change Password",
+            content:<ChangePassword />,
+            icon:"",
         },
     ];
     return (
@@ -47,14 +44,14 @@ function GeneralSettingsTab() {
 
                 <div className={"hidden md:block"}>
                     {
-                        activeTab === 'regional-preferences' ? <RegionalPreferences/> : <ThemeOptions />
+                        activeTab === 'personalInformation' ? <PersonalInformation/> : <ChangePassword />
                     }
                 </div>
-                </div>
+            </div>
 
         </div>
 
     );
 }
 
-export default GeneralSettingsTab;
+export default ProfileSecurityTab;

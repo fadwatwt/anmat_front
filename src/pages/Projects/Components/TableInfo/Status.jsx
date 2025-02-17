@@ -1,12 +1,12 @@
 import PropTypes from "prop-types";
 import { TbForbidFilled } from "react-icons/tb";
-import { FaCircleCheck } from "react-icons/fa6";
 import { IoTime } from "react-icons/io5";
 import { useTranslation } from "react-i18next";
+import {FaCircleCheck} from "react-icons/fa6";
 
 function Status({ title, type }) {
   const { t } = useTranslation();
-  switch (title) {
+  switch (type || title) {
     case "Not Started":
       return (
         <div className=" rounded-md text-nowrap text-xs bg-none border border-soft-200 dark:border-soft-500 inline-flex py-1 px-2  gap-1 items-center">
@@ -28,6 +28,14 @@ function Status({ title, type }) {
           <span className="text-sub-500 dark:text-sub-300">{t(title)}</span>
         </div>
       );
+
+      case "Active":
+          return (
+              <div className=" rounded-md text-nowrap text-xs bg-none border border-soft-200 dark:border-soft-500 inline-flex py-1 px-2  gap-1 items-center">
+                  <FaCircleCheck className={"text-green-500"} />
+                  <span className="text-sub-500 dark:text-sub-300">{t(title)}</span>
+              </div>
+          );
   }
 }
 

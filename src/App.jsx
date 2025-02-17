@@ -49,7 +49,7 @@ function App() {
             <Menu isSlidebarOpen={ isSlidebarOpen } taggleSlidebarOpen={ taggleSlidebarOpen} />
             <div className={"md:w-[calc(100vw-16rem)] w-screen  flex-col"}>
                 {!isSettingsPage ? (
-                    <Header taggleSlidebarOpen={taggleSlidebarOpen} />)
+                        <Header taggleSlidebarOpen={taggleSlidebarOpen} />)
                     : (<Header className="md:hidden block" taggleSlidebarOpen={taggleSlidebarOpen} />)
                 }
                 <AppRoute />

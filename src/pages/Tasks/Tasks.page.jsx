@@ -4,7 +4,7 @@ import Page from "../Page.jsx";
 import Table from "../../components/Tables/Table.jsx";
 import TimeLine from "../../components/TimeLine/TimeLine.jsx";
 import {useState} from "react";
-import {tasksRows} from "../../functions/FactoryData.jsx";
+import {tasks, tasksRows} from "../../functions/FactoryData.jsx";
 import EditTaskModal from "./modal/EditTaskModal.jsx";
 import Alert from "../../components/Alert.jsx";
 import NameAndDescription from "../Projects/Components/TableInfo/NameAndDescription.jsx";
@@ -37,7 +37,7 @@ function TasksPage() {
     }
     const handelEditModal = (index) => {
         console.log(index)
-        setTaskEdit({tasks:tasksRows[index]})
+        setTaskEdit({tasks:tasks[index]})
         setIsOpenEditModal(!isOpenEditModal)
     }
     const handelDeleteTask = (index) => {
@@ -67,11 +67,11 @@ function TasksPage() {
                                rows={rows}
                                isFilter={true}/>
                     </div>
-                <div className={"flex md:w-[37.5%] w-screen"}>
-                    <TimeLine/>
+                    <div className={"flex md:w-[37.5%] w-screen"}>
+                        <TimeLine/>
+                    </div>
                 </div>
-            </div>
-        </Page>
+            </Page>
             <EditTaskModal task={taskEdit} isOpen={isOpenEditModal} onClose={handelEditModal} />
             <Alert type={"warning"} title={"Delete Task?"}
                    message={"Are you sure you want to delete this task."}

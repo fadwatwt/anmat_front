@@ -7,7 +7,9 @@ import StepsComponent from "../../Projects/Components/CreateProjectForm/StepsCom
 
 function EditTaskModal({ isOpen, onClose, task }) {
     const [currentStep, setCurrentStep] = useState(1);
-    const tasks = task?.tasks || []
+    const tasks = Array.isArray(task?.tasks) ? task.tasks : [];
+
+    console.log(tasks)
 
     const steps = [
         ...tasks.map((task, index) => ({
