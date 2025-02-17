@@ -56,6 +56,7 @@ function SettingPage() {
                 }
               />
             </div>
+
             <div>
               <h3 className={"text-black dark:text-gray-200 text-lg"}>
                 {t("Settings Page")}
@@ -65,6 +66,7 @@ function SettingPage() {
               </p>
             </div>
           </div>
+
           <div
             className={
               "w-full flex md:justify-end justify-center items-center bg-none px-2"

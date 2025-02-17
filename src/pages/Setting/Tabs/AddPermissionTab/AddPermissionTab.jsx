@@ -27,6 +27,7 @@ function AddPermissionTab() {
             <h2 className="text-lg md:text-xl font-semibold dark:text-gray-200">
               {t("Add Permission")}
             </h2>
+
             <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400">
               {t("Define roles, categories, and actions efficiently.")}
             </p>
@@ -41,6 +42,7 @@ function AddPermissionTab() {
                 {t("Projects")}
               </p>
             </div>
+
             <div className="flex items-center gap-2">
               <button className="flex items-center gap-1 text-[#375DFB]">
                 <span className="text-xs">{t("Edit")} &gt;</span>
@@ -55,6 +57,7 @@ function AddPermissionTab() {
                 {t("Permission Name")}
               </p>
             </div>
+
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setEditPermissionModalOpen(1)}
