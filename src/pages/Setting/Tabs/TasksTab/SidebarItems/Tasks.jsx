@@ -12,7 +12,7 @@ function Tasks() {
             <div className={" flex flex-col gap-2"}>
                 <div className={"flex flex-col text-start gap-1"}>
                     <p className={"dark:text-gray-200 text-black"}>{t("Tasks Preferences")}</p>
-                    <p className={"text-sm dark:text-gray-200 text-gray-500"}>{t("Customize tasks settings")}</p>
+                    <p className={"text-sm text-gray-500 dark:text-gray-400"}>{t("Customize tasks settings")}</p>
                 </div>
                 <WordTheMiddleAndLine />
                 <div className={"flex flex-col gap-2"}>

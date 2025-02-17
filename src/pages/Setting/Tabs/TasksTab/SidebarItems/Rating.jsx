@@ -21,7 +21,7 @@ function Rating() {
             <div className="flex flex-col gap-2">
                 <div className="flex flex-col text-start gap-1">
                     <p className="dark:text-gray-200 text-black">{t("Adding Rating Categories")}</p>
-                    <p className="text-sm dark:text-gray-200 text-gray-500">{t("Customize Rating settings")}</p>
+                    <p className="text-sm dark:text-gray-400 text-gray-500">{t("Customize Rating settings")}</p>
                 </div>
                 <WordTheMiddleAndLine />
 

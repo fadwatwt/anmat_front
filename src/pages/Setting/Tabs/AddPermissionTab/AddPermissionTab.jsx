@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import DefaultButton from "../../../../components/Form/DefaultButton";
 import AddPermissionModal from "./AddPermissionModal";
 import EditPermissionModal from "./EditPermissionModal";
+import { RiArrowRightSLine} from "@remixicon/react";
 
 function AddPermissionTab() {
   const { t } = useTranslation();
@@ -24,11 +25,11 @@ function AddPermissionTab() {
       <div className="flex justify-center w-full md:p-6 p-3 rounded-2xl bg-white dark:bg-gray-800 lg:w-[40%] md:w-[60%] sm:w-[90%] overflow-auto">
         <div className="flex flex-col gap-4 w-full">
           <div className="flex flex-col text-start gap-1">
-            <h2 className="text-lg md:text-xl font-semibold dark:text-gray-200">
+            <h2 className="text-md  dark:text-gray-200">
               {t("Add Permission")}
             </h2>
 
-            <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               {t("Define roles, categories, and actions efficiently.")}
             </p>
           </div>
@@ -38,14 +39,15 @@ function AddPermissionTab() {
           {/* Row 1: Projects */}
           <div className="flex justify-between items-center w-full">
             <div className="flex items-center gap-2">
-              <p className="text-sm md:text-base font-medium dark:text-gray-200">
+              <p className="text-sm dark:text-gray-200">
                 {t("Projects")}
               </p>
             </div>
 
             <div className="flex items-center gap-2">
-              <button className="flex items-center gap-1 text-[#375DFB]">
-                <span className="text-xs">{t("Edit")} &gt;</span>
+              <button className="flex items-center gap-1 text-[#375DFB] dark:text-primary-200">
+                <span className="text-xs">{t("Edit")} </span>
+                <RiArrowRightSLine size="15" />
               </button>
             </div>
           </div>
@@ -53,7 +55,7 @@ function AddPermissionTab() {
           {/* Row 2: Permission Name */}
           <div className="flex justify-between items-center w-full">
             <div className="flex items-center gap-2">
-              <p className="text-sm md:text-base font-medium dark:text-gray-200">
+              <p className="text-sm dark:text-gray-200">
                 {t("Permission Name")}
               </p>
             </div>
@@ -61,9 +63,10 @@ function AddPermissionTab() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setEditPermissionModalOpen(1)}
-                className="flex items-center gap-1 text-[#375DFB]"
+                className="flex items-center gap-1 text-[#375DFB] dark:text-primary-200"
               >
-                <span className="text-xs">{t("Edit")} &gt;</span>
+                <span className="text-xs">{t("Edit")} </span>
+                <RiArrowRightSLine size="15" />
               </button>
             </div>
           </div>
@@ -73,7 +76,7 @@ function AddPermissionTab() {
             <DefaultButton
               type="button"
               title={`+ ${t("Add Permission")}`}
-              className="w-full sm:w-[406px] h-[40px] border-[1px] border-[#375DFB] text-[#375DFB] font-medium bg-transparent flex items-center justify-center gap-4 px-[10px]"
+              className="w-full py-3 border-[1px] border-[#375DFB] text-[#375DFB] dark:text-primary-200 bg-transparent flex items-center justify-center gap-4 px-[10px]"
               iconLeft="add-line"
               onClick={() => setAddPermissionModalOpen(1)}
             />

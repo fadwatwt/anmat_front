@@ -19,7 +19,7 @@ function Tabs({ tabs }) {
                         onClick={() => setActiveTab(title)}
                     >
                         {Icon && <Icon size={20} className={activeTab === title ? "text-primary-500 dark:text-primary-200" : "text-gray-600 dark:dark:text-gray-400"} />}
-                        <p className={"dark:text-gray-400 text-sm whitespace-nowrap"}>{t(title)}</p>
+                        <p className={` text-sm whitespace-nowrap ${activeTab === title ? "text-black dark:text-gray-200" :"text-gray-700 dark:text-gray-400"}`}>{t(title)}</p>
                     </div>
                 ))}
             </div>

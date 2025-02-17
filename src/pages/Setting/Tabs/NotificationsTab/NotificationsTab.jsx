@@ -46,9 +46,9 @@ function NotificationsTab() {
   );
 
   return (
-    <div className="flex md:gap-32 gap-10 w-full md:flex-row flex-col">
+    <div className="flex lg:gap-32 md:20 gap-10  w-full md:flex-row flex-col">
       <div className="hidden md:block">
-        <div className="bg-white dark:bg-gray-800 py-3 px-2 w-64 flex flex-col gap-2 rounded-lg">
+        <div className="bg-white dark:bg-gray-800 py-3 px-2 lg:w-64 w-48 flex flex-col gap-2 rounded-lg">
           <p className="uppercase text-sm px-3 text-start dark:text-gray-200">
             {t("Select Menu")}
           </p>

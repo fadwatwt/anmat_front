@@ -17,9 +17,9 @@ const EditPermissionModal = ({
     const { t } = useTranslation();
 
     const optionsStatus = [
-        { id: "1", element: <p className={"py-1 px-3 rounded-lg bg-blue-200 text-xs"}>permission 1</p> },
-        {id: "2", element: <p className={"py-1 px-3 rounded-lg bg-blue-200 text-xs"}>permission 2</p>},
-        {id: "3", element: <p className={"py-1 px-3 rounded-lg bg-blue-200 text-xs"}>permission 3</p>},
+        { id: "1", element: "permission 1" },
+        {id: "2", element: "permission 2"},
+        {id: "3", element: "permission 3"},
     ];
 
     // Handle multi-select changes
@@ -32,9 +32,9 @@ const EditPermissionModal = ({
         <Modal
             isOpen={isOpen}
             onClose={onClose}
-            title={t("Add a Permission")}
+            title={t("Edit a Permission")}
             isBtns={true}
-            btnApplyTitle={t("Add")}
+            btnApplyTitle={t("Save")}
             onClick={() => {
                 // Handle Add action here
                 onClose();
@@ -42,17 +42,17 @@ const EditPermissionModal = ({
         >
             <div className="flex flex-col gap-4 p-4">
                 {/* Permission Name */}
-                <InputAndLabel title={"Permission Name"}  />
+                <InputAndLabel value={"Permission name"} title={"Permission Name"}  />
 
                 {/* Categories */}
                 <div className="flex flex-col items-start ">
-                    <ElementsSelect options={optionsStatus} classNameItemSelected={""} isMultiple={true} isRemoveBtn={false} defaultValue={optionsStatus[0]}
+                    <ElementsSelect options={optionsStatus} classNameItemSelected={"p-1 px-2 bg-primary-100 text-black rounded-md"} isMultiple={true} isRemoveBtn={false} defaultValue={[optionsStatus[0],optionsStatus[2]]}
                                     title={"Categories"} classNameContainer={"w-full"} onChange={handleCategoryChange}/>
                 </div>
 
                 {/* Permissions */}
                 <div className="flex flex-col items-start ">
-                    <ElementsSelect options={optionsStatus} isMultiple={true} isRemoveBtn={false} classNameItemSelected={""} defaultValue={optionsStatus[0]}
+                    <ElementsSelect options={optionsStatus} isMultiple={true} isRemoveBtn={false} classNameItemSelected={"p-1 px-2 bg-primary-100 text-black rounded-md"} defaultValue={[optionsStatus[1]]}
                                     title={"Permissions"} classNameContainer={"w-full"} onChange={handleCategoryChange}/>
                 </div>
             </div>

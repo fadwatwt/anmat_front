@@ -19,13 +19,13 @@ function ConversationsTab() {
                     <div className={"flex flex-col gap-6"}>
                         <div className={"flex flex-col text-start gap-1"}>
                             <p className={"dark:text-gray-200 text-md text-black"}>{t("Conversations/Chat")}</p>
-                            <p className={"text-sm dark:text-gray-200 text-gray-500"}>{t("Manage chat and meeting permissions.")}</p>
+                            <p className={"text-sm text-gray-500 dark:text-gray-400"}>{t("Manage chat and meeting permissions.")}</p>
                         </div>
                         <div className={"flex flex-col gap-2"}>
                             <div className={"flex justify-between items-center gap-4"}>
                                 <div className={"flex flex-col items-start justify-center w-[70%] gap-1"}>
                                     <p className={"text-sm text-black text-wrap text-start dark:text-gray-200"}>{t("Who can create a group chat?")}</p>
-                                    <p className={"text-xs text-gray-500 text-wrap text-start"}>{t("Specify which roles are allowed to initiate group chats.")}</p>
+                                    <p className={"text-xs text-gray-500 text-wrap text-start dark:text-gray-400"}>{t("Specify which roles are allowed to initiate group chats.")}</p>
                                 </div>
                                 <DefaultSelect classNameContainer={"flex-1"} classNameSelect={"text-black text-sm p-3"}
                                                onChange={() => {
@@ -34,7 +34,7 @@ function ConversationsTab() {
                             <div className={"flex justify-between items-center gap-4"}>
                                 <div className={"flex flex-col items-start justify-center w-[70%] gap-1"}>
                                     <p className={"text-sm text-black text-wrap text-start dark:text-gray-200"}>{t("Who can create a meeting?")}</p>
-                                    <p className={"text-xs text-gray-500 text-wrap text-start"}>{t("Define which roles have permission to schedule meetings.")}</p>
+                                    <p className={"text-xs text-gray-500 text-wrap text-start dark:text-gray-400"}>{t("Define which roles have permission to schedule meetings.")}</p>
                                 </div>
                                 <DefaultSelect classNameContainer={"flex-1"} classNameSelect={"text-black text-sm p-3"}
                                                onChange={() => {

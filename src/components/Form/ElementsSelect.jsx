@@ -118,7 +118,7 @@ function ElementsSelect({
             {options.map((option) => (
               <div
                 key={option.id}
-                className="flex items-center p-2 hover:bg-gray-100 dark:hover:bg-gray-900 cursor-pointer"
+                className="flex items-center text-sm p-2 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-900 cursor-pointer"
                 onClick={() => toggleOptions(option)}
               >
                 {isMultiple && (
@@ -126,7 +126,7 @@ function ElementsSelect({
                     type="checkbox"
                     checked={selectedOptions.some((u) => u.id === option.id)}
                     readOnly
-                    className="mr-2"
+                    className="mr-2 checkbox-custom"
                   />
                 )}
                 {option.element}

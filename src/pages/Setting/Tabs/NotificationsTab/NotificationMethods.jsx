@@ -1,6 +1,7 @@
 import { FiInfo } from "react-icons/fi";
 import DefaultButton from "../../../../components/Form/DefaultButton";
 import { useTranslation } from "react-i18next";
+import InlineAlert from "../../../../components/InlineAlert.jsx";
 
 function NotificationMethods() {
   const { t } = useTranslation();
@@ -37,9 +38,9 @@ function NotificationMethods() {
           {notificationMethods.map(({ key, label, description }) => (
             <div
               key={key}
-              className="flex items-center gap-3 p-3 dark:bg-gray-700 rounded-lg w-full overflow-hidden"
+              className="flex items-center gap-3 p-3  rounded-lg w-full overflow-hidden"
             >
-              <input type="checkbox" className="w-4 h-4 accent-primary-600" />
+              <input type="checkbox" className="checkbox-custom" />
               <div className="text-start overflow-hidden">
                 <p className="text-sm md:text-base font-medium dark:text-gray-200 overflow-hidden text-ellipsis whitespace-nowrap">
                   {t(label)}
@@ -53,15 +54,7 @@ function NotificationMethods() {
         </div>
       </div>
 
-      {/* Info Banner */}
-      <div className="flex items-center justify-between w-full h-9 bg-[#EBF1FF] rounded-lg px-1 mx-auto overflow-hidden">
-        <div className="flex items-center gap-2">
-          <FiInfo className="text-blue-500 w-4 h-4" />
-          <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap overflow-hidden text-ellipsis">
-            Maximize your app usage by leaving notification settings active.
-          </p>
-        </div>
-      </div>
+     <InlineAlert type={"info"} text={"Maximize your app usage by leaving notification settings active."} />
 
       {/* Buttons */}
       <div className="flex gap-3 mt-4 w-full overflow-hidden">

@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { FiInfo } from "react-icons/fi";
 import Switch from "./Switch.jsx";
 import DefaultButton from "../../../../components/Form/DefaultButton.jsx";
 import { useTranslation } from "react-i18next";
+import InlineAlert from "../../../../components/InlineAlert.jsx";
 
 function NotificationPreferences() {
   const { t } = useTranslation();
@@ -57,7 +57,7 @@ function NotificationPreferences() {
           {notificationOptions.map(({ key, label, description }) => (
             <div
               key={key}
-              className="flex items-center justify-start gap-3 p-3 dark:bg-gray-700 rounded-lg w-full"
+              className="flex items-center justify-start gap-3 p-3 w-full"
             >
               <Switch
                 isOn={notifications[key]}
@@ -76,14 +76,7 @@ function NotificationPreferences() {
         </div>
       </div>
 
-      <div className="flex items-center justify-between w-full h-9 bg-[#EBF1FF] rounded-lg px-1 mx-auto overflow-hidden">
-        <div className="flex items-center gap-2">
-          <FiInfo className="text-blue-500 w-4 h-4" />
-          <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap overflow-hidden text-ellipsis">
-            Maximize your app usage by leaving notification settings active.
-          </p>
-        </div>
-      </div>
+      <InlineAlert type={"info"} text={"Maximize your app usage by leaving notification settings active."} />
       <div className="flex gap-3 mt-4 w-full">
         <DefaultButton
           type="button"
