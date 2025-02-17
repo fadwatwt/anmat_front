@@ -2,7 +2,7 @@ import Modal from "../../../../components/Modal/Modal";
 import { useTranslation } from "react-i18next";
 import PropTypes from "prop-types"; // Import prop-types
 import ElementsSelect from "../../../../components/Form/ElementsSelect.jsx";
-import Status from "../../../Projects/Components/TableInfo/Status.jsx";
+import InputAndLabel from "../../../../components/Form/InputAndLabel.jsx";
 
 const AddPermissionModal = ({
                               isOpen,
@@ -28,11 +28,6 @@ const AddPermissionModal = ({
     setCategory(selectedOptions);
   };
 
-  const handlePermissionsChange = (e) => {
-    const selectedOptions = e.target.value;
-    setPermissions(selectedOptions);
-  };
-
   return (
       <Modal
           isOpen={isOpen}
@@ -47,26 +42,17 @@ const AddPermissionModal = ({
       >
           <div className="flex flex-col gap-4 p-4">
               {/* Permission Name */}
-              <div className="flex flex-col items-start">
-                  <label className="mb-1">{t("Permission Name")}</label>
-                  <input
-                      type="text"
-                      placeholder={t("Add a Permission...")}
-                      value={permissionName}
-                      onChange={(e) => setPermissionName(e.target.value)}
-                      className="w-full h-10 border border-[#E2E4E9] rounded-lg px-3 focus:border-[#375DFB] focus:outline-none transition-all"
-                  />
-              </div>
+              <InputAndLabel title={"Permission Name"}  />
 
               {/* Categories */}
               <div className="flex flex-col items-start ">
-                  <ElementsSelect options={optionsStatus} isMultiple={true} defaultValue={optionsStatus[0]}
+                  <ElementsSelect options={optionsStatus} classNameItemSelected={""} isMultiple={true} isRemoveBtn={false} defaultValue={optionsStatus[0]}
                                   title={"Categories"} classNameContainer={"w-full"} onChange={handleCategoryChange}/>
               </div>
 
               {/* Permissions */}
               <div className="flex flex-col items-start ">
-                  <ElementsSelect options={optionsStatus} isMultiple={true} defaultValue={optionsStatus[0]}
+                  <ElementsSelect options={optionsStatus} isMultiple={true} isRemoveBtn={false} classNameItemSelected={""} defaultValue={optionsStatus[0]}
                                   title={"Permissions"} classNameContainer={"w-full"} onChange={handleCategoryChange}/>
               </div>
           </div>
