@@ -99,36 +99,41 @@ function Table({
             </p>
             {/* Control bar */}
             {showControlBar && (
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-6">
+                {/* Week/Month buttons */}
                 <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
                   <button
-                    className={`px-4 py-2 rounded-md ${
+                    className={`px-6 rounded-md ${
                       viewMode === "week"
                         ? "bg-white dark:bg-gray-600 shadow-sm"
                         : "bg-transparent"
-                    }`}
+                    } w-[100px] h-[28px]`} // Set height to 28px
                     onClick={() => onViewModeChange("week")}
                   >
                     Week
                   </button>
                   <button
-                    className={`px-4 py-2 rounded-md ${
+                    className={`px-6 rounded-md ${
                       viewMode === "month"
                         ? "bg-white dark:bg-gray-600 shadow-sm"
                         : "bg-transparent"
-                    }`}
+                    } w-[100px] h-[28px]`} // Set height to 28px
                     onClick={() => onViewModeChange("month")}
                   >
                     Month
                   </button>
                 </div>
+
+                {/* Disabled 'Today' button */}
                 <button
                   disabled
-                  className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-600 opacity-50"
+                  className="w-[64px] h-[36px] rounded-[8px] border-[1px] border-gray-200 dark:border-gray-600 opacity-50 pl-[10px] pr-[8px] gap-[4px]"
                 >
                   Today
                 </button>
-                <div className="text-gray-600 dark:text-gray-300">
+
+                {/* Date */}
+                <div className="text-gray-600 dark:text-gray-300 text-lg ">
                   {currentDate.toLocaleString("default", { month: "long" })}{" "}
                   {currentDate.getFullYear()}
                 </div>
@@ -139,19 +144,17 @@ function Table({
           <div className="flex gap-2">
             {/* SearchInput */}
             <SearchInput />
+
             {showControlBar && (
               <SelectWithoutLabel
                 options={neededOptions}
                 value={selectedDepartment}
                 onChange={onDepartmentChange}
-                className="w-44"
+                placeholder={t("Select Department")} // Placeholder added
               />
             )}
-            <button
-              className={
-                "flex dark:text-gray-400 text-sm items-baseline p-2  gap-2 rounded-lg border border-gray-200 dark:border-gray-600"
-              }
-            >
+
+            <button className="flex dark:text-gray-400 text-sm items-baseline p-2 gap-2 rounded-lg border border-gray-200 dark:border-gray-600">
               <TfiImport size={15} />
               {t("Export")}
             </button>
@@ -172,7 +175,7 @@ function Table({
               {isCheckInput && (
                 <th className="px-1 pt-1 w-5 rounded-tl-lg rounded-bl-lg dark:bg-gray-900">
                   <input
-                    className={"checkbox-custom"}
+                    className="checkbox-custom"
                     type="checkbox"
                     checked={isAllSelected}
                     onChange={handleHeaderCheckboxChange}
@@ -182,7 +185,7 @@ function Table({
               {headers.map((header, index) => (
                 <th
                   key={index}
-                  className="p-2 font-normal text-start text-sm dark:bg-gray-900"
+                  className="p-2 text-lg text-start text-sm dark:bg-gray-900 "
                   style={{
                     width: header.width || "auto",
                     borderTopRightRadius:
@@ -191,7 +194,9 @@ function Table({
                       index === headers.length - 1 ? "8px" : "0px",
                   }}
                 >
-                  {t(header.label)}
+                  {typeof header.label === "string"
+                    ? t(header.label)
+                    : header.label}
                 </th>
               ))}
             </tr>

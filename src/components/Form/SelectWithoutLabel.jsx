@@ -11,6 +11,7 @@ function SelectWithoutLabel({
   onChange,
   onBlur,
   error,
+  placeholder,
 }) {
   const { t } = useTranslation();
 
@@ -34,7 +35,9 @@ function SelectWithoutLabel({
                 : "border-soft-200 dark:border-gray-600 focus:ring-primary"
             }`}
         >
-          <option value="">{t(title)}</option>
+          <option value="" disabled>
+            {placeholder ? t(placeholder) : t(title)}
+          </option>
           {options?.map((option) => (
             <option key={option._id} value={option._id}>
               {option.name}
@@ -59,6 +62,7 @@ SelectWithoutLabel.propTypes = {
   onChange: PropTypes.func.isRequired,
   onBlur: PropTypes.func.isRequired,
   error: PropTypes.string,
+  placeholder: PropTypes.string, // New placeholder prop
 };
 
 export default SelectWithoutLabel;
