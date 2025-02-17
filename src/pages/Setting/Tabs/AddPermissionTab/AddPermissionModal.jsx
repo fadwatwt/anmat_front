@@ -17,13 +17,13 @@ const AddPermissionModal = ({
   const { t } = useTranslation();
 
     const optionsStatus = [
-        { id: "1", element: <Status type={"Not Started"} title={"Not Started"} /> },
-        { id: "2", element: <Status type={"In Progress"} title={"In Progress"} /> },
-        { id: "3", element: <Status type={"Completed"} title={"Completed"} /> },
+        { id: "1", element: <p className={"py-1 px-3 rounded-lg bg-blue-200 text-xs"}>permission 1</p> },
+        {id: "2", element: <p className={"py-1 px-3 rounded-lg bg-blue-200 text-xs"}>permission 2</p>},
+        {id: "3", element: <p className={"py-1 px-3 rounded-lg bg-blue-200 text-xs"}>permission 3</p>},
     ];
 
-  // Handle multi-select changes
-  const handleCategoryChange = (e) => {
+    // Handle multi-select changes
+    const handleCategoryChange = (e) => {
     const selectedOptions = e.target.value;
     setCategory(selectedOptions);
   };
