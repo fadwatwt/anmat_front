@@ -5,6 +5,7 @@ import { useState } from "react";
 import AddingAnEmployeeModal from "./modals/AddingAnEmployeeModal.jsx";
 import DepartmentsTab from "./Tabs/DepartmentsTab.jsx";
 import RotationTap from "./Tabs/RotationTap.jsx";
+import AttendanceTab from "./Tabs/AttendanceTab.jsx";
 
 function HrManagementPage() {
   const [isAddEmployeeModal, setIsAddEmployeeModal] = useState(false);
@@ -19,11 +20,11 @@ function HrManagementPage() {
     },
     {
       title: "Rotation",
-      content: <RotationTap  />,
+      content: <RotationTap />,
     },
     {
       title: "Attendance",
-      content: <div>Gmail content goes here</div>,
+      content: <AttendanceTab />,
     },
     {
       title: "Financials",
