@@ -8,12 +8,7 @@ function RotationTap() {
   const [viewMode, setViewMode] = useState("week");
   const [selectedDepartment, setSelectedDepartment] = useState("all");
   const [currentDate] = useState(new Date());
-  const [options, setOptions] = useState([
-    { value: "all", name: "All Departments" },
-    { value: "Development", name: "Development" },
-    { value: "Design", name: "Design" },
-    { value: "Publishing", name: "Publishing" },
-  ]);
+
   // Generate day headers
   const daysOfWeek = [
     { day: "Sunday", number: 1 },
@@ -69,7 +64,7 @@ function RotationTap() {
       : employee.department === selectedDepartment
   );
   const rows = filteredEmployees.map((employee) => [
-    <div key={employee.id}  className={`flex items-center gap-2`}>
+    <div key={employee.id} className={`flex items-center gap-2`}>
       <img
         src={employee.imageProfile}
         alt={employee.name}
@@ -106,7 +101,7 @@ function RotationTap() {
           selectedDepartment={selectedDepartment}
           onDepartmentChange={(e) => setSelectedDepartment(e.target.value)}
           currentDate={currentDate}
-          neededOptions={options}
+          showListOfDepartments={true}
         />
       </div>
     </div>
