@@ -1,8 +1,9 @@
 import { useTranslation } from "react-i18next";
 import Table from "../../../components/Tables/Table.jsx";
 import { employees } from "../../../functions/FactoryData.jsx";
-import { BsCheckCircleFill, BsClockFill, BsSlashCircleFill } from "react-icons/bs";
-import { GoCheckCircleFill, GoClockFill } from "react-icons/go";
+import {  BsClockFill, BsSlashCircleFill } from "react-icons/bs";
+import { GoCheckCircleFill } from "react-icons/go";
+import PropTypes from "prop-types";
 
 // Mock attendance data
 const attendanceData = [
@@ -49,7 +50,7 @@ function AttendanceTab() {
   ];
 
   const StatusBadge = ({ status }) => {
-    let borderColor, Icon;
+    let  Icon;
 
     switch (status) {
       case "On Time":
@@ -67,6 +68,7 @@ function AttendanceTab() {
         break;
     }
 
+
     return (
       <div className="flex items-center gap-2 border rounded-md px-2 py-1 w-fit">
         {Icon}
@@ -74,6 +76,10 @@ function AttendanceTab() {
       </div>
     );
   };
+
+  StatusBadge.propTypes = {
+    status: PropTypes.string,
+  }
   const calculateLateTime = (checkIn, workingHours) => {
     if (!checkIn) return "-"; // No check-in, return "-"
 
@@ -114,7 +120,7 @@ function AttendanceTab() {
         alt={record.employee.name}
         className="w-8 h-8 rounded-full"
       />
-      <div className="flex flex-col">
+      <div  className="flex flex-col">
         <span className="text-sm text-sub-500 dark:text-sub-300">
           {record.employee.name}
         </span>
@@ -123,20 +129,20 @@ function AttendanceTab() {
         </span>
       </div>
     </div>,
-    <span className="text-sm dark:text-sub-300">
+    <span key={index} className="text-sm dark:text-sub-300">
       {new Date(record.date).toLocaleDateString("en-GB", {
         day: "2-digit",
         month: "short",
         year: "numeric",
       })}
     </span>,
-    <span className="text-sm dark:text-sub-300">{record.workingHours}</span>,
-    <span className="text-sm dark:text-sub-300">{record.checkIn || "-"}</span>,
-    <span className="text-sm dark:text-sub-300">{record.checkOut || "-"}</span>,
-    <span className="text-sm dark:text-sub-300">
+    <span key={index} className="text-sm dark:text-sub-300">{record.workingHours}</span>,
+    <span key={index} className="text-sm dark:text-sub-300">{record.checkIn || "-"}</span>,
+    <span key={index} className="text-sm dark:text-sub-300">{record.checkOut || "-"}</span>,
+    <span key={index} className="text-sm dark:text-sub-300">
       {calculateLateTime(record.checkIn, record.workingHours)}
     </span>,
-    <StatusBadge status={record.status} />,
+    <StatusBadge key={index} status={record.status} />,
   ]);
   return (
     <div className="flex flex-col gap-6">
@@ -146,7 +152,6 @@ function AttendanceTab() {
           headers={headers}
           rows={rows}
           isCheckInput={true}
-          isActions={false}
           isTitle={true}
           classContainer="w-full"
           showListOfDepartments={true}
