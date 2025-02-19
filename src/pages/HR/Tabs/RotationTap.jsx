@@ -11,22 +11,22 @@ function RotationTap() {
 
   // Generate day headers
   const daysOfWeek = [
-    { day: "Sunday", number: 1 },
-    { day: "Monday", number: 2 },
-    { day: "Tuesday", number: 3 },
-    { day: "Wednesday", number: 4 },
-    { day: "Thursday", number: 5 },
-    { day: "Friday", number: 6 },
-    { day: "Saturday", number: 7 },
+    { day: t("Sunday"), number: 1 },
+    { day: t("Monday"), number: 2 },
+    { day: t("Tuesday"), number: 3 },
+    { day: t("Wednesday"), number: 4 },
+    { day: t("Thursday"), number: 5 },
+    { day: t("Friday"), number: 6 },
+    { day: t("Saturday"), number: 7 },
   ];
 
   const headers = [
-    { label: "Employee", width: "200px" },
+    { label: t("Employee"), width: "200px" },
     ...daysOfWeek.map(({ day, number }) => ({
       label: (
         <div className="flex flex-col items-center">
           <span className="">{day}</span>
-          <span className="text-lg text-start text-sm dark:bg-gray-900">
+          <span className="text-start text-sm dark:bg-gray-900">
             {number}
           </span>
         </div>

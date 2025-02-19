@@ -26,9 +26,10 @@ function DepartmentsTab() {
 
   const headers = [
     { label: t("Name"), width: "200px" },
-    { label: t("Manager"), width: "200px" },
-    { label: t("Employees Count"), width: "150px" },
-    { label: t("Description"), width: "300px" },
+    { label: t("Manager"), width: "100px" },
+    { label: t("No. of Active Tasks / Projects"), width: "200px" },
+    { label: t("No. of Employees"), width: "150px" },
+    { label: t("Score"), width: "200px" },
     { label: "", width: "50px" },
   ];
 
@@ -55,7 +56,7 @@ function DepartmentsTab() {
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-2 h-full">
           <Table
-            title={t("Departments")}
+            title={"All Departments"}
             headers={headers}
             handelDelete={(index) => {
               setSelectedDeleteDepartment(departments[index]);

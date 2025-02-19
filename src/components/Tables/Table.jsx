@@ -91,9 +91,8 @@ function Table({
 
   return (
     <div
-      className={
-        "rounded-lg md:w-full pb-10 dark:bg-gray-800 border border-gary-200 dark:border-gray-700 p-3 flex flex-col gap-4 bg-white " +
-        (classContainer ? classContainer : "w-[48rem]")
+      className={"rounded-lg md:w-full pb-10 overflow-hidden  overflow-x-auto tab-content dark:bg-gray-800 border border-gary-200 dark:border-gray-700 p-3 flex flex-col gap-4 bg-white " +
+        (classContainer ? classContainer : "")
       }
     >
       {isTitle && (
@@ -117,7 +116,7 @@ function Table({
                     } w-[100px] h-[28px]`} // Set height to 28px
                     onClick={() => onViewModeChange("week")}
                   >
-                    Week
+                    {t("Week")}
                   </button>
                   <button
                     className={`px-6 rounded-md ${
@@ -127,7 +126,7 @@ function Table({
                     } w-[100px] h-[28px]`} // Set height to 28px
                     onClick={() => onViewModeChange("month")}
                   >
-                    Month
+                    {t("Month")}
                   </button>
                 </div>
 
@@ -136,7 +135,7 @@ function Table({
                   disabled
                   className="w-[64px] h-[36px] rounded-[8px] border-[1px] border-gray-200 dark:border-gray-600 opacity-50 pl-[10px] pr-[8px] gap-[4px]"
                 >
-                  Today
+                  {t("Today")}
                 </button>
 
                 {/* Date */}
@@ -153,12 +152,16 @@ function Table({
             <SearchInput />
 
             {showDatePicker && (
-              <DateInput
-                className="w-fit"
-                id="date-picker"
-                name="selectedDate"
-                value={selectedDate}
-              />
+                <div className={"flex items-center justify-center"}>
+                  <DateInput
+                      className="w-fit justify-start"
+                      classNameLabel={""}
+                      classNameInput={"p-2"}
+                      id="date-picker"
+                      name="selectedDate"
+                      value={selectedDate}
+                  />
+                </div>
             )}
 
             {/* show status Filter */}
@@ -177,6 +180,7 @@ function Table({
             {/* show list of departments */}
             {showListOfDepartments && (
               <SelectWithoutLabel
+                  className={"w-32"}
                 options={departments}
                 value={selectedDepartment}
                 onChange={onDepartmentChange}
@@ -193,11 +197,11 @@ function Table({
       )}
       <div
         className={
-          "flex flex-col gap-5 justify-center dark:bg-gray-800 w-full dark:text-gray-400"
+          "flex flex-col min-w-[48rem] gap-5 justify-center dark:bg-gray-800 w-full dark:text-gray-400"
         }
       >
         <table
-          className={" relative table-auto w-full" + className}
+          className={" relative table-auto w-full " + className}
           style={{ borderSpacing: "0 1px" }}
         >
           <thead>
@@ -215,7 +219,7 @@ function Table({
               {headers.map((header, index) => (
                 <th
                   key={index}
-                  className="p-2 text-lg text-start text-sm dark:bg-gray-900 "
+                  className="p-2 text-start text-sm font-normal dark:bg-gray-900 "
                   style={{
                     width: header.width || "auto",
                     borderTopRightRadius:

@@ -100,7 +100,7 @@ function FinancialsTab() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2 h-full">
         <Table
-          title={t("Financial")}
+          title={"Financials"}
           headers={headers}
           rows={rows}
           isCheckInput={true}
