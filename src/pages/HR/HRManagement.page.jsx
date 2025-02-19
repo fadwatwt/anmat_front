@@ -6,6 +6,7 @@ import AddingAnEmployeeModal from "./modals/AddingAnEmployeeModal.jsx";
 import DepartmentsTab from "./Tabs/DepartmentsTab.jsx";
 import RotationTap from "./Tabs/RotationTap.jsx";
 import AttendanceTab from "./Tabs/AttendanceTab.jsx";
+import FinancialsTab from "./Tabs/financialData.jsx";
 
 function HrManagementPage() {
   const [isAddEmployeeModal, setIsAddEmployeeModal] = useState(false);
@@ -28,7 +29,7 @@ function HrManagementPage() {
     },
     {
       title: "Financials",
-      content: <div>Gmail content goes here</div>,
+      content: <FinancialsTab />,
     },
     {
       title: "Youtube",
