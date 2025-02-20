@@ -25,8 +25,8 @@ function RotationTap() {
     ...daysOfWeek.map(({ day, number }) => ({
       label: (
         <div className="flex flex-col items-center">
-          <span className="">{day}</span>
-          <span className="text-start text-sm dark:bg-gray-900">
+          <span className="dark:text-gray-400">{day}</span>
+          <span className="text-start text-sm dark:bg-gray-900 text-gray-400">
             {number}
           </span>
         </div>

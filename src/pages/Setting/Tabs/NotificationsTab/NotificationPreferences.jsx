@@ -67,7 +67,7 @@ function NotificationPreferences() {
                 <p className="text-sm md:text-base font-medium dark:text-gray-200">
                   {t(label)}
                 </p>
-                <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-xs md:text-sm text-gray-600 text-wrap dark:text-gray-400">
                   {t(description)}
                 </p>
               </div>
@@ -85,7 +85,7 @@ function NotificationPreferences() {
         />
         <DefaultButton
           type="button"
-          title={t("Save Changes")}
+          title={t("Apply Changes")}
           className="bg-primary-500 font-medium dark:bg-primary-200 dark:text-black text-white"
         />
       </div>

@@ -6,6 +6,7 @@ import TabModal from "../../../../components/Modal/TabsContener/TabModal.jsx";
 import NotificationPreferences from "./NotificationPreferences.jsx";
 import NotificationMethods from "./NotificationMethods.jsx";
 import { useTranslation } from "react-i18next";
+import {RiEqualizerLine, RiNotification4Line} from "@remixicon/react";
 
 function NotificationsTab() {
   const { t } = useTranslation();
@@ -33,13 +34,13 @@ function NotificationsTab() {
         id: "notification-preferences",
         title: t("Notification Preferences"),
         content: <NotificationPreferences />,
-        icon: <IoOptionsOutline />,
+        icon: <RiEqualizerLine />,
       },
       {
         id: "notification-methods",
         title: t("Notification Methods"),
         content: <NotificationMethods />,
-        icon: <RiNotification2Line />,
+        icon: <RiNotification4Line />,
       },
     ],
     [t]
@@ -50,7 +51,7 @@ function NotificationsTab() {
       <div className="hidden md:block">
         <div className="bg-white dark:bg-gray-800 py-3 px-2 lg:w-64 w-48 flex flex-col gap-2 rounded-lg">
           <p className="uppercase text-sm px-3 text-start dark:text-gray-200">
-            {t("Select Menu")}
+            {t("select menu")}
           </p>
           <Sidebar
             activeItem={activeTab}

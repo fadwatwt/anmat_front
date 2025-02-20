@@ -107,11 +107,11 @@ function Table({
             {showControlBar && (
               <div className="flex items-center gap-6">
                 {/* Week/Month buttons */}
-                <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+                <div className="flex bg-gray-100 dark:bg-gray-900 rounded-lg p-1">
                   <button
-                    className={`px-6 rounded-md ${
+                    className={`px-6 rounded-md text-sm text-gray-200 ${
                       viewMode === "week"
-                        ? "bg-white dark:bg-gray-600 shadow-sm"
+                        ? "bg-white text-gray-200 dark:bg-gray-800 shadow-sm"
                         : "bg-transparent"
                     } w-[100px] h-[28px]`} // Set height to 28px
                     onClick={() => onViewModeChange("week")}
@@ -119,9 +119,9 @@ function Table({
                     {t("Week")}
                   </button>
                   <button
-                    className={`px-6 rounded-md ${
+                    className={`px-6 rounded-md text-gray-200 text-sm ${
                       viewMode === "month"
-                        ? "bg-white dark:bg-gray-600 shadow-sm"
+                        ? "bg-white dark:bg-gray-800 shadow-sm"
                         : "bg-transparent"
                     } w-[100px] h-[28px]`} // Set height to 28px
                     onClick={() => onViewModeChange("month")}
@@ -133,7 +133,7 @@ function Table({
                 {/* Disabled 'Today' button */}
                 <button
                   disabled
-                  className="w-[64px] h-[36px] rounded-[8px] border-[1px] border-gray-200 dark:border-gray-600 opacity-50 pl-[10px] pr-[8px] gap-[4px]"
+                  className="w-[64px] text-gray-200 h-[36px] rounded-[8px] border-[1px] border-gray-200 dark:border-gray-600 opacity-50 pl-[10px] pr-[8px] gap-[4px]"
                 >
                   {t("Today")}
                 </button>

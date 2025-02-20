@@ -304,6 +304,15 @@
   "Phone": "رقم الهاتف",
   "Email": "الايميل",
   "Adding an Employee": "اضافة موظف",
-  "Categories": "الفئات"
+  "Categories": "الفئات",
+  "On Time": "في الوقت المحدد",
+  "Absent": "غائب",
+  "Notification Methods": "الطريقة",
+  "Choose what notifications you want to receive": "اختر الإشعارات التي ترغب في تلقيها.",
+  "Choose how you want to receive notifications": "اختر كيف تفضل تلقي الإشعارات.",
+  "Stay informed about the latest news, updates.": "ابقَ على اطلاع بأحدث الأخبار والتحديثات والإعلانات.",
+  "Get reminders for upcoming events, deadlines.": "احصل على تذكيرات للفعاليات القادمة والمواعيد النهائية والمواعيد.",
+  "Updates on approved leaves, attendance records": "تحديثات حول الإجازات المعتمدة وسجلات الحضور وتذكيرات مهمة تتعلق بالحضور.",
+  "Receive timely reminders before": "تلقَّ تذكيرات في الوقت المناسب قبل المواعيد النهائية."
 
 }

@@ -70,9 +70,9 @@ function AttendanceTab() {
 
 
     return (
-      <div className="flex items-center gap-2 border rounded-md px-2 py-1 w-fit">
+      <div className="flex items-center gap-2 border dark:border-gray-700 rounded-md px-2 py-1 w-fit">
         {Icon}
-        <span className="text-sm">{status}</span>
+        <span className="text-xs dark:text-gray-200">{t(status)}</span>
       </div>
     );
   };
