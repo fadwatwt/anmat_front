@@ -9,57 +9,50 @@ import {
     RiLinkedinFill, 
     RiFacebookFill 
 } from "@remixicon/react";
-
-const EmailInvitation = ({ 
+import Orandis from "../assets/images/Orandis.png";
+const EmailInvitation = ({
   userName,
-  companyName ,
-  position ,
-  department ,
-  organization ,
-  hrEmail ,
-  phoneNumber
+  companyName,
+  position,
+  department,
+  organization,
+  hrEmail,
+  phoneNumber,
 }) => {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === "ar"; // Check if Arabic
-  
+
   return (
     <div className="flex justify-center w-full">
-      <div className="flex flex-col items-center p-6 rounded-2xl bg-white dark:bg-gray-900 lg:w-[520px] md:w-[90%] sm:w-[95%] overflow-hidden shadow-lg dark:shadow-gray-800">
-        
+      <div className="flex flex-col items-center p-6 rounded-2xl bg-white dark:bg-gray-900 lg:w-[600px] md:w-[90%] sm:w-[95%] overflow-hidden shadow-lg dark:shadow-gray-800">
         {/* Company Logo */}
+        {/* use this  Orandis its in assets */}
+
         <div className="mb-4">
-  <div className="w-16 h-16 rounded-full bg-gradient-to-b from-amber-300 to-amber-500 flex items-center justify-center relative">
-    <svg 
-      width="36" 
-      height="36" 
-      viewBox="0 0 36 36" 
-      fill="none" 
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <g fill="white">
-       
-        <circle cx="10" cy="10" r="5" />
-        <circle cx="18" cy="18" r="5" />
-        <circle cx="26" cy="26" r="5" />
-        <path d="M12.5 12.5 L16 16 Q18 18 20 16 L24 12.5" stroke="white" strokeWidth="3" strokeLinecap="round" fill="none"/>
-        <path d="M12.5 24 L16 20 Q18 18 20 20 L24 24" stroke="white" strokeWidth="3" strokeLinecap="round" fill="none"/>
-      </g>
-    </svg>
-  </div>
-</div>
-
-
+          <img
+            src={Orandis}
+            alt="Company Logo"
+            className="w-20 h-20 rounded-full object-cover object-center"
+          />
+        </div>
 
         {/* Welcome Header */}
-       {/* Welcome Header */}
-       <h1 className="text-center text-[#0A0D14] dark:text-gray-200 font-[400] text-[24px] leading-[32px] tracking-[0%] font-[Almarai]">
-  {t("Welcome to {{companyName}}! Your New Journey Begins!", { companyName })}
-</h1>
-
+        {/* Welcome Header */}
+        <h1 className="text-center text-[#0A0D14] dark:text-gray-200 font-[400] text-[24px] leading-[32px] tracking-[0%] font-[Almarai]">
+          {t("Welcome to {{companyName}}! Your New Journey Begins!", {
+            companyName,
+          })}
+        </h1>
 
         {/* Greeting Text */}
-        <div className={`text-left w-full mb-4 ${isRTL ? "text-right" : "text-left"}`}>
-          <p className="text-sm text-[#525866] dark:text-gray-300 mb-2">{t("Dear")} {userName},</p>
+        <div
+          className={`text-left w-full mb-4 ${
+            isRTL ? "text-right" : "text-left"
+          }`}
+        >
+          <p className="text-sm text-[#525866] dark:text-gray-300 mb-2">
+            {t("Dear")} {userName},
+          </p>
           <p className="text-sm text-[#525866] dark:text-gray-300">
             {t(`We are pleased to welcome you to our team at `)}
             <span className="font-medium">{organization}</span>
@@ -68,17 +61,34 @@ const EmailInvitation = ({
         </div>
 
         {/* Instructions */}
-        <div className={`text-left w-full mb-6 ${isRTL ? "text-right" : "text-left"}`}>
+        <div
+          className={`text-left w-full mb-6 ${
+            isRTL ? "text-right" : "text-left"
+          }`}
+        >
           <p className="text-sm text-[#525866] dark:text-gray-300">
-            {t("To complete your onboarding process, please click the button below to finalize your information and activate your account.")}
+            {t(
+              "To complete your onboarding process, please click the button below to finalize your information and activate your account."
+            )}
           </p>
         </div>
 
         {/* Action Button */}
-        <button 
+        <button
           className="bg-[#375DFB] dark:bg-[#C2D6FF] text-white dark:text-[#0A0D14] transition-all mt-3 flex items-center justify-center"
-          style={{ width: "176px", height: "44px", borderRadius: "10px", padding: "10px", gap: "4px",
-            fontFamily: "Almarai", fontWeight: 400, fontSize: "16px", lineHeight: "24px", letterSpacing: "-1.1%", textAlign: "center" }}
+          style={{
+            width: "176px",
+            height: "44px",
+            borderRadius: "10px",
+            padding: "10px",
+            gap: "4px",
+            fontFamily: "Almarai",
+            fontWeight: 400,
+            fontSize: "16px",
+            lineHeight: "24px",
+            letterSpacing: "-1.1%",
+            textAlign: "center",
+          }}
         >
           {t("Complete Your Profile")}
         </button>
@@ -86,51 +96,91 @@ const EmailInvitation = ({
         {/* Contact Info */}
         <div className={`w-full mt-4 ${isRTL ? "text-right" : "text-left"}`}>
           <p className="text-sm text-[#525866] dark:text-gray-300">
-            {t("If you have any questions or need assistance during the process, don't hesitate to contact us.")}
+            {t(
+              "If you have any questions or need assistance during the process, don't hesitate to contact us."
+            )}
           </p>
           <p className="text-sm text-[#525866] dark:text-gray-300 mb-0">
             {t("Looking forward to working with you!")}
           </p>
 
-          <p className="text-sm font-medium text-[#0A0D14] dark:text-gray-100 mt-4" style={{ 
-            fontFamily: "Almarai", fontWeight: 400, fontSize: "16px", lineHeight: "24px", letterSpacing: "-1.1%" 
-          }}>
+          <p
+            className="text-sm font-medium text-[#0A0D14] dark:text-gray-100 mt-4"
+            style={{
+              fontFamily: "Almarai",
+              fontWeight: 400,
+              fontSize: "16px",
+              lineHeight: "24px",
+              letterSpacing: "-1.1%",
+            }}
+          >
             {t("Contact Information:")}
           </p>
-          <p className="text-sm text-[#0A0D14] dark:text-gray-200" style={{ 
-            fontFamily: "Almarai", fontWeight: 400, fontSize: "16px", lineHeight: "24px", letterSpacing: "-1.1%" 
-          }}>
+          <p
+            className="text-sm text-[#0A0D14] dark:text-gray-200"
+            style={{
+              fontFamily: "Almarai",
+              fontWeight: 400,
+              fontSize: "16px",
+              lineHeight: "24px",
+              letterSpacing: "-1.1%",
+            }}
+          >
             {t("HR Email:")} {hrEmail}
           </p>
-          <p className="text-sm text-[#0A0D14] dark:text-gray-200" style={{ 
-            fontFamily: "Almarai", fontWeight: 400, fontSize: "16px", lineHeight: "24px", letterSpacing: "-1.1%" 
-          }}>
+          <p
+            className="text-sm text-[#0A0D14] dark:text-gray-200"
+            style={{
+              fontFamily: "Almarai",
+              fontWeight: 400,
+              fontSize: "16px",
+              lineHeight: "24px",
+              letterSpacing: "-1.1%",
+            }}
+          >
             {t("Phone")} {phoneNumber}
           </p>
         </div>
 
         {/* Social Media Icons */}
         <div className="flex justify-center w-full gap-4 mt-2">
-          <a href="#" className="text-[#757C8A] hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+          <a
+            href="#"
+            className="text-[#757C8A] hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+          >
             <RiMailFill size={21} />
           </a>
-          <a href="#" className="text-[#757C8A] hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+          <a
+            href="#"
+            className="text-[#757C8A] hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+          >
             <RiYoutubeFill size={21} />
           </a>
-          <a href="#" className="text-[#757C8A] hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+          <a
+            href="#"
+            className="text-[#757C8A] hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+          >
             <RiInstagramFill size={21} />
           </a>
-          <a href="#" className="text-[#757C8A] hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+          <a
+            href="#"
+            className="text-[#757C8A] hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+          >
             <RiTwitterXFill size={21} />
           </a>
-          <a href="#" className="text-[#757C8A] hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+          <a
+            href="#"
+            className="text-[#757C8A] hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+          >
             <RiLinkedinFill size={21} />
           </a>
-          <a href="#" className="text-[#757C8A] hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+          <a
+            href="#"
+            className="text-[#757C8A] hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+          >
             <RiFacebookFill size={21} />
           </a>
         </div>
-
       </div>
     </div>
   );
