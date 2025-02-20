@@ -313,6 +313,15 @@
   "Stay informed about the latest news, updates.": "ابقَ على اطلاع بأحدث الأخبار والتحديثات والإعلانات.",
   "Get reminders for upcoming events, deadlines.": "احصل على تذكيرات للفعاليات القادمة والمواعيد النهائية والمواعيد.",
   "Updates on approved leaves, attendance records": "تحديثات حول الإجازات المعتمدة وسجلات الحضور وتذكيرات مهمة تتعلق بالحضور.",
-  "Receive timely reminders before": "تلقَّ تذكيرات في الوقت المناسب قبل المواعيد النهائية."
-
+  "Receive timely reminders before": "تلقَّ تذكيرات في الوقت المناسب قبل المواعيد النهائية.",
+  "Welcome to {{companyName}}! Your New Journey Begins!": "مرحبًا بك في {{companyName}}! رحلتك الجديدة تبدأ الآن!",
+  "Dear": "عزيزي",
+  "We are pleased to welcome you to our team at ": "يسعدنا الترحيب بك في فريقنا لدى ",
+  "for the position of {{position}} in the {{department}}.": "لتولي منصب {{position}} في قسم {{department}}.",
+  "To complete your onboarding process, please click the button below to finalize your information and activate your account.": "لإكمال عملية انضمامك، يرجى النقر على الزر أدناه لإدخال بياناتك وتفعيل حسابك.",
+  "Complete Your Profile": "أكمل ملفك الشخصي",
+  "If you have any questions or need assistance during the process, don't hesitate to contact us.": "إذا كان لديك أي استفسارات أو تحتاج إلى مساعدة خلال العملية، فلا تتردد في التواصل معنا.",
+  "Looking forward to working with you!": "نتطلع للعمل معك قريبًا!",
+  "Contact Information:": "معلومات التواصل:",
+  "HR Email:": "البريد الإلكتروني للموارد البشرية:"
 }
