@@ -1,6 +1,8 @@
 import PropTypes from "prop-types";
+import {useTranslation} from "react-i18next";
 
 function Switch({ isOn, handleToggle }) {
+  const {i18n } = useTranslation();
   return (
     <button
       onClick={handleToggle}
@@ -12,7 +14,7 @@ function Switch({ isOn, handleToggle }) {
     >
       <div
         className={`relative bg-white  dark:shadow-inner  dark:shadow-gray-500 dark:bg-gray-800 w-3.5 h-3.5 rounded-full  transform transition-transform flex items-center justify-center ${
-          isOn ? "translate-x-5" : "translate-x-0"
+          isOn ? `${i18n.language === "ar" ? "translate-0": "translate-x-5"}` : `${i18n.language === "ar" ? "-translate-x-5" : "translate-0"} `
         }`}
       >
         {/* Small Circle Inside */}

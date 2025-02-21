@@ -13,7 +13,7 @@ function SelectWithoutLabel({
   error,
   placeholder,
 }) {
-  const { t } = useTranslation();
+  const { t,i18n } = useTranslation();
 
   return (
     <div className={`relative flex flex-col gap-1 ${className}`}>
@@ -44,7 +44,7 @@ function SelectWithoutLabel({
             </option>
           ))}
         </select>
-        <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none text-gray-500">
+        <div className={`absolute inset-y-0 ${i18n.language === 'ar' ? "left-1 " :"right-3"}  flex items-center pointer-events-none`}>
           <IoIosArrowDown />
         </div>
       </div>

@@ -8,30 +8,25 @@ function RotationTap() {
   const [viewMode, setViewMode] = useState("week");
   const [selectedDepartment, setSelectedDepartment] = useState("all");
   const [currentDate] = useState(new Date());
-  const [options, setOptions] = useState([
-    { value: "all", name: "All Departments" },
-    { value: "Development", name: "Development" },
-    { value: "Design", name: "Design" },
-    { value: "Publishing", name: "Publishing" },
-  ]);
+
   // Generate day headers
   const daysOfWeek = [
-    { day: "Sunday", number: 1 },
-    { day: "Monday", number: 2 },
-    { day: "Tuesday", number: 3 },
-    { day: "Wednesday", number: 4 },
-    { day: "Thursday", number: 5 },
-    { day: "Friday", number: 6 },
-    { day: "Saturday", number: 7 },
+    { day: t("Sunday"), number: 1 },
+    { day: t("Monday"), number: 2 },
+    { day: t("Tuesday"), number: 3 },
+    { day: t("Wednesday"), number: 4 },
+    { day: t("Thursday"), number: 5 },
+    { day: t("Friday"), number: 6 },
+    { day: t("Saturday"), number: 7 },
   ];
 
   const headers = [
-    { label: "Employee", width: "200px" },
+    { label: t("Employee"), width: "200px" },
     ...daysOfWeek.map(({ day, number }) => ({
       label: (
         <div className="flex flex-col items-center">
-          <span className="">{day}</span>
-          <span className="text-lg text-start text-sm dark:bg-gray-900">
+          <span className="dark:text-gray-400">{day}</span>
+          <span className="text-start text-sm dark:bg-gray-900 text-gray-400">
             {number}
           </span>
         </div>
@@ -69,7 +64,7 @@ function RotationTap() {
       : employee.department === selectedDepartment
   );
   const rows = filteredEmployees.map((employee) => [
-    <div key={employee.id}  className={`flex items-center gap-2`}>
+    <div key={employee.id} className={`flex items-center gap-2`}>
       <img
         src={employee.imageProfile}
         alt={employee.name}
@@ -106,7 +101,7 @@ function RotationTap() {
           selectedDepartment={selectedDepartment}
           onDepartmentChange={(e) => setSelectedDepartment(e.target.value)}
           currentDate={currentDate}
-          neededOptions={options}
+          showListOfDepartments={true}
         />
       </div>
     </div>

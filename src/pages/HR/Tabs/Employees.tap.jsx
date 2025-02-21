@@ -94,7 +94,7 @@ function EmployeesTap() {
       <div className={"flex flex-col gap-6"}>
         <div className="flex flex-col gap-2 h-full">
           <Table
-            className="custom-class"
+            className=""
             title={"All Employees"}
             headers={headers}
             handelDelete={(index) => handelDeleteEmployee(employees[index])}

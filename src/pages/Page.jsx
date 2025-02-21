@@ -7,7 +7,7 @@ import Breadcrumbs from "../components/Breadcrumbs.jsx";
 function Page({children,title,isTitle=true,isBtn,btnOnClick,btnTitle,className,isBreadcrumbs,breadcrumbs}) {
     const {t} = useTranslation()
     return (
-        <div className={"max-h-full h-[calc(100vh-72px)] overflow-hidden  overflow-x-auto tab-content  dark:bg-gray-900  " + (className ? className :"flex flex-col gap-4 box-border  mx-auto py-5 md:px-10 px-3")}>
+        <div className={"max-h-full h-[calc(100vh)] overflow-hidden  overflow-x-auto tab-content  dark:bg-gray-900  " + (className ? className :"flex flex-col gap-4 box-border  mx-auto py-5 md:px-10 px-3")}>
             {
                 isTitle &&
                 <div className={"flex justify-between items-center"}>

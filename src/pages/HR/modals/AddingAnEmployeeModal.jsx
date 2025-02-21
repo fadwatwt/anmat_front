@@ -129,7 +129,7 @@ function AddingAnEmployeeModal({ isOpen, onClose }) {
             }
           />
           <SelectWithoutLabel
-            title="Role"
+            title={"Role"}
             name="role"
             value={formik.values.role} // Ensure it’s controlled
             onChange={(val) => formik.setFieldValue("role", val)} // Send _id

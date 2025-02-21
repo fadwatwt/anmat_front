@@ -393,6 +393,18 @@ const employees = [
     }
 ];
 
+export const departments = [
+  { value: "all", name: "Departments" },
+  { value: "Development", name: "Development" },
+  { value: "Design", name: "Design" },
+  { value: "Publishing", name: "Publishing" },
+];
+export const defaultStatusOptions = [
+  { value: "all", name: "Status" },
+  { value: "ontime", name: "On Time" },
+  { value: "late", name: "Late" },
+  { value: "absent", name: "Absent" },
+];
 
 export {tasks,date1,date2,
     members,
