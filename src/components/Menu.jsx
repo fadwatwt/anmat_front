@@ -1,13 +1,13 @@
-import {MdManageAccounts, MdOutlineArrowBackIosNew, MdWindow} from "react-icons/md";
-import {AiOutlineMessage, AiOutlineProject} from "react-icons/ai";
-import {GrTask} from "react-icons/gr";
-import {TbBrandGoogleAnalytics} from "react-icons/tb";
-import {IoSettingsOutline, IoShareSocial} from "react-icons/io5";;
+
+
+
 import PropTypes from 'prop-types';
 import SearchInput from "./Form/SearchInput.jsx";
 import MenuItem from "./Menu/MenuItem.jsx";
 import {useTranslation} from "react-i18next";
 import BriefTimeLine from "./TimeLine/BriefTimeLine.jsx";
+import logo from "../assets/images/logo.png"
+import { Setting,Edit ,Share,Messages1,Category,Profile2User,TaskSquare,NoteText,Chart2,HambergerMenu} from 'iconsax-react';
 
 function Menu({isSlidebarOpen,taggleSlidebarOpen}) {
     const {t,i18n} = useTranslation()
@@ -35,7 +35,7 @@ function Menu({isSlidebarOpen,taggleSlidebarOpen}) {
         >
             <div className={" h-32 flex p-5 gap-2 border-b-2 dark:border-gray-600 items-center"}>
                 <div className={"profile-image"}>
-                    <img src={"https://placehold.co/600x600/F3B653/FFFFFF/png"} alt={"img"}
+                    <img src={logo} alt={"img"}
                          className={" w-10 h-10 rounded-full m-0 p-0"}/>
                 </div>
                 <div className={"flex flex-col  gap-2 justify-center  "}>
@@ -47,7 +47,7 @@ function Menu({isSlidebarOpen,taggleSlidebarOpen}) {
                         <button className="inline-flex h-8 w-8 items-center p-2 text-sm text-gray-500
                 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
                                 onClick={taggleSlidebarOpen}>
-                            <MdOutlineArrowBackIosNew/>
+                            <HambergerMenu />
                         </button>
                     )
                 }
@@ -59,14 +59,15 @@ function Menu({isSlidebarOpen,taggleSlidebarOpen}) {
                 </div>
                 <div className={"flex  flex-col gap-2"}>
                     <div className={"py-5 menu-list sm:py-0 flex flex-col gap-2 text-gray-500"}>
-                        <MenuItem path={"/"} icon={<MdWindow/>} title={"Dashboard"}/>
-                        <MenuItem path={"/projects"} icon={<AiOutlineProject/>} title={"Projects"}/>
-                        <MenuItem path={"/tasks"} icon={<GrTask/>} title={"Tasks"}/>
-                        <MenuItem path={"/analytics"} icon={<TbBrandGoogleAnalytics/>} title={"Analytics"}/>
-                        <MenuItem path={"/hr-management"} icon={<MdManageAccounts/>} title={"HR Management"}/>
-                        <MenuItem path={"/conversations"} icon={<AiOutlineMessage/>} title={"Conversations"}/>
-                        <MenuItem path={"/social-media"} icon={<IoShareSocial/>} title={"Social Media"}/>
-                        <MenuItem path={"/settings"} icon={<IoSettingsOutline/>} title={"Settings"}/>
+                        <MenuItem path={"/"} icon={<Category />} title={"Dashboard"}/>
+                        <MenuItem path={"/projects"} icon={<NoteText/>} title={"Projects"}/>
+                        <MenuItem path={"/tasks"} icon={<TaskSquare />} title={"Tasks"}/>
+                        <MenuItem path={"/analytics"} icon={<Chart2 />} title={"Analytics"}/>
+                        <MenuItem path={"/hr-management"} icon={<Profile2User />} title={"HR Management"}/>
+                        <MenuItem path={"/conversations"} icon={<Messages1 />} title={"Conversations"}/>
+                        <MenuItem path={"/social-media"} icon={<Share />} title={"Social Media"}/>
+                        <MenuItem path={"/social-media"} icon={<Edit />} title={"Timeline"}/>
+                        <MenuItem path={"/settings"} icon={<Setting />} title={"Settings"}/>
                     </div>
                 </div>
                 <BriefTimeLine tweet={tweet} myAccount={myAccount}/>

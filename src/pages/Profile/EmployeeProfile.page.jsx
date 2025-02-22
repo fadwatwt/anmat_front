@@ -3,22 +3,25 @@ import {HiMiniCheckBadge} from "react-icons/hi2";
 import {FaRegClock, FaRegUser} from "react-icons/fa";
 import {LuCake} from "react-icons/lu";
 import {TbSchool} from "react-icons/tb";
-import {RiBuilding2Line, RiLockLine} from "react-icons/ri";
+import {RiBriefcaseLine, RiBuilding2Line, RiLockLine} from "react-icons/ri";
 import {MdEmail, MdOutlineCalendarToday} from "react-icons/md";
-import Table from "../../../components/Tables/Table.jsx";
-import Page from "../../Page.jsx";
-import Status from "../../Projects/Components/TableInfo/Status.jsx";
+import Table from "../../components/Tables/Table.jsx";
+import Page from "../Page.jsx";
+import Status from "../Projects/Components/TableInfo/Status.jsx";
 import {useTranslation} from "react-i18next";
 import {FiPlus} from "react-icons/fi";
-import SelectWithoutLabel from "../../../components/Form/SelectWithoutLabel.jsx";
+import SelectWithoutLabel from "../../components/Form/SelectWithoutLabel.jsx";
 import {TfiImport, TfiStar} from "react-icons/tfi";
-import TabsOutContent from "../../../components/Modal/TabsContener/TabsOutContent.jsx";
+import TabsOutContent from "../../components/Modal/TabsContener/TabsOutContent.jsx";
 import {useState} from "react";
-import Rating from "../Rating.jsx";
+import Rating from "../HR/Rating.jsx";
 import {AiOutlineDashboard, AiOutlineDollar} from "react-icons/ai";
 import {BsFileCheck} from "react-icons/bs";
-import ToDoList from "../components/ToDoList.jsx";
-import CalendarEmployee from "../components/CalendarEmployee.jsx";
+import ToDoList from "./components/ToDoList.jsx";
+import CalendarEmployee from "./components/CalendarEmployee.jsx";
+import AddRequestModal from "./modals/AddRequest.modal.jsx";
+import profileBanner from "../../assets/images/profileBanner.png"
+import {RiCake2Line, RiGraduationCapLine, RiMailLine, RiUserLine} from "@remixicon/react";
 
 
 function EmployeeProfilePage() {
@@ -26,6 +29,7 @@ function EmployeeProfilePage() {
     const { slug } = useParams();
     const [employeeId] = slug.split('-')[0];
     const [activeTab, setActiveTab] = useState("Leave");
+    const [isAddRequestModal, setIsAddRequestModal] = useState(false);
     const headerTasksRating = [
         {label: "Task"},
         {label: "Date"},
@@ -99,6 +103,10 @@ function EmployeeProfilePage() {
         setActiveTab(tabTitle);
     };
 
+    const handelAddRequestModal = () => {
+        setIsAddRequestModal(!isAddRequestModal)
+    }
+
     const tasksRows = [
         ["Task Delta","15 Nov, 2024",<><Rating  value={"90"}/></>,<><p className={"text-wrap dark:text-gray-300"}>Good performance on content delivery.</p></>],
         ["Task Delta","15 Nov, 2024",<><Rating  value={"90"}/></>,<><p className={"text-wrap dark:text-gray-300"}>Good performance on content delivery.</p></>],
@@ -111,7 +119,7 @@ function EmployeeProfilePage() {
         <div className={"w-full flex flex-col items-center md:gap-6 xl:gap-4 gap-8 h-full"}>
             <div className={"relative flex min-h-48 justify-center  w-full h-full"}>
                 <div className={"w-full md:h-40 h-[50vh]"}>
-                    <img className={"max-w-full w-full max-h-full object-cover"} src={"https://media.istockphoto.com/id/1470053023/photo/panoramic-fresh-green-spring-and-summer-background-with-sun-lens-flare-and-defocused-blurred.jpg?b=1&s=612x612&w=0&k=20&c=xkD0vx6erKGryV6qs_EO1Mso9ncxqaZY45yT6v6HGkg="} alt={""} />
+                    <img className={"max-w-full w-full max-h-full object-cover"} src={profileBanner} alt={""} />
                 </div>
                 <p className={"absolute top-3 right-3 text-sm text-white"}>Change</p>
                 <div className={"absolute md:top-1/3 top-[50px] w-full px-10"}>
@@ -133,17 +141,17 @@ function EmployeeProfilePage() {
                             <div className={"w-full flex md:flex-row flex-col gap-4 "}>
                                 <div className={"flex flex-col gap-4 flex-1 md:border-r-2"}>
                                     <div className={"name-profile flex items-center gap-1"}>
-                                        <FaRegUser className={"text-soft-400 text-sm dark:text-gray-300"}/>
+                                        <RiUserLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"}/>
                                         <span className={"text-soft-400 text-sm dark:text-gray-300"}>Name:</span>
                                         <p className={"text-black text-sm dark:text-gray-100"}>Rawan Ahmed</p>
                                     </div>
                                     <div className={"name-profile flex items-center gap-1"}>
-                                        <LuCake size={18} className={"text-soft-400 dark:text-gray-300"}/>
+                                        <RiCake2Line size={18} className={"text-soft-400 dark:text-gray-300"}/>
                                         <p className={"text-soft-400 text-sm dark:text-gray-300"}>Age:</p>
                                         <p className={"text-black text-sm dark:text-gray-100"}>21</p>
                                     </div>
                                     <div className={"name-profile flex items-center gap-1"}>
-                                        <TbSchool size={18} className={"text-soft-400 text-sm dark:text-gray-300"}/>
+                                        <RiGraduationCapLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"}/>
                                         <span className={"text-soft-400 text-sm dark:text-gray-300"}>Education:</span>
                                         <p className={"text-black text-sm dark:text-gray-100"}>Bachelor’s Degree in Journalism</p>
                                     </div>
@@ -155,12 +163,12 @@ function EmployeeProfilePage() {
                                         <p className={"text-black text-sm dark:text-gray-100"}>Publishing</p>
                                     </div>
                                     <div className={"name-profile flex items-center gap-1"}>
-                                        <RiLockLine size={18} className={"text-soft-400 dark:text-gray-300"}/>
+                                        <RiBriefcaseLine size="18" className="text-soft-400 dark:text-gray-300"/>
                                         <p className={"text-soft-400 text-sm dark:text-gray-300"}>Role:</p>
                                         <p className={"text-black text-sm dark:text-gray-100"}>Content Editor</p>
                                     </div>
                                     <div className={"name-profile flex items-center gap-1"}>
-                                        <MdEmail size={18} className={"text-soft-400 text-sm dark:text-gray-300"}/>
+                                        <RiMailLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"}/>
                                         <span className={"text-soft-400 text-sm dark:text-gray-300"}>Email:</span>
                                         <p className={"text-black text-sm dark:text-gray-100"}>Rawan@email.com</p>
                                     </div>
@@ -181,6 +189,7 @@ function EmployeeProfilePage() {
                         <div className={"flex justify-between items-center w-full"}>
                             <p className={"text-lg dark:text-gray-200"}>{t("Requests")}</p>
                             <button
+                                onClick={handelAddRequestModal}
                                 className={" bg-none p-1.5 border-2 border-primary-base dark:border-primary-200 rounded-xl flex items-center gap-2"}>
                                 <FiPlus className={"text-primary-base dark:text-primary-200"} size={13}/>
                                 <span className={"text-sm text-primary-base dark:text-primary-200"}>{t("Request")}</span>
@@ -272,6 +281,7 @@ function EmployeeProfilePage() {
                 <CalendarEmployee />
             </div>
         </div>
+            <AddRequestModal isOpen={isAddRequestModal} onClose={handelAddRequestModal} onClick={() => {}} />
         </Page>
     );
 }

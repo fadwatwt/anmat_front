@@ -5,13 +5,20 @@ import {PiDotsThreeVerticalBold} from "react-icons/pi";
 import {useTranslation} from "react-i18next";
 import SelectWithoutLabel from "../../../components/Form/SelectWithoutLabel.jsx";
 import {FiPlus} from "react-icons/fi";
+import AddToDoListModal from "../modals/AddToDoList.modal.jsx";
+import {useState} from "react";
 
 function ToDoList({list,isActions,isFilter,className}) {
     const [dropdownOpen, setDropdownOpen] = useDropdown();
     const {t,i18n} = useTranslation()
+    const [isAddToDoModal, setIsAddToDoModal] = useState(false);
     const handleDropdownToggle = (index) => {
         setDropdownOpen(dropdownOpen === index ? null : index);
     };
+
+    const handelAddToDoListModal = () => {
+        setIsAddToDoModal(!isAddToDoModal)
+    }
 
     return (
         <div className={`bg-white rounded-2xl p-4 w-full gap-4 flex flex-col dark:bg-gray-800 ${className}`}>
@@ -23,7 +30,7 @@ function ToDoList({list,isActions,isFilter,className}) {
                             <SelectWithoutLabel title={"Today"} className={"w-[94px] h-[36px]"}/>
                         )
                     }
-                    <div className={"flex gap-1 items-center"}>
+                    <div className={"flex gap-1 items-center cursor-pointer"} onClick={handelAddToDoListModal}>
                         <FiPlus className={"text-primary-base dark:text-primary-200"} size={15} />
                         <span className={"text-primary-base dark:text-primary-200"}>Add</span>
                     </div>
@@ -50,6 +57,7 @@ function ToDoList({list,isActions,isFilter,className}) {
                     </div>
                 ))}
             </div>
+            <AddToDoListModal isOpen={isAddToDoModal} onClose={handelAddToDoListModal} onClick={() => {}} />
         </div>
     );
 }

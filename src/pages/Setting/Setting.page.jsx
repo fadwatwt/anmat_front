@@ -1,6 +1,5 @@
 import Tabs from "../../components/Tabs.jsx";
 import GeneralSettingsTab from "./Tabs/GeneralSettings.tab.jsx";
-import {IoSettingsOutline} from "react-icons/io5";
 import {FiPlus} from "react-icons/fi";
 import {useTranslation} from "react-i18next";
 import AttendanceTab from "./Tabs/Attendance.tab.jsx";
@@ -9,6 +8,7 @@ import TasksTab from "./Tabs/TasksTab/Tasks.tab.jsx";
 import ProfileSecurityTab from "./Tabs/Profile&SecurityTab/ProfileSecurity.tab.jsx";
 import NotificationsTab from "./Tabs/NotificationsTab/NotificationsTab";
 import AddPermissionTab from "./Tabs/AddPermissionTab/AddPermissionTab";
+import {RiSettings3Line} from "@remixicon/react";
 
 
 function SettingPage() {
@@ -50,8 +50,8 @@ function SettingPage() {
                     <div
                         className="title-page flex items-center gap-2 bg-none text-start w-full md:py-6 py-3 text-base sm:text-lg md:text-xl text-gray-600">
                         <div className={"p-2 rounded-full bg-gray-100 dark:bg-gray-900"}>
-                            <IoSettingsOutline
-                                className={"group-hover:text-primary-500 w-[19.62px] h-[19.62px] dark:text-gray-100"}/>
+                            <RiSettings3Line size="25"
+                                className={"group-hover:text-primary-500  dark:text-gray-100"}/>
                         </div>
                         <div>
                             <h3 className={"text-black dark:text-gray-200 text-lg"}>{t("Settings Page")}</h3>

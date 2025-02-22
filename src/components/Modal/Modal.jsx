@@ -3,7 +3,7 @@ import {IoClose} from "react-icons/io5";
 import {useTranslation} from "react-i18next";
 import DefaultButton from "../Form/DefaultButton.jsx";
 
-const Modal = ({ isOpen, onClose, children,title,className,isBtns,customBtns,classNameOpacity,btnApplyTitle,onClick }) => {
+const Modal = ({ isOpen, onClose, children,title,className,isBtns,customBtns,classNameOpacity,btnApplyTitle,onClick,classNameBtns }) => {
     const {t} = useTranslation()
     if (!isOpen) return null;
     return (
@@ -32,7 +32,7 @@ const Modal = ({ isOpen, onClose, children,title,className,isBtns,customBtns,cla
                     </div>
                     {
                         isBtns && (
-                            <div className={"flex gap-2 py-3 w-full"}>
+                            <div className={"flex gap-2 py-3 w-full " + classNameBtns}>
                                 <DefaultButton type={'button'} title={("Cancel")}
                                                className={"font-medium dark:text-gray-200"}/>
                                 <DefaultButton onClick={onClick} type={'button'} title={btnApplyTitle ? btnApplyTitle:"Apply"}
@@ -58,6 +58,7 @@ Modal.propTypes = {
     btnApplyTitle: PropTypes.string,
     className: PropTypes.string,
     classNameOpacity: PropTypes.string,
-    customBtns:PropTypes.element
+    customBtns:PropTypes.element,
+    classNameBtns:PropTypes.string
 }
 export default Modal;

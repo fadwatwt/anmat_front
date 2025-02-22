@@ -11,7 +11,7 @@ import CreateProjectForm from "../pages/Projects/Components/CreateProjectForm/Cr
 import ProjectDetailes from "../pages/Projects/Components/ProjectDetails/ProjectDetailes.jsx";
 import TaskDetails from "../pages/Tasks/TaskDetailes/TaskDetails.jsx";
 import CreateTask from "../pages/Tasks/CreateTask.jsx";
-import EmployeeProfilePage from "../pages/HR/pages/EmployeeProfile.page.jsx";
+import EmployeeProfilePage from "../pages/Profile/EmployeeProfile.page.jsx";
 
 function AppRoute() {
     return (
