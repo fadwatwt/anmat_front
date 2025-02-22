@@ -83,6 +83,36 @@ function Header({ taggleSlidebarOpen, className }) {
       time: "2 weeks ago",
       isRead: false,
     },
+
+    {
+      id: 6,
+      avatar: "!",
+      avatarColor: "bg-red-100 text-red-500",
+      content: (
+        <>
+          The task{" "}
+          <span className="font-medium">Finalize Project Proposal</span> is
+          overdue by 3 days. Immediate action required!
+        </>
+      ),
+      time: "2 weeks ago",
+      isRead: false,
+    },
+
+    {
+      id: 6,
+      avatar: "!",
+      avatarColor: "bg-red-100 text-red-500",
+      content: (
+        <>
+          The task{" "}
+          <span className="font-medium">Finalize Project Proposal</span> is
+          overdue by 3 days. Immediate action required!
+        </>
+      ),
+      time: "2 weeks ago",
+      isRead: false,
+    },
   ];
 
   // Mock data for messages
@@ -124,6 +154,46 @@ function Header({ taggleSlidebarOpen, className }) {
       content:
         "Hey, I'm having trouble with the API integration. Can we pair...",
       time: "3 Hours Ago",
+      isRead: false,
+    },
+    {
+      id: 5,
+      avatar: "/path-to-ethan-avatar.jpg",
+      avatarImage: true,
+      user: "Ethan Kim",
+      content:
+        "Just finished the unit tests for the login feature. Coverage loo...",
+      time: "2 Hours Ago",
+      isRead: false,
+    },
+    {
+      id: 6,
+      avatar: "/path-to-ethan-avatar.jpg",
+      avatarImage: true,
+      user: "Ethan Kim",
+      content:
+        "Just finished the unit tests for the login feature. Coverage loo...",
+      time: "2 Hours Ago",
+      isRead: false,
+    },
+    {
+      id: 5,
+      avatar: "/path-to-ethan-avatar.jpg",
+      avatarImage: true,
+      user: "Ethan Kim",
+      content:
+        "Just finished the unit tests for the login feature. Coverage loo...",
+      time: "2 Hours Ago",
+      isRead: false,
+    },
+    {
+      id: 6,
+      avatar: "/path-to-ethan-avatar.jpg",
+      avatarImage: true,
+      user: "Ethan Kim",
+      content:
+        "Just finished the unit tests for the login feature. Coverage loo...",
+      time: "2 Hours Ago",
       isRead: false,
     },
     {

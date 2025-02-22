@@ -51,7 +51,7 @@ const MessagesDropdown = ({ messages }) => {
           <div className="fixed inset-0 bg-black/50 sm:hidden z-40"></div>
           <div
             ref={messageRef}
-            className="fixed sm:absolute inset-0 sm:inset-auto top-1/2 sm:right-0 sm:mt-2 sm:w-[343px] w-full max-w-[343px] mx-auto sm:mx-0 transform -translate-y-1/2 sm:translate-y-0 h-[686px] sm:h-auto sm:max-h-[686px] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-[20px] shadow-lg z-50"
+            className="fixed sm:absolute inset-0 sm:inset-auto top-1/2 sm:right-0 sm:mt-2 sm:w-[343px] w-full max-w-[343px] mx-auto sm:mx-0 transform -translate-y-1/2 sm:translate-y-0 h-[686px] sm:h-auto sm:max-h-[70vh] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-[20px] shadow-lg z-50"
             style={{ borderWidth: "0.5px" }}
           >
             <div className="flex justify-between items-center px-4 py-3 border-b dark:border-gray-700">
@@ -63,7 +63,7 @@ const MessagesDropdown = ({ messages }) => {
               </button>
             </div>
 
-            <div className="max-h-[calc(100%-120px)] sm:max-h-[686px] overflow-y-auto">
+            <div className="max-h-[calc(100%-120px)] sm:max-h-[calc(70vh-120px)] overflow-y-auto">
               {messages.map((message) => (
                 <div
                   key={message.id}
