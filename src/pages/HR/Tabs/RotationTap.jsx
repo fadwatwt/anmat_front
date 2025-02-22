@@ -8,6 +8,10 @@ function RotationTap() {
   const [viewMode, setViewMode] = useState("week");
   const [selectedDepartment, setSelectedDepartment] = useState("all");
   const [currentDate] = useState(new Date());
+  const viewModalList = [
+      {id:"week",title:"Week"},
+      {id:"month",title:"Month"},
+  ]
 
   // Generate day headers
   const daysOfWeek = [
@@ -94,6 +98,7 @@ function RotationTap() {
           isActions={false}
           isTitle={true}
           classContainer="w-full"
+          viewModalList={viewModalList}
           // New props for control bar
           showControlBar={true}
           viewMode={viewMode}

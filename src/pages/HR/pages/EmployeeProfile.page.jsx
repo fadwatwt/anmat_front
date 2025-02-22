@@ -18,6 +18,7 @@ import Rating from "../Rating.jsx";
 import {AiOutlineDashboard, AiOutlineDollar} from "react-icons/ai";
 import {BsFileCheck} from "react-icons/bs";
 import ToDoList from "../components/ToDoList.jsx";
+import CalendarEmployee from "../components/CalendarEmployee.jsx";
 
 
 function EmployeeProfilePage() {
@@ -99,22 +100,22 @@ function EmployeeProfilePage() {
     };
 
     const tasksRows = [
-        ["Task Delta","15 Nov, 2024",<><Rating  value={"90"}/></>,<><p className={"text-wrap"}>Good performance on content delivery.</p></>],
-        ["Task Delta","15 Nov, 2024",<><Rating  value={"90"}/></>,<><p className={"text-wrap"}>Good performance on content delivery.</p></>],
-        ["Task Delta","15 Nov, 2024",<><Rating  value={"90"}/></>,<><p className={"text-wrap"}>Good performance on content delivery.</p></>],
-        ["Task Delta","15 Nov, 2024",<><Rating  value={"90"}/></>,<><p className={"text-wrap"}>Good performance on content delivery.</p></>],
+        ["Task Delta","15 Nov, 2024",<><Rating  value={"90"}/></>,<><p className={"text-wrap dark:text-gray-300"}>Good performance on content delivery.</p></>],
+        ["Task Delta","15 Nov, 2024",<><Rating  value={"90"}/></>,<><p className={"text-wrap dark:text-gray-300"}>Good performance on content delivery.</p></>],
+        ["Task Delta","15 Nov, 2024",<><Rating  value={"90"}/></>,<><p className={"text-wrap dark:text-gray-300"}>Good performance on content delivery.</p></>],
+        ["Task Delta","15 Nov, 2024",<><Rating  value={"90"}/></>,<><p className={"text-wrap dark:text-gray-300"}>Good performance on content delivery.</p></>],
     ]
     return (
         <Page isTitle={false} className={"w-full"}>
 
-        <div className={"w-full flex flex-col items-center md:gap-6 xl:gap-4 gap-8"}>
-            <div className={"relative flex min-h-48 justify-center  w-full"}>
+        <div className={"w-full flex flex-col items-center md:gap-6 xl:gap-4 gap-8 h-full"}>
+            <div className={"relative flex min-h-48 justify-center  w-full h-full"}>
                 <div className={"w-full md:h-40 h-[50vh]"}>
                     <img className={"max-w-full w-full max-h-full object-cover"} src={"https://media.istockphoto.com/id/1470053023/photo/panoramic-fresh-green-spring-and-summer-background-with-sun-lens-flare-and-defocused-blurred.jpg?b=1&s=612x612&w=0&k=20&c=xkD0vx6erKGryV6qs_EO1Mso9ncxqaZY45yT6v6HGkg="} alt={""} />
                 </div>
                 <p className={"absolute top-3 right-3 text-sm text-white"}>Change</p>
                 <div className={"absolute md:top-1/3 top-[50px] w-full px-10"}>
-                    <div className={" rounded-md p-4 border flex bg-white"}>
+                    <div className={" rounded-2xl p-4 border dark:border-gray-700 flex bg-white dark:bg-gray-800"}>
                         <div
                             className={"flex md:items-center md:flex-row md:justify-center flex-col justify-between gap-6 flex-1"}>
                             <div className={"flex justify-between items-center"}>
@@ -125,64 +126,64 @@ function EmployeeProfilePage() {
                                                       className={"absolute top-0 right-0 bg-white rounded-full text-cyan-500"}/>
                                 </div>
                                 <button
-                                    className={"p-1.5 rounded-lg md:hidden text-nowrap bg-none border text-sm self-start"}>Edit
+                                    className={"p-1.5 rounded-lg md:hidden text-nowrap bg-none border text-sm dark:border-gray-700 dark:text-gray-200 self-start"}>Edit
                                     profile
                                 </button>
                             </div>
                             <div className={"w-full flex md:flex-row flex-col gap-4 "}>
                                 <div className={"flex flex-col gap-4 flex-1 md:border-r-2"}>
                                     <div className={"name-profile flex items-center gap-1"}>
-                                        <FaRegUser className={"text-soft-400 text-sm"}/>
-                                        <span className={"text-soft-400 text-sm"}>Name:</span>
-                                        <p className={"text-black text-sm"}>Rawan Ahmed</p>
+                                        <FaRegUser className={"text-soft-400 text-sm dark:text-gray-300"}/>
+                                        <span className={"text-soft-400 text-sm dark:text-gray-300"}>Name:</span>
+                                        <p className={"text-black text-sm dark:text-gray-100"}>Rawan Ahmed</p>
                                     </div>
                                     <div className={"name-profile flex items-center gap-1"}>
-                                        <LuCake size={18} className={"text-soft-400"}/>
-                                        <p className={"text-soft-400 text-sm"}>Age:</p>
-                                        <p className={"text-black text-sm"}>21</p>
+                                        <LuCake size={18} className={"text-soft-400 dark:text-gray-300"}/>
+                                        <p className={"text-soft-400 text-sm dark:text-gray-300"}>Age:</p>
+                                        <p className={"text-black text-sm dark:text-gray-100"}>21</p>
                                     </div>
                                     <div className={"name-profile flex items-center gap-1"}>
-                                        <TbSchool size={18} className={"text-soft-400 text-sm"}/>
-                                        <span className={"text-soft-400 text-sm"}>Education:</span>
-                                        <p className={"text-black text-sm"}>Bachelor’s Degree in Journalism</p>
+                                        <TbSchool size={18} className={"text-soft-400 text-sm dark:text-gray-300"}/>
+                                        <span className={"text-soft-400 text-sm dark:text-gray-300"}>Education:</span>
+                                        <p className={"text-black text-sm dark:text-gray-100"}>Bachelor’s Degree in Journalism</p>
                                     </div>
                                 </div>
                                 <div className={"flex flex-col gap-4 flex-1"}>
                                     <div className={"name-profile flex items-center gap-1"}>
-                                        <RiBuilding2Line className={"text-soft-400 text-sm"}/>
-                                        <span className={"text-soft-400 text-sm"}>Department:</span>
-                                        <p className={"text-black text-sm"}>Publishing</p>
+                                        <RiBuilding2Line className={"text-soft-400 text-sm dark:text-gray-300"}/>
+                                        <span className={"text-soft-400 text-sm dark:text-gray-300"}>Department:</span>
+                                        <p className={"text-black text-sm dark:text-gray-100"}>Publishing</p>
                                     </div>
                                     <div className={"name-profile flex items-center gap-1"}>
-                                        <RiLockLine size={18} className={"text-soft-400"}/>
-                                        <p className={"text-soft-400 text-sm"}>Role:</p>
-                                        <p className={"text-black text-sm"}>Content Editor</p>
+                                        <RiLockLine size={18} className={"text-soft-400 dark:text-gray-300"}/>
+                                        <p className={"text-soft-400 text-sm dark:text-gray-300"}>Role:</p>
+                                        <p className={"text-black text-sm dark:text-gray-100"}>Content Editor</p>
                                     </div>
                                     <div className={"name-profile flex items-center gap-1"}>
-                                        <MdEmail size={18} className={"text-soft-400 text-sm"}/>
-                                        <span className={"text-soft-400 text-sm"}>Email:</span>
-                                        <p className={"text-black text-sm"}>Rawan@email.com</p>
+                                        <MdEmail size={18} className={"text-soft-400 text-sm dark:text-gray-300"}/>
+                                        <span className={"text-soft-400 text-sm dark:text-gray-300"}>Email:</span>
+                                        <p className={"text-black text-sm dark:text-gray-100"}>Rawan@email.com</p>
                                     </div>
                                 </div>
                             </div>
 
                             <button
-                                className={"p-1.5 rounded-lg hidden md:block text-nowrap bg-none border text-sm self-start"}>Edit
+                                className={"p-1.5 rounded-lg hidden md:block text-nowrap bg-none border text-sm self-start dark:text-gray-200 dark:border-gray-700"}>Edit
                                 profile
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
-            <div className={"flex gap-6 md:flex-row h-full flex-col items-start w-full px-10 justify-between"}>
-                <div className={"md:w-8/12 w-full flex flex-col gap-4 items-center "}>
-                    <div className={"bg-white rounded-2xl p-4 gap-6 md:flex-1 flex flex-col items-center w-full"}>
+            <div className={"flex gap-6 md:flex-row flex-col items-start w-full px-10 justify-between"}>
+                <div className={"md:w-8/12 w-full flex flex-col gap-4 items-center h-full"}>
+                    <div className={"bg-white rounded-2xl p-4 gap-6 md:flex-1 flex flex-col dark:bg-gray-800 items-center w-full"}>
                         <div className={"flex justify-between items-center w-full"}>
-                            <p className={"text-lg"}>{t("Requests")}</p>
+                            <p className={"text-lg dark:text-gray-200"}>{t("Requests")}</p>
                             <button
-                                className={" bg-none p-1.5 border-2 border-primary-base rounded-xl flex items-center gap-2"}>
+                                className={" bg-none p-1.5 border-2 border-primary-base dark:border-primary-200 rounded-xl flex items-center gap-2"}>
                                 <FiPlus className={"text-primary-base dark:text-primary-200"} size={13}/>
-                                <span className={"text-sm text-primary-base"}>{t("Request")}</span>
+                                <span className={"text-sm text-primary-base dark:text-primary-200"}>{t("Request")}</span>
                             </button>
                         </div>
                         <div className={"flex items-center justify-between w-full"}>
@@ -205,9 +206,9 @@ function EmployeeProfilePage() {
                             )}
                         </div>
                     </div>
-                    <div className={"bg-white rounded-2xl p-4 gap-6 md:flex-1 flex flex-col items-center w-full"}>
+                    <div className={"bg-white rounded-2xl p-4 gap-6 md:flex-1 flex flex-col items-center w-full dark:bg-gray-800"}>
                         <div className={"flex justify-between items-center w-full"}>
-                            <p className={"text-lg"}>{t("Tasks Rating")}</p>
+                            <p className={"text-lg dark:text-gray-200"}>{t("Tasks Rating")}</p>
                             <div className={"flex gap-2"}>
                                 <SelectWithoutLabel title={"Filter by"} className={"w-[94px] h-[36px]"}/>
                                 <button
@@ -223,39 +224,39 @@ function EmployeeProfilePage() {
                         </div>
                     </div>
                 </div>
-                <div className={"md:flex-1 w-full h-full flex flex-col gap-3"}>
-                        <div className={"bg-white rounded-2xl p-4 md:flex-1 w-full gap-4 flex flex-col"}>
-                            <p className={"text-lg text-start"}>Work Information</p>
+                <div className={"w-full flex h-full flex-col gap-3"}>
+                        <div className={"bg-white rounded-2xl p-4 md:flex-1 w-full gap-4 flex flex-col dark:bg-gray-800"}>
+                            <p className={"text-lg text-start dark:text-gray-200"}>Work Information</p>
                             <div className={"flex flex-col w-full gap-6"}>
                                 <div className={"name-profile flex items-center gap-1"}>
-                                    <AiOutlineDollar className={"text-soft-400 text-sm"}/>
-                                    <span className={"text-soft-400 text-sm"}>Salary:</span>
-                                    <p className={"text-black text-sm"}>$3,500/month</p>
+                                    <AiOutlineDollar className={"text-soft-400 text-sm dark:text-gray-300"}/>
+                                    <span className={"text-soft-400 text-sm dark:text-gray-300"}>Salary:</span>
+                                    <p className={"text-black text-sm dark:text-gray-200"}>$3,500/month</p>
                                 </div>
                                 <div className={"name-profile flex items-center gap-1"}>
-                                    <FaRegClock  className={"text-soft-400 text-sm"}/>
-                                    <span className={"text-soft-400 text-sm"}>Working Hours:</span>
-                                    <p className={"text-black text-sm"}> 8 hours/day</p>
+                                    <FaRegClock  className={"text-soft-400 text-sm dark:text-gray-300"}/>
+                                    <span className={"text-soft-400 text-sm dark:text-gray-300"}>Working Hours:</span>
+                                    <p className={"text-black text-sm dark:text-gray-200"}> 8 hours/day</p>
                                 </div>
                                 <div className={"name-profile flex items-center gap-1"}>
-                                    <MdOutlineCalendarToday className={"text-soft-400 text-sm"}/>
-                                    <span className={"text-soft-400 text-sm"}>Annual Leave Days:</span>
-                                    <p className={"text-black text-sm"}> 21 days/year</p>
+                                    <MdOutlineCalendarToday className={"text-soft-400 text-sm dark:text-gray-300"}/>
+                                    <span className={"text-soft-400 text-sm dark:text-gray-300"}>Annual Leave Days:</span>
+                                    <p className={"text-black text-sm dark:text-gray-200"}> 21 days/year</p>
                                 </div>
                                 <div className={"name-profile flex items-center gap-1"}>
-                                    <AiOutlineDashboard  className={"text-soft-400 text-sm"}/>
-                                    <span className={"text-soft-400 text-sm"}>Attendance Rate:</span>
-                                    <p className={"text-black text-sm"}>95% for the month</p>
+                                    <AiOutlineDashboard  className={"text-soft-400 text-sm dark:text-gray-300"}/>
+                                    <span className={"text-soft-400 text-sm dark:text-gray-300"}>Attendance Rate:</span>
+                                    <p className={"text-black text-sm dark:text-gray-200"}>95% for the month</p>
                                 </div>
                                 <div className={"name-profile flex items-center gap-1"}>
-                                    <BsFileCheck  className={"text-soft-400 text-sm"}/>
-                                    <span className={"text-soft-400 text-sm"}>Task Completion:</span>
-                                    <p className={"text-black text-sm"}>67%</p>
+                                    <BsFileCheck  className={"text-soft-400 text-sm dark:text-gray-300"}/>
+                                    <span className={"text-soft-400 text-sm dark:text-gray-300"}>Task Completion:</span>
+                                    <p className={"text-black text-sm dark:text-gray-200"}>67%</p>
                                 </div>
                                 <div className={"name-profile flex items-center gap-2"}>
-                                    <TfiStar  className={"text-soft-400 text-sm"}/>
-                                    <span className={"text-soft-400 text-sm"}>Rating:</span>
-                                    <p className={"text-black text-sm"}><Rating value={"90"} /></p>
+                                    <TfiStar  className={"text-soft-400 text-sm dark:text-gray-300"}/>
+                                    <span className={"text-soft-400 text-sm dark:text-gray-300"}>Rating:</span>
+                                    <p className={"text-black text-sm dark:text-gray-200"}><Rating value={"90"} /></p>
                                 </div>
                             </div>
                     </div>
@@ -264,9 +265,11 @@ function EmployeeProfilePage() {
                         "Proofread \"Weekly Report for Publishing",
                         "Publish \"Holiday Campaign Articles",
                         "Edit content for \"Marketing Trends 2024.",
-                    ]} isActions={true} isFilter={true} className={"flex-1"} />
-
+                    ]} isActions={true} isFilter={true} className={"h-[68%]"} />
                 </div>
+            </div>
+            <div className={"w-full flex h-full flex-col gap-3 px-10 pb-10"}>
+                <CalendarEmployee />
             </div>
         </div>
         </Page>

@@ -14,9 +14,9 @@ function ToDoList({list,isActions,isFilter,className}) {
     };
 
     return (
-        <div className={`bg-white rounded-2xl p-4 w-full gap-4 flex flex-col ${className}`}>
+        <div className={`bg-white rounded-2xl p-4 w-full gap-4 flex flex-col dark:bg-gray-800 ${className}`}>
             <div className={"w-full flex items-center justify-between"}>
-                <p className={"text-lg text-start"}>To Do List</p>
+                <p className={"text-lg text-start dark:text-gray-200"}>To Do List</p>
                 <div className={"flex items-center gap-2"}>
                     {
                         isFilter && (
@@ -24,8 +24,8 @@ function ToDoList({list,isActions,isFilter,className}) {
                         )
                     }
                     <div className={"flex gap-1 items-center"}>
-                        <FiPlus className={"text-primary-base"} size={15} />
-                        <span className={"text-primary-base"}>Add</span>
+                        <FiPlus className={"text-primary-base dark:text-primary-200"} size={15} />
+                        <span className={"text-primary-base dark:text-primary-200"}>Add</span>
                     </div>
                 </div>
             </div>
@@ -34,7 +34,7 @@ function ToDoList({list,isActions,isFilter,className}) {
                     <div className={"flex w-full justify-between items-center relative"} key={index}>
                         <div className={"flex items-center gap-2"}>
                             <input type={"checkbox"} className={"checkbox-custom"}/>
-                            <p className={"text-sm text-sub-500 text-wrap"}>{item}</p>
+                            <p className={"text-sm text-sub-500 text-wrap dark:text-gray-300"}>{item}</p>
                         </div>
                         {isActions && (
                             <div className={"dropdown-container"}>
@@ -58,6 +58,7 @@ ToDoList.propTypes = {
     list:PropTypes.array,
     isActions:PropTypes.bool,
     isFilter:PropTypes.bool,
+    className:PropTypes.string
 
 }
 
