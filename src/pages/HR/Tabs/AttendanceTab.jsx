@@ -34,10 +34,36 @@ const attendanceData = [
   // Add more mock data as needed
 ];
 
+export const StatusBadge = ({ status }) => {
+  let Icon;
+
+  switch (status) {
+    case "On Time":
+      Icon = (
+        <GoCheckCircleFill className="text-green-600 dark:text-green-300" />
+      );
+      break;
+    case "Late":
+      Icon = <BsClockFill className="text-[#C2540A] dark:text-yellow-300" />;
+      break;
+    case "Absent":
+      Icon = <BsSlashCircleFill className="text-[#757C8A] dark:text-red-300" />;
+      break;
+    case "Pending":
+      Icon = <BsClockFill className="text-[#C2540A] dark:text-yellow-300" />;
+      break;
+  }
+
+  return (
+    <div className="flex items-center gap-2 border dark:border-gray-700 rounded-md px-2 py-1 w-fit">
+      {Icon}
+      <span className="text-xs dark:text-gray-200">{status}</span>
+    </div>
+  );
+};
 function AttendanceTab() {
   const { t } = useTranslation();
 
-  
   const headers = [
     { label: "Employee", width: "200px" },
     { label: "Date", width: "120px" },
@@ -49,37 +75,9 @@ function AttendanceTab() {
     { label: "", width: "50px" },
   ];
 
-  const StatusBadge = ({ status }) => {
-    let  Icon;
-
-    switch (status) {
-      case "On Time":
-        Icon = (
-          <GoCheckCircleFill className="text-green-600 dark:text-green-300" />
-        );
-        break;
-      case "Late":
-        Icon = <BsClockFill className="text-[#C2540A] dark:text-yellow-300" />;
-        break;
-      case "Absent":
-        Icon = (
-          <BsSlashCircleFill className="text-[#757C8A] dark:text-red-300" />
-        );
-        break;
-    }
-
-
-    return (
-      <div className="flex items-center gap-2 border dark:border-gray-700 rounded-md px-2 py-1 w-fit">
-        {Icon}
-        <span className="text-xs dark:text-gray-200">{t(status)}</span>
-      </div>
-    );
-  };
-
   StatusBadge.propTypes = {
     status: PropTypes.string,
-  }
+  };
   const calculateLateTime = (checkIn, workingHours) => {
     if (!checkIn) return "-"; // No check-in, return "-"
 
@@ -120,7 +118,7 @@ function AttendanceTab() {
         alt={record.employee.name}
         className="w-8 h-8 rounded-full"
       />
-      <div  className="flex flex-col">
+      <div className="flex flex-col">
         <span className="text-sm text-sub-500 dark:text-sub-300">
           {record.employee.name}
         </span>
@@ -136,9 +134,15 @@ function AttendanceTab() {
         year: "numeric",
       })}
     </span>,
-    <span key={index} className="text-sm dark:text-sub-300">{record.workingHours}</span>,
-    <span key={index} className="text-sm dark:text-sub-300">{record.checkIn || "-"}</span>,
-    <span key={index} className="text-sm dark:text-sub-300">{record.checkOut || "-"}</span>,
+    <span key={index} className="text-sm dark:text-sub-300">
+      {record.workingHours}
+    </span>,
+    <span key={index} className="text-sm dark:text-sub-300">
+      {record.checkIn || "-"}
+    </span>,
+    <span key={index} className="text-sm dark:text-sub-300">
+      {record.checkOut || "-"}
+    </span>,
     <span key={index} className="text-sm dark:text-sub-300">
       {calculateLateTime(record.checkIn, record.workingHours)}
     </span>,
