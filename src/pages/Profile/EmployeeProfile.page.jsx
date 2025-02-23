@@ -1,27 +1,24 @@
 import {useParams} from "react-router";
-import {HiMiniCheckBadge} from "react-icons/hi2";
-import {FaRegClock, FaRegUser} from "react-icons/fa";
-import {LuCake} from "react-icons/lu";
-import {TbSchool} from "react-icons/tb";
-import {RiBriefcaseLine, RiBuilding2Line, RiLockLine} from "react-icons/ri";
-import {MdEmail, MdOutlineCalendarToday} from "react-icons/md";
 import Table from "../../components/Tables/Table.jsx";
 import Page from "../Page.jsx";
 import Status from "../Projects/Components/TableInfo/Status.jsx";
 import {useTranslation} from "react-i18next";
-import {FiPlus} from "react-icons/fi";
 import SelectWithoutLabel from "../../components/Form/SelectWithoutLabel.jsx";
-import {TfiImport, TfiStar} from "react-icons/tfi";
 import TabsOutContent from "../../components/Modal/TabsContener/TabsOutContent.jsx";
 import {useState} from "react";
 import Rating from "../HR/Rating.jsx";
-import {AiOutlineDashboard, AiOutlineDollar} from "react-icons/ai";
-import {BsFileCheck} from "react-icons/bs";
 import ToDoList from "./components/ToDoList.jsx";
 import CalendarEmployee from "./components/CalendarEmployee.jsx";
 import AddRequestModal from "./modals/AddRequest.modal.jsx";
 import profileBanner from "../../assets/images/profileBanner.png"
-import {RiCake2Line, RiGraduationCapLine, RiMailLine, RiUserLine} from "@remixicon/react";
+import {
+    RiCake2Line, RiCalendarLine,
+    RiCheckboxCircleFill,
+    RiDashboard3Line,
+    RiGraduationCapLine,
+    RiMailLine, RiMoneyDollarCircleLine, RiStarLine, RiTaskLine, RiTimeLine,
+    RiUserLine,RiDownload2Line,RiAddLine, RiBriefcaseLine, RiBuilding2Line
+} from "@remixicon/react";
 
 
 function EmployeeProfilePage() {
@@ -117,12 +114,12 @@ function EmployeeProfilePage() {
         <Page isTitle={false} className={"w-full"}>
 
         <div className={"w-full flex flex-col items-center md:gap-6 xl:gap-4 gap-8 h-full"}>
-            <div className={"relative flex min-h-48 justify-center  w-full h-full"}>
+            <div className={"relative flex min-h-48 justify-center  w-full h-full md:mb-0 mb-44"}>
                 <div className={"w-full md:h-40 h-[50vh]"}>
                     <img className={"max-w-full w-full max-h-full object-cover"} src={profileBanner} alt={""} />
                 </div>
                 <p className={"absolute top-3 right-3 text-sm text-white"}>Change</p>
-                <div className={"absolute md:top-1/3 top-[50px] w-full px-10"}>
+                <div className={"absolute md:top-1/3 top-[50px] w-full md:px-10 px-2"}>
                     <div className={" rounded-2xl p-4 border dark:border-gray-700 flex bg-white dark:bg-gray-800"}>
                         <div
                             className={"flex md:items-center md:flex-row md:justify-center flex-col justify-between gap-6 flex-1"}>
@@ -130,8 +127,8 @@ function EmployeeProfilePage() {
                                 <div className={"relative h-[72px] w-[72px]"}>
                                     <img className={"rounded-full h-[72px] w-[72px] max-w-full"}
                                          src={"https://randomuser.me/api/portraits/men/1.jpg"} alt={"image-user"}/>
-                                    <HiMiniCheckBadge size={23}
-                                                      className={"absolute top-0 right-0 bg-white rounded-full text-cyan-500"}/>
+                                    <RiCheckboxCircleFill size="23"
+                                                      className="absolute top-0 right-0 bg-white dark:bg-gray-800 rounded-full text-cyan-500"/>
                                 </div>
                                 <button
                                     className={"p-1.5 rounded-lg md:hidden text-nowrap bg-none border text-sm dark:border-gray-700 dark:text-gray-200 self-start"}>Edit
@@ -183,7 +180,7 @@ function EmployeeProfilePage() {
                     </div>
                 </div>
             </div>
-            <div className={"flex gap-6 md:flex-row flex-col items-start w-full px-10 justify-between"}>
+            <div className={"flex gap-6 md:flex-row flex-col items-start w-full md:px-10 px-2 justify-between"}>
                 <div className={"md:w-8/12 w-full flex flex-col gap-4 items-center h-full"}>
                     <div className={"bg-white rounded-2xl p-4 gap-6 md:flex-1 flex flex-col dark:bg-gray-800 items-center w-full"}>
                         <div className={"flex justify-between items-center w-full"}>
@@ -191,7 +188,7 @@ function EmployeeProfilePage() {
                             <button
                                 onClick={handelAddRequestModal}
                                 className={" bg-none p-1.5 border-2 border-primary-base dark:border-primary-200 rounded-xl flex items-center gap-2"}>
-                                <FiPlus className={"text-primary-base dark:text-primary-200"} size={13}/>
+                                <RiAddLine size={"18"} className={"text-primary-base dark:text-primary-200"} />
                                 <span className={"text-sm text-primary-base dark:text-primary-200"}>{t("Request")}</span>
                             </button>
                         </div>
@@ -203,7 +200,7 @@ function EmployeeProfilePage() {
                                 <SelectWithoutLabel title={"Filter by"} className={"w-[94px] h-[36px]"}/>
                                 <button
                                     className={"flex dark:text-gray-400 text-sm items-baseline p-2  gap-2 rounded-lg border border-gray-200 dark:border-gray-600"}>
-                                    <TfiImport size={15}/>
+                                    <RiDownload2Line size={15}/>
                                     {t("Export")}
                                 </button>
                             </div>
@@ -222,7 +219,7 @@ function EmployeeProfilePage() {
                                 <SelectWithoutLabel title={"Filter by"} className={"w-[94px] h-[36px]"}/>
                                 <button
                                     className={"flex dark:text-gray-400 text-sm items-baseline p-2  gap-2 rounded-lg border border-gray-200 dark:border-gray-600"}>
-                                    <TfiImport size={15}/>
+                                    <RiDownload2Line size={"18"}/>
                                     {t("Export")}
                                 </button>
                             </div>
@@ -238,32 +235,32 @@ function EmployeeProfilePage() {
                             <p className={"text-lg text-start dark:text-gray-200"}>Work Information</p>
                             <div className={"flex flex-col w-full gap-6"}>
                                 <div className={"name-profile flex items-center gap-1"}>
-                                    <AiOutlineDollar className={"text-soft-400 text-sm dark:text-gray-300"}/>
+                                    <RiMoneyDollarCircleLine size={"18"} className={"text-soft-400 text-sm dark:text-gray-300"}/>
                                     <span className={"text-soft-400 text-sm dark:text-gray-300"}>Salary:</span>
                                     <p className={"text-black text-sm dark:text-gray-200"}>$3,500/month</p>
                                 </div>
                                 <div className={"name-profile flex items-center gap-1"}>
-                                    <FaRegClock  className={"text-soft-400 text-sm dark:text-gray-300"}/>
+                                    <RiTimeLine size={"18"}  className={"text-soft-400 text-sm dark:text-gray-300"}/>
                                     <span className={"text-soft-400 text-sm dark:text-gray-300"}>Working Hours:</span>
                                     <p className={"text-black text-sm dark:text-gray-200"}> 8 hours/day</p>
                                 </div>
                                 <div className={"name-profile flex items-center gap-1"}>
-                                    <MdOutlineCalendarToday className={"text-soft-400 text-sm dark:text-gray-300"}/>
+                                    <RiCalendarLine size={"18"} className={"text-soft-400 text-sm dark:text-gray-300"}/>
                                     <span className={"text-soft-400 text-sm dark:text-gray-300"}>Annual Leave Days:</span>
                                     <p className={"text-black text-sm dark:text-gray-200"}> 21 days/year</p>
                                 </div>
                                 <div className={"name-profile flex items-center gap-1"}>
-                                    <AiOutlineDashboard  className={"text-soft-400 text-sm dark:text-gray-300"}/>
+                                    <RiDashboard3Line size={"18"}  className={"text-soft-400 text-sm dark:text-gray-300"}/>
                                     <span className={"text-soft-400 text-sm dark:text-gray-300"}>Attendance Rate:</span>
                                     <p className={"text-black text-sm dark:text-gray-200"}>95% for the month</p>
                                 </div>
                                 <div className={"name-profile flex items-center gap-1"}>
-                                    <BsFileCheck  className={"text-soft-400 text-sm dark:text-gray-300"}/>
+                                    <RiTaskLine size={"18"}  className={"text-soft-400 text-sm dark:text-gray-300"}/>
                                     <span className={"text-soft-400 text-sm dark:text-gray-300"}>Task Completion:</span>
                                     <p className={"text-black text-sm dark:text-gray-200"}>67%</p>
                                 </div>
                                 <div className={"name-profile flex items-center gap-2"}>
-                                    <TfiStar  className={"text-soft-400 text-sm dark:text-gray-300"}/>
+                                    <RiStarLine size={"18"} className={"text-soft-400 text-sm dark:text-gray-300"}/>
                                     <span className={"text-soft-400 text-sm dark:text-gray-300"}>Rating:</span>
                                     <p className={"text-black text-sm dark:text-gray-200"}><Rating value={"90"} /></p>
                                 </div>
@@ -277,7 +274,7 @@ function EmployeeProfilePage() {
                     ]} isActions={true} isFilter={true} className={"h-[68%]"} />
                 </div>
             </div>
-            <div className={"w-full flex h-full flex-col gap-3 px-10 pb-10"}>
+            <div className={"w-full flex h-full flex-col gap-3 md:px-10 px-2 pb-10"}>
                 <CalendarEmployee />
             </div>
         </div>

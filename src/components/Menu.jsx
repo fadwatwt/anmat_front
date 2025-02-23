@@ -66,7 +66,7 @@ function Menu({isSlidebarOpen,taggleSlidebarOpen}) {
                         <MenuItem path={"/hr-management"} icon={<Profile2User />} title={"HR Management"}/>
                         <MenuItem path={"/conversations"} icon={<Messages1 />} title={"Conversations"}/>
                         <MenuItem path={"/social-media"} icon={<Share />} title={"Social Media"}/>
-                        <MenuItem path={"/social-media"} icon={<Edit />} title={"Timeline"}/>
+                        <MenuItem path={"/time-line"} icon={<Edit />} title={"Timeline"}/>
                         <MenuItem path={"/settings"} icon={<Setting />} title={"Settings"}/>
                     </div>
                 </div>

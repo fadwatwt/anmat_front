@@ -12,6 +12,7 @@ import ProjectDetailes from "../pages/Projects/Components/ProjectDetails/Project
 import TaskDetails from "../pages/Tasks/TaskDetailes/TaskDetails.jsx";
 import CreateTask from "../pages/Tasks/CreateTask.jsx";
 import EmployeeProfilePage from "../pages/Profile/EmployeeProfile.page.jsx";
+import TimeLinePage from "../pages/TimeLine.page.jsx";
 
 function AppRoute() {
     return (
@@ -26,6 +27,7 @@ function AppRoute() {
             <Route path={"/tasks/:slug"} element={<TaskDetails/>}></Route>
             <Route path={"/tasks/create"} element={<CreateTask/>}></Route>
             <Route path={"/social-media"} element={<SocialMediaPage/>}></Route>
+            <Route path={"/time-line"} element={<TimeLinePage/>}></Route>
             <Route path={"/settings"} element={<SettingPage/>}></Route>
             <Route path={"/hr-management"} element={<HRManagementPage/>}></Route>
             <Route path={"/employee-profile/:slug"} element={<EmployeeProfilePage />}></Route>
