@@ -7,7 +7,7 @@ import TaskComments from "../../Projects/Components/ProjectDetails/components/Ta
 import CommentInput from "../../../components/CommentInput.jsx";
 import ProjectMembers from "../../Projects/Components/ProjectDetails/components/ProjectMembers.jsx";
 import AttachmentsList from "../../Projects/Components/ProjectDetails/components/AttachmentsList.jsx";
-import ActivityLogs from "../../Projects/Components/ProjectDetails/components/ActivityLogs.jsx";
+import ActivityLogs from "../../../components/ActivityLogs.jsx";
 import TimeLine from "../../../components/TimeLine/TimeLine.jsx";
 import {useTranslation} from "react-i18next";
 import InfoCard from "../../components/InfoCard.jsx";

@@ -3,10 +3,10 @@ import PropTypes from "prop-types";
 import {IoDocument, IoVideocam} from "react-icons/io5";
 import {FaCheckCircle} from "react-icons/fa";
 import {useTranslation} from "react-i18next";
-import {translateTime} from "../../../../../functions/Days.js";
+import {translateTime} from "../functions/Days.js";
 
 
-function ActivityLogs({activityLogs}) {
+function ActivityLogs({activityLogs,className}) {
     const {t} = useTranslation()
     const getTypeActivityIcons = (type) => {
         switch (type) {
@@ -45,7 +45,7 @@ function ActivityLogs({activityLogs}) {
     return (
         <div className={"flex flex-col w-full p-4 rounded-2xl items-start gap-3 bg-white dark:bg-white-0"}>
             <p className={"text-lg dark:text-gray-200"}>{t("Activity Logs")}</p>
-            <div className={"max-h-64 h-auto flex flex-col w-full overflow-hidden overflow-y-auto custom-scroll"}>
+            <div className={"flex flex-col w-full overflow-hidden overflow-y-auto custom-scroll " + className }>
                 {
                     activityLogs.map((activityLog, index) => (
                             <div key={index} className={"flex gap-2 justify-start items-start h-80"}>
@@ -79,6 +79,7 @@ function ActivityLogs({activityLogs}) {
 }
 
 ActivityLogs.propTypes = {
-    activityLogs:PropTypes.array.isRequired
+    activityLogs:PropTypes.array.isRequired,
+    className:PropTypes.string
 }
 export default ActivityLogs;

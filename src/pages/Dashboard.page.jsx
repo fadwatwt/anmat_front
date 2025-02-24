@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import {
   BarChart,
   Bar,
@@ -11,6 +11,9 @@ import {
 import { FileText, Calendar, Upload, Plus } from "lucide-react";
 import Table from "../components/Tables/Table"; // Import the Table component
 import { StatusBadge } from "./HR/Tabs/AttendanceTab";
+import Page from "./Page.jsx";
+import DefaultSelect from "../components/Form/DefaultSelect.jsx";
+import ActivityLogs from "../components/ActivityLogs.jsx";
 
 const DonutChart = ({ data, total }) => {
   let cumulativePercent = 0;
@@ -68,6 +71,8 @@ const TaskManagementDashboard = () => {
   const [viewMode, setViewMode] = useState("week");
   const [currentDate] = useState(new Date());
 
+  const theme = localStorage.getItem("theme")
+
   // Mock data for the charts
   const monthlyData = [
     { name: "Jan", onTime: 45, late: 35 },
@@ -76,6 +81,38 @@ const TaskManagementDashboard = () => {
     { name: "Apr", onTime: 60, late: 85 },
     { name: "May", onTime: 55, late: 30 },
     { name: "Jun", onTime: 50, late: 45 },
+  ];
+  const activityLogs = [
+    {
+      type: "add",
+      title: "New task added",
+      description: "John Doe added a new task: Design website layout.",
+      timeAgo: "2025-01-13T14:00:00.000Z",
+    },
+    {
+      type: "video",
+      title: "Meeting scheduled",
+      description: "Bob Brown added a comment to the task: Perform QA Testing.",
+      timeAgo: "2025-01-13T11:00:00.000Z",
+    },
+    {
+      type: "uploaded",
+      title: "File uploaded",
+      description: "Jane Smith uploaded 'UI_Design.png' to the project.",
+      timeAgo: "2025-01-12T16:00:00.000Z",
+    },
+    {
+      type: "check",
+      title: "Task completed",
+      description: "Alice Johnson marked the task 'Implement Backend APIs' as complete.",
+      timeAgo: "2025-01-10T16:00:00.000Z",
+    },
+    {
+      type: "add",
+      title: "New task added",
+      description: "Bob Brown added a comment to the task: Perform QA Testing.",
+      timeAgo: "2025-01-13T11:00:00.000Z",
+    },
   ];
 
   const taskSummaryData = {
@@ -336,21 +373,17 @@ const TaskManagementDashboard = () => {
   ]);
 
   return (
-    <div className="h-screen overflow-y-auto p-6 space-y-6">
+    <Page isTitle={false}>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Task Summary Section */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
+        <div className="bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold text-gray-900">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
               Tasks Summary
             </h2>
             <div className="flex gap-2">
-              <select className="border rounded-lg px-3 py-1.5 text-sm text-gray-600">
-                <option>Tasks</option>
-              </select>
-              <select className="border rounded-lg px-3 py-1.5 text-sm text-gray-600">
-                <option>Last Month</option>
-              </select>
+              <DefaultSelect classNameContainer={"w-28"} options={[{id:"", value:"option"}]} />
+              <DefaultSelect classNameContainer={"w-28"} options={[{id:"", value:"Last Month"}]} />
             </div>
           </div>
 
@@ -367,7 +400,7 @@ const TaskManagementDashboard = () => {
               />
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">
-                  <div className="text-sm text-gray-500">TASKS</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-200">TASKS</div>
                   <div className="text-3xl font-bold dark:text-white">
                     {taskSummaryData.total}
                   </div>
@@ -381,84 +414,81 @@ const TaskManagementDashboard = () => {
               <div className="text-indigo-600 font-semibold">
                 {taskSummaryData.active}
               </div>
-              <div className="text-sm text-gray-500">Active</div>
+              <div className="text-sm text-gray-500 dark:text-gray-200">Active</div>
             </div>
             <div>
-              <div className="text-green-600 font-semibold">
+              <div className="text-green-600 font-semibold ">
                 {taskSummaryData.completed}
               </div>
-              <div className="text-sm text-gray-500">On-Time Completed</div>
+              <div className="text-sm text-gray-500 dark:text-gray-200">On-Time Completed</div>
             </div>
             <div>
               <div className="text-yellow-600 font-semibold">
                 {taskSummaryData.late}
               </div>
-              <div className="text-sm text-gray-500">Late Completed</div>
+              <div className="text-sm text-gray-500 dark:text-gray-200">Late Completed</div>
             </div>
             <div>
               <div className="text-red-600 font-semibold">
                 {taskSummaryData.overdue}
               </div>
-              <div className="text-sm text-gray-500">Overdue</div>
+              <div className="text-sm text-gray-500 dark:text-gray-200">Overdue</div>
             </div>
           </div>
         </div>
 
         {/* Department Analytics Section */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
+        <div className="bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold text-gray-900">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
               Departments analytics
             </h2>
             <div className="flex gap-2">
-              <select className="border rounded-lg px-3 py-1.5 text-sm text-gray-600">
-                <option>Department</option>
-              </select>
-              <select className="border rounded-lg px-3 py-1.5 text-sm text-gray-600">
-                <option>Last 6 months</option>
-              </select>
+              <DefaultSelect classNameContainer={"w-28"} options={[{id:"", value:"Department"}]} />
+              <DefaultSelect classNameContainer={"w-32"} options={[{id:"", value:"Last 6 months"}]} />
             </div>
           </div>
 
           <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer  width="100%" height="100%">
               <BarChart data={monthlyData} barGap={4}>
                 {" "}
                 {/* Reduce barGap */}
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <CartesianGrid className={"bg-gary-800 text-gray-800"} stroke={theme  === "dark" ? "rgb(78,90,110)" : "rgb(166,167,169)"} strokeDasharray="3 3"  vertical={false} />
                 <XAxis
                   dataKey="name"
+                  className={"text-gray-700 dark:text-gray-400"}
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "#6B7280", fontSize: 12 }}
+                  tick={theme  === "dark" ?{ fill: "#d1d2d3", fontSize: 12 } : {fill: "#6B7280", fontSize: 12 } }
                 />
                 <YAxis
                   domain={[0, 125]}
                   ticks={[0, 25, 50, 75, 100, 125]}
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "#6B7280", fontSize: 12 }}
+                  tick={theme  === "dark" ?{ fill: "#d1d2d3", fontSize: 12 } : {fill: "#6B7280", fontSize: 12 } }
                 />
                 <Bar
                   dataKey="onTime"
                   fill="#38C793"
                   name="On-Time Completed"
                   radius={[15, 15, 0, 0]}
-                  barSize={20} // Reduce bar size
+                  barSize={15} // Reduce bar size
                 />
                 <Bar
                   dataKey="late"
                   fill="#F17B2C"
                   name="Late Completed"
                   radius={[15, 15, 0, 0]}
-                  barSize={20} // Reduce bar size
+                  barSize={15} // Reduce bar size
                 />
                 <Legend
                   iconType="circle"
                   wrapperStyle={{
                     marginTop: 16,
                     paddingTop: 16,
-                    borderTop: "1px solid #E5E7EB",
+                    borderTop: `1px solid ${theme === "dark" ?"rgb(78,90,110)" :"#E5E7EB"}`,
                   }}
                 />
               </BarChart>
@@ -481,53 +511,7 @@ const TaskManagementDashboard = () => {
         </div>
 
         {/* Activity Logs Section (1/3 of the width) */}
-        <div className="bg-white rounded-xl shadow-sm p-6 lg:col-span-1">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold text-gray-900">
-              Activity Log
-            </h2>
-          </div>
-
-          <div className="space-y-6 max-h-[480px] overflow-y-auto pr-2">
-            {activityLog.map((log) => (
-              <div key={log.id} className="flex items-start gap-3">
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                    log.type === "task"
-                      ? "bg-blue-50"
-                      : log.type === "complete"
-                      ? "bg-green-50"
-                      : "bg-yellow-50"
-                  }`}
-                >
-                  {log.type === "task" && (
-                    <Plus className="w-4 h-4 text-blue-600" />
-                  )}
-                  {log.type === "complete" && (
-                    <FileText className="w-4 h-4 text-green-600" />
-                  )}
-                  {log.type === "meeting" && (
-                    <Calendar className="w-4 h-4 text-yellow-600" />
-                  )}
-                  {log.type === "file" && (
-                    <Upload className="w-4 h-4 text-gray-600" />
-                  )}
-                </div>
-                <div className="flex-1 text-start">
-                  <h3 className="text-sm font-medium text-gray-900">
-                    {log.title}
-                  </h3>
-                  <p className="text-sm text-gray-600 mt-0.5">
-                    {log.description}
-                  </p>
-                  <span className="text-xs text-gray-500 mt-1 block">
-                    {log.time}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <ActivityLogs className={"max-h-[30rem]"} activityLogs={activityLogs}/>
       </div>
 
       {/* Requests Section */}
@@ -547,7 +531,7 @@ const TaskManagementDashboard = () => {
           currentDate={currentDate}
         />
       </div>
-    </div>
+    </Page>
   );
 };
 
