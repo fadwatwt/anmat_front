@@ -61,8 +61,7 @@ const DonutChart = ({ data, total }) => {
 };
 
 const TaskManagementDashboard = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [requestType, setRequestType] = useState("Leave Request"); // State for switch
+  const [requestType] = useState("Leave Request"); // State for switch
 
   const viewModalList = [
     { id: "Leave", title: "Leave" },
