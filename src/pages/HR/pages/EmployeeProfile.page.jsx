@@ -23,6 +23,8 @@ import ToDoList from "../components/ToDoList.jsx";
 function EmployeeProfilePage() {
     const {t} = useTranslation()
     const { slug } = useParams();
+    console.log({ slug });
+    
     const [employeeId] = slug.split('-')[0];
     const [activeTab, setActiveTab] = useState("Leave");
     const headerTasksRating = [
