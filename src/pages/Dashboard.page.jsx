@@ -14,6 +14,9 @@ import Page from "./Page.jsx";
 import DefaultSelect from "../components/Form/DefaultSelect.jsx";
 import ActivityLogs from "../components/ActivityLogs.jsx";
 import PropTypes from "prop-types";
+import {useTranslation} from "react-i18next";
+import ProjectRatingModal from "./Projects/modal/ProjectRatingModal.jsx";
+import Alert from "../components/Alert.jsx";
 
 const DonutChart = ({ data, total }) => {
   let cumulativePercent = 0;
@@ -67,6 +70,17 @@ DonutChart.propTypes = {
 
 const TaskManagementDashboard = () => {
   const [requestType] = useState("Leave Request"); // State for switch
+  const {t,i18n} = useTranslation()
+  const [isRatingModal,setIsModalSetting] = useState(false)
+  const [isConfirmApprovalAlert,setIsConfirmApprovalAlert] = useState(false)
+
+  const handelRatingModal = () => {
+    setIsModalSetting(!isRatingModal);
+  }
+
+  const handelConfirmApprovalAlert = () => {
+    setIsConfirmApprovalAlert(!isConfirmApprovalAlert)
+  }
 
   const viewModalList = [
     { id: "Leave", title: "Leave" },
@@ -340,7 +354,7 @@ const TaskManagementDashboard = () => {
     task.rating ? (
         <span className="text-yellow-500">{task.rating} ★</span>
     ) : (
-        "No Rating"
+        <button onClick={handelRatingModal}  className={"w-full border border-gray-700 rounded-md py-1 "}> {t("Rating")} <span className={"text-yellow-500"}>★</span> </button>
     ),
   ]);
 
@@ -370,7 +384,7 @@ const TaskManagementDashboard = () => {
       <button className="bg-red-100 text-red-600 px-3 py-1 rounded-md w-fit">
         Reject
       </button>
-      <button className="bg-green-100 text-green-600 px-3 py-1 rounded-md w-fit">
+      <button onClick={handelConfirmApprovalAlert} className="bg-green-100 text-green-600 px-3 py-1 rounded-md w-fit">
         Accept
       </button>
     </div>,
@@ -383,7 +397,7 @@ const TaskManagementDashboard = () => {
           <div className="bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
-                Tasks Summary
+                {t("Tasks Summary")}
               </h2>
               <div className="flex gap-2">
                 <DefaultSelect classNameContainer={"w-28"} options={[{id:"", value:"option"}]} />
@@ -404,7 +418,7 @@ const TaskManagementDashboard = () => {
                 />
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center">
-                    <div className="text-sm text-gray-500 dark:text-gray-200">TASKS</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-200">{t("TASKS")}</div>
                     <div className="text-3xl font-bold dark:text-white">
                       {taskSummaryData.total}
                     </div>
@@ -418,25 +432,25 @@ const TaskManagementDashboard = () => {
                 <div className="text-indigo-600 font-semibold">
                   {taskSummaryData.active}
                 </div>
-                <div className="text-sm text-gray-500 dark:text-gray-200">Active</div>
+                <div className="text-sm text-gray-500 dark:text-gray-200">{t("Active")}</div>
               </div>
               <div>
-                <div className="text-green-600 font-semibold ">
+                <div className="text-green-600 text-sm ">
                   {taskSummaryData.completed}
                 </div>
-                <div className="text-sm text-gray-500 dark:text-gray-200">On-Time Completed</div>
+                <div className="text-sm text-gray-500 dark:text-gray-200">{t("On - Time Completed")}</div>
               </div>
               <div>
                 <div className="text-yellow-600 font-semibold">
                   {taskSummaryData.late}
                 </div>
-                <div className="text-sm text-gray-500 dark:text-gray-200">Late Completed</div>
+                <div className="text-sm text-gray-500 dark:text-gray-200">{t("Late Completed")}</div>
               </div>
               <div>
                 <div className="text-red-600 font-semibold">
                   {taskSummaryData.overdue}
                 </div>
-                <div className="text-sm text-gray-500 dark:text-gray-200">Overdue</div>
+                <div className="text-sm text-gray-500 dark:text-gray-200">{t("Overdue")}</div>
               </div>
             </div>
           </div>
@@ -445,7 +459,7 @@ const TaskManagementDashboard = () => {
           <div className="bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
-                Departments analytics
+                {t("Departments analytics")}
               </h2>
               <div className="flex gap-2">
                 <DefaultSelect classNameContainer={"w-28"} options={[{id:"", value:"Department"}]} />
@@ -476,14 +490,14 @@ const TaskManagementDashboard = () => {
                   <Bar
                       dataKey="onTime"
                       fill="#38C793"
-                      name="On-Time Completed"
+                      name={t("On-Time Completed")}
                       radius={[15, 15, 0, 0]}
                       barSize={15} // Reduce bar size
                   />
                   <Bar
                       dataKey="late"
                       fill="#F17B2C"
-                      name="Late Completed"
+                      name={t("Late Completed")}
                       radius={[15, 15, 0, 0]}
                       barSize={15} // Reduce bar size
                   />
@@ -500,7 +514,6 @@ const TaskManagementDashboard = () => {
             </div>
           </div>
         </div>
-
         {/* Task/Project Evaluation & Activity Logs Section */}
         <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Task/Project Evaluation Section (2/3 of the width) */}
@@ -535,6 +548,16 @@ const TaskManagementDashboard = () => {
               currentDate={currentDate}
           />
         </div>
+        <ProjectRatingModal isOpen={isRatingModal} onClose={handelRatingModal} project={1} />
+        <Alert title={"Confirm Approval"} message={"Are you sure you want to approve this leave request for [Employee Name]?  This action cannot be undone."}
+               isOpen={isConfirmApprovalAlert}
+               onClose={handelConfirmApprovalAlert}
+               type={"warning"}
+               isBtns={"true"}
+               onSubmit={() => {}}
+               titleSubmitBtn={"Approve"}
+               titleCancelBtn={"Cancel"}
+        />
       </Page>
   );
 };

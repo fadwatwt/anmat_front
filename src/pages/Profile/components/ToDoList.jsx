@@ -23,7 +23,7 @@ function ToDoList({list,isActions,isFilter,className}) {
     return (
         <div className={`bg-white rounded-2xl p-4 w-full gap-4 flex flex-col dark:bg-gray-800 ${className}`}>
             <div className={"w-full flex items-center justify-between"}>
-                <p className={"text-lg text-start dark:text-gray-200"}>To Do List</p>
+                <p className={"text-lg text-start dark:text-gray-200"}>{t("To Do List")}</p>
                 <div className={"flex items-center gap-2"}>
                     {
                         isFilter && (
@@ -32,7 +32,7 @@ function ToDoList({list,isActions,isFilter,className}) {
                     }
                     <div className={"flex gap-1 items-center cursor-pointer"} onClick={handelAddToDoListModal}>
                         <FiPlus className={"text-primary-base dark:text-primary-200"} size={15} />
-                        <span className={"text-primary-base dark:text-primary-200"}>Add</span>
+                        <span className={"text-primary-base dark:text-primary-200"}>{t("Add")}</span>
                     </div>
                 </div>
             </div>

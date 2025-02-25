@@ -1,11 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
-import { AiOutlineMessage } from "react-icons/ai";
 import Avatar from "./Avatar";
+import {RiChat3Line} from "@remixicon/react";
+import {useTranslation} from "react-i18next";
 
 const MessagesDropdown = ({ messages }) => {
   const [showMessages, setShowMessages] = useState(false);
   const messageRef = useRef(null);
+  const {t,i18n} = useTranslation()
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -29,17 +31,17 @@ const MessagesDropdown = ({ messages }) => {
   };
 
   return (
-    <div className="relative">
+    <div className="w-10">
       <div
         className={`icon-message flex items-center h-10 ${
           showMessages
             ? "bg-blue-100 text-blue-500 dark:bg-blue-900 dark:text-blue-300"
-            : "bg-gray-100 dark:bg-gray-900 dark:text-gray-100"
+            : "bg-gray-100 dark:bg-gray-900"
         } rounded-lg py-1 px-3 text-center cursor-pointer`}
         onClick={toggleMessages}
       >
         <div className="relative">
-          <AiOutlineMessage size={20} />
+          <RiChat3Line className="dark:text-gray-100 text-gray-600" size={20} />
           <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
             5
           </span>
@@ -48,18 +50,18 @@ const MessagesDropdown = ({ messages }) => {
 
       {showMessages && (
         <>
-          <div className="fixed inset-0 bg-black/50 sm:hidden z-40"></div>
+          <div className="fixed inset-0 right-3 bg-black/50 sm:hidden z-40"></div>
           <div
             ref={messageRef}
-            className="fixed sm:absolute inset-0 sm:inset-auto top-1/2 sm:right-0 sm:mt-2 sm:w-[343px] w-full max-w-[343px] mx-auto sm:mx-0 transform -translate-y-1/2 sm:translate-y-0 h-[686px] sm:h-auto sm:max-h-[70vh] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-[20px] shadow-lg z-50"
+            className={`fixed sm:absolute inset-0 sm:inset-auto top-1/2 ${i18n.language === "ar" ? "sm:-right-0" : "sm:right-0"}  sm:mt-2 sm:w-[343px] w-full max-w-[343px] mx-auto sm:mx-0 transform -translate-y-1/6 sm:translate-y-0 h-[686px] sm:h-auto sm:max-h-[70vh] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-[20px] shadow-lg z-50`}
             style={{ borderWidth: "0.5px" }}
           >
             <div className="flex justify-between items-center px-4 py-3 border-b dark:border-gray-700">
               <h3 className="font-[Almarai] font-[400] text-[16px] leading-[24px] tracking-[-1.1%] dark:text-white">
-                Messages (5)
+                {t("Messages")} (5)
               </h3>
-              <button className="text-[#375DFB] font-[Almarai] font-[400] text-[14px] leading-[20px] tracking-[-0.6%] text-center hover:underline">
-                Mark all as read
+              <button className="text-[#375DFB] dark:text-primary-200 font-[Almarai] font-[400] text-[14px] leading-[20px] tracking-[-0.6%] text-center hover:underline">
+                {t("Mark all as read")}
               </button>
             </div>
 

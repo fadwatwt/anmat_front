@@ -237,7 +237,7 @@ function Header({ taggleSlidebarOpen, className }) {
         <SearchInput />
       </div>
       <div className={"flex gap-5"}>
-        <div className={"icons flex gap-2 items-center"}>
+        <div className={"icons flex gap-2 items-center relative w-56 justify-end"}>
           <NotificationsDropdown notifications={notifications} />
           <MessagesDropdown messages={messages} />
         </div>

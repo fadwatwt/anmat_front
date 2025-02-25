@@ -22,7 +22,7 @@ import {
 
 
 function EmployeeProfilePage() {
-    const {t} = useTranslation()
+    const {t,i18n} = useTranslation()
     const { slug } = useParams();
     console.log({ slug });
     
@@ -120,7 +120,7 @@ function EmployeeProfilePage() {
                 <div className={"w-full md:h-40 h-[50vh]"}>
                     <img className={"max-w-full w-full max-h-full object-cover"} src={profileBanner} alt={""} />
                 </div>
-                <p className={"absolute top-3 right-3 text-sm text-white"}>Change</p>
+                <p className={"absolute top-3 right-3 text-sm text-white"}>{t("Change")}</p>
                 <div className={"absolute md:top-1/3 top-[50px] w-full md:px-10 px-2"}>
                     <div className={" rounded-2xl p-4 border dark:border-gray-700 flex bg-white dark:bg-gray-800"}>
                         <div
@@ -133,50 +133,49 @@ function EmployeeProfilePage() {
                                                       className="absolute top-0 right-0 bg-white dark:bg-gray-800 rounded-full text-cyan-500"/>
                                 </div>
                                 <button
-                                    className={"p-1.5 rounded-lg md:hidden text-nowrap bg-none border text-sm dark:border-gray-700 dark:text-gray-200 self-start"}>Edit
-                                    profile
+                                    className={"p-1.5 rounded-lg md:hidden text-nowrap bg-none border text-sm dark:border-gray-700 dark:text-gray-200 self-start"}>{t("Edit profile")}
                                 </button>
                             </div>
                             <div className={"w-full flex md:flex-row flex-col gap-4 "}>
-                                <div className={"flex flex-col gap-4 flex-1 md:border-r-2"}>
+                                <div className={`flex flex-col gap-4 flex-1  ${i18n.language === "ar" ? "md:border-l-2 " :"md:border-r-2 "}`}>
                                     <div className={"name-profile flex items-center gap-1"}>
                                         <RiUserLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"}/>
-                                        <span className={"text-soft-400 text-sm dark:text-gray-300"}>Name:</span>
+                                        <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Name")}:</span>
                                         <p className={"text-black text-sm dark:text-gray-100"}>Rawan Ahmed</p>
                                     </div>
                                     <div className={"name-profile flex items-center gap-1"}>
                                         <RiCake2Line size={18} className={"text-soft-400 dark:text-gray-300"}/>
-                                        <p className={"text-soft-400 text-sm dark:text-gray-300"}>Age:</p>
+                                        <p className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Age")}:</p>
                                         <p className={"text-black text-sm dark:text-gray-100"}>21</p>
                                     </div>
                                     <div className={"name-profile flex items-center gap-1"}>
                                         <RiGraduationCapLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"}/>
-                                        <span className={"text-soft-400 text-sm dark:text-gray-300"}>Education:</span>
+                                        <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Education")}:</span>
                                         <p className={"text-black text-sm dark:text-gray-100"}>Bachelor’s Degree in Journalism</p>
                                     </div>
                                 </div>
                                 <div className={"flex flex-col gap-4 flex-1"}>
                                     <div className={"name-profile flex items-center gap-1"}>
                                         <RiBuilding2Line className={"text-soft-400 text-sm dark:text-gray-300"}/>
-                                        <span className={"text-soft-400 text-sm dark:text-gray-300"}>Department:</span>
-                                        <p className={"text-black text-sm dark:text-gray-100"}>Publishing</p>
+                                        <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Department")}:</span>
+                                        <p className={"text-black text-sm dark:text-gray-100"}>{t("Publishing")}</p>
                                     </div>
                                     <div className={"name-profile flex items-center gap-1"}>
                                         <RiBriefcaseLine size="18" className="text-soft-400 dark:text-gray-300"/>
-                                        <p className={"text-soft-400 text-sm dark:text-gray-300"}>Role:</p>
-                                        <p className={"text-black text-sm dark:text-gray-100"}>Content Editor</p>
+                                        <p className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Role")}:</p>
+                                        <p className={"text-black text-sm dark:text-gray-100"}>{t("Content Editor")}</p>
                                     </div>
                                     <div className={"name-profile flex items-center gap-1"}>
                                         <RiMailLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"}/>
-                                        <span className={"text-soft-400 text-sm dark:text-gray-300"}>Email:</span>
+                                        <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Email")}:</span>
                                         <p className={"text-black text-sm dark:text-gray-100"}>Rawan@email.com</p>
                                     </div>
                                 </div>
                             </div>
 
                             <button
-                                className={"p-1.5 rounded-lg hidden md:block text-nowrap bg-none border text-sm self-start dark:text-gray-200 dark:border-gray-700"}>Edit
-                                profile
+                                className={"p-1.5 rounded-lg hidden md:block text-nowrap bg-none border text-sm self-start dark:text-gray-200 dark:border-gray-700"}>
+                                {t("Edit profile")}
                             </button>
                         </div>
                     </div>
@@ -234,36 +233,36 @@ function EmployeeProfilePage() {
                 </div>
                 <div className={"w-full flex h-full flex-col gap-3"}>
                         <div className={"bg-white rounded-2xl p-4 md:flex-1 w-full gap-4 flex flex-col dark:bg-gray-800"}>
-                            <p className={"text-lg text-start dark:text-gray-200"}>Work Information</p>
+                            <p className={"text-lg text-start dark:text-gray-200"}>{t("Work Information")}</p>
                             <div className={"flex flex-col w-full gap-6"}>
                                 <div className={"name-profile flex items-center gap-1"}>
                                     <RiMoneyDollarCircleLine size={"18"} className={"text-soft-400 text-sm dark:text-gray-300"}/>
-                                    <span className={"text-soft-400 text-sm dark:text-gray-300"}>Salary:</span>
-                                    <p className={"text-black text-sm dark:text-gray-200"}>$3,500/month</p>
+                                    <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Salary")}:</span>
+                                    <p className={"text-black text-sm dark:text-gray-200"}>$3,500/{t("month")}</p>
                                 </div>
                                 <div className={"name-profile flex items-center gap-1"}>
                                     <RiTimeLine size={"18"}  className={"text-soft-400 text-sm dark:text-gray-300"}/>
-                                    <span className={"text-soft-400 text-sm dark:text-gray-300"}>Working Hours:</span>
-                                    <p className={"text-black text-sm dark:text-gray-200"}> 8 hours/day</p>
+                                    <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Working Hours")}:</span>
+                                    <p className={"text-black text-sm dark:text-gray-200"}> 8 {t("hours")}/{t("day")}</p>
                                 </div>
                                 <div className={"name-profile flex items-center gap-1"}>
                                     <RiCalendarLine size={"18"} className={"text-soft-400 text-sm dark:text-gray-300"}/>
-                                    <span className={"text-soft-400 text-sm dark:text-gray-300"}>Annual Leave Days:</span>
-                                    <p className={"text-black text-sm dark:text-gray-200"}> 21 days/year</p>
+                                    <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Annual Leave Days")}:</span>
+                                    <p className={"text-black text-sm dark:text-gray-200"}> 21 {t("days")}/{t("year")}</p>
                                 </div>
                                 <div className={"name-profile flex items-center gap-1"}>
                                     <RiDashboard3Line size={"18"}  className={"text-soft-400 text-sm dark:text-gray-300"}/>
-                                    <span className={"text-soft-400 text-sm dark:text-gray-300"}>Attendance Rate:</span>
-                                    <p className={"text-black text-sm dark:text-gray-200"}>95% for the month</p>
+                                    <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Attendance Rate")}:</span>
+                                    <p className={"text-black text-sm dark:text-gray-200"}>95% {t("for the month")}</p>
                                 </div>
                                 <div className={"name-profile flex items-center gap-1"}>
                                     <RiTaskLine size={"18"}  className={"text-soft-400 text-sm dark:text-gray-300"}/>
-                                    <span className={"text-soft-400 text-sm dark:text-gray-300"}>Task Completion:</span>
+                                    <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Task Completion")}:</span>
                                     <p className={"text-black text-sm dark:text-gray-200"}>67%</p>
                                 </div>
                                 <div className={"name-profile flex items-center gap-2"}>
                                     <RiStarLine size={"18"} className={"text-soft-400 text-sm dark:text-gray-300"}/>
-                                    <span className={"text-soft-400 text-sm dark:text-gray-300"}>Rating:</span>
+                                    <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Rating")}:</span>
                                     <p className={"text-black text-sm dark:text-gray-200"}><Rating value={"90"} /></p>
                                 </div>
                             </div>
