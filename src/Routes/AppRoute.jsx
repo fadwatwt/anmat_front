@@ -14,6 +14,7 @@ import CreateTask from "../pages/Tasks/CreateTask.jsx";
 import EmployeeProfilePage from "../pages/Profile/EmployeeProfile.page.jsx";
 import TimeLinePage from "../pages/TimeLine.page.jsx";
 import Notifications from "../pages/Notifications/Notifications.jsx";
+import MangerProfilePage from "../pages/Profile/MangerProfile.page.jsx";
 
 function AppRoute() {
     return (
@@ -33,6 +34,7 @@ function AppRoute() {
             <Route path={"/hr-management"} element={<HRManagementPage/>}></Route>
                 <Route path={"/notifications"} element={<Notifications />} />
             <Route path={"/employee-profile/:slug"} element={<EmployeeProfilePage />}></Route>
+            <Route path={"/manager-profile/:slug"} element={<MangerProfilePage />}></Route>
         </Routes>
     );
 }
