@@ -14,6 +14,9 @@ import {
 import {useTranslation} from "react-i18next";
 import PropTypes from "prop-types";
 import Page from "./Page.jsx";
+import {RiUser3Line} from "@remixicon/react";
+import Table from "../components/Tables/Table.jsx";
+import departmentBrand1 from "../assets/images/Department Brands/departmentBrand1.png"
 const DonutChart = ({ data, total }) => {
     let cumulativePercent = 0;
 
@@ -22,6 +25,7 @@ const DonutChart = ({ data, total }) => {
         const y = Math.sin(2 * Math.PI * percent);
         return [x, y];
     };
+
 
     const paths = data.map((segment) => {
         const percent = segment.value / total;
@@ -61,8 +65,59 @@ const DonutChart = ({ data, total }) => {
 
 DonutChart.propTypes = {
     data: PropTypes.array,
-    total:PropTypes.string || PropTypes.number
+    total: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 }
+const HalfDonutChart = ({ data, total }) => {
+    let cumulativePercent = 0;
+
+    const createCoordinatesForPercent = (percent) => {
+        const angle = Math.PI * (1 - percent); // تعديل الزاوية لتبدأ من اليسار وتتحرك باتجاه عقارب الساعة
+        const x = Math.cos(angle);
+        const y = -Math.sin(angle); // استخدام سالب sin لجعل القوس علويًا
+        return [x, y];
+    };
+
+    const paths = data.map((segment) => {
+        const percent = segment.value / total;
+        const [startX, startY] = createCoordinatesForPercent(cumulativePercent);
+        cumulativePercent += percent;
+        const [endX, endY] = createCoordinatesForPercent(cumulativePercent);
+        const largeArcFlag = percent > 0.5 ? 1 : 0;
+
+        return (
+            <path
+                key={segment.color}
+                d={`M ${startX} ${startY} A 1 1 0 ${largeArcFlag} 1 ${endX} ${endY}`}
+                stroke={segment.color}
+                strokeWidth="0.2"
+                fill="none"
+            />
+        );
+    });
+
+    // Background semicircle
+    const [startXbg, startYbg] = createCoordinatesForPercent(0);
+    const [endXbg, endYbg] = createCoordinatesForPercent(1);
+    const backgroundPath = `M ${startXbg} ${startYbg} A 1 1 0 0 1 ${endXbg} ${endYbg}`;
+    const theme = localStorage.getItem("theme")
+
+    return (
+        <svg viewBox="-1.1 -1.1 2.2 2.2">
+            <path
+                d={backgroundPath}
+                stroke={ theme === "dark" ? "#31353F" :"#E5E7EB"}
+                strokeWidth="0.2"
+                fill="none"
+            />
+            {paths}
+        </svg>
+    );
+};
+
+HalfDonutChart.propTypes = {
+    data: PropTypes.array,
+    total: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};
 const ProgressBar = ({title, ratio, progressText, remainingTime}) => {
     return (
         <div className={"flex gap-5 items-center w-full"}>
@@ -156,18 +211,43 @@ function AnalyticsPage() {
         { x: 5, y: 3.5 },
         { x: 6, y: 4 },
     ];
-    const data02 = [
-        { x: 30, y: 20 },
-        { x: 50, y: 180 },
-        { x: 75, y: 240 },
-        { x: 100, y: 100 },
-        { x: 120, y: 190 },
-    ];
 
+
+    const headersDeparmentsRanking = [
+        {label: t("Department"), width: "400px"},
+        {label: t("Rank"), width: ""},
+        {label: t("Rating"), width: ""},
+        {label: t("Head Points"), width: ""},
+        {label: t("Performance"), width: ""},
+        {label: t("Attendance"), width: ""},
+    ];
+    const departments = [1,2,3,4]
+
+    const departmentRowTable = () => {
+        return departments.map((department) => [
+            <>
+                <div className={"flex justify-start items-center gap-2"}>
+                    <div className={"flex justify-center items-center rounded-full w-9 h-9 border border-gray-400 dark:border-gray-700"}>
+                        <img src={departmentBrand1} className={"w-6 h-6 rounded-full"}/>
+                    </div>
+                    <div className={"flex flex-col items-start gap-1"}>
+                        <p className={"text-sm dark:text-gray-200"}>Design</p>
+                        <p className={"text-sm text-gray-500"}>Manager: Ahmed Ali</p>
+                    </div>
+                </div>
+            </>,
+            "1",
+            "3.5",
+            "4",
+            "95%",
+            "100%"
+        ]);
+    };
+    const rows = departmentRowTable()
 
     return (
         <Page isTitle={true} title={"All Analytics Overview"}>
-            <div className={"flex flex-col justify-center items-center gap-3"}>
+            <div className={"flex flex-col justify-center items-center gap-5"}>
                 <p className={"w-full text-start text-sm dark:text-gray-200"}>{t("Tasks Analytics")}</p>
                 <div className={"flex justify-center items-center gap-3"}>
                     <div className="bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 flex-1">
@@ -284,7 +364,7 @@ function AnalyticsPage() {
                                         radius={[15, 15, 0, 0]}
                                         barSize={15} // Reduce bar size
                                     />
-                                    <Legend content={<CustomLegend />}/>
+                                    <Legend content={<CustomLegend/>}/>
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>
@@ -364,7 +444,7 @@ function AnalyticsPage() {
                     </div>
                 </div>
             </div>
-            <div className={"flex flex-col justify-center items-center gap-3"}>
+            <div className={"flex flex-col justify-center items-center gap-5"}>
                 <p className={"w-full text-start text-sm dark:text-gray-200"}>{t("Projects Analytics")}</p>
                 <div className={"flex justify-center items-center gap-3 w-full"}>
                     <div className="bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 flex-1">
@@ -424,7 +504,7 @@ function AnalyticsPage() {
                                     />
                                     <Legend
                                         iconType="circle"
-                                        content={<CustomLegend />}
+                                        content={<CustomLegend/>}
                                     />
                                 </BarChart>
                             </ResponsiveContainer>
@@ -433,7 +513,7 @@ function AnalyticsPage() {
                     <div className={"bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 flex-1"}>
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
-                                {t("Projects Timeline")}
+                                {t("Project Timeline")}
                             </h2>
                             <div className="flex gap-2">
                                 <DefaultSelect classNameContainer={"w-32"}
@@ -491,15 +571,15 @@ function AnalyticsPage() {
                             </div>
                         </div>
                         <div className={"flex flex-col justify-center gap-6 w-full"}>
-                           <LastProjectItem index={1} title={"Alpha Project"} department={"Publishing Dep"} />
-                           <LastProjectItem index={2} title={"Alpha Project"} department={"Publishing Dep"} />
-                           <LastProjectItem index={3} title={"Alpha Project"} department={"Publishing Dep"} />
-                           <LastProjectItem index={4} title={"Alpha Project"} department={"Publishing Dep"} />
+                            <LastProjectItem index={1} title={"Alpha Project"} department={"Publishing Dep"}/>
+                            <LastProjectItem index={2} title={"Alpha Project"} department={"Publishing Dep"}/>
+                            <LastProjectItem index={3} title={"Alpha Project"} department={"Publishing Dep"}/>
+                            <LastProjectItem index={4} title={"Alpha Project"} department={"Publishing Dep"}/>
                         </div>
                     </div>
                 </div>
             </div>
-            <div className={"flex flex-col justify-center items-center gap-3 w-full"}>
+            <div className={"flex flex-col justify-center items-center gap-5 w-full"}>
                 <p className={"w-full text-start text-sm dark:text-gray-200"}>{t("Employee Attendance")}</p>
                 <div className={"flex justify-center items-center gap-3 w-full"}>
                     <div className="bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 flex-1">
@@ -563,25 +643,283 @@ function AnalyticsPage() {
                                 <ScatterChart
                                     margin={{
                                         top: 80,
-                                            right: 0,
+                                        right: 0,
                                         bottom: 0,
                                         left: 0,
                                     }}
                                 >
-                                    <YAxis ticks={[0,2, 3, 4, 5,6]} type="number" dataKey="y" name="weight" />
+                                    <YAxis ticks={[0, 2, 3, 4, 5, 6]} type="number" dataKey="y" name="weight"/>
                                     <ZAxis type="number" range={[50]}/>
                                     <Tooltip cursor={{strokeDasharray: '3 3'}}/>
-                                    <Legend  content={<CustomLegend />}/>
-                                    <Scatter symbolSize={5} name="Employee has improved from 2 points to 4 points this month" data={data01} fill="#FCAA0B" line shape="circle"/>
+                                    <Legend content={<CustomLegend/>}/>
+                                    <Scatter symbolSize={5}
+                                             name="Employee has improved from 2 points to 4 points this month"
+                                             data={data01} fill="#FCAA0B" line shape="circle"/>
                                 </ScatterChart>
                             </ResponsiveContainer>
                         </div>
 
                     </div>
                 </div>
+                <div className={"flex justify-center items-center gap-3 w-full"}>
+                    <div className={"bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 flex-1"}>
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
+                                {t("Employee Accomplishment")}
+                            </h2>
+                            <div className="flex gap-2">
+                                <DefaultSelect classNameContainer={"w-32"}
+                                               options={[{id: "", value: "Last 6 months"}]}/>
+                            </div>
+                        </div>
+                        <div className={"h-64"}>
+                            <LineChart width={500} height={300} data={data}>
+                                <YAxis ticks={[1, 5, 10, 15]} axisLine={false}
+                                       tickLine={false} tick={theme === "dark" ? {fill: "#d1d2d3", fontSize: 12} : {
+                                    fill: "#6B7280",
+                                    fontSize: 12
+                                }}/>
+                                <Line type="monotone" dataKey="Expected Time" stroke="#C2D6FF" allowReorder={"no"}
+                                      dot={false}/>
+                                <Line type="monotone" strokeDasharray="5 5" dataKey="Actual Time" dot={false}
+                                      stroke="#38C793"/>
+                            </LineChart>
+                        </div>
+                    </div>
+                    <div className="bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 flex-1">
+                        <div className="flex justify-between items-center mb-6 ">
+                            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
+                                {t("Employee Adherence")}
+                            </h2>
+                            <div className="flex gap-2">
+                                <DefaultSelect classNameContainer={"w-28"} options={[{id: "", value: "Last Month"}]}/>
+                            </div>
+                        </div>
+
+                        <div className="flex justify-center mb-6 w-full">
+                            <div className="relative w-48 h-48 ">
+                                <DonutChart
+                                    data={[
+                                        {value: tasksRatingData.highRating, color: "#375DFB"},
+                                        {value: tasksRatingData.lowRating, color: "#38C793"},
+                                    ]}
+                                    total={tasksRatingData.total}
+                                />
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <div className="text-center">
+                                        <div className="text-sm text-gray-500 dark:text-gray-200">{t("TASKS")}</div>
+                                        <div className="text-3xl font-bold dark:text-white">
+                                            {tasksRatingData.total}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex justify-center gap-3 text-center items-center">
+                            <div>
+                                <div className="text-indigo-600 font-semibold">
+                                    {tasksRatingData.highRating}
+                                </div>
+                                <div className="text-sm text-gray-500 dark:text-gray-200">{t("High Rating")}</div>
+                            </div>
+                            <div>
+                                <div className="text-green-600 text-sm ">
+                                    {tasksRatingData.lowRating}
+                                </div>
+                                <div
+                                    className="text-sm text-nowrap text-gray-500 dark:text-gray-200">{t("Low Rating")}</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                <div className={"flex justify-center items-center gap-3 w-full"}>
+                    <div className="bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 flex-1">
+                        <div className="flex justify-between items-center mb-6 ">
+                            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
+                                {t("Department Performance")}
+                            </h2>
+                            <div className="flex gap-2">
+                                <DefaultSelect classNameContainer={"w-28"} options={[{id: "", value: "Last Month"}]}/>
+                            </div>
+                        </div>
+
+                        <div className="flex justify-center w-full">
+                            <div className="relative w-48 h-32 ">
+                                    <HalfDonutChart
+                                        data={[
+                                            {value: 20, color: '#F17B2C'}
+                                        ]}
+                                        total={100}
+                                    />
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <div className="text-center">
+                                        <div className="text-sm text-gray-500 dark:text-gray-200">{t("TASKS")}</div>
+                                        <div className="text-3xl font-bold dark:text-white">
+                                            {tasksRatingData.total}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col justify-center gap-3 text-center items-center ">
+                            <div className={"flex justify-center items-center gap-2 w-1/2"}>
+                                <div className="text-indigo-600 w-2.5 h-2.5 rounded-full bg-[#F17B2C]"></div>
+                                <div
+                                    className="text-xs text-gray-500 dark:text-gray-200">{t("Employee has completed their task in 67 hours")}</div>
+                            </div>
+                            <div className={"flex justify-start items-center gap-2 w-1/2"}>
+                                <div className="text-indigo-600 w-2.5 h-2.5 rounded-full bg-[#31353F]"></div>
+                                <div
+                                    className="text-xs text-gray-500 dark:text-gray-200">{t("Expected Time was 55 Hours")}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className={"bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 flex-1 h-full"}>
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
+                                {t("Top 3 Employees")}
+                            </h2>
+                            <div className="flex gap-2">
+                                <DefaultSelect classNameContainer={"w-32"}
+                                               options={[{id: "", value: "Performance"}]}/>
+                            </div>
+                        </div>
+                        <div className={"flex flex-col justify-center gap-6 w-full"}>
+                            <div className={"flex items-center gap-3"}>
+                                <div
+                                    className={"rounded-full w-10 h-10 border text-xl dark:text-gray-200 flex justify-center items-center"}>
+                                    <RiUser3Line className="dark:text-gray-200" size={"18"}/></div>
+                                <div className={"flex flex-col gap-1 items-start"}>
+                                    <p className={"text-sm dark:text-gray-200"}>Ali Ali</p>
+                                    <p className={"text-xs text-gray-600 dark:text-gray-400"}>Publishing Dep</p>
+                                </div>
+                            </div>
+                            <div className={"flex items-center gap-3"}>
+                                <div
+                                    className={"rounded-full w-10 h-10 border text-xl dark:text-gray-200 flex justify-center items-center"}>
+                                    <RiUser3Line className="dark:text-gray-200" size={"18"}/></div>
+                                <div className={"flex flex-col gap-1 items-start"}>
+                                    <p className={"text-sm dark:text-gray-200"}>Rawan Ahmed</p>
+                                    <p className={"text-xs text-gray-600 dark:text-gray-400"}>Publishing Dep</p>
+                                </div>
+                            </div>
+                            <div className={"flex items-center gap-3"}>
+                                <div
+                                    className={"rounded-full w-10 h-10 border text-xl dark:text-gray-200 flex justify-center items-center"}>
+                                    <RiUser3Line className="dark:text-gray-200" size={"18"}/></div>
+                                <div className={"flex flex-col gap-1 items-start"}>
+                                    <p className={"text-sm dark:text-gray-200"}>Yara Ahmed</p>
+                                    <p className={"text-xs text-gray-600 dark:text-gray-400"}>Publishing Dep</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className={"flex flex-col justify-center items-center gap-5 w-full"}>
+                <p className={"w-full text-start text-sm dark:text-gray-200"}>{t("Department Analytics")}</p>
+                <div className={"flex justify-center items-center gap-3 w-full"}>
+                    <div className="bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 flex-1">
+                        <div className="flex justify-between items-center mb-6 ">
+                            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
+                                {t("Department Adherence")}
+                            </h2>
+                            <div className="flex gap-2">
+                                <DefaultSelect classNameContainer={"w-28"} options={[{id: "", value: "Last Month"}]}/>
+                            </div>
+                        </div>
+
+                        <div className="flex justify-center mb-6 w-full">
+                            <div className="relative w-48 h-48 ">
+                                <DonutChart
+                                    data={[
+                                        {value: tasksRatingData.highRating, color: "#375DFB"},
+                                        {value: tasksRatingData.lowRating, color: "#F2AE40"},
+                                    ]}
+                                    total={tasksRatingData.total}
+                                />
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <div className="text-center">
+                                        <div className="text-sm text-gray-500 dark:text-gray-200">{t("TASKS")}</div>
+                                        <div className="text-3xl font-bold dark:text-white">
+                                            {tasksRatingData.total}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex justify-center gap-3 text-center items-center">
+                            <div>
+                                <div className="text-indigo-600 font-semibold">
+                                    {tasksRatingData.highRating}
+                                </div>
+                                <div className="text-sm text-gray-500 dark:text-gray-200">{t("High Rating")}</div>
+                            </div>
+                            <div>
+                                <div className="text-green-600 text-sm ">
+                                    {tasksRatingData.lowRating}
+                                </div>
+                                <div
+                                    className="text-sm text-nowrap text-gray-500 dark:text-gray-200">{t("Low Rating")}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 flex-1">
+                        <div className="flex justify-between items-center mb-6 ">
+                            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
+                                {t("Department Performance")}
+                            </h2>
+                            <div className="flex gap-2">
+                                <DefaultSelect classNameContainer={"w-28"} options={[{id: "", value: "Last Month"}]}/>
+                            </div>
+                        </div>
+
+                        <div className="flex justify-center mb-6 w-full">
+                            <div className="relative w-48 h-48 ">
+                                <DonutChart
+                                    data={[
+                                        {value: tasksRatingData.highRating, color: "#38C793"},
+                                        {value: tasksRatingData.lowRating, color: "#DF1C41"},
+                                    ]}
+                                    total={tasksRatingData.total}
+                                />
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <div className="text-center">
+                                    <div className="text-sm text-gray-500 dark:text-gray-200">{t("TASKS")}</div>
+                                        <div className="text-3xl font-bold dark:text-white">
+                                            {tasksRatingData.total}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex justify-center gap-3 text-center items-center">
+                            <div>
+                                <div className="text-indigo-600 font-semibold">
+                                    {tasksRatingData.highRating}
+                                </div>
+                                <div className="text-sm text-gray-500 dark:text-gray-200">{t("High Rating")}</div>
+                            </div>
+                            <div>
+                                <div className="text-green-600 text-sm ">
+                                    {tasksRatingData.lowRating}
+                                </div>
+                                <div
+                                    className="text-sm text-nowrap text-gray-500 dark:text-gray-200">{t("Low Rating")}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <Table isTitle={true} title={"Deparments Ranking"}
+                       headers={headersDeparmentsRanking} rows={rows}
+                       isActions={false}   />
+            </div>
         </Page>
-);
+    );
 }
 
 export default AnalyticsPage;
