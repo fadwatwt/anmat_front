@@ -138,15 +138,16 @@ const ProgressBar = ({title, ratio, progressText, remainingTime}) => {
 
 const CustomLegend = (props) => {
     const { payload } = props;
+    const {t} = useTranslation()
     return (
         <ul style={{ listStyle: 'none',display:"flex",justifyContent:"center",alignItems:"center",gap:"16px", padding: 0, margin: 0, fontSize: "10px" }}>
             {payload.map((entry, index) => (
-                <li key={`item-${index}`} style={{ display: "flex", alignItems: "center", marginTop: "30px" }}>
+                <li key={`item-${index}`} style={{ display: "flex", gap:"5px", alignItems: "center", marginTop: "30px" }}>
                     {/* تصغير الدائرة */}
-                    <svg width="8" height="8" style={{ marginRight: "5px" }}>
+                    <svg width="8" height="8" >
                         <circle cx="4" cy="4" r="4" fill={entry.color} />
                     </svg>
-                    <span className={"text-xs"} style={{color:entry.color}}>{entry.value}</span>
+                    <span className={"text-xs"} style={{color:entry.color}}>{t(entry.value)}</span>
                 </li>
             ))}
         </ul>
@@ -249,8 +250,8 @@ function AnalyticsPage() {
         <Page isTitle={true} title={"All Analytics Overview"}>
             <div className={"flex flex-col justify-center items-center gap-5"}>
                 <p className={"w-full text-start text-sm dark:text-gray-200"}>{t("Tasks Analytics")}</p>
-                <div className={"flex justify-center items-center gap-3"}>
-                    <div className="bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 flex-1">
+                <div className={"flex justify-center items-center flex-col md:flex-row gap-3"}>
+                    <div className="bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 md:flex-1 w-full">
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
                                 {t("Tasks Summary")}
@@ -310,7 +311,7 @@ function AnalyticsPage() {
                             </div>
                         </div>
                     </div>
-                    <div className="bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 flex-1">
+                    <div className="bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 md:flex-1 w-full">
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
                                 {t("Departments analytics")}
@@ -370,8 +371,8 @@ function AnalyticsPage() {
                         </div>
                     </div>
                 </div>
-                <div className={"flex justify-center items-center gap-3 w-full"}>
-                    <div className={"bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 flex-1"}>
+                <div className={"flex justify-center items-center gap-3 flex-col md:flex-row w-full"}>
+                    <div className={"bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 md:flex-1 w-full"}>
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
                                 {t("Tasks Timeline")}
@@ -381,7 +382,7 @@ function AnalyticsPage() {
                                                options={[{id: "", value: "Last 6 months"}]}/>
                             </div>
                         </div>
-                        <div className={"h-64"}>
+                        <div className={""}>
                             <LineChart width={500} height={300} data={data}>
                                 <YAxis ticks={[1, 5, 10, 15]} axisLine={false}
                                        tickLine={false} tick={theme === "dark" ? {fill: "#d1d2d3", fontSize: 12} : {
@@ -392,11 +393,15 @@ function AnalyticsPage() {
                                       dot={false}/>
                                 <Line type="monotone" strokeDasharray="5 5" dataKey="Actual Time" dot={false}
                                       stroke="#38C793"/>
+
+                                <Legend
+                                    content={<CustomLegend/>}
+                                />
                             </LineChart>
                         </div>
 
                     </div>
-                    <div className="bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 flex-1">
+                    <div className="bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 md:flex-1 w-full h-full">
                         <div className="flex justify-between items-center mb-6 ">
                             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
                                 {t("Tasks Rating")}
@@ -407,7 +412,7 @@ function AnalyticsPage() {
                         </div>
 
                         <div className="flex justify-center mb-6 w-full">
-                            <div className="relative w-48 h-48 ">
+                            <div className="relative w-48 h-52 ">
                                 <DonutChart
                                     data={[
                                         {value: tasksRatingData.highRating, color: "#375DFB"},
@@ -446,8 +451,8 @@ function AnalyticsPage() {
             </div>
             <div className={"flex flex-col justify-center items-center gap-5"}>
                 <p className={"w-full text-start text-sm dark:text-gray-200"}>{t("Projects Analytics")}</p>
-                <div className={"flex justify-center items-center gap-3 w-full"}>
-                    <div className="bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 flex-1">
+                <div className={"flex justify-center items-center gap-3 flex-col md:flex-row w-full"}>
+                    <div className="bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 md:flex-1 w-full h-full">
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
                                 {t("Projects Performance")}
@@ -460,7 +465,7 @@ function AnalyticsPage() {
                             </div>
                         </div>
 
-                        <div className="h-64">
+                        <div className="h-72">
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart data={monthlyData} barGap={4}>
                                     {" "}
@@ -510,7 +515,7 @@ function AnalyticsPage() {
                             </ResponsiveContainer>
                         </div>
                     </div>
-                    <div className={"bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 flex-1"}>
+                    <div className={"bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 md:flex-1 w-full"}>
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
                                 {t("Project Timeline")}
@@ -520,7 +525,7 @@ function AnalyticsPage() {
                                                options={[{id: "", value: "Last 6 months"}]}/>
                             </div>
                         </div>
-                        <div className={"h-64"}>
+                        <div className={""}>
                             <LineChart width={500} height={300} data={data}>
                                 <YAxis ticks={[1, 5, 10, 15]} axisLine={false}
                                        tickLine={false} tick={theme === "dark" ? {fill: "#d1d2d3", fontSize: 12} : {
@@ -531,12 +536,13 @@ function AnalyticsPage() {
                                       dot={false}/>
                                 <Line type="monotone" strokeDasharray="5 5" dataKey="Actual Time" dot={false}
                                       stroke="#38C793"/>
+                                <Legend content={<CustomLegend/>}/>
                             </LineChart>
                         </div>
                     </div>
                 </div>
-                <div className={"flex justify-center items-center gap-3 w-full"}>
-                    <div className={"bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 flex-1"}>
+                <div className={"flex justify-center items-center gap-3 flex-col md:flex-row w-full"}>
+                    <div className={"bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 md:flex-1 w-full"}>
                         <div className="flex justify-between items-center mb-10">
                             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
                                 {t("Projects Performance")}
@@ -560,7 +566,7 @@ function AnalyticsPage() {
 
                         </div>
                     </div>
-                    <div className={"bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 w-[35%] h-full"}>
+                    <div className={"bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 md:w-[35%] w-full h-full"}>
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
                                 {t("Last 4 Projects")}
@@ -580,9 +586,9 @@ function AnalyticsPage() {
                 </div>
             </div>
             <div className={"flex flex-col justify-center items-center gap-5 w-full"}>
-                <p className={"w-full text-start text-sm dark:text-gray-200"}>{t("Employee Attendance")}</p>
-                <div className={"flex justify-center items-center gap-3 w-full"}>
-                    <div className="bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 flex-1">
+                <p className={"w-full text-start text-sm dark:text-gray-200"}>{t("Employees Analytics")}</p>
+                <div className={"flex justify-center items-center gap-3 flex-col md:flex-row w-full"}>
+                    <div className="bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 md:flex-1 w-full">
                         <div className="flex justify-between items-center mb-6 ">
                             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
                                 {t("Employee Attendance")}
@@ -628,7 +634,7 @@ function AnalyticsPage() {
                             </div>
                         </div>
                     </div>
-                    <div className={"bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 flex-1"}>
+                    <div className={"bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 md:flex-1 w-full"}>
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
                                 {t("Employee Performance")}
@@ -661,8 +667,8 @@ function AnalyticsPage() {
 
                     </div>
                 </div>
-                <div className={"flex justify-center items-center gap-3 w-full"}>
-                    <div className={"bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 flex-1"}>
+                <div className={"flex justify-center items-center gap-3 flex-col md:flex-row w-full"}>
+                    <div className={"bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 md:flex-1 w-full"}>
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
                                 {t("Employee Accomplishment")}
@@ -672,7 +678,7 @@ function AnalyticsPage() {
                                                options={[{id: "", value: "Last 6 months"}]}/>
                             </div>
                         </div>
-                        <div className={"h-64"}>
+                        <div className={""}>
                             <LineChart width={500} height={300} data={data}>
                                 <YAxis ticks={[1, 5, 10, 15]} axisLine={false}
                                        tickLine={false} tick={theme === "dark" ? {fill: "#d1d2d3", fontSize: 12} : {
@@ -683,10 +689,14 @@ function AnalyticsPage() {
                                       dot={false}/>
                                 <Line type="monotone" strokeDasharray="5 5" dataKey="Actual Time" dot={false}
                                       stroke="#38C793"/>
+
+                                <Legend
+                                    content={<CustomLegend/>}
+                                />
                             </LineChart>
                         </div>
                     </div>
-                    <div className="bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 flex-1">
+                    <div className="bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 md:flex-1 w-full h-full">
                         <div className="flex justify-between items-center mb-6 ">
                             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
                                 {t("Employee Adherence")}
@@ -697,7 +707,7 @@ function AnalyticsPage() {
                         </div>
 
                         <div className="flex justify-center mb-6 w-full">
-                            <div className="relative w-48 h-48 ">
+                            <div className="relative w-48 h-52 ">
                                 <DonutChart
                                     data={[
                                         {value: tasksRatingData.highRating, color: "#375DFB"},
@@ -733,8 +743,8 @@ function AnalyticsPage() {
                         </div>
                     </div>
                 </div>
-                <div className={"flex justify-center items-center gap-3 w-full"}>
-                    <div className="bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 flex-1">
+                <div className={"flex justify-center items-center gap-3 flex-col md:flex-row w-full"}>
+                    <div className="bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 md:flex-1 w-full">
                         <div className="flex justify-between items-center mb-6 ">
                             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
                                 {t("Department Performance")}
@@ -764,7 +774,7 @@ function AnalyticsPage() {
                         </div>
 
                         <div className="flex flex-col justify-center gap-3 text-center items-center ">
-                            <div className={"flex justify-center items-center gap-2 w-1/2"}>
+                            <div className={"flex justify-start items-center gap-2 w-1/2"}>
                                 <div className="text-indigo-600 w-2.5 h-2.5 rounded-full bg-[#F17B2C]"></div>
                                 <div
                                     className="text-xs text-gray-500 dark:text-gray-200">{t("Employee has completed their task in 67 hours")}</div>
@@ -776,7 +786,7 @@ function AnalyticsPage() {
                             </div>
                         </div>
                     </div>
-                    <div className={"bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 flex-1 h-full"}>
+                    <div className={"bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 md:flex-1 w-full h-full"}>
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
                                 {t("Top 3 Employees")}
@@ -820,8 +830,8 @@ function AnalyticsPage() {
             </div>
             <div className={"flex flex-col justify-center items-center gap-5 w-full"}>
                 <p className={"w-full text-start text-sm dark:text-gray-200"}>{t("Department Analytics")}</p>
-                <div className={"flex justify-center items-center gap-3 w-full"}>
-                    <div className="bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 flex-1">
+                <div className={"flex justify-center items-center gap-3 flex-col md:flex-row w-full"}>
+                    <div className="bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 md:flex-1 w-full">
                         <div className="flex justify-between items-center mb-6 ">
                             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
                                 {t("Department Adherence")}
@@ -867,7 +877,7 @@ function AnalyticsPage() {
                             </div>
                         </div>
                     </div>
-                    <div className="bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 flex-1">
+                    <div className="bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 md:flex-1 w-full">
                         <div className="flex justify-between items-center mb-6 ">
                             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
                                 {t("Department Performance")}
@@ -914,9 +924,11 @@ function AnalyticsPage() {
                         </div>
                     </div>
                 </div>
-                <Table isTitle={true} title={"Deparments Ranking"}
-                       headers={headersDeparmentsRanking} rows={rows}
-                       isActions={false}   />
+                <div className={"w-full"}>
+                    <Table isTitle={true} title={"Departments Ranking"}
+                           headers={headersDeparmentsRanking} rows={rows}
+                           isActions={false}   />
+                </div>
             </div>
         </Page>
     );
