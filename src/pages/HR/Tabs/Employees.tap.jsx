@@ -1,20 +1,22 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
 import Table from "../../../components/Tables/Table.jsx";
 import EditAnEmployeeModal from "../modals/EditAnEmployeeModal.jsx";
 import AccountDetails from "../../Projects/Components/TableInfo/AccountDetails.jsx";
 import Rating from "../Rating.jsx";
-import { convertToSlug } from "../../../functions/AnotherFunctions.js";
 import Alert from "../../../components/Alert.jsx";
-import { useDispatch, useSelector } from "react-redux";
 import {
   fetchEmployees,
   deleteEmployee,
 } from "../../../redux/employees/employeeAPI";
+
 function EmployeesTap() {
   const dispatch = useDispatch();
   const { employees, loading, error } = useSelector((state) => state.employees);
   const { t } = useTranslation();
+
+  // State for modals and alerts
   const [isEditEmployeeModal, setIsEditEmployeeModal] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [selectedDeleteEmployee, setSelectedDeleteEmployee] = useState(null);
@@ -22,6 +24,11 @@ function EmployeesTap() {
   const [isOpenSuccessDeleteAlert, setIsOpenSuccessDeleteAlert] =
     useState(false);
 
+  // State for search and filtered employees
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredEmployees, setFilteredEmployees] = useState([]);
+
+  // Table headers
   const headers = [
     { label: t("Employees"), width: "200px" },
     { label: t("Department"), width: "150px" },
@@ -31,100 +38,127 @@ function EmployeesTap() {
     { label: "", width: "50px" },
   ];
 
+  // Fetch employees on component mount
   useEffect(() => {
     dispatch(fetchEmployees());
   }, [dispatch]);
 
-  const EmployeeRowTable = () => {
-    return employees?.map((employee, index) => [
+  // Update filtered employees when employees or search term changes
+  useEffect(() => {
+    if (searchTerm) {
+      const filtered = employees.filter((employee) =>
+        employee.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredEmployees(filtered);
+    } else {
+      setFilteredEmployees(employees);
+    }
+  }, [employees, searchTerm]);
+
+  // Generate table rows from filtered employees
+  const EmployeeRowTable = (employeesToShow) => {
+    return employeesToShow?.map((employee, index) => [
       <AccountDetails
         key={`account-details-${index}`}
         path={`/employee-profile/${employee._id}-${encodeURIComponent(
-          convertToSlug(employee.name)
+          employee.name
         )}`}
         account={{
           name: employee.name,
           rule: employee.role?.name || "N/A",
-          //   imageProfile: employee.profilePicture
-          //     ? `${BASE_URL}${employee.profilePicture}`
-          //     : defaultProfileImage,
         }}
       />,
-      <p key={`department-${index}`} className={"text-sm dark:text-sub-300"}>
+      <p key={`department-${index}`} className="text-sm dark:text-sub-300">
         {employee.department?.name || "N/A"}
       </p>,
-      <p key={`jobType-${index}`} className={"text-sm dark:text-sub-300"}>
-        {employee.workingDays?.length >= 3 ? "Full-time" : "Part-time"}
+      <p key={`work-type-${index}`} className="text-sm dark:text-sub-300">
+        {employee.jobType || employee.workType || "N/A"}
       </p>,
-      <p key={`salary-${index}`} className={"text-sm dark:text-sub-300"}>
-        {employee.financial?.salary ? `$${employee.financial.salary}` : "$0"}
+      <p key={`salary-${index}`} className="text-sm dark:text-sub-300">
+        ${employee.financial?.salary?.toLocaleString() || 0}
       </p>,
-      <Rating
-        key={`rating-${index}`}
-        value={employee.averageLateness * 10 || 0}
-      />,
+      <Rating key={`rating-${index}`} value={employee.score / 20} />,
     ]);
   };
-  const handelEditEmployeeModal = (employee) => {
+
+  // Handle opening the edit modal
+  const handleEditEmployeeModal = (employee) => {
     setSelectedEmployee(employee);
     setIsEditEmployeeModal(true);
   };
-  const handelDeleteEmployee = (employee) => {
+
+  // Handle opening the delete alert
+  const handleDeleteEmployee = (employee) => {
+    console.log("Employee selected for deletion:", employee); // Debugging
     setSelectedDeleteEmployee(employee);
     setIsOpenDeleteAlert(true);
   };
-  const handleDeleteConfirmation = (isConfirmed) => {
-    if (isConfirmed) {
-      handelDeleteSuccessEmployee();
-      console.log("تمت الموافقة على الحذف");
-    } else {
-      console.log("تم رفض الحذف");
+
+  // Handle delete confirmation
+  const handleDeleteConfirmation = async (isConfirmed) => {
+    setIsOpenDeleteAlert(false);
+    if (isConfirmed && selectedDeleteEmployee) {
+      try {
+        await dispatch(deleteEmployee(selectedDeleteEmployee._id));
+        setIsOpenSuccessDeleteAlert(true);
+        dispatch(fetchEmployees()); // Refresh the employee list
+      } catch (error) {
+        console.error("Delete employee failed:", error);
+      }
     }
   };
 
-  const handelDeleteSuccessEmployee = () => {
-    setIsOpenSuccessDeleteAlert(true);
+  // Handle search input change
+  const handleSearch = (term) => {
+    setSearchTerm(term);
   };
 
-  const rows = EmployeeRowTable();
-  console.log({ rows });
+  if (error) return <div className="text-red-500 p-4">Error: {error}</div>;
 
   return (
     <>
-      <div className={"flex flex-col gap-6"}>
+      <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-2 h-full">
           <Table
-            className=""
-            title={"All Employees"}
+            title="All Employees"
             headers={headers}
-            handelDelete={(index) => handelDeleteEmployee(employees[index])}
-            handelEdit={(index) => handelEditEmployeeModal(employees[index])}
+            handelDelete={(index) =>
+              handleDeleteEmployee(filteredEmployees[index])
+            }
+            handelEdit={(index) =>
+              handleEditEmployeeModal(filteredEmployees[index])
+            }
             isActions={true}
-            rows={rows}
+            rows={EmployeeRowTable(filteredEmployees)}
             isFilter={true}
+            onSearch={handleSearch} // Pass search handler to Table
           />
         </div>
       </div>
 
+      {/* Edit Employee Modal */}
       <EditAnEmployeeModal
         isOpen={isEditEmployeeModal}
         employee={selectedEmployee}
         onClose={() => setIsEditEmployeeModal(false)}
       />
+
+      {/* Delete Confirmation Alert */}
       <Alert
-        type={"warning"}
-        title={"Delete Employee?"}
-        message={"Are you sure you want to delete this employee."}
+        type="warning"
+        title="Delete Employee?"
+        message="Are you sure you want to delete this employee?"
         onSubmit={handleDeleteConfirmation}
-        titleCancelBtn={"Cancel"}
-        titleSubmitBtn={"Delete"}
+        titleCancelBtn="Cancel"
+        titleSubmitBtn="Delete"
         isOpen={isOpenDeleteAlert}
-        onClose={() => setIsOpenDeleteAlert(!isOpenDeleteAlert)}
+        onClose={() => setIsOpenDeleteAlert(false)}
       />
 
+      {/* Success Delete Alert */}
       <Alert
-        type={"success"}
-        title={"Employee Deleted"}
+        type="success"
+        title="Employee Deleted"
         isBtns={false}
         message={`The employee ${selectedDeleteEmployee?.name} and all associated data have been successfully deleted.`}
         isOpen={isOpenSuccessDeleteAlert}
