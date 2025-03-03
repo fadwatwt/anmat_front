@@ -54,10 +54,10 @@ function TaskDetails() {
 
         <>
             <Page title={"Task Details"} isBreadcrumbs={true} breadcrumbs={breadcrumbItems}>
-                <div className={"w-full flex items-start  gap-8 flex-col md:flex-row"}>
+                <div className={"w-full flex items-start  gap-8 flex-col md:flex-row h-full"}>
                     <div className={"flex flex-col gap-6 md:w-[60%] w-full "}>
                         <InfoCard type={"task"} handelEditAction={handelEditModal}/>
-                        <div className={"p-4 bg-white dark:bg-white-0 rounded-2xl w-full flex flex-col gap-3"}>
+                        <div className={"p-4 bg-white dark:bg-white-0 rounded-2xl w-full flex flex-col gap-3 h-96"}>
                             <div className={"title-header pb-3 w-full flex items-center justify-between "}>
                                 <p className={"text-lg dark:text-gray-200"}>{t("Task Stages")} </p>
                                 <SelectWithoutLabel title={"Filter by"} options={filterOptions} onChange={handelChangeFilterTask} className={"w-[120px] h-[36px]"}/>
@@ -77,7 +77,7 @@ function TaskDetails() {
                     <div className={"flex-1 flex flex-col gap-6"}>
                         <ProjectMembers members={members}/>
                         <AttachmentsList attachments={attachments}/>
-                        <ActivityLogs activityLogs={activityLogs}/>
+                        <ActivityLogs activityLogs={activityLogs} className={"h-72"}/>
                         <TimeLine/>
                     </div>
 
