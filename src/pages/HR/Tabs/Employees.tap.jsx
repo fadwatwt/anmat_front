@@ -66,6 +66,9 @@ function EmployeesTap() {
         account={{
           name: employee.name,
           rule: employee.role?.name || "N/A",
+          imageProfile:
+            employee?.profilePicture ||
+            "https://ui-avatars.com/api/?name=John+Doe",
         }}
       />,
       <p key={`department-${index}`} className="text-sm dark:text-sub-300">

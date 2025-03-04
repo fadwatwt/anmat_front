@@ -16,14 +16,36 @@ import { fetchDepartments } from "../../../redux/departments/departmentAPI.js";
 function EditAnEmployeeModal({ isOpen, onClose, employee }) {
   const dispatch = useDispatch();
   const { loading } = useSelector((state) => state.employees);
-
+  const [apiError, setApiError] = useState("");
   const [roles, setRoles] = useState([]);
   const [departments, setDepartments] = useState([]);
 
   useEffect(() => {
     if (isOpen) {
-      dispatch(fetchRoles()).then((res) => setRoles(res.payload.data));
-      dispatch(fetchDepartments()).then((res) => setDepartments(res.payload));
+      setApiError("");
+      dispatch(fetchRoles())
+        .then((res) => {
+          setRoles(
+            res.payload.data.map((role) => ({
+              value: role._id,
+              label: role.name,
+            }))
+          );
+        })
+        .catch(() => setApiError("Failed to fetch roles. Please try again."));
+
+      dispatch(fetchDepartments())
+        .then((res) => {
+          setDepartments(
+            res.payload.map((dept) => ({
+              value: dept._id,
+              label: dept.name,
+            }))
+          );
+        })
+        .catch(() =>
+          setApiError("Failed to fetch departments. Please try again.")
+        );
     }
   }, [isOpen, dispatch]);
 
@@ -31,170 +53,127 @@ function EditAnEmployeeModal({ isOpen, onClose, employee }) {
     initialValues: {
       name: employee?.name || "",
       email: employee?.email || "",
-      password: "",
-      phone: employee?.phone || "",
-      role: employee?.role?._id || "",
-      department: employee?.department?._id || "",
-      age: employee?.age || "",
       workingHours: employee?.workingHours || "",
+      workingDays: employee?.workingDays || "",
       holidays: employee?.holidays || "",
+      department: employee?.department?._id || "",
+      financial: employee?.financial?.salary || "",
     },
     validationSchema: Yup.object({
-      name: Yup.string().required("Required"),
-      email: Yup.string().email("Invalid email").required("Required"),
-      password: Yup.string().min(6, "Minimum 6 characters"),
-      phone: Yup.string().required("Required"),
-      role: Yup.string().required("Required"),
-      department: Yup.string().required("Required"),
-      age: Yup.number().min(18, "Must be at least 18").required("Required"),
-      workingHours: Yup.number().required("Required"),
-      holidays: Yup.number().required("Required"),
+      name: Yup.string().required("Name is required"),
+      email: Yup.string()
+        .email("Invalid email address")
+        .required("Email is required"),
+      workingHours: Yup.number().required("Working hours are required"),
+      workingDays: Yup.number().required("Working days are required"),
+      holidays: Yup.number().required("Holidays are required"),
+      department: Yup.string().required("Department is required"),
+      financial: Yup.string().required("Financial information is required"),
     }),
-    onSubmit: (values, { resetForm }) => {
-      dispatch(updateEmployee({ id: employee._id, data: values }))
-        .then(() => {
-          dispatch(fetchEmployees());
-          resetForm();
-          onClose();
-        })
-        .catch((error) => {
-          console.error("Update failed:", error);
-        });
+    onSubmit: async (values, { setSubmitting }) => {
+      try {
+        setApiError("");
+        await dispatch(
+          updateEmployee({ id: employee._id, employeeData: values })
+        ).unwrap();
+        dispatch(fetchEmployees());
+        onClose();
+      } catch (error) {
+        setApiError(
+          error.message || "Failed to update employee. Please try again."
+        );
+      } finally {
+        setSubmitting(false);
+      }
     },
     enableReinitialize: true,
   });
+
+  useEffect(() => {
+    if (isOpen) {
+      setApiError("");
+
+      dispatch(fetchDepartments())
+        .then((res) => {
+          setDepartments(
+            res.payload.map((dept) => ({
+              _id: dept._id, // Ensure the correct property names
+              name: dept.name,
+            }))
+          );
+        })
+        .catch(() =>
+          setApiError("Failed to fetch departments. Please try again.")
+        );
+    }
+  }, [isOpen, dispatch]);
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
       isBtns={true}
-      btnApplyTitle={"Edit Employee"}
+      btnApplyTitle={formik.isSubmitting ? "Saving..." : "Edit Employee"}
       onClick={formik.handleSubmit}
       className={"lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12"}
       title={"Editing an Employee"}
+      disableSubmit={formik.isSubmitting || !formik.isValid}
     >
       <div className="px-1">
+        {apiError && (
+          <div className="mb-4 text-red-500 text-sm">{apiError}</div>
+        )}
+
         <div className="flex flex-col gap-4">
           <InputAndLabel
             title="Name"
             name="name"
-            value={formik.values.name}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            placeholder="Enter Name"
-            error={
-              formik.touched.name && formik.errors.name
-                ? formik.errors.name
-                : ""
-            }
+            {...formik.getFieldProps("name")}
+            error={formik.errors.name}
           />
           <InputAndLabel
             title="Email"
             name="email"
-            value={formik.values.email}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            placeholder="Enter Email"
-            error={
-              formik.touched.email && formik.errors.email
-                ? formik.errors.email
-                : ""
-            }
-          />
-          <InputAndLabel
-            title="Phone"
-            name="phone"
-            value={formik.values.phone}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            placeholder="Enter Phone Number"
-            error={
-              formik.touched.phone && formik.errors.phone
-                ? formik.errors.phone
-                : ""
-            }
+            {...formik.getFieldProps("email")}
+            error={formik.errors.email}
           />
 
-          <InputAndLabel
-            title="Password"
-            type="password"
-            name="password"
-            value={formik.values.password}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            placeholder="Enter New Password (optional)"
-            error={
-              formik.touched.password && formik.errors.password
-                ? formik.errors.password
-                : ""
-            }
-          />
-          <SelectWithoutLabel
-            title="Role"
-            name="role"
-            value={formik.values.role}
-            onChange={(val) => formik.setFieldValue("role", val)}
-            onBlur={formik.handleBlur}
-            options={roles}
-            error={
-              formik.touched.role && formik.errors.role
-                ? formik.errors.role
-                : ""
-            }
-          />
-          <SelectWithoutLabel
-            title="Department"
-            name="department"
-            value={formik.values.department}
-            onChange={(val) => formik.setFieldValue("department", val)}
-            onBlur={formik.handleBlur}
-            options={departments}
-            error={
-              formik.touched.department && formik.errors.department
-                ? formik.errors.department
-                : ""
-            }
-          />
-          <InputAndLabel
-            title="Age"
-            name="age"
-            type="number"
-            value={formik.values.age}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            placeholder="Enter Age"
-            error={
-              formik.touched.age && formik.errors.age ? formik.errors.age : ""
-            }
-          />
           <InputAndLabel
             title="Working Hours"
             name="workingHours"
             type="number"
-            value={formik.values.workingHours}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            placeholder="Enter Working Hours"
-            error={
-              formik.touched.workingHours && formik.errors.workingHours
-                ? formik.errors.workingHours
-                : ""
-            }
+            {...formik.getFieldProps("workingHours")}
+            error={formik.errors.workingHours}
+          />
+          <InputAndLabel
+            title="Working Days"
+            name="workingDays"
+            type="number"
+            {...formik.getFieldProps("workingDays")}
+            error={formik.errors.workingDays}
           />
           <InputAndLabel
             title="Holidays"
             name="holidays"
             type="number"
-            value={formik.values.holidays}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            placeholder="Enter Number of Holidays"
-            error={
-              formik.touched.holidays && formik.errors.holidays
-                ? formik.errors.holidays
-                : ""
-            }
+            {...formik.getFieldProps("holidays")}
+            error={formik.errors.holidays}
+          />
+
+          <SelectWithoutLabel
+            title="Department"
+            name="department"
+            value={formik.values.department}
+            onChange={(val) => formik.setFieldValue("department", val)} // Sending _id
+            options={departments} // Ensure the correct structure
+            error={formik.errors.department}
+          />
+
+          <InputAndLabel
+            title="Financial"
+            name="financial"
+            {...formik.getFieldProps("financial")}
+            error={formik.errors.financial}
           />
         </div>
       </div>
@@ -203,8 +182,8 @@ function EditAnEmployeeModal({ isOpen, onClose, employee }) {
 }
 
 EditAnEmployeeModal.propTypes = {
-  isOpen: PropTypes.bool,
-  onClose: PropTypes.func,
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
   employee: PropTypes.object.isRequired,
 };
 
