@@ -28,13 +28,14 @@ export const createEmployee = createAsyncThunk(
   }
 );
 
-// Update employee
 export const updateEmployee = createAsyncThunk(
   "employees/update",
   async ({ id, employeeData }, { rejectWithValue }) => {
     try {
+      console.log({ id, employeeData }); // here the id is correct but no data
+
       const response = await axios.patch(
-        `${RootRoute}/employees/${id}`,
+        `${RootRoute}/employees/${id}`, // Removed leading space
         employeeData
       );
       return response.data.data;
@@ -43,7 +44,6 @@ export const updateEmployee = createAsyncThunk(
     }
   }
 );
-
 // Delete employee
 export const deleteEmployee = createAsyncThunk(
   "employees/delete",
