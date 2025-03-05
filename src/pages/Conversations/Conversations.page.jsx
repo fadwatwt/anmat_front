@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import { ChevronDown, Paperclip, Smile, Mic, Send } from "lucide-react";
 import { Check } from "lucide-react";
-import Page from "./Page.jsx";
+import Page from "../Page.jsx";
 import {RiArrowLeftSLine, RiArrowRightSLine} from "@remixicon/react";
 import {RiArrowLeftLine} from "react-icons/ri";
+import SchedulingMeeting from "./modal/SchedulingMeeting.jsx";
 
 const Conversation = () => {
   const [activeTab, setActiveTab] = useState("Meetings");
   const [activeRightTab, setActiveRightTab] = useState("Attachments");
   const [showRightSidebar, setShowRightSidebar] = useState(false);
   const [showLeftSidebar, setShowLeftSidebar] = useState(false);
+  const [isOpenSchedulingMeeting,setIsOpenSchedulingMeeting] = useState(false);
 
 
   const chatGroups = [
@@ -166,6 +168,10 @@ const Conversation = () => {
     );
   };
 
+  const handelSchedulingMeeting = () => {
+    setIsOpenSchedulingMeeting(!isOpenSchedulingMeeting)
+  }
+
   return (
     <Page isTitle={false} className="flex w-full h-screen">
       <div className={"w-full rounded-2xl overflow-hidden flex "}>
@@ -219,7 +225,7 @@ const Conversation = () => {
 
           {/* Schedule Button */}
           <div className="p-4">
-            <button className="flex items-center text-blue-600 gap-2 dark:text-primary-200">
+            <button onClick={handelSchedulingMeeting} className="flex items-center text-blue-600 gap-2 dark:text-primary-200">
               <span className="text-lg">+</span>
               <span>Schedule a Meeting</span>
             </button>
@@ -618,6 +624,7 @@ const Conversation = () => {
           </div>
         </div>
       </div>
+      <SchedulingMeeting isOpen={isOpenSchedulingMeeting} onClose={handelSchedulingMeeting} />
     </Page>
   );
 };

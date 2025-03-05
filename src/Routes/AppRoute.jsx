@@ -1,6 +1,6 @@
 import {Route, Routes} from "react-router";
 import DashboardPage from "../pages/Dashboard.page.jsx";
-import ConversationsPage from "../pages/Conversations.page.jsx";
+import ConversationsPage from "../pages/Conversations/Conversations.page.jsx";
 import AnalyticsPage from "../pages/Analytics.page.jsx";
 import HRManagementPage from "../pages/HR/HRManagement.page.jsx";
 import ProjectsPage from "../pages/Projects/Projects.page.jsx";
