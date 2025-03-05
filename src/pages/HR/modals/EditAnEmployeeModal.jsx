@@ -57,7 +57,6 @@ function EditAnEmployeeModal({ isOpen, onClose, employee }) {
       workingDays: employee?.workingDays || "",
       holidays: employee?.holidays || "",
       department: employee?.department?._id || "",
-      financial: employee?.financial?.salary || "",
     },
     validationSchema: Yup.object({
       name: Yup.string().required("Name is required"),
@@ -68,7 +67,6 @@ function EditAnEmployeeModal({ isOpen, onClose, employee }) {
       workingDays: Yup.number().required("Working days are required"),
       holidays: Yup.number().required("Holidays are required"),
       department: Yup.string().required("Department is required"),
-      financial: Yup.string().required("Financial information is required"),
     }),
     onSubmit: async (values, { setSubmitting }) => {
       try {
@@ -169,12 +167,6 @@ function EditAnEmployeeModal({ isOpen, onClose, employee }) {
             error={formik.errors.department}
           />
 
-          <InputAndLabel
-            title="Financial"
-            name="financial"
-            {...formik.getFieldProps("financial")}
-            error={formik.errors.financial}
-          />
         </div>
       </div>
     </Modal>
