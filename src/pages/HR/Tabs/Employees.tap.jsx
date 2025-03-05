@@ -27,7 +27,8 @@ function EmployeesTap() {
   // State for search and filtered employees
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredEmployees, setFilteredEmployees] = useState([]);
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
   // Table headers
   const headers = [
     { label: t("Employees"), width: "200px" },
@@ -54,6 +55,14 @@ function EmployeesTap() {
       setFilteredEmployees(employees);
     }
   }, [employees, searchTerm]);
+
+  // Calculate current page's employees
+  const indexOfLastEmployee = currentPage * itemsPerPage;
+  const indexOfFirstEmployee = indexOfLastEmployee - itemsPerPage;
+  const currentEmployees = filteredEmployees.slice(
+    indexOfFirstEmployee,
+    indexOfLastEmployee
+  );
 
   // Generate table rows from filtered employees
   const EmployeeRowTable = (employeesToShow) => {
