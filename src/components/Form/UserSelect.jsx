@@ -22,6 +22,7 @@ const UserSelect = ({
     const dropdownRef = useRef(null);
 
     const toggleUser = (user) => {
+        console.log(user)
         let updatedSelection;
         if (isMultiSelect) {
             const alreadySelected = selectedUsers.find((u) => u.id === user.id);
@@ -38,9 +39,11 @@ const UserSelect = ({
         }
     };
 
-    useEffect(() => {
-        setSelectedUsers(defaultSelectedUsers); // تحديث القيم الافتراضية عند تغيير الخاصية
-    }, [defaultSelectedUsers]);
+    // useEffect(() => {
+    //     if (JSON.stringify(selectedUsers) !== JSON.stringify(defaultSelectedUsers)) {
+    //         setSelectedUsers(defaultSelectedUsers);
+    //     }
+    // }, [defaultSelectedUsers]);
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -85,7 +88,7 @@ const UserSelect = ({
                                 >
                                     <div className="flex items-center dark:text-gray-300 text-nowrap text-xs overflow-hidden w-16">
                                         <img
-                                            src={user.image}
+                                            src={user.imageProfile}
                                             alt={user.name}
                                             className="w-5 h-5 rounded-full mx-1"
                                         />
@@ -139,7 +142,7 @@ const UserSelect = ({
                                     />
                                 )}
                                 <img
-                                    src={user.image}
+                                    src={user.imageProfile}
                                     alt={user.name}
                                     className="w-5 h-5 rounded-full"
                                 />
