@@ -33,13 +33,11 @@ function AddingAnEmployeeModal({ isOpen, onClose }) {
       name: "",
       email: "",
       password: "",
-      phone: "",
       role: "",
       department: "",
-      age: "",
       workingHours: "",
-      workingDays: "",
       holidays: "",
+      salary: "",
     },
     validationSchema: Yup.object({
       name: Yup.string().required("Required"),
@@ -47,12 +45,11 @@ function AddingAnEmployeeModal({ isOpen, onClose }) {
       password: Yup.string()
         .min(6, "Minimum 6 characters")
         .required("Required"),
-      phone: Yup.string().required("Required"),
       role: Yup.string().required("Required"),
       department: Yup.string().required("Required"),
-      age: Yup.number().min(18, "Must be at least 18").required("Required"),
       workingHours: Yup.number().required("Required"),
       holidays: Yup.number().required("Required"),
+      salary: Yup.number().required("Required"),
     }),
     onSubmit: (values, { resetForm }) => {
       console.log({ values });
@@ -101,19 +98,7 @@ function AddingAnEmployeeModal({ isOpen, onClose }) {
                 : ""
             }
           />
-          <InputAndLabel
-            title="Phone"
-            name="phone"
-            value={formik.values.phone}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            placeholder="Enter Phone Number"
-            error={
-              formik.touched.phone && formik.errors.phone
-                ? formik.errors.phone
-                : ""
-            }
-          />
+
           <InputAndLabel
             title="Password"
             type="password"
@@ -155,18 +140,7 @@ function AddingAnEmployeeModal({ isOpen, onClose }) {
                 : ""
             }
           />
-          <InputAndLabel
-            title="Age"
-            name="age"
-            type="number"
-            value={formik.values.age}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            placeholder="Enter Age"
-            error={
-              formik.touched.age && formik.errors.age ? formik.errors.age : ""
-            }
-          />
+
           <InputAndLabel
             title="Working Hours"
             name="workingHours"
@@ -192,6 +166,20 @@ function AddingAnEmployeeModal({ isOpen, onClose }) {
             error={
               formik.touched.holidays && formik.errors.holidays
                 ? formik.errors.holidays
+                : ""
+            }
+          />
+          <InputAndLabel
+            title="salary"
+            name="salary"
+            type="number"
+            value={formik.values.salary}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            placeholder="Enter Number of salary"
+            error={
+              formik.touched.salary && formik.errors.salary
+                ? formik.errors.salary
                 : ""
             }
           />
