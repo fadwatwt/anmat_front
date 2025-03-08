@@ -1,39 +1,11 @@
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
+import { format, parseISO } from "date-fns";
 import Table from "../../../components/Tables/Table.jsx";
-import { employees } from "../../../functions/FactoryData.jsx";
-import {  BsClockFill, BsSlashCircleFill } from "react-icons/bs";
+import { fetchAllAttendance } from "../../../redux/attendance/attendanceAPI";
+import { BsClockFill, BsSlashCircleFill } from "react-icons/bs";
 import { GoCheckCircleFill } from "react-icons/go";
-import PropTypes from "prop-types";
-
-// Mock attendance data
-const attendanceData = [
-  {
-    employee: employees[0],
-    date: "2024-03-01",
-    workingHours: "9:00 AM - 5:00 PM",
-    checkIn: "8:55 AM",
-    checkOut: "5:05 PM",
-    status: "On Time"
-  },
-  {
-    employee: employees[1],
-    date: "2024-03-01",
-    workingHours: "9:00 AM - 5:00 PM",
-    checkIn: "9:15 AM",
-    checkOut: "5:00 PM",
-    status: "Late"
-  },
-  {
-    employee: employees[2],
-    date: "2024-03-01",
-    workingHours: "9:00 AM - 5:00 PM",
-    checkIn: null,
-    checkOut: null,
-    status: "Absent"
-  },
-  // Add more mock data as needed
-];
-
 export const StatusBadge = ({ status }) => {
   let Icon;
 
@@ -63,91 +35,96 @@ export const StatusBadge = ({ status }) => {
 };
 function AttendanceTab() {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const { attendance, loading, error } = useSelector(
+    (state) => state.attendance
+  );
+
+  useEffect(() => {
+    dispatch(fetchAllAttendance());
+  }, [dispatch]);
 
   const headers = [
-    { label: "Employee", width: "200px" },
-    { label: "Date", width: "120px" },
-    { label: "Official Working Hours", width: "180px" },
-    { label: "Check In", width: "120px" },
-    { label: "Check Out", width: "120px" },
-    { label: "Late", width: "140px" },
-    { label: "Status", width: "140px" },
+    { label: t("Employee"), width: "200px" },
+    { label: t("Date"), width: "120px" },
+    { label: t("Official Working Hours"), width: "180px" },
+    { label: t("Check In"), width: "120px" },
+    { label: t("Check Out"), width: "120px" },
+    { label: t("Late"), width: "140px" },
+    { label: t("Status"), width: "140px" },
     { label: "", width: "50px" },
   ];
 
-  StatusBadge.propTypes = {
-    status: PropTypes.string,
-  };
-  const calculateLateTime = (checkIn, workingHours) => {
-    if (!checkIn) return "-"; // No check-in, return "-"
-
+  const calculateLateTime = (checkIn, officialStartTime) => {
+    if (!checkIn || !officialStartTime) return "-"; // Add checks for undefined/null
     try {
-      // Extract the official start time (e.g., "9:00 AM" from "9:00 AM - 5:00 PM")
-      const [officialStartTimeStr] = workingHours.split(" - ");
-
-      // Function to convert "9:00 AM" to Date object
-      const parseTime = (timeStr) => {
-        const [time, modifier] = timeStr.split(" ");
-        let [hours, minutes] = time.split(":").map(Number);
-
-        if (modifier === "PM" && hours !== 12) hours += 12;
-        if (modifier === "AM" && hours === 12) hours = 0;
-
-        return new Date(1970, 0, 1, hours, minutes);
-      };
-
-      const officialStartTime = parseTime(officialStartTimeStr);
-      const actualCheckInTime = parseTime(checkIn);
-
-      // Calculate the difference in minutes
+      const checkInDate = parseISO(checkIn);
+      const officialStartDate = parseISO(officialStartTime);
       const diffInMinutes = Math.round(
-        (actualCheckInTime - officialStartTime) / (1000 * 60)
+        (checkInDate - officialStartDate) / (1000 * 60)
       );
-
       return diffInMinutes > 0 ? `${diffInMinutes} min` : "-";
     } catch (error) {
       console.error("Error calculating late time:", error);
       return "-";
     }
   };
-
-  const rows = attendanceData.map((record, index) => [
-    <div key={index} className="flex items-center gap-2">
+  const getStatus = (record) => {
+    if (!record?.checkin || !record?.officialStartTime) return "Absent"; // Add checks for undefined/null
+    try {
+      const checkInTime = parseISO(record.checkin);
+      const officialStartTime = parseISO(record.officialStartTime);
+      return checkInTime > officialStartTime ? "Late" : "On Time";
+    } catch (error) {
+      console.error("Error determining status:", error);
+      return "Pending";
+    }
+  };
+  const rows = attendance?.map((record) => [
+    <div key={record._id} className="flex items-center gap-2">
       <img
-        src={record.employee.imageProfile}
-        alt={record.employee.name}
+        src={
+          record.employee?.profilePicture ||
+          "https://ui-avatars.com/api/?name=John+Doe"
+        }
+        alt={record.employee?.name}
         className="w-8 h-8 rounded-full"
       />
       <div className="flex flex-col">
         <span className="text-sm text-sub-500 dark:text-sub-300">
-          {record.employee.name}
+          {record.employee?.name || "N/A"}
         </span>
         <span className="text-gray-500 text-sm">
-          {record.employee.department}
+          {record.employee?.department?.name || "N/A"}
         </span>
       </div>
     </div>,
-    <span key={index} className="text-sm dark:text-sub-300">
-      {new Date(record.date).toLocaleDateString("en-GB", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      })}
+    <span key={`date-${record._id}`} className="text-sm dark:text-sub-300">
+      {record.date ? format(parseISO(record.date), "dd MMM yyyy") : "N/A"}
     </span>,
-    <span key={index} className="text-sm dark:text-sub-300">
-      {record.workingHours}
+    <span key={`hours-${record._id}`} className="text-sm dark:text-sub-300">
+      {record.officialStartTime && record.officialEndTime
+        ? `${format(parseISO(record.officialStartTime), "h:mm a")} - ${format(
+            parseISO(record.officialEndTime),
+            "h:mm a"
+          )}`
+        : "N/A"}
     </span>,
-    <span key={index} className="text-sm dark:text-sub-300">
-      {record.checkIn || "-"}
+    <span key={`checkin-${record._id}`} className="text-sm dark:text-sub-300">
+      {record.checkin ? format(parseISO(record.checkin), "h:mm a") : "-"}
     </span>,
-    <span key={index} className="text-sm dark:text-sub-300">
-      {record.checkOut || "-"}
+    <span key={`checkout-${record._id}`} className="text-sm dark:text-sub-300">
+      {record.checkout ? format(parseISO(record.checkout), "h:mm a") : "-"}
     </span>,
-    <span key={index} className="text-sm dark:text-sub-300">
-      {calculateLateTime(record.checkIn, record.workingHours)}
+    <span key={`late-${record._id}`} className="text-sm dark:text-sub-300">
+      {calculateLateTime(record.checkin, record.officialStartTime)}
     </span>,
-    <StatusBadge key={index} status={record.status} />,
+    <StatusBadge key={`status-${record._id}`} status={getStatus(record)} />,
   ]);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div className="text-red-500 p-4">Error: {error}</div>;
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2 h-full">

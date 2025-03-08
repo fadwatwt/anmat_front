@@ -5,6 +5,7 @@ import departmentReduce from "./departments/departmentSlice";
 import rolesReducer from "./roles/rolesSlice"; // Import roles reducer
 import { authApi } from "./auth/authAPI";
 import authReducer from "./auth/authSlice";
+import attendanceReducer from "./attendance/attendanceSlice";
 
 export const store = configureStore({
   reducer: {
@@ -14,5 +15,6 @@ export const store = configureStore({
     employees: employeeReduce,
     departments: departmentReduce,
     roles: rolesReducer,
+    attendance: attendanceReducer,
   },
 });

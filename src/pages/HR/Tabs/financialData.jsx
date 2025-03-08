@@ -1,46 +1,57 @@
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import Table from "../../../components/Tables/Table.jsx";
-import { employees } from "../../../functions/FactoryData.jsx";
+import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
-
-// Mock financial data
-const financialData = [
-  {
-    employee: employees[0],
-    department: "Publishing",
-    workType: "Full-time",
-    salary: "1500$",
-    adjustments: "1500$",
-    requests: ["Money request: 200$", "Leave", "+2"]
-  },
-  {
-    employee: employees[1],
-    department: "Design",
-    workType: "Part-time",
-    salary: "1200$",
-    adjustments: "1200$",
-    requests: ["Bonus: 500$", "Overtime"]
-  },
-  {
-    employee: employees[2],
-    department: "Marketing",
-    workType: "Contract",
-    salary: "1800$",
-    adjustments: "1800$",
-    requests: ["Advance: 300$", "Leave"]
-  },
-];
+import Table from "../../../components/Tables/Table.jsx";
+import { fetchEmployees } from "../../../redux/employees/employeeAPI";
 
 // Function to determine background color
 const getRequestBgColor = (request) => {
   if (request.startsWith("Money request")) return "#C2EFFF";
   if (request === "Leave") return "#FFDAC2";
-  if (/^\+\d+$/.test(request)) return "#F6F8FA"; // Matches "+2", "+5", etc.
-  return "#C2EFFF"; // Default color
+  if (/^\+\d+$/.test(request)) return "#F6F8FA";
+  return "#C2EFFF";
 };
 
 function FinancialsTab() {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const { employees, loading, error } = useSelector((state) => state.employees);
+
+  useEffect(() => {
+    dispatch(fetchEmployees());
+  }, [dispatch]);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div className="text-red-500 p-4">Error: {error}</div>;
+
+  const financialData = employees.map((employee) => {
+    const financial = employee.financial || {};
+    const adjustments = (financial.bonuses || 0) - (financial.deductions || 0);
+
+    const requests = [];
+    financial.salaryAdvanceRequests?.forEach((request) => {
+      requests.push(`Money request: $${request.requestAmount}`);
+    });
+    financial.leaveRequests?.forEach(() => {
+      requests.push("Leave");
+    });
+
+    return {
+      employee: {
+        imageProfile:
+          employee.profilePicture ||
+          "https://ui-avatars.com/api/?name=John+Doe",
+        name: employee.name,
+        department: employee.department?.name || "N/A",
+      },
+      department: employee.department?.name || "N/A",
+      workType: employee.workType || financial.workType || "N/A",
+      salary: `$${(financial.salary || 0).toLocaleString()}`,
+      adjustments: `$${adjustments.toLocaleString()}`,
+      requests,
+    };
+  });
 
   const headers = [
     { label: t("Employee"), width: "200px" },
@@ -54,12 +65,17 @@ function FinancialsTab() {
 
   const RequestTag = ({ request }) => (
     <span
-      className="inline-flex items-center  rounded-full px-2 py-1 mr-2 mb-1 text-sm"
+      className="inline-flex items-center rounded-full px-2 py-1 mr-2 mb-1 text-sm"
       style={{
         backgroundColor: getRequestBgColor(request),
-        color: request === "Leave" ? "#6E330C" : request .startsWith("Money request") ? "#164564" : "#000",
-        fontSize: "12px"
-    }}
+        color:
+          request === "Leave"
+            ? "#6E330C"
+            : request.startsWith("Money request")
+            ? "#164564"
+            : "#000",
+        fontSize: "12px",
+      }}
     >
       {t(request)}
     </span>
@@ -70,7 +86,7 @@ function FinancialsTab() {
   };
 
   const rows = financialData.map((record, index) => [
-    <div key={index} className="flex items-center gap-2">
+    <div key={`employee-${index}`} className="flex items-center gap-2">
       <img
         src={record.employee.imageProfile}
         alt={record.employee.name}
@@ -85,13 +101,21 @@ function FinancialsTab() {
         </span>
       </div>
     </div>,
-    <span key={index} className="text-sm dark:text-sub-300">{t(record.department)}</span>,
-    <span key={index} className="text-sm dark:text-sub-300">{t(record.workType)}</span>,
-    <span key={index} className="text-sm dark:text-sub-300">{record.salary}</span>,
-    <span key={index} className="text-sm dark:text-sub-300">{record.adjustments}</span>,
-    <div key={index} className="flex flex-wrap gap-1">
+    <span key={`department-${index}`} className="text-sm dark:text-sub-300">
+      {t(record.department)}
+    </span>,
+    <span key={`workType-${index}`} className="text-sm dark:text-sub-300">
+      {t(record.workType)}
+    </span>,
+    <span key={`salary-${index}`} className="text-sm dark:text-sub-300">
+      {record.salary}
+    </span>,
+    <span key={`adjustments-${index}`} className="text-sm dark:text-sub-300">
+      {record.adjustments}
+    </span>,
+    <div key={`requests-${index}`} className="flex flex-wrap gap-1">
       {record.requests.map((request, i) => (
-        <RequestTag key={i} request={request} />
+        <RequestTag key={`request-${i}`} request={request} />
       ))}
     </div>,
   ]);

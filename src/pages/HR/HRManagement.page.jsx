@@ -49,12 +49,20 @@ function HrManagementPage() {
 
   return (
     <>
-      <LoginPage />
-      {/* <Page
+      {/* <LoginPage /> */}
+      <Page
         title={"HR Management"}
         isBtn={true}
-        btnOnClick={activeTab === "Departments" ? handelAddDepartmentModal : handelAddEmployeeModal}
-        btnTitle={activeTab === "Departments" ? "Create a Department":"Add an Employee"}
+        btnOnClick={
+          activeTab === "Departments"
+            ? handelAddDepartmentModal
+            : handelAddEmployeeModal
+        }
+        btnTitle={
+          activeTab === "Departments"
+            ? "Create a Department"
+            : "Add an Employee"
+        }
       >
         <Tabs tabs={tabsData} setActiveTitleTab={setActiveTab} />
       </Page>
@@ -63,7 +71,10 @@ function HrManagementPage() {
         isOpen={isAddEmployeeModal}
         onClose={handelAddEmployeeModal}
       />
-      <CreateADepartmentModal isOpen={isAddDepartmentModal} onClose={handelAddDepartmentModal} /> */}
+      <CreateADepartmentModal
+        isOpen={isAddDepartmentModal}
+        onClose={handelAddDepartmentModal}
+      />
     </>
   );
 }
