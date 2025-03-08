@@ -8,6 +8,7 @@ import useDarkMode from "./Hooks/useDarkMode.js";
 import "/i18n.js"
 import i18n from "i18next";
 import {setLanguage} from "./functions/Days.js";
+import Desktop2 from "./pages/Landing/Desktop2.jsx";
 
 function App() {
     const [isSlidebarOpen, setSlidebarOpen] = useState(false);
@@ -45,15 +46,18 @@ function App() {
 
     useDarkMode();
     return (
-        <div className={`flex max-w-full w-screen max-h-screen`}>
-            <Menu isSlidebarOpen={ isSlidebarOpen } taggleSlidebarOpen={ taggleSlidebarOpen} />
-            <div className={"md:w-[calc(100vw-16rem)] w-screen  flex-col"}>
-                {!isSettingsPage ? (
-                        <Header taggleSlidebarOpen={taggleSlidebarOpen} />)
-                    : (<Header className="md:hidden block" taggleSlidebarOpen={taggleSlidebarOpen} />)
-                }
-                <AppRoute />
-            </div>
+        // <div className={`flex max-w-full w-screen max-h-screen`}>
+        //     <Menu isSlidebarOpen={ isSlidebarOpen } taggleSlidebarOpen={ taggleSlidebarOpen} />
+        //     <div className={"md:w-[calc(100vw-16rem)] w-screen  flex-col"}>
+        //         {!isSettingsPage ? (
+        //                 <Header taggleSlidebarOpen={taggleSlidebarOpen} />)
+        //             : (<Header className="md:hidden block" taggleSlidebarOpen={taggleSlidebarOpen} />)
+        //         }
+        //         <AppRoute />
+        //     </div>
+        // </div>
+        <div className={"max-h-screen overflow-y-auto overflow-hidden"}>
+            <Desktop2 />
         </div>
     )
 }
