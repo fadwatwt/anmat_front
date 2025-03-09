@@ -9,7 +9,7 @@ import ReplayAndDeleteReplay from "../../../components/Modal/Methods/ReplayAndDe
 import LikeAndUnLike from "../../../components/Modal/Methods/LikeAndUnlike.jsx";
 import PostAndDeletePost from "../../../components/Modal/Methods/PostAndDeletePost.jsx";
 import { useTranslation } from "react-i18next";
-import useDropdown from "../../../hooks/useDropdown"; // استيراد useDropdown
+import useDropdown from "../../../Hooks/useDropdown"; // استيراد useDropdown
 
 function FacebookTab() {
   const { t, i18n } = useTranslation();
