@@ -6,6 +6,7 @@ import rolesReducer from "./roles/rolesSlice"; // Import roles reducer
 import { authApi } from "./auth/authAPI";
 import authReducer from "./auth/authSlice";
 import attendanceReducer from "./attendance/attendanceSlice";
+import rotationReducer from "./rotation/rotationSlice";
 
 export const store = configureStore({
   reducer: {
@@ -16,5 +17,6 @@ export const store = configureStore({
     departments: departmentReduce,
     roles: rolesReducer,
     attendance: attendanceReducer,
+    rotation: rotationReducer,
   },
 });
