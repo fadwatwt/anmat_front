@@ -54,7 +54,6 @@ function EditAnEmployeeModal({ isOpen, onClose, employee }) {
       name: employee?.name || "",
       email: employee?.email || "",
       workingHours: employee?.workingHours || "",
-      workingDays: employee?.workingDays || "",
       holidays: employee?.holidays || "",
       department: employee?.department?._id || "",
     },
@@ -64,7 +63,6 @@ function EditAnEmployeeModal({ isOpen, onClose, employee }) {
         .email("Invalid email address")
         .required("Email is required"),
       workingHours: Yup.number().required("Working hours are required"),
-      workingDays: Yup.number().required("Working days are required"),
       holidays: Yup.number().required("Holidays are required"),
       department: Yup.string().required("Department is required"),
     }),
@@ -143,13 +141,7 @@ function EditAnEmployeeModal({ isOpen, onClose, employee }) {
             {...formik.getFieldProps("workingHours")}
             error={formik.errors.workingHours}
           />
-          <InputAndLabel
-            title="Working Days"
-            name="workingDays"
-            type="number"
-            {...formik.getFieldProps("workingDays")}
-            error={formik.errors.workingDays}
-          />
+
           <InputAndLabel
             title="Holidays"
             name="holidays"
@@ -166,7 +158,6 @@ function EditAnEmployeeModal({ isOpen, onClose, employee }) {
             options={departments} // Ensure the correct structure
             error={formik.errors.department}
           />
-
         </div>
       </div>
     </Modal>

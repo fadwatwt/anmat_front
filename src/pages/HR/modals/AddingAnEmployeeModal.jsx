@@ -12,6 +12,7 @@ import {
 } from "../../../redux/employees/employeeAPI.js";
 import { fetchRoles } from "../../../redux/roles/rolesSlice.js";
 import { fetchDepartments } from "../../../redux/departments/departmentAPI.js";
+import DefaultSelect from "../../../components/Form/DefaultSelect.jsx";
 
 function AddingAnEmployeeModal({ isOpen, onClose }) {
   const dispatch = useDispatch();
@@ -113,13 +114,16 @@ function AddingAnEmployeeModal({ isOpen, onClose }) {
                 : ""
             }
           />
-          <SelectWithoutLabel
-            title={"Role"}
+          <DefaultSelect
+            title="Role"
             name="role"
-            value={formik.values.role} // Ensure it’s controlled
-            onChange={(val) => formik.setFieldValue("role", val)} // Send _id
+            value={formik.values.role}
+            onChange={(val) => formik.setFieldValue("role", val)}
             onBlur={formik.handleBlur}
-            options={roles} // Ensure _id is used internally but name is displayed
+            options={roles.map((role) => ({
+              id: role._id, // Ensure `_id` is used as the value
+              value: role.name, // Ensure `name` is displayed
+            }))}
             error={
               formik.touched.role && formik.errors.role
                 ? formik.errors.role
@@ -127,13 +131,16 @@ function AddingAnEmployeeModal({ isOpen, onClose }) {
             }
           />
 
-          <SelectWithoutLabel
+          <DefaultSelect
             title="Department"
             name="department"
-            value={formik.values.department} // Ensure it’s controlled
-            onChange={(val) => formik.setFieldValue("department", val)} // Send _id
+            value={formik.values.department}
+            onChange={(val) => formik.setFieldValue("department", val)}
             onBlur={formik.handleBlur}
-            options={departments} // Ensure _id is used internally but name is displayed
+            options={departments.map((department) => ({
+              id: department._id, // Ensure `_id` is used as the value
+              value: department.name, // Ensure `name` is displayed
+            }))}
             error={
               formik.touched.department && formik.errors.department
                 ? formik.errors.department

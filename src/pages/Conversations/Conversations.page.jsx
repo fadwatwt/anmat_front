@@ -13,8 +13,11 @@ import { RiArrowLeftSLine, RiArrowRightSLine } from "@remixicon/react";
 import { RiArrowLeftLine } from "react-icons/ri";
 import SchedulingMeeting from "./modal/SchedulingMeeting.jsx";
 import { IoAdd } from "react-icons/io5";
+import { useTranslation } from "react-i18next";
 
 const Conversation = () => {
+  const { t } = useTranslation(); // Add this line
+
   const [activeTab, setActiveTab] = useState("Meetings");
   const [activeRightTab, setActiveRightTab] = useState("Attachments");
   const [showRightSidebar, setShowRightSidebar] = useState(false);
@@ -203,7 +206,12 @@ const Conversation = () => {
   };
 
   return (
-    <Page isTitle={false} className="flex w-full h-screen">
+    <Page
+      isTitle={false}
+      className="flex w-full h-screen"
+      dir="rtl"
+      style={{ fontFamily: "Tajawal, sans-serif" }}
+    >
       <div className={"w-full rounded-2xl overflow-hidden flex "}>
         {!showLeftSidebar && (
           <button
@@ -239,7 +247,7 @@ const Conversation = () => {
               }`}
               onClick={() => setActiveTab("Chats")}
             >
-              Chats
+              {t("Chats")}
             </button>
             <button
               className={`flex-1 py-4 text-center dark:text-gray-200 ${
@@ -249,7 +257,7 @@ const Conversation = () => {
               }`}
               onClick={() => setActiveTab("Meetings")}
             >
-              Meetings
+              {t("Meetings")}
             </button>
           </div>
 
@@ -260,7 +268,7 @@ const Conversation = () => {
               className="flex items-center text-blue-600 gap-2 dark:text-primary-200"
             >
               <span className="text-lg">+</span>
-              <span>Schedule a Meeting</span>
+              <span>{t("Schedule a Meeting")}</span>
             </button>
           </div>
           {/* add btn and center it */}
@@ -270,7 +278,7 @@ const Conversation = () => {
             <div className="relative dark:bg-gray-900">
               <input
                 type="text"
-                placeholder="Search..."
+                placeholder={t("Search...")}
                 className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md dark:bg-gray-900 dark:border-gray-700 focus-visible:dark:border-gray-700 text-sm"
               />
               <svg
@@ -345,7 +353,7 @@ const Conversation = () => {
               </div>
               <div>
                 <h3 className="flex flex-start font-medium dark:text-gray-200">
-                  Reviewing the content
+                  {t("Reviewing the content")}
                 </h3>
                 <p className="text-xs text-gray-500 dark:text-gray-300">
                   Alice, Bob, Charlie, Diana, Ethan, Fiona and Amir
@@ -526,7 +534,7 @@ const Conversation = () => {
             </button>
             <input
               type="text"
-              placeholder="Type a message..."
+              placeholder={t("Type a message...")}
               className="flex-1 px-4 py-2 border border-gray-300 box-border w-1/2  rounded-full outline-none text-gray-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:bg-gray-900 dark:border-gray-700 dark:focus:border-primary-200"
             />
             <button className="text-gray-500 hover:text-gray-700">
@@ -576,7 +584,7 @@ const Conversation = () => {
               </div>
             </div>
             <h3 className="text-center font-medium dark:text-gray-300">
-              Reviewing the content
+              {t("Reviewing the content")}
             </h3>
           </div>
 
@@ -590,7 +598,7 @@ const Conversation = () => {
               }`}
               onClick={() => setActiveRightTab("Attachments")}
             >
-              Attachments
+              {t("Attachments")}
             </button>
             <button
               className={`flex-1 py-3 text-center ${
@@ -600,7 +608,7 @@ const Conversation = () => {
               }`}
               onClick={() => setActiveRightTab("Main points")}
             >
-              Main points
+              {t("Main points")}
             </button>
           </div>
 
@@ -611,7 +619,7 @@ const Conversation = () => {
                 {/* Files Section */}
                 <div className="p-4">
                   <h4 className="flex flex-start font-[600] mb-2 dark:text-gray-200">
-                    Files (6)
+                    {t("Files")} (6)
                   </h4>
                   <div className="space-y-2">
                     {files.map((file, index) => (
@@ -628,7 +636,7 @@ const Conversation = () => {
                               {file.name}
                             </p>
                             <p className="flex flex-start text-xs text-gray-500 dark:text-gray-400">
-                              Size: {file.size}
+                              {t("Size")}: {file.size}
                             </p>
                           </div>
                         </div>
@@ -656,7 +664,7 @@ const Conversation = () => {
                 {/* Photos & Media Section */}
                 <div className="p-4">
                   <h4 className="flex flex-start font-[600] mb-2 dark:text-gray-200">
-                    Photos & Media (9)
+                    {t("Photos & Media")} (9)
                   </h4>
                   <div className="grid grid-cols-3 gap-1">
                     {photoGrid.map((photo, index) => (
@@ -679,7 +687,7 @@ const Conversation = () => {
                 {/* Header with Icons */}
                 <div className="flex items-center justify-between mb-2">
                   <h4 className="flex items-center font-[600] dark:text-gray-200">
-                    Points ({points.length})
+                    {t("Points")} ({points.length})
                   </h4>
 
                   {/* Action Icons */}

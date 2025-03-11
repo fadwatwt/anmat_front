@@ -165,6 +165,7 @@ function EmployeesTap() {
         titleSubmitBtn="Delete"
         isOpen={isOpenDeleteAlert}
         onClose={() => setIsOpenDeleteAlert(false)}
+        isBtns={1}
       />
 
       {/* Success Delete Alert */}

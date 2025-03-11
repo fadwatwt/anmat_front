@@ -21,38 +21,51 @@ function DefaultSelect({ title, options, onChange, classNameContainer,classNameS
     };
 
     return (
-        <div className={classNameContainer}>
-            {
-                title &&
-                <label htmlFor="select-input"
-                       className="text-sm text-start text-gray-700 flex items-center gap-1 mb-2 dark:text-gray-200">
-                    <span> {t(title)} </span>
-                    {isOption && (
-                        <span className="text-sm text-gray-500 flex items-center gap-1">
-                        ({t("Option")}) <FaCircleInfo className="text-gray-400" size={15}/>
-                    </span>
-                    )}
-                </label>
-            }
+      <div className={classNameContainer}>
+        {title && (
+          <label
+            htmlFor="select-input"
+            className="text-sm text-start text-gray-700 flex items-center gap-1 mb-2 dark:text-gray-200"
+          >
+            <span> {t(title)} </span>
+            {isOption && (
+              <span className="text-sm text-gray-500 flex items-center gap-1">
+                ({t("Option")}){" "}
+                <FaCircleInfo className="text-gray-400" size={15} />
+              </span>
+            )}
+          </label>
+        )}
 
-            <div className="relative">
-                <select
-                    onChange={handleChange}
-                    id="select-input"
-                    className={`appearance-none box-border dark:bg-white-0 dark:text-primary-150 w-full border border-gray-300 dark:border-gray-500  rounded-[10px] truncate  bg-white ${classNameSelect ? classNameSelect :"text-gray-500 py-[10px] p-3 text-xs"} shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
-                    value={selectedValue}
-                >
-                    {options.map((option) => (
-                        <option key={option.id} value={option.id}>
-                            {t(option.value)}
-                        </option>
-                    ))}
-                </select>
-                <div className={`absolute inset-y-0 ${i18n.language === 'ar' ? "left-1 " :"right-3"}  flex items-center pointer-events-none`}>
-                    <IoIosArrowDown />
-                </div>
-            </div>
+        <div className="relative">
+          <select
+            onChange={handleChange}
+            id="select-input"
+            className={`appearance-none box-border dark:bg-white-0 dark:text-primary-150 w-full border border-gray-300 dark:border-gray-500  rounded-[10px] truncate  bg-white ${
+              classNameSelect
+                ? classNameSelect
+                : "text-gray-500 py-[10px] p-3 text-xs"
+            } shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
+            value={selectedValue}
+          >
+            <option disabled selected>
+              Select
+            </option>
+            {options.map((option) => (
+              <option key={option.id} value={option.id}>
+                {t(option.value)}
+              </option>
+            ))}
+          </select>
+          <div
+            className={`absolute inset-y-0 ${
+              i18n.language === "ar" ? "left-1 " : "right-3"
+            }  flex items-center pointer-events-none`}
+          >
+            <IoIosArrowDown />
+          </div>
         </div>
+      </div>
     );
 }
 

@@ -43,6 +43,7 @@ function DepartmentsTab() {
       dept.manager?.name || t("Not assigned"),
       dept.employeeCount || 0,
       dept.description || t("No description"),
+      dept.score || 0,
     ]);
   };
 
@@ -97,6 +98,7 @@ function DepartmentsTab() {
         titleSubmitBtn={t("Delete")}
         isOpen={isDeleteAlertOpen}
         onClose={() => setIsDeleteAlertOpen(false)}
+        isBtns={true}
       />
 
       <Alert
