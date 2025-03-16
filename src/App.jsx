@@ -3,16 +3,19 @@ import Menu from "./components/Menu.jsx";
 import Header from "./components/Header.jsx";
 import AppRoute from "./Routes/AppRoute.jsx";
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router";
+import {Navigate, Route, Routes, useLocation} from "react-router";
 import useDarkMode from "./Hooks/useDarkMode.js";
 import "/i18n.js";
 import i18n from "i18next";
 import { setLanguage } from "./functions/Days.js";
+import {useSelector} from "react-redux";
+import LoginPage from "./pages/Login/Login.page.jsx";
 
 function App() {
   const [isSlidebarOpen, setSlidebarOpen] = useState(false);
   const location = useLocation();
   const isSettingsPage = location.pathname === "/settings";
+  const authToken = localStorage.getItem("authToken");
   const taggleSlidebarOpen = () => {
     setSlidebarOpen(!isSlidebarOpen);
     console.log("bilal");
@@ -44,24 +47,37 @@ function App() {
   setLanguage(i18n.language);
 
   useDarkMode();
+
   return (
-    <div className={`flex max-w-full w-screen max-h-screen`}>
-      <Menu
-        isSlidebarOpen={isSlidebarOpen}
-        taggleSlidebarOpen={taggleSlidebarOpen}
-      />
-      <div className={"md:w-[calc(100vw-16rem)] w-screen  flex-col"}>
-        {!isSettingsPage ? (
-          <Header taggleSlidebarOpen={taggleSlidebarOpen} />
-        ) : (
-          <Header
-            className="md:hidden block"
-            taggleSlidebarOpen={taggleSlidebarOpen}
+      <>
+        {
+          authToken ?
+        <div className={`flex max-w-full w-screen max-h-screen`}>
+          <Menu
+              isSlidebarOpen={isSlidebarOpen}
+              taggleSlidebarOpen={taggleSlidebarOpen}
           />
-        )}
-        <AppRoute />
-      </div>
-    </div>
+          <div className={"md:w-[calc(100vw-16rem)] w-screen  flex-col"}>
+            {!isSettingsPage ? (
+                <Header taggleSlidebarOpen={taggleSlidebarOpen}/>
+            ) : (
+                <Header
+                    className="md:hidden block"
+                    taggleSlidebarOpen={taggleSlidebarOpen}
+                />
+            )}
+            <AppRoute/>
+          </div>
+        </div>
+              :
+              <Routes>
+                <>
+                  <Route path={"/login"} element={ <LoginPage />} />
+                  <Route path="*" element={<Navigate to="/login" replace />} />
+                </>
+              </Routes>
+        }
+      </>
   );
 }
 

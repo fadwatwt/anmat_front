@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import { RootRoute } from "../../Root.Route";
+import {ExternalServer, RootRoute} from "../../Root.Route";
 
 // Fetch all employees
 export const fetchEmployees = createAsyncThunk(
@@ -21,6 +21,9 @@ export const createEmployee = createAsyncThunk(
   async (employeeData, { rejectWithValue }) => {
     try {
       const response = await axios.post(`${RootRoute}/employees`, employeeData);
+      await axios.post(`${ExternalServer}/users`, {...employeeData,id:response.data.data._id},{
+          headers: { Authorization: `Bearer ${'token'}`},
+      })
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
