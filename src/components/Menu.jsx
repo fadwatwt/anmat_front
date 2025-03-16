@@ -8,9 +8,11 @@ import {useTranslation} from "react-i18next";
 import BriefTimeLine from "./TimeLine/BriefTimeLine.jsx";
 import logo from "../assets/images/logo.png"
 import { Setting,Edit ,Share,Messages1,Category,Profile2User,TaskSquare,NoteText,Chart2,HambergerMenu} from 'iconsax-react';
+import {useLocation} from "react-router";
 
 function Menu({isSlidebarOpen,taggleSlidebarOpen}) {
     const {t,i18n} = useTranslation()
+    const location = useLocation()
 
     const tweet = {
         images: [
@@ -70,7 +72,12 @@ function Menu({isSlidebarOpen,taggleSlidebarOpen}) {
                         <MenuItem path={"/settings"} icon={<Setting />} title={"Settings"}/>
                     </div>
                 </div>
-                {/*<BriefTimeLine tweet={tweet} myAccount={myAccount}/>*/}
+                {
+                    location.pathname === "/" ?
+                        <BriefTimeLine tweet={tweet} myAccount={myAccount}/>
+                        :null
+                }
+
             </div>
         </div>
     );
