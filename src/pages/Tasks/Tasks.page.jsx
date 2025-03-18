@@ -1,84 +1,170 @@
-import {useTranslation} from "react-i18next";
-import {useNavigate} from "react-router";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router";
+import { fetchTasks, deleteTask } from "../../redux/tasks/tasksAPI";
 import Page from "../Page.jsx";
 import Table from "../../components/Tables/Table.jsx";
 import TimeLine from "../../components/TimeLine/TimeLine.jsx";
-import {useState} from "react";
-import {tasks, tasksRows} from "../../functions/FactoryData.jsx";
 import EditTaskModal from "./modal/EditTaskModal.jsx";
 import Alert from "../../components/Alert.jsx";
 import NameAndDescription from "../Projects/Components/TableInfo/NameAndDescription.jsx";
 import AccountDetails from "../Projects/Components/TableInfo/AccountDetails.jsx";
-import {translateDate} from "../../functions/Days.js";
+import { translateDate } from "../../functions/Days.js";
 import Priority from "../Projects/Components/TableInfo/Priority.jsx";
 import Status from "../Projects/Components/TableInfo/Status.jsx";
 import MembersListXLine from "../Projects/Components/ProjectDetails/components/MembersListXLine.jsx";
-import {convertToSlug} from "../../functions/AnotherFunctions.js";
+import { convertToSlug } from "../../functions/AnotherFunctions.js";
 
 function TasksPage() {
-    const {t} = useTranslation()
-    const navigate = useNavigate()
-    const [isOpenEditModal,setIsOpenEditModal] = useState(false)
-    const [taskEdit,setTaskEdit] = useState(null)
-    const [isOpenDeleteAlert,setIsOpenDeleteAlert] = useState(false)
-    const headers = [
-        {label: t("Tasks"), width: "200px"},
-        {label: t("Assigned to"), width: "150px"},
-        {label: t("Manager"), width: "200px"},
-        {label: t("Assigned - Due  Date"), width: "300px"},
-        {label: t("Priority"), width: "100px"},
-        {label: t("Status"), width: "100px"},
-        {label: "", width: "50px"},
-    ];
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { tasks, loading, error } = useSelector((state) => state.tasks);
+  const [isOpenEditModal, setIsOpenEditModal] = useState(false);
+  const [taskEdit, setTaskEdit] = useState(null);
+  const [isOpenDeleteAlert, setIsOpenDeleteAlert] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState(null);
 
+  // Fetch tasks on mount
+  useEffect(() => {
+    dispatch(fetchTasks());
+  }, [dispatch]);
 
-    const handelCreateProjectBtn = () => {
-        navigate("/tasks/create");
+  // Table headers
+  const headers = [
+    { label: t("Tasks"), width: "200px" },
+    { label: t("Assigned to"), width: "150px" },
+    { label: t("Manager"), width: "200px" },
+    { label: t("Assigned - Due Date"), width: "300px" },
+    { label: t("Priority"), width: "100px" },
+    { label: t("Status"), width: "100px" },
+    { label: "", width: "50px" },
+  ];
+
+  // Handle create task button
+  const handleCreateTask = () => {
+    navigate("/tasks/create");
+  };
+
+  // Handle edit modal
+  const handleEditModal = (task) => {
+    setTaskEdit(task);
+    setIsOpenEditModal(true);
+  };
+
+  // Handle delete task
+  const handleDeleteTask = async () => {
+    if (taskToDelete) {
+      try {
+        await dispatch(deleteTask(taskToDelete._id)).unwrap();
+        setIsOpenDeleteAlert(false);
+        setTaskToDelete(null);
+      } catch (err) {
+        console.error("Failed to delete task:", err);
+      }
     }
-    const handelEditModal = (index) => {
-        console.log(index)
-        setTaskEdit({tasks:tasks[index]})
-        setIsOpenEditModal(!isOpenEditModal)
-    }
-    const handelDeleteTask = (index) => {
-        console.log(index)
-        setIsOpenDeleteAlert(!isOpenDeleteAlert)
-    }
-    const taskRowTable = () => {
-        return tasksRows.map((task) => [
-            <><NameAndDescription path={`/tasks/${task.id}-${convertToSlug(task.name)}`} id={task.id} name={task.name} description={task.description}/></>,
-            <><MembersListXLine members={task.members} maxVisible={task.maxVisibleMembers}/></>,
-            <><AccountDetails account={task.account}/></>,
-            <><p
-                className="text-sm dark:text-sub-300">{translateDate(task.dateStart)} - {translateDate(task.dateEnd)}</p>,
-            </>,
-            <><Priority type={task.priority.type} title={task.priority.title}/></>,
-            <><Status type={task.status.type} title={task.status.title}/></>
-        ]);
-    };
-    const rows = taskRowTable()
-    return (
-        <>
-            <Page title={"Tasks"} isBtn={true} btnOnClick={handelCreateProjectBtn} btnTitle={"Create a Task"}>
-                <div className={"flex flex-col gap-6"}>
-                    <div className="flex flex-col gap-2 h-full">
-                        <Table className="custom-class" title={"All tasks"} handelDelete={handelDeleteTask}
-                               headers={headers} handelEdit={handelEditModal} isActions={true}
-                               rows={rows}
-                               isFilter={true}/>
-                    </div>
-                    <div className={"flex md:w-[37.5%] w-screen"}>
-                        <TimeLine/>
-                    </div>
-                </div>
-            </Page>
-            <EditTaskModal task={taskEdit} isOpen={isOpenEditModal} onClose={handelEditModal} />
-            <Alert type={"warning"} title={"Delete Task?"}
-                   message={"Are you sure you want to delete this task."}
-                   titleCancelBtn={"Cancel"}
-                   titleSubmitBtn={"Delete"} isOpen={isOpenDeleteAlert} onClose={() => setIsOpenDeleteAlert(!isOpenDeleteAlert)} />
-        </>
-    );
+  };
+
+  // Handle delete confirmation
+  const handleDeleteConfirmation = (task) => {
+    setTaskToDelete(task);
+    setIsOpenDeleteAlert(true);
+  };
+
+  // Generate table rows from tasks
+  const taskRowTable = () => {
+    return tasks.map((task) => [
+      <NameAndDescription
+        key={`task-${task._id}`}
+        path={`/tasks/${task._id}-${convertToSlug(task.title)}`}
+        name={task.title}
+        description={task.description}
+      />,
+
+      <MembersListXLine
+        key={`members-${task._id}`}
+        members={task.assignedTo || []} // Ensure members is an array
+        maxVisible={3}
+      />,
+      <AccountDetails
+        key={`manager-${task._id}`}
+        account={{
+          name: task.manager?.name || "N/A",
+          imageProfile: task.manager?.imageProfile
+            ? task.manager.imageProfile
+            : "https://ui-avatars.com/api/?name=John+Doe",
+        }}
+      />,
+      // Handle null manager
+      <p key={`dates-${task._id}`} className="text-sm dark:text-sub-300">
+        {translateDate(task.assignedDate)} - {translateDate(task.dueDate)}
+      </p>,
+      <Priority
+        key={`priority-${task._id}`}
+        type={task.priority}
+        title={task.priority}
+      />,
+      <Status
+        key={`status-${task._id}`}
+        type={task.status}
+        title={task.status}
+      />,
+    ]);
+  };
+
+  // Handle loading and error states
+  if (loading) return <>Loading</>;
+  if (error) return <>Error</>;
+
+  return (
+    <>
+      <Page
+        title={"Tasks"}
+        isBtn={true}
+        btnOnClick={handleCreateTask}
+        btnTitle={"Create a Task"}
+      >
+        <div className={"flex flex-col gap-6"}>
+          <div className="flex flex-col gap-2 h-full">
+            <Table
+              className="custom-class"
+              title={"All tasks"}
+              headers={headers}
+              rows={taskRowTable()}
+              isActions={true}
+              isFilter={true}
+              handelDelete={(index) => handleDeleteConfirmation(tasks[index])} // Fixed: Use `tasks` instead of `filteredEmployees`
+              handelEdit={(index) => handleEditModal(tasks[index])} // Fixed: Use `tasks` instead of `filteredEmployees`
+            />
+          </div>
+          <div className={"flex md:w-[37.5%] w-screen"}>
+            <TimeLine />
+          </div>
+        </div>
+      </Page>
+
+      {/* Edit Task Modal */}
+      <EditTaskModal
+        task={taskEdit}
+        isOpen={isOpenEditModal}
+        onClose={() => setIsOpenEditModal(false)}
+      />
+
+      {/* Delete Confirmation Alert */}
+      <Alert
+        type={"warning"}
+        title={"Delete Task?"}
+        message={"Are you sure you want to delete this task?"}
+        titleCancelBtn={"Cancel"}
+        titleSubmitBtn={"Delete"}
+        isOpen={isOpenDeleteAlert}
+        onClose={() => setIsOpenDeleteAlert(false)}
+        onSubmit={handleDeleteTask}
+        isBtns={1}
+      />
+    </>
+  );
 }
 
 export default TasksPage;
