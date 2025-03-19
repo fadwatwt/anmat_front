@@ -10,6 +10,8 @@ import DefaultSelect from "../../../components/Form/DefaultSelect.jsx";
 import { fetchDepartments } from "../../../redux/departments/departmentAPI";
 import { fetchEmployees } from "../../../redux/employees/employeeAPI";
 import MultiSelect from "../../../components/Form/MultiSelect.jsx";
+import ElementsSelect from "../../../components/Form/ElementsSelect.jsx";
+import UserSelect from "../../../components/Form/UserSelect.jsx";
 
 const validationSchema = Yup.object({
   title: Yup.string().required("Title is required"),
@@ -91,8 +93,9 @@ const EditTaskModal = ({ task, isOpen, onClose }) => {
       isOpen={isOpen}
       onClose={onClose}
       isBtns={true}
-      btnApplyTitle={"Update Task"}
+      btnApplyTitle={formik.isSubmitting ? "Updating..." : "Update Task"}
       onClick={formik.handleSubmit}
+      btnApplyDisabled={formik.isSubmitting}
       className={"lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12"}
       title={"Edit Task"}
     >
@@ -107,33 +110,69 @@ const EditTaskModal = ({ task, isOpen, onClose }) => {
           error={formik.touched.title && formik.errors.title}
         />
 
-        <DefaultSelect
+        <ElementsSelect
           title="Department"
-          name="department"
-          value={formik.values.department}
-          onChange={(val) => formik.setFieldValue("department", val)}
-          options={departments.map((dep) => ({ id: dep._id, value: dep.name }))}
-          error={formik.touched.department && formik.errors.department}
+          options={departments.map((dep) => ({
+            id: dep._id,
+            element: <span>{dep.name}</span>,
+          }))}
+          onChange={(selected) =>
+            formik.setFieldValue("department", selected[0]?.id || "")
+          }
+          isMultiple={false}
+          defaultValue={departments
+            .filter((dep) => dep._id === formik.values.department)
+            .map((dep) => ({
+              id: dep._id,
+              element: <span>{dep.name}</span>,
+            }))}
+          placeholder="Select Department"
         />
+        {formik.touched.department && formik.errors.department && (
+          <p className="text-red-500 text-xs mt-1">
+            {formik.errors.department}
+          </p>
+        )}
 
-        <MultiSelect
+        <UserSelect
           title="Assigned To"
-          multi
-          name="assignedTo"
-          value={formik.values.assignedTo}
-          onChange={(val) => formik.setFieldValue("assignedTo", val)}
-          options={employees.map((emp) => ({ id: emp._id, value: emp.name }))}
-          error={formik.touched.assignedTo && formik.errors.assignedTo}
+          users={employees}
+          onChange={(selectedUsers) => {
+            const assignedToIds = selectedUsers.map((user) => user._id);
+            formik.setFieldValue("assignedTo", assignedToIds);
+          }}
+          isMultiSelect={true}
+          defaultSelectedUsers={employees.filter((emp) =>
+            formik.values.assignedTo.includes(emp._id)
+          )}
         />
+        {formik.touched.assignedTo && formik.errors.assignedTo && (
+          <p className="text-red-500 text-xs mt-1">
+            {formik.errors.assignedTo}
+          </p>
+        )}
 
-        <DefaultSelect
+        <ElementsSelect
           title="Manager"
-          name="manager"
-          value={formik.values.manager}
-          onChange={(val) => formik.setFieldValue("manager", val)}
-          options={employees.map((emp) => ({ id: emp._id, value: emp.name }))}
-          error={formik.touched.manager && formik.errors.manager}
+          options={employees.map((emp) => ({
+            id: emp._id,
+            element: <span>{emp.name}</span>,
+          }))}
+          onChange={(selected) =>
+            formik.setFieldValue("manager", selected[0]?.id || "")
+          }
+          isMultiple={false}
+          defaultValue={employees
+            .filter((emp) => emp._id === formik.values.manager)
+            .map((emp) => ({
+              id: emp._id,
+              element: <span>{emp.name}</span>,
+            }))}
+          placeholder="Select Manager"
         />
+        {formik.touched.manager && formik.errors.manager && (
+          <p className="text-red-500 text-xs mt-1">{formik.errors.manager}</p>
+        )}
 
         {/* Standard Date Picker */}
         <InputAndLabel
@@ -146,33 +185,57 @@ const EditTaskModal = ({ task, isOpen, onClose }) => {
           error={formik.touched.dueDate && formik.errors.dueDate}
         />
 
-        <DefaultSelect
+        <ElementsSelect
           title="Status"
-          name="status"
-          value={formik.values.status}
-          onChange={(val) => formik.setFieldValue("status", val)}
           options={[
-            { id: "Active", value: "Active" },
-            { id: "Inactive", value: "Inactive" },
-            { id: "Delayed", value: "Delayed" },
-            { id: "Scheduled", value: "Scheduled" },
+            { id: "Active", element: <span>Active</span> },
+            { id: "Inactive", element: <span>Inactive</span> },
+            { id: "Delayed", element: <span>Delayed</span> },
+            { id: "Scheduled", element: <span>Scheduled</span> },
           ]}
-          error={formik.touched.status && formik.errors.status}
+          onChange={(selected) =>
+            formik.setFieldValue("status", selected[0]?.id || "")
+          }
+          isMultiple={false}
+          defaultValue={[
+            {
+              id: formik.values.status,
+              element: <span>{formik.values.status}</span>,
+            },
+          ]}
+          placeholder="Select Status"
         />
+        {formik.touched.status && formik.errors.status && (
+          <p className="text-red-500 text-xs mt-1">{formik.errors.status}</p>
+        )}
 
-        <DefaultSelect
+        <ElementsSelect
           title="Priority"
-          name="priority"
-          value={formik.values.priority}
-          onChange={(val) => formik.setFieldValue("priority", val)}
           options={[
-            { id: "Urgent", value: "Urgent" },
-            { id: "High", value: "High" },
-            { id: "Medium", value: "Medium" },
-            { id: "Low", value: "Low" },
+            { id: "Urgent", element: <span>Urgent</span> },
+            { id: "High", element: <span>High</span> },
+            { id: "Medium", element: <span>Medium</span> },
+            { id: "Low", element: <span>Low</span> },
           ]}
-          error={formik.touched.priority && formik.errors.priority}
+          onChange={(selected) =>
+            formik.setFieldValue("priority", selected[0]?.id || "")
+          }
+          isMultiple={false}
+          defaultValue={
+            formik.values.priority
+              ? [
+                  {
+                    id: formik.values.priority,
+                    element: <span>{formik.values.priority}</span>,
+                  },
+                ]
+              : []
+          }
+          placeholder="Select Priority"
         />
+        {formik.touched.priority && formik.errors.priority && (
+          <p className="text-red-500 text-xs mt-1">{formik.errors.priority}</p>
+        )}
 
         <InputAndLabel
           title="Description"

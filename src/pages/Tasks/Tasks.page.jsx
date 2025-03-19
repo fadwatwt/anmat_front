@@ -114,7 +114,6 @@ function TasksPage() {
   };
 
   // Handle loading and error states
-  if (loading) return <>Loading</>;
   if (error) return <>Error</>;
 
   return (
