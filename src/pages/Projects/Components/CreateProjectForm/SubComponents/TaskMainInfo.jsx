@@ -44,9 +44,10 @@ function TaskMainInfo({ task, type = "task",values,handleChange }) {
 
   // Status options
   const optionsStatus = [
-    { id: "1", element: <Status type={"Not Started"} title={"Not Started"} /> },
-    { id: "2", element: <Status type={"In Progress"} title={"In Progress"} /> },
-    { id: "3", element: <Status type={"Completed"} title={"Completed"} /> },
+    { id: "1", element: <Status type={"Scheduled"} title={"Scheduled"} /> },
+    { id: "2", element: <Status type={"Delayed"} title={"Delayed"} /> },
+    { id: "3", element: <Status type={"Inactive"} title={"Inactive"} /> },
+    { id: "4", element: <Status type={"Active"} title={"Active"} /> },
   ];
 
   console.log(values)
@@ -171,23 +172,27 @@ function TaskMainInfo({ task, type = "task",values,handleChange }) {
       </div>
 
       {/* Status and Priority */}
-      <div className={"flex items-center justify-center gap-2"}>
-        <ElementsSelect
-          title="Status"
-          options={optionsStatus}
-          defaultValue={valuesInputs.status} // Pass the selected ID directly
-          onChange={(value) => handleSelectChange("status", value)}
-          name="status"
-          classNameContainer={"flex-1"}
-        />
-        <ElementsSelect
-          title="Priority"
-          options={optionsPriority}
-          defaultValue={valuesInputs.priority} // Pass the selected ID directly
-          onChange={(value) => handleSelectChange("priority", value)}
-          name="priority"
-          classNameContainer={"flex-1"}
-        />
+      <div className={" relative flex items-center justify-center gap-2"}>
+        <div className={"relative flex-1"}>
+          <ElementsSelect
+              title="Status"
+              options={optionsStatus}
+              defaultValue={[optionsStatus[0]]} // Pass the selected ID directly
+              onChange={(value) => handleSelectChange("status", value)}
+              name="status"
+              classNameContainer={"w-full"}
+          />
+        </div>
+        <div className={"relative flex-1"}>
+          <ElementsSelect
+              title="Priority"
+              options={optionsPriority}
+              defaultValue={valuesInputs.priority} // Pass the selected ID directly
+              onChange={(value) => handleSelectChange("priority", value)}
+              name="priority"
+              classNameContainer={"flex-1"}
+          />
+        </div>
       </div>
 
       {/* Dependent Department */}
