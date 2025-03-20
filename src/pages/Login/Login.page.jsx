@@ -12,13 +12,13 @@ import WordTheMiddleAndLine from "../../components/Subcomponents/WordTheMiddleAn
 
 function LoginPage() {
   const { t, i18n } = useTranslation();
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  const [login] = useLoginMutation();
-  const { isLoading, error } = useSelector((state) => state.auth);
+  const [login, { isLoading }] = useLoginMutation();
+  const { error } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const navigateTo = (path) => {
     window.location.href = path;
   };
@@ -26,10 +26,16 @@ function LoginPage() {
     e.preventDefault();
     try {
       const response = await login({ email, password }).unwrap();
-      dispatch(loginSuccess(response));
-      navigate("/"); // Use navigate from useNavigate instead of window.location.href
+      console.log("Login Response:", response); // Debugging
+      dispatch(loginSuccess(response)); // Dispatch loginSuccess with the full response
+
+      // Store the token in local storage
+      localStorage.setItem("token", response.token); // Store the token
+
+      navigate("/"); // Redirect to the home page
     } catch (err) {
-      dispatch(loginFailure(err.data?.message || t("login_failed")));
+      console.error("Login Error:", err); // Debugging
+      dispatch(loginFailure(err.data?.message || "Login failed")); // Handle error
     }
   };
 
@@ -164,13 +170,8 @@ function LoginPage() {
 
         {/* Language Selector */}
         <div className="flex justify-start">
-          <button
-            className="text-sm text-gray-600 hover:text-gray-800 transition-colors"
-            onClick={() =>
-              i18n.changeLanguage(i18n.language === "en" ? "ar" : "en")
-            }
-          >
-            {i18n.language === "en" ? "عربي" : "English"}
+          <button type="submit" disabled={isLoading}>
+            {isLoading ? "Loading..." : "Login"}
           </button>
         </div>
       </div>

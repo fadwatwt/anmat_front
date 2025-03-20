@@ -70,7 +70,7 @@ function Menu({isSlidebarOpen,taggleSlidebarOpen}) {
                         <MenuItem path={"/settings"} icon={<Setting />} title={"Settings"}/>
                     </div>
                 </div>
-                <BriefTimeLine tweet={tweet} myAccount={myAccount}/>
+                {/*<BriefTimeLine tweet={tweet} myAccount={myAccount}/>*/}
             </div>
         </div>
     );

@@ -1,4 +1,4 @@
-// redux/auth/authSlice.js
+// src/redux/auth/authSlice.js
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
@@ -18,8 +18,9 @@ const authSlice = createSlice({
     },
     loginSuccess: (state, action) => {
       state.isLoading = false;
-      state.user = action.payload.employee;
-      state.token = action.payload.token;
+      state.user = action.payload.data.employee; // Access the employee from the data field
+      state.token = action.payload.token; // Access the token directly
+      state.error = null;
     },
     loginFailure: (state, action) => {
       state.isLoading = false;
@@ -32,5 +33,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { loginStart, loginSuccess, loginFailure, logout } = authSlice.actions;
+export const { loginStart, loginSuccess, loginFailure, logout } =
+  authSlice.actions;
 export default authSlice.reducer;
