@@ -1,4 +1,3 @@
-// ProjectsPage.jsx
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
@@ -23,13 +22,13 @@ import {
   selectPagination,
   selectAllProjects,
 } from "../../redux/projects/projectSelectors.js";
+import { defaultPhoto } from "../../Root.Route.js";
 
 function ProjectsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const projects = useSelector(selectAllProjects) || [];
-  const status = useSelector(selectProjectStatus);
   const pagination = useSelector(selectPagination);
   const [isOpenEditModal, setIsOpenEditModal] = useState(false);
   const [isOpenDeleteAlert, setIsOpenDeleteAlert] = useState(false);
@@ -38,9 +37,7 @@ function ProjectsPage() {
   useEffect(() => {
     dispatch(fetchProjects());
   }, [dispatch, pagination.currentPage, pagination.rowsPerPage]);
-  console.log("Projects:", projects);
-  console.log("Status:", status);
-  console.log("Pagination:", pagination);
+
   const handlePageChange = (newPage) => {
     dispatch(setPagination({ currentPage: newPage }));
   };
@@ -49,25 +46,27 @@ function ProjectsPage() {
     dispatch(setPagination({ rowsPerPage: newRowsPerPage, currentPage: 1 }));
   };
 
-  const handelCreateProjectBtn = () => navigate("/projects/create");
+  const handleCreateProjectBtn = () => navigate("/projects/create");
 
-  const handleEditProject = (projectId) => {
-    const project = projects.find((p) => p._id === projectId);
-    setSelectedProject(project);
+  const handleEditProject = (index) => {
+    setSelectedProject(projects[index]);
     setIsOpenEditModal(true);
   };
 
-  const handleDeleteProject = (projectId) => {
-    const project = projects.find((p) => p._id === projectId);
-    setSelectedProject(project);
+  const handleDeleteProject = (index) => {
+    setSelectedProject(projects[index]);
     setIsOpenDeleteAlert(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (selectedProject) {
-      dispatch(deleteProject(selectedProject._id));
-      setIsOpenDeleteAlert(false);
-      setSelectedProject(null);
+      try {
+        await dispatch(deleteProject(selectedProject._id)).unwrap();
+        setIsOpenDeleteAlert(false);
+        setSelectedProject(null);
+      } catch (err) {
+        console.error("Failed to delete project:", err);
+      }
     }
   };
 
@@ -81,60 +80,45 @@ function ProjectsPage() {
     { label: "", width: "50px" },
   ];
 
-  const rows =
-    projects.length > 0
-      ? projects.map((project) => ({
-          id: project._id,
-          cells: [
-            <NameAndDescription
-              key={`name-${project._id}`}
-              path={`/projects/${project._id}-${convertToSlug(project.name)}`}
-              name={project.name || t("No Name")}
-              description={project.description || t("No Description")}
-            />,
-            <AccountDetails
-              key={`account-${project._id}`}
-              account={{
-                name: project.assignedTo?.name || t("Unassigned"),
-                rule: project.assignedTo ? t("Manager") : t("N/A"),
-                imageProfile:
-                  project.assignedTo?.avatar || "/default-avatar.png",
-              }}
-            />,
-            <p
-              key={`date-${project._id}`}
-              className="text-sm dark:text-sub-300"
-            >
-              {project.endDate ? translateDate(project.endDate) : t("No Date")}
-            </p>,
-            <p
-              key={`tasks-${project._id}`}
-              className="text-sm dark:text-sub-300"
-            >
-              {Array.isArray(project.tasks) ? project.tasks.length : 0}
-            </p>,
-            <Priority
-              key={`priority-${project._id}`}
-              type={project.priority?.toLowerCase().replace(" ", "-") || "low"}
-              title={t(project.priority) || t("Low")}
-            />,
-            <Status
-              key={`status-${project._id}`}
-              type={
-                project.status?.toLowerCase().replace(" ", "-") || "pending"
-              }
-              title={t(project.status) || t("Pending")}
-            />,
-          ],
-        }))
-      : [];
+  const rows = projects.map((project) => [
+    <NameAndDescription
+      key={`name-${project._id}`}
+      path={`/projects/${project._id}-${convertToSlug(project.name)}`}
+      name={project.projectName || t("No Name")}
+      description={project.description || t("No Description")}
+    />,
+    <AccountDetails
+      key={`account-${project._id}`}
+      account={{
+        name: project.manager?.name || t("Unassigned"),
+        rule: project.manager ? t("Manager") : t("N/A"),
+        imageProfile: project.assignedTo?.avatar || defaultPhoto,
+      }}
+    />,
+    <p key={`date-${project._id}`} className="text-sm dark:text-sub-300">
+      {project.dueDate ? translateDate(project.dueDate) : t("No Date")}
+    </p>,
+    <p key={`tasks-${project._id}`} className="text-sm dark:text-sub-300">
+      {Array.isArray(project.tasks) ? project.tasks.length : 0}
+    </p>,
+    <Priority
+      key={`priority-${project._id}`}
+      type={project.priority?.toLowerCase().replace(" ", "-") || "low"}
+      title={t(project.priority) || t("Low")}
+    />,
+    <Status
+      key={`status-${project._id}`}
+      type={project.status?.toLowerCase().replace(" ", "-") || "pending"}
+      title={t(project.status) || t("Pending")}
+    />,
+  ]);
 
   return (
     <>
       <Page
         title={t("Projects")}
         isBtn={true}
-        btnOnClick={handelCreateProjectBtn}
+        btnOnClick={handleCreateProjectBtn}
         btnTitle={t("Create Project")}
       >
         <div className="flex flex-col gap-6">
@@ -143,14 +127,14 @@ function ProjectsPage() {
             headers={headers}
             rows={rows}
             isActions={true}
-            isFilter={true}
-            handelDelete={handleDeleteProject}
-            handelEdit={handleEditProject}
+            isCheckInput={false} // Set to true if you want checkboxes
             currentPage={pagination.currentPage}
             totalPages={pagination.totalPages}
             rowsPerPage={pagination.rowsPerPage}
             onPageChange={handlePageChange}
             onRowsPerPageChange={handleRowsPerPageChange}
+            handelEdit={handleEditProject} // Pass the edit handler
+            handelDelete={handleDeleteProject} // Pass the delete handler
           />
         </div>
       </Page>
@@ -173,6 +157,7 @@ function ProjectsPage() {
         titleCancelBtn={t("Cancel")}
         titleSubmitBtn={t("Delete")}
         isOpen={isOpenDeleteAlert}
+        isBtns={1}
         onClose={() => {
           setIsOpenDeleteAlert(false);
           setSelectedProject(null);

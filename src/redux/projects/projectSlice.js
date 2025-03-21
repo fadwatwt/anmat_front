@@ -29,7 +29,7 @@ export const deleteProject = createAsyncThunk(
   "projects/delete",
   async (projectId) => {
     await deleteProjectApi(projectId);
-    return projectId;
+    return projectId; // Return the ID of the deleted project
   }
 );
 
@@ -64,13 +64,14 @@ const projectSlice = createSlice({
         state.error = action.error.message;
       })
       .addCase(deleteProject.fulfilled, (state, action) => {
+        // Use the correct ID field (e.g., `_id` if that's what your project objects use)
         state.projects = state.projects.filter(
-          (project) => project.id !== action.payload
+          (project) => project._id !== action.payload
         );
       })
       .addCase(updateProject.fulfilled, (state, action) => {
         const index = state.projects.findIndex(
-          (p) => p.id === action.payload.id
+          (p) => p._id === action.payload._id // Use the correct ID field
         );
         if (index !== -1) {
           state.projects[index] = action.payload;
