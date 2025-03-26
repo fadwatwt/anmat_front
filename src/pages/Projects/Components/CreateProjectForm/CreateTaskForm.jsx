@@ -4,7 +4,7 @@ import TaskStage from "./SubComponents/TaskStage.jsx";
 import { useTranslation } from "react-i18next";
 import PropTypes from "prop-types";
 
-function CreateTaskForm(task,values,onChange) {
+function CreateTaskForm({ task, values, onChange }) {
   const [taskStageNumber, setTaskStageNumber] = useState([1]);
   const { t } = useTranslation();
 
@@ -18,15 +18,16 @@ function CreateTaskForm(task,values,onChange) {
     const reorderedStages = updatedStages.map((_, index) => index + 1);
     setTaskStageNumber(reorderedStages);
   };
+
   return (
     <div className={"flex flex-col gap-1"}>
-      <TaskMainInfo task={task} valuse={values} onChange={onChange} />
+      <TaskMainInfo task={task} values={values} handleChange={onChange} />
       <div className={"flex flex-col gap-4"}>
-        {taskStageNumber.map((taskStageNumber) => (
+        {taskStageNumber.map((stageNum) => (
           <TaskStage
-            key={taskStageNumber}
+            key={stageNum}
             handelDelete={decrementTaskStage}
-            stageNumber={taskStageNumber}
+            stageNumber={stageNum}
           />
         ))}
 
@@ -45,6 +46,8 @@ function CreateTaskForm(task,values,onChange) {
 
 CreateTaskForm.propTypes = {
   task: PropTypes.object,
+  values: PropTypes.object,
+  onChange: PropTypes.func,
 };
 
 export default CreateTaskForm;

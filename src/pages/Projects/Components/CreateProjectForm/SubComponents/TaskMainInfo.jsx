@@ -10,7 +10,9 @@ import Status from "../../TableInfo/Status.jsx";
 import { useTranslation } from "react-i18next";
 import PropTypes from "prop-types";
 
-function TaskMainInfo({ task, type = "task",values,handleChange }) {
+function TaskMainInfo({ task, type = "task", values, handleChange }) {
+  console.log({ ...task });
+
   const { t } = useTranslation();
 
   // Mock users (replace with actual API data)
@@ -50,7 +52,7 @@ function TaskMainInfo({ task, type = "task",values,handleChange }) {
     { id: "4", element: <Status type={"Active"} title={"Active"} /> },
   ];
 
-  console.log(values)
+  console.log(values);
 
   // Priority options
   const optionsPriority = [
@@ -116,8 +118,11 @@ function TaskMainInfo({ task, type = "task",values,handleChange }) {
       </p>
 
       {/* Task Name */}
+      {console.log(valuesInputs)}
       <InputAndLabel
-        value={valuesInputs.taskName}
+        value={
+          type === "task" ? valuesInputs.taskName : valuesInputs.projectName
+        }
         onChange={handleChangeFunc}
         name="taskName"
         type="text"
@@ -175,22 +180,22 @@ function TaskMainInfo({ task, type = "task",values,handleChange }) {
       <div className={" relative flex items-center justify-center gap-2"}>
         <div className={"relative flex-1"}>
           <ElementsSelect
-              title="Status"
-              options={optionsStatus}
-              defaultValue={[optionsStatus[0]]} // Pass the selected ID directly
-              onChange={(value) => handleSelectChange("status", value)}
-              name="status"
-              classNameContainer={"w-full"}
+            title="Status"
+            options={optionsStatus}
+            defaultValue={[optionsStatus[0]]} // Pass the selected ID directly
+            onChange={(value) => handleSelectChange("status", value)}
+            name="status"
+            classNameContainer={"w-full"}
           />
         </div>
         <div className={"relative flex-1"}>
           <ElementsSelect
-              title="Priority"
-              options={optionsPriority}
-              defaultValue={valuesInputs.priority} // Pass the selected ID directly
-              onChange={(value) => handleSelectChange("priority", value)}
-              name="priority"
-              classNameContainer={"flex-1"}
+            title="Priority"
+            options={optionsPriority}
+            defaultValue={valuesInputs.priority} // Pass the selected ID directly
+            onChange={(value) => handleSelectChange("priority", value)}
+            name="priority"
+            classNameContainer={"flex-1"}
           />
         </div>
       </div>

@@ -147,9 +147,11 @@ function ProjectsPage() {
             setIsOpenEditModal(false);
             setSelectedProject(null);
           }}
+          onUpdateProject={(updatedProject) =>
+            dispatch(updateProject(updatedProject))
+          }
         />
       )}
-
       <Alert
         type="warning"
         title={t("Delete Project?")}

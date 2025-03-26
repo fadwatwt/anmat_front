@@ -21,7 +21,7 @@ export const fetchProjectsApi = async (pagination) => {
 
 // Create a new project
 export const createProjectApi = async (projectData) => {
-  const response = await axios.post(RootRoute, projectData);
+  const response = await axios.post(`${RootRoute}/projects`, projectData);
   return response.data.data; // Return the created project
 };
 
@@ -33,6 +33,15 @@ export const deleteProjectApi = async (projectId) => {
 
 // Update an existing project
 export const updateProjectApi = async (project) => {
-  const response = await axios.patch(`${RootRoute}/${project._id}`, project);
+  const response = await axios.patch(
+    `${RootRoute}/projects/${project._id}`,
+    project
+  );
   return response.data.data; // Return the updated project
+};
+
+// Get a single project by ID
+export const getProjectByIdApi = async (projectId) => {
+  const response = await axios.get(`${RootRoute}/projects/${projectId}`);
+  return response.data.data; // Return the project data
 };
