@@ -47,7 +47,8 @@ function ProjectPage() {
     dispatch(setPagination({ rowsPerPage: newRowsPerPage, currentPage: 1 }));
   };
 
-  const handleCreateProjectBtn = () => router.push("/dashboard/projects/create");
+  const handleCreateProjectBtn = () =>
+    router.push("/dashboard/projects/create");
 
   const handleEditProject = (index) => {
     setSelectedProject(projects[index]);
