@@ -24,6 +24,7 @@
     "lucide-react": "^0.475.0",
     "next": "15.2.3",
     "next-i18next": "^15.4.2",
+    "next-new-dashboard": "file:",
     "prop-types": "^15.8.1",
     "react": "^19.0.0",
     "react-datepicker": "^8.2.0",

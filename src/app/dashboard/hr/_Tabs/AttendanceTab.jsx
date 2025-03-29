@@ -1,11 +1,19 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { format, parseISO } from "date-fns";
-import Table from "@/components/Tables/Table.jsx";
-import { fetchAllAttendance } from "@/redux/attendance/attendanceAPI";
+import Table from "@/components/Tables/Table";
+import {
+  fetchAllAttendance,
+  updateAttendance,
+  deleteAttendance,
+} from "@/redux/attendance/attendanceAPI";
 import { BsClockFill, BsSlashCircleFill } from "react-icons/bs";
 import { GoCheckCircleFill } from "react-icons/go";
+
+import Alert from "@/components/Alert.jsx";
+import EditAttendanceModal from "../_modals/EditAttendanceModal";
+
 export const StatusBadge = ({ status }) => {
   let Icon;
 
@@ -33,12 +41,19 @@ export const StatusBadge = ({ status }) => {
     </div>
   );
 };
+
 function AttendanceTab() {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { attendance, loading, error } = useSelector(
     (state) => state.attendance
   );
+
+  // State for modals and alerts
+  const [selectedAttendance, setSelectedAttendance] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
+  const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
 
   useEffect(() => {
     dispatch(fetchAllAttendance());
@@ -56,7 +71,7 @@ function AttendanceTab() {
   ];
 
   const calculateLateTime = (checkIn, officialStartTime) => {
-    if (!checkIn || !officialStartTime) return "-"; // Add checks for undefined/null
+    if (!checkIn || !officialStartTime) return "-";
     try {
       const checkInDate = parseISO(checkIn);
       const officialStartDate = parseISO(officialStartTime);
@@ -69,8 +84,9 @@ function AttendanceTab() {
       return "-";
     }
   };
+
   const getStatus = (record) => {
-    if (!record?.checkin || !record?.officialStartTime) return "Absent"; // Add checks for undefined/null
+    if (!record?.checkin) return "Absent";
     try {
       const checkInTime = parseISO(record.checkin);
       const officialStartTime = parseISO(record.officialStartTime);
@@ -80,6 +96,7 @@ function AttendanceTab() {
       return "Pending";
     }
   };
+
   const rows = attendance?.map((record) => [
     <div key={record._id} className="flex items-center gap-2">
       <img
@@ -122,6 +139,24 @@ function AttendanceTab() {
     <StatusBadge key={`status-${record._id}`} status={getStatus(record)} />,
   ]);
 
+  const handleEdit = (index) => {
+    setSelectedAttendance(attendance[index]);
+    setIsEditModalOpen(true);
+  };
+
+  const handleDelete = (index) => {
+    setSelectedAttendance(attendance[index]);
+    setIsDeleteAlertOpen(true);
+  };
+
+  const confirmDelete = () => {
+    dispatch(deleteAttendance(selectedAttendance._id)).then(() => {
+      setIsDeleteAlertOpen(false);
+      setIsSuccessAlertOpen(true);
+      dispatch(fetchAllAttendance());
+    });
+  };
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div className="text-red-500 p-4">Error: {error}</div>;
 
@@ -139,8 +174,40 @@ function AttendanceTab() {
           showStatusFilter={true}
           showDatePicker={true}
           isActions={true}
+          handelEdit={handleEdit}
+          handelDelete={handleDelete}
         />
       </div>
+
+      {/* Edit Modal */}
+      <EditAttendanceModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        attendance={selectedAttendance}
+      />
+
+      {/* Delete Confirmation Alert */}
+      <Alert
+        type="warning"
+        title="Delete Attendance Record?"
+        message="Are you sure you want to delete this attendance record? This action cannot be undone."
+        isOpen={isDeleteAlertOpen}
+        onClose={() => setIsDeleteAlertOpen(false)}
+        onSubmit={confirmDelete}
+        titleCancelBtn="Cancel"
+        titleSubmitBtn="Delete"
+        isBtns={true}
+      />
+
+      {/* Success Alert */}
+      <Alert
+        type="success"
+        title="Attendance Record Deleted"
+        message="The attendance record has been successfully deleted."
+        isOpen={isSuccessAlertOpen}
+        onClose={() => setIsSuccessAlertOpen(false)}
+        isBtns={false}
+      />
     </div>
   );
 }
