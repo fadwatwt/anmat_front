@@ -9,6 +9,7 @@ import authReducer from "./auth/authSlice";
 import attendanceReducer from "./attendance/attendanceSlice";
 import tasksReducer from "./tasks/tasksSlice";
 import rotationReducer from "./rotation/rotationSlice";
+import financialReducer from "./financial/financialSlice";
 
 export const store = configureStore({
   reducer: {
@@ -22,6 +23,7 @@ export const store = configureStore({
     accounts: accountsReducer,
     tasks: tasksReducer,
     rotation: rotationReducer,
+    financials: financialReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(authApi.middleware), // Add the authApi middleware
