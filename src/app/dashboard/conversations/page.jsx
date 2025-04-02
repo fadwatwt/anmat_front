@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   ChevronDown,
   Paperclip,
@@ -14,115 +14,335 @@ import { RiArrowLeftSLine, RiArrowRightSLine } from "@remixicon/react";
 import SchedulingMeeting from "@/app/dashboard/conversations/_modal/SchedulingMeeting.jsx";
 import { IoAdd } from "react-icons/io5";
 import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  useGetChatsQuery,
+  useGetMessagesQuery,
+  useSendMessageMutation,
+  useCreateChatMutation,
+} from "@/redux/conversations/conversationsAPI";
+import {
+  setActiveChat,
+  addTempMessage,
+  clearTempMessages,
+  updateChatLastMessage,
+  updateUserStatus,
+} from "@/redux/conversations/conversationsSlice";
+import {
+  initSocket,
+  disconnectSocket,
+  getSocket,
+} from "@/services/socketService";
 
 const ConversationPage = () => {
-  const { t } = useTranslation(); // Add this line
+  const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const [newMessage, setNewMessage] = useState("");
+  const { activeChat } = useSelector((state) => state.conversations);
+  const tempMessages = useSelector(
+    (state) => state.conversations.tempMessages[activeChat?._id] || []
+  );
+  const messagesEndRef = useRef(null);
 
+  // RTK Query hooks
+  const {
+    data: chats = [],
+    isLoading: chatsLoading,
+    refetch: refetchChats,
+  } = useGetChatsQuery();
+  const {
+    data: messagesData,
+    isLoading: messagesLoading,
+    refetch: refetchMessages,
+  } = useGetMessagesQuery(activeChat?._id, { skip: !activeChat });
+
+  const [sendMessage] = useSendMessageMutation();
+  const [createChat] = useCreateChatMutation();
+
+  // State for UI
   const [activeTab, setActiveTab] = useState("Meetings");
   const [activeRightTab, setActiveRightTab] = useState("Attachments");
   const [showRightSidebar, setShowRightSidebar] = useState(false);
   const [showLeftSidebar, setShowLeftSidebar] = useState(false);
   const [isOpenSchedulingMeeting, setIsOpenSchedulingMeeting] = useState(false);
+  const [socket, setSocket] = useState(null);
 
-  const chatGroups = [
-    {
-      name: "Team Innovators",
-      avatar: "TI",
-      avatarColor: "bg-pink-200",
-      message: "Hey everyone! How's everyone...",
-      time: "20 Mins Ago",
-      isOnline: true,
-    },
-    {
-      name: "Creative Minds",
-      avatar: "https://randomuser.me/api/portraits/women/45.jpg",
-      isAvatar: true,
-      message: "Hope you all have a super pro...",
-      time: "20 Mins Ago",
-      hasRead: true,
-    },
-    {
-      name: "Reviewing the content",
-      avatar: "RT",
-      avatarColor: "bg-gray-200",
-      message: "Determine who is responsible...",
-      time: "20 Mins Ago",
-      hasRead: true,
-      isActive: true,
-    },
-    {
-      name: "Strategic Thinkers",
-      avatar: "ST",
-      avatarColor: "bg-gray-200",
-      message: "Just checking in to see if anyone...",
-      time: "20 Mins Ago",
-      isOnline: true,
-    },
-    {
-      name: "Dynamic Collaboration",
-      avatar: "DC",
-      avatarColor: "bg-blue-200",
-      message: "Hope you're all enjoying your tim...",
-      time: "20 Mins Ago",
-      isOnline: true,
-    },
-    {
-      name: "Impact Makers",
-      avatar: "IM",
-      avatarColor: "bg-yellow-200",
-      message: "Keep up the amazing teamw...",
-      time: "20 Mins Ago",
-      hasRead: true,
-    },
-    {
-      name: "Trailblazers",
-      avatar: "TB",
-      avatarColor: "bg-green-200",
-      message: "Sending positive energy to th...",
-      time: "20 Mins Ago",
-    },
-  ];
+  // Get current user ID from localStorage or auth state
+  const currentUserId = localStorage.getItem("userId");
+  const userName = localStorage.getItem("userName");
 
-  const messages = [
-    {
-      avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-      message: "Just a friendly reminder to stay positive!",
-      time: "09:40",
-      reaction: null,
-      type: "text",
-    },
-    {
-      avatar: "https://randomuser.me/api/portraits/women/25.jpg",
-      message: null,
-      audio: true,
-      duration: "00:24",
-      time: "09:40",
-      reaction: "👍",
-      type: "audio",
-    },
-    {
-      text: "How sure are we about our presentation?",
-      time: "09:50",
-      type: "question",
-      isRight: true,
-    },
-    {
-      avatar: "https://randomuser.me/api/portraits/men/41.jpg",
-      message: "Just a friendly reminder to stay positive!",
-      time: "09:40",
-      reaction: null,
-      type: "text",
-    },
-    {
-      avatar: "https://randomuser.me/api/portraits/women/68.jpg",
-      image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab",
-      message: "Determine who is responsible for this part of the process.",
-      time: "10:00",
-      reaction: "❤️",
-      type: "image",
-    },
-  ];
+  // Merged messages (API + temp)
+  const messages = messagesData?.messages || [];
+  const allMessages = [...messages, ...tempMessages];
 
+  // Initialize socket connection
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      const socketInstance = initSocket(token);
+      setSocket(socketInstance);
+
+      socketInstance.on("connect", () => {
+        console.log("Connected to socket server");
+      });
+
+      socketInstance.on("disconnect", () => {
+        console.log("Disconnected from socket server");
+      });
+
+      socketInstance.on("error", (error) => {
+        console.error("Socket error:", error);
+      });
+
+      // Listen for new messages
+      socketInstance.on("newMessage", (data) => {
+        console.log("New message received:", data);
+
+        // If the message is for the active chat, add it to the UI immediately
+        if (activeChat && data.chatId === activeChat._id) {
+          // Only add the message if it's not from the current user
+          if (data.message.sender._id !== currentUserId) {
+            const formattedMessage = {
+              _id: data.message._id,
+              content: data.message.content,
+              sender: {
+                _id: data.message.sender._id,
+                id: data.message.sender._id,
+                name: data.message.sender.name,
+                avatar: data.message.sender.avatar,
+              },
+              timestamp: data.message.timestamp,
+              status: "delivered",
+            };
+
+            dispatch(
+              addTempMessage({
+                chatId: data.chatId,
+                message: formattedMessage,
+              })
+            );
+
+            // Mark message as read since we're in the chat
+            if (socketInstance) {
+              socketInstance.emit("markRead", {
+                chatId: data.chatId,
+                messageId: data.message._id,
+              });
+            }
+          }
+
+          // Refetch messages to ensure we have the latest data
+          setTimeout(() => {
+            refetchMessages();
+            dispatch(clearTempMessages(activeChat._id));
+          }, 1000);
+        }
+
+        // Update last message in chat list
+        dispatch(
+          updateChatLastMessage({
+            chatId: data.chatId,
+            message: data.message.content,
+            timestamp: data.message.timestamp,
+          })
+        );
+
+        // Refetch chats to update the order
+        refetchChats();
+      });
+
+      // Listen for message read status updates
+      socketInstance.on("messagesRead", ({ chatId, userId }) => {
+        if (userId !== currentUserId) {
+          refetchMessages();
+        }
+      });
+
+      // Listen for user status updates
+      socketInstance.on("userStatusUpdate", ({ userId, isOnline }) => {
+        dispatch(updateUserStatus({ userId, isOnline }));
+        refetchChats(); // Refetch chats to update online status in the UI
+      });
+
+      return () => {
+        disconnectSocket();
+      };
+    }
+  }, [dispatch, currentUserId]);
+
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [allMessages]);
+
+  // Set first chat as active when chats are loaded
+  useEffect(() => {
+    if (chats.length > 0 && !activeChat) {
+      dispatch(setActiveChat(chats[0]));
+    }
+  }, [chats, activeChat, dispatch]);
+
+  // Join chat room when active chat changes
+  useEffect(() => {
+    if (socket && activeChat) {
+      // Leave previous chat room if exists
+      const prevChatId = socket.prevChatId;
+      if (prevChatId && prevChatId !== activeChat._id) {
+        socket.emit("leaveChat", { chatId: prevChatId });
+      }
+
+      // Join new chat room
+      socket.emit("joinChat", { chatId: activeChat._id });
+      socket.prevChatId = activeChat._id;
+
+      // Mark messages as read when entering a chat
+      socket.emit("markRead", {
+        chatId: activeChat._id,
+        userId: currentUserId,
+      });
+
+      // Refetch messages to ensure we have the latest
+      refetchMessages();
+    }
+  }, [socket, activeChat, currentUserId, refetchMessages]);
+
+  // Handle sending a new message
+  const handleSendMessage = async () => {
+    if (!newMessage.trim() || !activeChat) return;
+
+    // Create a temporary message object to display immediately
+    const tempMessage = {
+      _id: `temp-${Date.now()}`,
+      content: newMessage,
+      sender: {
+        _id: currentUserId,
+        id: currentUserId,
+        name: userName,
+      },
+      timestamp: new Date().toISOString(),
+      status: "sending",
+    };
+
+    // Add to temporary messages
+    dispatch(
+      addTempMessage({
+        chatId: activeChat._id,
+        message: tempMessage,
+      })
+    );
+
+    // Clear input
+    setNewMessage("");
+
+    try {
+      const result = await sendMessage({
+        chatId: activeChat._id,
+        content: newMessage,
+      }).unwrap();
+
+      // If we're not using sockets, update the chat manually
+      if (!socket) {
+        refetchMessages();
+        refetchChats();
+      }
+    } catch (error) {
+      console.error("Failed to send message:", error);
+      // You could mark the temp message as failed
+    }
+  };
+
+  // Map your chats data to the UI format
+  const chatGroups = chats.map((chat) => ({
+    _id: chat._id,
+    name: chat.name || (chat.participants || []).map((p) => p.name).join(", "),
+    avatar:
+      (chat.participants || [])
+        .find((p) => p._id !== currentUserId)
+        ?.name?.charAt(0) || "TI",
+    avatarColor: "bg-pink-200",
+    message: chat.lastMessage?.content || "No messages yet...",
+    time: formatTimestamp(chat.lastMessage?.timestamp),
+    isOnline: chat.participants?.some((p) => p.isOnline) || false,
+    hasRead: chat.lastMessage?.read || false,
+    isActive: activeChat?._id === chat._id,
+  }));
+
+  // Format timestamp helper
+  function formatTimestamp(timestamp) {
+    if (!timestamp) return "No recent activity";
+
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+
+    if (diffMins < 60) return `${diffMins} ${t("Mins Ago")}`;
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `${diffHours} ${t("Hours Ago")}`;
+    return date.toLocaleDateString();
+  }
+
+  // Transform backend messages to UI format
+  const transformMessagesToUI = () => {
+    return allMessages.map((msg) => {
+      // Check if the message sender is the current user
+      const isCurrentUser =
+        msg.sender?._id === currentUserId || msg.sender?.id === currentUserId;
+
+      return {
+        text: msg.content,
+        time: formatMessageTime(msg.timestamp),
+        type: "message",
+        isCurrentUser: isCurrentUser,
+        avatar: isCurrentUser
+          ? null
+          : msg.sender?.avatar ||
+            "https://randomuser.me/api/portraits/men/32.jpg",
+        reaction: msg.reaction || null,
+        status: msg.status || "delivered",
+      };
+    });
+  };
+
+  function formatMessageTime(timestamp) {
+    if (!timestamp) return "";
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }
+
+  const uiMessages = transformMessagesToUI();
+
+  const handleChatSelect = (chatId) => {
+    const selectedChat = chats.find((chat) => chat._id === chatId);
+    dispatch(setActiveChat(selectedChat));
+
+    // Mark messages as read when selecting a chat (handled in the useEffect)
+  };
+
+  const handelSchedulingMeeting = () => {
+    setIsOpenSchedulingMeeting(!isOpenSchedulingMeeting);
+  };
+
+  const Avatar = ({ avatar, color }) => {
+    if (typeof avatar === "string" && !avatar.startsWith("http")) {
+      return (
+        <div
+          className={`flex items-center justify-center ${color} text-gray-700 w-8 h-8 rounded-full`}
+        >
+          {avatar}
+        </div>
+      );
+    }
+    return (
+      <img
+        src={avatar || "https://randomuser.me/api/portraits/lego/1.jpg"}
+        className="w-8 h-8 rounded-full object-cover"
+        alt="Avatar"
+      />
+    );
+  };
+
+  // Keep your existing files, photoGrid, and points data
   const files = [
     {
       name: "Project Phoenix Prop...",
@@ -182,27 +402,16 @@ const ConversationPage = () => {
     "Allocate budget approvals by reviewing each department's ",
     "Set next meeting date",
   ];
-  const Avatar = ({ avatar, color }) => {
-    if (typeof avatar === "string" && !avatar.startsWith("http")) {
-      return (
-        <div
-          className={`flex items-center justify-center ${color} text-gray-700 w-8 h-8 rounded-full`}
-        >
-          {avatar}
-        </div>
-      );
-    }
-    return (
-      <img
-        src={avatar || "https://randomuser.me/api/portraits/lego/1.jpg"}
-        className="w-8 h-8 rounded-full object-cover"
-        alt="Avatar"
-      />
-    );
-  };
 
-  const handelSchedulingMeeting = () => {
-    setIsOpenSchedulingMeeting(!isOpenSchedulingMeeting);
+  // Get chat participant avatar
+  const getChatAvatar = () => {
+    if (!activeChat?.participants) return "";
+
+    const otherParticipant = activeChat.participants.find(
+      (p) => p._id !== currentUserId || p.id !== currentUserId
+    );
+
+    return otherParticipant?.name?.charAt(0) || "";
   };
 
   return (
@@ -237,7 +446,7 @@ const ConversationPage = () => {
               <RiArrowLeftSLine size={18} />
             </button>
           )}
-          {/* Tabs */}
+          {/* Tabs form here till end need to be modified*/}
           <div className="flex border-b border-gray-200 dark:border-veryWeak-500">
             <button
               className={`flex-1 py-4 text-center dark:text-gray-200 ${
@@ -271,7 +480,6 @@ const ConversationPage = () => {
               <span>{t("Schedule a Meeting")}</span>
             </button>
           </div>
-          {/* add btn and center it */}
 
           {/* Search */}
           <div className="px-4 mb-2">
@@ -300,46 +508,46 @@ const ConversationPage = () => {
 
           {/* Chat List */}
           <div className="flex-1 overflow-y-auto tab-content">
-            {chatGroups.map((chat, index) => (
-              <div key={index} className={"p-1 dark:bg-gray-800"}>
+            {chatsLoading ? (
+              <div className="p-4 text-center">Loading chats...</div>
+            ) : (
+              chatGroups.map((chat) => (
                 <div
-                  className={` px-3 py-3 flex items-start gap-3 hover:bg-gray-100 hover:dark:bg-gray-900 ${
-                    chat.isActive ? " bg-gray-100 dark:bg-gray-900" : ""
-                  }`}
+                  key={chat._id}
+                  className={"p-1 dark:bg-gray-800"}
+                  onClick={() => handleChatSelect(chat._id)}
                 >
-                  {chat.avatar || chat.isAvatar ? (
+                  <div
+                    className={`px-3 py-3 flex items-start gap-3 hover:bg-gray-100 hover:dark:bg-gray-900 cursor-pointer ${
+                      chat.isActive ? "bg-gray-100 dark:bg-gray-900" : ""
+                    }`}
+                  >
                     <Avatar avatar={chat.avatar} color={chat.avatarColor} />
-                  ) : (
-                    <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                      <span className="text-xs text-gray-500 dark:text-gray-200">
-                        {chat.name.substring(0, 2)}
-                      </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-start">
+                        <h4 className="font-medium text-sm text-gray-800 truncate dark:text-gray-200">
+                          {chat.name}
+                        </h4>
+                        <span className="text-xs text-gray-500 dark:text-gray-300">
+                          {chat.time}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-600 truncate dark:text-gray-300">
+                        {chat.message}
+                      </p>
                     </div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-start">
-                      <h4 className="font-medium text-sm text-gray-800 truncate dark:text-gray-200">
-                        {chat.name}
-                      </h4>
-                      <span className="text-xs text-gray-500 dark:text-gray-300">
-                        {chat.time}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-600 truncate dark:text-gray-300">
-                      {chat.message}
-                    </p>
+                    {chat.isOnline && (
+                      <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 self-end"></div>
+                    )}
+                    {chat.hasRead && (
+                      <div className="text-blue-500">
+                        <Check size={16} />
+                      </div>
+                    )}
                   </div>
-                  {chat.isOnline && (
-                    <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 self-end"></div>
-                  )}
-                  {chat.hasRead && (
-                    <div className="text-blue-500">
-                      <Check size={16} />
-                    </div>
-                  )}
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
 
@@ -349,14 +557,19 @@ const ConversationPage = () => {
           <div className="border-b border-gray-200 p-4 flex justify-between items-center bg-white dark:bg-gray-800 dark:border-veryWeak-500">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                <span className="text-xs text-gray-500">RT</span>
+                <span className="text-xs text-gray-500">{getChatAvatar()}</span>
               </div>
               <div>
                 <h3 className="flex flex-start font-medium dark:text-gray-200">
-                  {t("Reviewing the content")}
+                  {activeChat?.name || t("Select a conversation")}
                 </h3>
                 <p className="text-xs text-gray-500 dark:text-gray-300">
-                  Alice, Bob, Charlie, Diana, Ethan, Fiona and Amir
+                  {activeChat?.participants
+                    ?.filter(
+                      (p) => p._id !== currentUserId && p.id !== currentUserId
+                    )
+                    .map((p) => p.name)
+                    .join(", ") || ""}
                 </p>
               </div>
             </div>
@@ -382,151 +595,73 @@ const ConversationPage = () => {
 
           {/* Messages */}
           <div className="flex-1 p-4 overflow-y-auto bg-white dark:bg-gray-800 custom-scroll">
-            {messages.map((message, index) => (
-              <div key={index} className="mb-6 relative">
-                {message.type === "text" && (
-                  <div className="flex items-start gap-3">
-                    {message.avatar && (
-                      <img
-                        src={message.avatar}
-                        className="w-8 h-8 rounded-full"
-                        alt="Avatar"
-                      />
-                    )}
-                    <div className="flex flex-col max-w-md">
-                      <div className="bg-white border border-gray-200 p-3 rounded-lg dark:bg-gray-900 dark:border-veryWeak-500">
-                        <p className="text-gray-800 dark:text-gray-300">
-                          {message.message}
-                        </p>
-                      </div>
-                      <div className="mt-1">
-                        <span className="text-xs text-gray-500">
-                          {message.time}
-                        </span>
-                      </div>
-                      {message.reaction && (
-                        <div className="absolute -right-2 -bottom-2 bg-gray-100 rounded-full px-1 text-xs">
-                          {message.reaction}
+            {messagesLoading ? (
+              <div className="p-4 text-center">Loading messages...</div>
+            ) : !activeChat ? (
+              <div className="p-4 text-center text-gray-500 dark:text-gray-400">
+                {t("Select a conversation to start chatting")}
+              </div>
+            ) : uiMessages.length === 0 ? (
+              <div className="p-4 text-center text-gray-500 dark:text-gray-400">
+                {t("No messages yet. Start the conversation!")}
+              </div>
+            ) : (
+              uiMessages.map((message, index) => (
+                <div key={index} className="mb-6 relative">
+                  {message.isCurrentUser ? (
+                    // Current user's message (displayed on the right)
+                    <div className="flex justify-end mb-4">
+                      <div className="max-w-md">
+                        <div className="bg-blue-100 p-3 rounded-lg dark:bg-[#253EA7]">
+                          <p className="text-gray-800 dark:text-gray-300">
+                            {message.text}
+                          </p>
                         </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {message.type === "audio" && (
-                  <div className="flex items-start gap-3">
-                    {message.avatar && (
-                      <img
-                        src={message.avatar}
-                        className="w-8 h-8 rounded-full"
-                        alt="Avatar"
-                      />
-                    )}
-                    <div className="flex flex-col max-w-md">
-                      <div className="flex items-center gap-2 bg-white border border-gray-200 p-3 rounded-lg dark:bg-gray-900 dark:border-veryWeak-500">
-                        <button className="text-blue-500 dark:text-primary-200">
-                          ▶
-                        </button>
-                        <div className="flex-1">
-                          <div className="flex items-center">
-                            <div className="h-5 w-72 bg-gray-200 dark:bg-gray-800 relative rounded-full overflow-hidden">
-                              <div
-                                className="h-5 w-1/4 bg-blue-500 absolute dark:bg-primary-300"
-                                style={{ left: "50%" }}
-                              ></div>
-                              <div className="absolute flex w-full justify-around">
-                                {Array(15)
-                                  .fill(0)
-                                  .map((_, i) => (
-                                    <div
-                                      key={i}
-                                      className="h-5 w-0.5 bg-white dark:bg-gray-400 opacity-40"
-                                    ></div>
-                                  ))}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <span className="text-sm text-gray-600 dark:text-gray-400">
-                          {message.duration}
-                        </span>
-                      </div>
-                      <div className="mt-1 flex items-center gap-2">
-                        <span className="text-xs text-gray-500">
-                          {message.time}
-                        </span>
-                        {message.reaction && (
-                          <div className="bg-amber-200 rounded-full w-5 h-5 flex items-center justify-center text-xs">
-                            {message.reaction}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {message.type === "question" && (
-                  <div className="flex justify-end mb-4">
-                    <div className="max-w-md">
-                      <div className="bg-blue-100 p-3 rounded-lg dark:bg-[#253EA7]">
-                        <p className="text-gray-800 dark:text-gray-300">
-                          {message.text}
-                        </p>
-                      </div>
-                      <div className="mt-1 text-right">
-                        <span className="text-xs text-gray-500">
-                          {message.time}
-                        </span>
-                        <Check
-                          size={16}
-                          className="inline ml-1 text-blue-500"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {message.type === "image" && (
-                  <div className="flex items-start gap-3">
-                    {message.avatar && (
-                      <img
-                        src={message.avatar}
-                        className="w-8 h-8 rounded-full"
-                        alt="Avatar"
-                      />
-                    )}
-                    <div className="flex flex-col max-w-md">
-                      <div className="bg-white border border-gray-200 p-3 rounded-lg dark:bg-[#253EA7] dark:border-primary-700">
-                        <div className="w-64 h-48 bg-gray-300 rounded-md mb-2 overflow-hidden">
-                          <img
-                            src={message.image}
-                            alt="Chat attachment"
-                            className="w-full h-full object-cover"
+                        <div className="mt-1 text-right">
+                          <span className="text-xs text-gray-500">
+                            {message.time}
+                          </span>
+                          <Check
+                            size={16}
+                            className="inline ml-1 text-blue-500"
                           />
                         </div>
-                        <p className="text-gray-800 dark:text-gray-300">
-                          {message.message}
-                        </p>
                       </div>
-                      <div className="mt-1 flex items-center gap-2">
-                        <span className="text-xs text-gray-500">
-                          {message.time}
-                        </span>
+                    </div>
+                  ) : (
+                    // Other user's message (displayed on the left)
+                    <div className="flex items-start gap-3">
+                      {message.avatar && (
+                        <img
+                          src={message.avatar}
+                          className="w-8 h-8 rounded-full"
+                          alt="Avatar"
+                        />
+                      )}
+                      <div className="flex flex-col max-w-md">
+                        <div className="bg-white border border-gray-200 p-3 rounded-lg dark:bg-gray-900 dark:border-veryWeak-500">
+                          <p className="text-gray-800 dark:text-gray-300">
+                            {message.text}
+                          </p>
+                        </div>
+                        <div className="mt-1">
+                          <span className="text-xs text-gray-500">
+                            {message.time}
+                          </span>
+                        </div>
                         {message.reaction && (
-                          <div className="bg-red-200 rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                          <div className="absolute -right-2 -bottom-2 bg-gray-100 rounded-full px-1 text-xs">
                             {message.reaction}
                           </div>
                         )}
-                        <ChevronDown size={16} className="text-blue-500" />
                       </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            ))}
+                  )}
+                </div>
+              ))
+            )}
           </div>
 
-          {/* Message Input */}
           {/* Message Input */}
           <div className="p-4 border-t border-gray-200 flex max-w-full box-border items-center gap-3 bg-white dark:bg-[#31353F] dark:border-gray-700">
             <button className="text-gray-500 hover:text-gray-700">
@@ -534,8 +669,16 @@ const ConversationPage = () => {
             </button>
             <input
               type="text"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
               placeholder={t("Type a message...")}
-              className="flex-1 px-4 py-2 border border-gray-300 box-border w-1/2  rounded-full outline-none text-gray-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:bg-gray-900 dark:border-gray-700 dark:focus:border-primary-200"
+              className="flex-1 px-4 py-2 border border-gray-300 box-border w-1/2 rounded-full outline-none text-gray-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:bg-gray-900 dark:border-gray-700 dark:focus:border-primary-200"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSendMessage();
+                }
+              }}
+              disabled={!activeChat}
             />
             <button className="text-gray-500 hover:text-gray-700">
               <Paperclip size={20} />
@@ -543,11 +686,16 @@ const ConversationPage = () => {
             <button className="text-gray-500 hover:text-gray-700">
               <Mic size={20} />
             </button>
-            <button className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600">
+            <button
+              className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 disabled:bg-blue-300"
+              onClick={handleSendMessage}
+              disabled={!newMessage.trim() || !activeChat}
+            >
               <Send size={18} />
             </button>
           </div>
         </div>
+
         {!showRightSidebar && (
           <button
             className="md:hidden fixed top-11 right-0.5 z-50 bg-gray-800 text-white p-2 rounded"
@@ -564,7 +712,6 @@ const ConversationPage = () => {
             showRightSidebar ? "block" : "hidden"
           } md:block fixed md:relative top-0 right-0 h-full z-40`}
         >
-          <></>
           {showRightSidebar && (
             <button
               className="md:hidden fixed top-11 right-52 z-50 bg-gray-800 text-white p-2 rounded"
@@ -579,12 +726,12 @@ const ConversationPage = () => {
             <div className="flex justify-center mb-4">
               <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
                 <span className="text-xl text-gray-500 dark:text-gray-300">
-                  RT
+                  {getChatAvatar()}
                 </span>
               </div>
             </div>
             <h3 className="text-center font-medium dark:text-gray-300">
-              {t("Reviewing the content")}
+              {activeChat?.name || t("Select a conversation")}
             </h3>
           </div>
 
@@ -611,7 +758,6 @@ const ConversationPage = () => {
               {t("Main points")}
             </button>
           </div>
-
           {/* Files Section */}
           <div className="h-full overflow-hidden overflow-y-auto custom-scroll">
             {activeRightTab === "Attachments" ? (

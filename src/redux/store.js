@@ -10,10 +10,12 @@ import attendanceReducer from "./attendance/attendanceSlice";
 import tasksReducer from "./tasks/tasksSlice";
 import rotationReducer from "./rotation/rotationSlice";
 import financialReducer from "./financial/financialSlice";
-
+import { conversationsAPI } from "./conversations/conversationsAPI";
+import conversationsReducer from "./conversations/conversationsSlice";
 export const store = configureStore({
   reducer: {
     [authApi.reducerPath]: authApi.reducer, // Add the authApi reducer
+    [conversationsAPI.reducerPath]: conversationsAPI.reducer,
     auth: authReducer,
     projects: projectReducer,
     employees: employeeReduce,
@@ -24,7 +26,11 @@ export const store = configureStore({
     tasks: tasksReducer,
     rotation: rotationReducer,
     financials: financialReducer,
+    conversations: conversationsReducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(authApi.middleware), // Add the authApi middleware
+    getDefaultMiddleware().concat(
+      authApi.middleware,
+      conversationsAPI.middleware
+    ), // Add the authApi middleware
 });
