@@ -1,81 +1,91 @@
-import { useState, useMemo } from "react";
-import Sidebar from "@/components/Subcomponents/Sidebar.jsx";
-import { IoOptionsOutline } from "react-icons/io5";
-import { RiNotification2Line } from "react-icons/ri";
-import TabModal from "@/components/Modal/TabsContener/TabModal.jsx";
-import NotificationPreferences from "./NotificationPreferences.jsx";
-import NotificationMethods from "./NotificationMethods.jsx";
-import { useTranslation } from "react-i18next";
-import {RiEqualizerLine, RiNotification4Line} from "@remixicon/react";
+import SearchInput from "./Form/SearchInput.jsx";
+import { MdOutlineKeyboardArrowDown } from "react-icons/md";
+import PropTypes from "prop-types";
+import { HiOutlineMenuAlt2 } from "react-icons/hi";
+import NotificationsDropdown from "./Dropdowns/NotificationsDropdown.jsx";
+import MessagesDropdown from "./Dropdowns/MessagesDropdown.jsx";
+import { useAuth } from "../contexts/AuthContext";
 
-function NotificationsTab() {
-  const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState("notification-preferences");
+function Header({ taggleSlidebarOpen, className }) {
+  const { currentUser } = useAuth();
 
-  const listSideBar = useMemo(
-    () => [
-      {
-        id: "notification-preferences",
-        title: t("Notification Preferences"),
-        icon: <IoOptionsOutline />,
-      },
-      {
-        id: "notification-methods",
-        title: t("Notification Methods"),
-        icon: <RiNotification2Line />,
-      },
-    ],
-    [t]
-  );
-
-  const tabsData = useMemo(
-    () => [
-      {
-        id: "notification-preferences",
-        title: t("Notification Preferences"),
-        content: <NotificationPreferences />,
-        icon: <RiEqualizerLine />,
-      },
-      {
-        id: "notification-methods",
-        title: t("Notification Methods"),
-        content: <NotificationMethods />,
-        icon: <RiNotification4Line />,
-      },
-    ],
-    [t]
-  );
+  // Mock data for messages (will be replaced with real implementation later)
+  const messages = [
+    {
+      id: 1,
+      avatar: "/path-to-ibn-avatar.jpg",
+      avatarImage: true,
+      user: "Ibn Sina",
+      content:
+        "Ugh, this bug is driving me crazy! Any ideas on how to fix this...",
+      time: "5 Mins Ago",
+      isRead: false,
+    },
+    {
+      id: 2,
+      avatar: "/path-to-maya-avatar.jpg",
+      avatarImage: true,
+      user: "Maya Patel",
+      content: "Does anyone know how to configure the CI/CD pipeline fo...",
+      time: "20 Mins Ago",
+      isRead: true,
+    },
+    // More messages...
+  ];
 
   return (
-    <div className="flex lg:gap-32 md:20 gap-10  w-full md:flex-row flex-col">
+    <div
+      className={
+        "header dark:bg-gray-800 max-w-full bg-white h-[72px] flex px-8 items-center justify-between relative " +
+        className
+      }
+    >
+      <button
+        onClick={taggleSlidebarOpen}
+        className="inline-flex items-center p-2 text-sm h-8 text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
+      >
+        <HiOutlineMenuAlt2 />
+      </button>
       <div className="hidden md:block">
-        <div className="bg-white dark:bg-gray-800 py-3 px-2 lg:w-64 w-48 flex flex-col gap-2 rounded-lg">
-          <p className="uppercase text-sm px-3 text-start dark:text-gray-200">
-            {t("select menu")}
-          </p>
-          <Sidebar
-            activeItem={activeTab}
-            onClick={setActiveTab}
-            list={listSideBar}
-          />
-        </div>
+        <SearchInput />
       </div>
-
-      <div className="md:p-5 p-2 rounded-2xl bg-white dark:bg-gray-800 lg:w-[39%]">
-        <div className="md:hidden block">
-          <TabModal
-            classNameItem="justify-start mx-1"
-            classNameContent="h-[30rem]"
-            tabs={tabsData}
-          />
+      <div className={"flex gap-5"}>
+        <div
+          className={"icons flex gap-2 items-center relative w-56 justify-end"}
+        >
+          <NotificationsDropdown />
+          <MessagesDropdown messages={messages} />
         </div>
 
-        <div className="hidden md:block">
-          {tabsData.find((tab) => tab.id === activeTab)?.content}
+        {/* User Profile Section */}
+        <div
+          className={
+            "flex box-border rounded-lg border-2 dark:border-gray-700 md:py-0.5 md:px-1 px-0.5 py-0.5 items-center gap-1 cursor-pointer"
+          }
+        >
+          <div className={"p-1"}>
+            <img
+              src={
+                currentUser?.avatar ||
+                "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
+              }
+              className={"w-8 h-8 rounded-full"}
+              alt={"user-profile"}
+            />
+          </div>
+          <p className={"dark:text-gray-400 text-sm sm:block hidden"}>
+            {currentUser?.name || "Loading..."}
+          </p>
+          <MdOutlineKeyboardArrowDown />
         </div>
       </div>
     </div>
   );
 }
 
-export default NotificationsTab;
+Header.propTypes = {
+  taggleSlidebarOpen: PropTypes.func,
+  className: PropTypes.string,
+};
+
+export default Header;
