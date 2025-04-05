@@ -1,16 +1,29 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import {ExternalServer, RootRoute} from "../../Root.Route";
+import { ExternalServer, RootRoute } from "../../Root.Route";
+
+// Helper function for auth headers
+const getAuthConfig = (getState) => {
+  const token = getState()?.auth?.token || localStorage.getItem("token");
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+};
 
 // Fetch all employees
 export const fetchEmployees = createAsyncThunk(
   "employees/fetchAll",
-  async (_, { rejectWithValue }) => {
+  async (_, { rejectWithValue, getState }) => {
     try {
-      const response = await axios.get(`${RootRoute}/employees`);
+      const response = await axios.get(
+        `${RootRoute}/employees`,
+        getAuthConfig(getState)
+      );
       return response.data.data;
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data || error.message);
     }
   }
 );
@@ -18,44 +31,80 @@ export const fetchEmployees = createAsyncThunk(
 // Create a new employee
 export const createEmployee = createAsyncThunk(
   "employees/create",
-  async (employeeData, { rejectWithValue }) => {
+  async (employeeData, { rejectWithValue, getState }) => {
     try {
-      const response = await axios.post(`${RootRoute}/employees`, employeeData);
-      await axios.post(`${ExternalServer}/users`, {...employeeData,id:response.data.data._id},{
-          headers: { Authorization: `Bearer ${'token'}`},
-      })
+      // Validate required fields
+      if (!employeeData.name || !employeeData.email) {
+        throw new Error("Name and email are required");
+      }
+
+      const config = getAuthConfig(getState);
+      const response = await axios.post(
+        `${RootRoute}/employees`,
+        employeeData,
+        config
+      );
+
+      // Sync with external server (if needed)
+      try {
+        await axios.post(
+          `${ExternalServer}/users`,
+          { ...employeeData, id: response.data.data._id },
+          config
+        );
+      } catch (externalError) {
+        console.warn("External server sync failed:", externalError);
+      }
+
       return response.data.data;
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue({
+        message: error.response?.data?.message || error.message,
+        details: error.response?.data,
+      });
     }
   }
 );
 
+// Update employee
 export const updateEmployee = createAsyncThunk(
   "employees/update",
-  async ({ id, employeeData }, { rejectWithValue }) => {
+  async ({ id, employeeData }, { rejectWithValue, getState }) => {
     try {
-      console.log({ id, employeeData }); // here the id is correct but no data
+      if (!id) throw new Error("Employee ID is required");
 
       const response = await axios.patch(
-        `${RootRoute}/employees/${id}`, // Removed leading space
-        employeeData
+        `${RootRoute}/employees/${id}`,
+        employeeData,
+        getAuthConfig(getState)
       );
       return response.data.data;
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue({
+        message: error.response?.data?.message || error.message,
+        details: error.response?.data,
+      });
     }
   }
 );
+
 // Delete employee
 export const deleteEmployee = createAsyncThunk(
   "employees/delete",
-  async (id, { rejectWithValue }) => {
+  async (id, { rejectWithValue, getState }) => {
     try {
-      await axios.delete(`${RootRoute}/employees/${id}`);
+      if (!id) throw new Error("Employee ID is required");
+
+      await axios.delete(
+        `${RootRoute}/employees/${id}`,
+        getAuthConfig(getState)
+      );
       return id;
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue({
+        message: error.response?.data?.message || error.message,
+        details: error.response?.data,
+      });
     }
   }
 );

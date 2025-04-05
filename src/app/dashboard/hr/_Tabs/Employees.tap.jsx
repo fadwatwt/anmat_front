@@ -6,10 +6,7 @@ import EditAnEmployeeModal from "@/app/dashboard/hr/_modals/EditAnEmployeeModal.
 import AccountDetails from "../../projects/Components/TableInfo/AccountDetails.jsx";
 import Rating from "../Rating.jsx";
 import Alert from "../../../../components/Alert.jsx";
-import {
-  fetchEmployees,
-  deleteEmployee,
-} from "@/redux/employees/employeeAPI";
+import { fetchEmployees, deleteEmployee } from "@/redux/employees/employeeAPI";
 
 function EmployeesTap() {
   const dispatch = useDispatch();
@@ -69,9 +66,9 @@ function EmployeesTap() {
     return employeesToShow?.map((employee, index) => [
       <AccountDetails
         key={`account-details-${index}`}
-        path={`/employee-profile/${employee._id}-${encodeURIComponent(
-          employee.name
-        )}`}
+        path={`/dashboard/profile/employee-profile/${
+          employee._id
+        }-${encodeURIComponent(employee.name)}`}
         account={{
           name: employee.name,
           rule: employee.role?.name || "N/A",

@@ -6,10 +6,11 @@ export const fetchAllAttendance = createAsyncThunk(
   "attendance/fetchAll",
   async (_, { getState, rejectWithValue }) => {
     try {
-      const { auth } = getState();
+      const token = getState()?.auth?.token || localStorage.getItem("token");
+
       const config = {
         headers: {
-          Authorization: `Bearer ${auth.token}`,
+          Authorization: `Bearer ${token}`,
         },
       };
       const response = await axios.get(`${RootRoute}/attendance/all`, config);
@@ -103,3 +104,4 @@ export const deleteAttendance = createAsyncThunk(
     }
   }
 );
+
