@@ -12,6 +12,8 @@ import rotationReducer from "./rotation/rotationSlice";
 import financialReducer from "./financial/financialSlice";
 import { conversationsAPI } from "./conversations/conversationsAPI";
 import conversationsReducer from "./conversations/conversationsSlice";
+import todoReducer from "./todos/todoSlice";
+
 export const store = configureStore({
   reducer: {
     [authApi.reducerPath]: authApi.reducer, // Add the authApi reducer
@@ -27,6 +29,7 @@ export const store = configureStore({
     rotation: rotationReducer,
     financials: financialReducer,
     conversations: conversationsReducer,
+    todos: todoReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(

@@ -14,6 +14,7 @@ import ToDoList from "@/app/dashboard/profile/_components/ToDoList.jsx";
 import CalendarEmployee from "@/app/dashboard/profile/_components/CalendarEmployee.jsx";
 import AddRequestModal from "@/app/dashboard/profile/_modals/AddRequest.modal.jsx";
 // import profileBanner from "@/assets/images/profileBanner.png";
+import Image from "next/image";
 
 import {
   RiCake2Line,
@@ -35,6 +36,7 @@ import {
 } from "@remixicon/react";
 import Status from "../../../projects/Components/TableInfo/Status";
 import { fetchEmployees } from "@/redux/employees/employeeAPI";
+import { defaultPhoto } from "@/Root.Route";
 
 function EmployeeProfilePage() {
   const { employees, loading, error } = useSelector((state) => state.employees);
@@ -232,10 +234,12 @@ function EmployeeProfilePage() {
           }
         >
           <div className={"w-full md:h-40 h-[50vh]"}>
-            <img
-              className={"max-w-full w-full max-h-full object-cover"}
-              src={"/api/placeholder/1200/300"}
-              alt={"Profile Banner"}
+            <Image
+              className="max-w-full w-full max-h-full object-cover"
+              src="/images/profileBanner.png"
+              alt="Profile Banner"
+              width={1200}
+              height={300}
             />
           </div>
           <p className={"absolute top-3 right-3 text-sm text-white"}>
@@ -258,7 +262,7 @@ function EmployeeProfilePage() {
                   <div className={"relative h-[72px] w-[72px]"}>
                     <img
                       className={"rounded-full h-[72px] w-[72px] max-w-full"}
-                      src={profilePicture || "/api/placeholder/72/72"}
+                      src={profilePicture || defaultPhoto}
                       alt={"User profile"}
                     />
                     <RiCheckboxCircleFill
@@ -577,12 +581,7 @@ function EmployeeProfilePage() {
               </div>
             </div>
             <ToDoList
-              list={[
-                "Complete daily tasks",
-                "Submit weekly report",
-                "Attend team meeting",
-                "Update project status",
-              ]}
+              employeeId={employeeId}
               isActions={true}
               isFilter={true}
               className={"h-[68%]"}
