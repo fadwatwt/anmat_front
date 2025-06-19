@@ -14,6 +14,7 @@ function Page({
   isBreadcrumbs,
   breadcrumbs,
   isNavs,
+  btnIcon=null
 }) {
   const { t } = useTranslation();
   return (
@@ -43,7 +44,7 @@ function Page({
                 onClick={btnOnClick}
                 className="bg-primary-base dark:bg-primary-200 flex gap-1 items-center p-[10px] rounded-[10px]"
               >
-                <FiPlus className="text-white text-md dark:text-black" />
+                {btnIcon ? btnIcon : <FiPlus className="text-white text-md dark:text-black" />}
                 <span className="text-white text-md text-nowrap dark:text-black">
                   {t(btnTitle)}
                 </span>
@@ -76,6 +77,7 @@ Page.propTypes = {
   className: PropTypes.string,
   btnOnClick: PropTypes.func,
   isNavs: PropTypes.bool,
+  btnIcon: PropTypes.elementType
 };
 
 export default Page;

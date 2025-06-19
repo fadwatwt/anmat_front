@@ -13,6 +13,8 @@ function App() {
   const [isSlidebarOpen, setSlidebarOpen] = useState(false);
   const location = useLocation();
   const isSettingsPage = location.pathname === "/settings";
+  const pagesWithoutHeader = ["/settings", "/subscription"];
+  const isHeaderAllowed = !pagesWithoutHeader.includes(location.pathname);
   const taggleSlidebarOpen = () => {
     setSlidebarOpen(!isSlidebarOpen);
     console.log("bilal");
@@ -46,12 +48,13 @@ function App() {
   useDarkMode();
   return (
     <div className={`flex max-w-full w-screen max-h-screen`}>
+      {/* <AppRoute /> */}
       <Menu
         isSlidebarOpen={isSlidebarOpen}
         taggleSlidebarOpen={taggleSlidebarOpen}
       />
       <div className={"md:w-[calc(100vw-16rem)] w-screen  flex-col"}>
-        {!isSettingsPage ? (
+        {!pagesWithoutHeader.includes(location.pathname) ? (
           <Header taggleSlidebarOpen={taggleSlidebarOpen} />
         ) : (
           <Header

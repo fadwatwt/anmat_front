@@ -21,7 +21,7 @@ function Sidebar({ list, onClick, activeItem }) {
           <div className={"flex gap-2 items-center"}>
             {item.icon &&
               React.cloneElement(item.icon, {
-                size: 15,
+                size: 20,
                 className:
                   activeItem === item.id
                     ? "text-primary-500 dark:text-primary-200"

@@ -15,10 +15,12 @@ import EmployeeProfilePage from "../pages/Profile/EmployeeProfile.page.jsx";
 import TimeLinePage from "../pages/TimeLine.page.jsx";
 import Notifications from "../pages/Notifications/Notifications.jsx";
 import MangerProfilePage from "../pages/Profile/MangerProfile.page.jsx";
+import Subscriptions from "../pages/Subscription/Subscriptions.page.jsx";
 
 function AppRoute() {
     return (
         <Routes>
+            <Route path={"/subscription"} element={<Subscriptions/>}></Route>
             <Route path={"/"} element={<DashboardPage/>}></Route>
             <Route path={"/conversations"} element={<ConversationsPage/>}></Route>
             <Route path={"/analytics"} element={<AnalyticsPage/>}></Route>
