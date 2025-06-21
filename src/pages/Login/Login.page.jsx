@@ -29,7 +29,7 @@ function LoginPage() {
       dispatch(loginSuccess(response));
       navigate("/"); // Use navigate from useNavigate instead of window.location.href
     } catch (err) {
-      dispatch(loginFailure(err.data?.message || t("login_failed")));
+      dispatch(loginFailure(err.data?.message || t("log in failed")));
     }
   };
 
@@ -64,7 +64,7 @@ function LoginPage() {
 
             {/* Title */}
             <div className="text-sm text-sub-500 flex flex-col justify-center items-center text-start dark:text-sub-300">
-              <p className="text-2xl text-black">{t("login_title")}</p>
+              <p className="text-2xl text-black">{t("Log in")}</p>
               <p className="text-gray-500">{t("login_subtitle")}</p>
             </div>
 
@@ -85,7 +85,7 @@ function LoginPage() {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder={t("enter_email")}
+                      placeholder={t("enter email")}
                       className={`custom-date-input dark:bg-white-0 w-full py-3 px-2 outline-none appearance-none focus:outline-none peer ${
                         i18n.language === "ar" ? "text-end" : ""
                       }`}
@@ -125,10 +125,10 @@ function LoginPage() {
                       checked={rememberMe}
                       onChange={(e) => setRememberMe(e.target.checked)}
                     />
-                    <p className="text-sm text-black">{t("remember_me")}</p>
+                    <p className="text-sm text-black">{t("remember me")}</p>
                   </div>
                   <p className="text-sm text-gray-500 underline cursor-pointer">
-                    {t("forgot_password")}
+                    {t("forgot password")}
                   </p>
                 </div>
 
@@ -143,7 +143,7 @@ function LoginPage() {
                     isLoading ? "opacity-50 cursor-not-allowed" : ""
                   }`}
                 >
-                  {isLoading ? t("loading") : t("login_button")}
+                  {isLoading ? t("loading") : t("login")}
                 </button>
 
                 {/* Social Login Divider */}
@@ -155,7 +155,7 @@ function LoginPage() {
                   className="w-full rounded-lg border border-gray-400 py-1.5 flex gap-2 justify-center items-center hover:bg-gray-50 transition-colors"
                 >
                   <FcGoogle />
-                  <span className="text-sm">{t("login_with_google")}</span>
+                  <span className="text-sm">{t("Log in with google")}</span>
                 </button>
               </div>
             </div>
