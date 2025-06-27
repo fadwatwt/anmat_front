@@ -18,16 +18,20 @@ import MangerProfilePage from "../pages/Profile/MangerProfile.page.jsx";
 import LoginPage from "../pages/Login/Login.page.jsx";
 import RegisterPage from "../pages/Register/Register.page.jsx";
 import EmailVerificationPage from "../pages/Register/EmailVerification.page.jsx";
+import AIPage from "../pages/AI.page.jsx";
+import AIAssistantPage from "../pages/AI.page.jsx";
 import { useSelector } from "react-redux";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
   const { token } = useSelector((state) => state.auth);
-  
+  // السماح بالدخول في وضع التطوير بدون تحقق
+  if (process.env.NODE_ENV === 'development') {
+    return children;
+  }
   if (!token) {
     return <Navigate to="/login" replace />;
   }
-
   return children;
 };
 
@@ -118,6 +122,11 @@ function AppRoute() {
             <Route path="/manager-profile/:slug" element={
                 <ProtectedRoute>
                     <MangerProfilePage />
+                </ProtectedRoute>
+            } />
+            <Route path="/ai-assistant" element={
+                <ProtectedRoute>
+                    <AIAssistantPage />
                 </ProtectedRoute>
             } />
         </Routes>
