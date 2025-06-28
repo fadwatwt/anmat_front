@@ -1,39 +1,37 @@
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from "react";
 
 export default function useDarkMode() {
-    const getInitialTheme = () => {
-        const storedTheme = localStorage.getItem('theme');
-        // const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    const [theme, setTheme] = useState("system");
 
-        if (storedTheme) {
-            return storedTheme;
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const storedTheme = localStorage.getItem("theme") || "system";
+            setTheme(storedTheme);
+            applyTheme(storedTheme);
         }
-        return 'system';
-    };
+    }, []);
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            applyTheme(theme);
+            localStorage.setItem("theme", theme);
+        }
+    }, [theme]);
 
     const applyTheme = (theme) => {
+        if (typeof window === "undefined") return; // تجنب الأخطاء في الخادم
+
         const root = document.documentElement;
-        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 
-        root.classList.remove('dark', 'light');
+        root.classList.remove("dark", "light");
 
-        if (theme === 'system') {
+        if (theme === "system") {
             root.classList.add(systemTheme);
         } else {
             root.classList.add(theme);
         }
     };
-
-    const [theme, setTheme] = useState(() => {
-        const initialTheme = getInitialTheme();
-        applyTheme(initialTheme); // تطبيق الوضع عند التحميل
-        return initialTheme;
-    });
-
-    useEffect(() => {
-        applyTheme(theme);
-        localStorage.setItem('theme', theme);
-    }, [theme]);
 
     return [theme, setTheme];
 }

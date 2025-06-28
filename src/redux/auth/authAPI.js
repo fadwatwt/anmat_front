@@ -1,6 +1,6 @@
 // redux/auth/authAPI.js
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { RootRoute } from "../../Root.Route";
+import { RootRoute } from "@/Root.Route";
 
 export const authApi = createApi({
   reducerPath: "authApi",
@@ -22,14 +22,7 @@ export const authApi = createApi({
         body: credentials,
       }),
     }),
-    register: builder.mutation({
-      query: (userData) => ({
-        url: "register",
-        method: "POST",
-        body: userData,
-      }),
-    }),
   }),
 });
 
-export const { useLoginMutation, useRegisterMutation } = authApi;
+export const { useLoginMutation } = authApi;

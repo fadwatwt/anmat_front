@@ -1,0 +1,135 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+#root {
+    margin: 0 auto;
+    text-align: center;
+}
+
+body{
+    background-color: #F6F8FA ;
+
+}
+html,body{
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+p,div{
+    color:#4B5563
+}
+
+.tab-content,.none-scroll {
+    overflow-y: scroll;
+    scrollbar-width: none;
+}
+
+.tab-content::-webkit-scrollbar,.none-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.checkbox-custom {
+    appearance: none; /* إزالة الشكل الافتراضي للـ checkbox */
+    width: 16px; /* تحديد عرض الـ checkbox */
+    height: 16px; /* تحديد ارتفاع الـ checkbox */
+    padding: 8px;
+    border: 1px solid #ccc; /* تحديد لون الحدود */
+    border-radius: 4px; /* إضافة حواف دائرية */
+    background-color: #fff; /* لون الخلفية للـ checkbox */
+    position: relative; /* لجعل العنصر يحتوي على المحتويات بشكل صحيح */
+    cursor: pointer; /* تغيير شكل المؤشر عند التمرير فوق الـ checkbox */
+    transition: all 0.3s ease; /* إضافة تأثيرات عند التغيير */
+}
+
+
+/* إضافة علامة check داخل الـ checkbox */
+.checkbox-custom:checked::before {
+    content: ''; /* لا شيء في البداية */
+    position: absolute;
+    top: 3.20px;
+    left: 4.80px;
+    width: 6.59px;
+    height: 9.06px;
+    border: solid white; /* لون الخط */
+    border-width: 0 3px 3px 0; /* تحديد شكل الـ check */
+    transform: rotate(45deg); /* تدوير الخط ليظهر كـ check */
+
+}
+
+/* الوضع الداكن */
+.dark .checkbox-custom {
+    background-color: #1a202c; /* خلفية داكنة */
+    border-color: #4a5568; /* لون الحدود */
+}
+
+.checkbox-custom:checked{
+    background-color: #375DFB;
+}
+
+.dark .checkbox-custom:checked{
+    background-color: #C2D6FF;
+}
+
+.dark .checkbox-custom:checked::before {
+    border-color: #000; /* لون العلامة (check) في الوضع الداكن */
+}
+
+.custom-dashed-border {
+    border: 2px dashed transparent;
+    border-image: linear-gradient(to right, black 50%, transparent 50%) 1;
+    border-image-slice: 1;
+}
+
+.custom-date-input {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.custom-date-input::-webkit-calendar-picker-indicator {
+    display: none;
+}
+
+.custom-scroll {
+    /* دعم Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: #E2E4E9 #F6F8FA;
+}
+
+.dark .custom-scroll {
+    /* دعم Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: #31353F #161922;
+}
+
+/* دعم Chrome و Edge و Safari */
+.custom-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+    background-color: #4a90e2;
+    border-radius: 50px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+    background: #f0f0f0;
+}
+
+/* دعم Chrome و Edge و Safari */
+.dark .custom-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.dark .custom-scroll::-webkit-scrollbar-thumb {
+    background-color: #31353F;
+    border-radius: 4px;
+}
+
+.dark .custom-scroll::-webkit-scrollbar-track {
+    background: #161922;
+}
+
+

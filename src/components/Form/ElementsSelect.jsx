@@ -14,12 +14,16 @@ function ElementsSelect({
   classNameContainer,
   isMultiple = false,
   defaultValue = [],
-                          classNameItemSelected,
-                          isRemoveBtn= true
+  classNameItemSelected,
+  isRemoveBtn = true,
+                          dropDownClassName,
 }) {
   const [selectedOptions, setSelectedOptions] = useState(
     Array.isArray(defaultValue) ? defaultValue : []
   );
+  // useEffect(() => {
+  //   setSelectedOptions(Array.isArray(defaultValue) ? defaultValue : []);
+  // }, [defaultValue]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { t } = useTranslation();
   const dropdownRef = useRef(null);
@@ -53,7 +57,7 @@ function ElementsSelect({
   }, []);
 
   return (
-    <div className={ classNameContainer} ref={dropdownRef}>
+    <div className={classNameContainer} ref={dropdownRef}>
       {/* Label */}
       <label
         htmlFor="user-select"
@@ -82,8 +86,10 @@ function ElementsSelect({
                   key={option.id}
                   className={
                     isMultiple &&
-                      `text-gray-800 rounded-md py-1 px-2 flex gap-1 items-center ` +
-                      classNameItemSelected ?classNameItemSelected:"border border-gray-200"
+                    `text-gray-800 rounded-md py-1 px-2 flex gap-1 items-center ` +
+                      classNameItemSelected
+                      ? classNameItemSelected
+                      : "border border-gray-200"
                   }
                 >
                   {option.element}
@@ -114,7 +120,9 @@ function ElementsSelect({
 
         {/* Dropdown */}
         {isDropdownOpen && (
-          <div className={`absolute z-10  bg-white dark:bg-white-0 border border-gray-300 dark:border-gray-500 p-2 w-11/12 rounded-2xl shadow-md mt-1 max-h-60 overflow-y-auto`}>
+          <div
+            className={`absolute z-20  bg-white dark:bg-white-0 border border-gray-300 dark:border-gray-500 p-2 w-11/12 rounded-2xl shadow-md mt-1 max-h-60 overflow-y-auto ${dropDownClassName}`}
+          >
             {options.map((option) => (
               <div
                 key={option.id}
@@ -148,8 +156,9 @@ ElementsSelect.propTypes = {
   placeholder: PropTypes.string,
   isMultiple: PropTypes.bool,
   defaultValue: PropTypes.array, // Added defaultValue prop validation
-  classNameItemSelected:PropTypes.string,
-  isRemoveBtn:PropTypes.bool
+  classNameItemSelected: PropTypes.string,
+  isRemoveBtn: PropTypes.bool,
+  dropDownClassName: PropTypes.string,
 };
 
 export default ElementsSelect;

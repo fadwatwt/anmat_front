@@ -18,7 +18,7 @@ function InputAndLabel({
   return (
     <div className={`flex flex-col gap-1 w-full items-start ${className}`}>
       <label className="text-gray-900 dark:text-gray-200 text-sm">
-        {t(title)}{isRequired && <span className={"text-red-500 ms-1"}>*</span>}
+        {t(title)}{isRequired && <span className={"text-red-500"}>*</span>}
       </label>
       <input
         type={type}
