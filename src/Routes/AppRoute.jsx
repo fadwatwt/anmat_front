@@ -20,6 +20,8 @@ import RegisterPage from "../pages/Register/Register.page.jsx";
 import EmailVerificationPage from "../pages/Register/EmailVerification.page.jsx";
 import { useSelector } from "react-redux";
 import Subscriptions from "../pages/Subscription/Subscriptions.page.jsx";
+import RolesPage from "../pages/Permissions/RolesPage.jsx";
+import PermissionsPage from "../pages/Permissions/PermissionsPage.jsx";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -124,6 +126,16 @@ function AppRoute() {
             <Route path={"/subscription"} element={
                 <ProtectedRoute>
                     <Subscriptions />
+                </ProtectedRoute>
+            } />
+            <Route path="/roles" element={
+                <ProtectedRoute>
+                    <RolesPage />
+                </ProtectedRoute>
+            } />
+            <Route path="/permissions" element={
+                <ProtectedRoute>
+                    <PermissionsPage />
                 </ProtectedRoute>
             } />
         </Routes>
