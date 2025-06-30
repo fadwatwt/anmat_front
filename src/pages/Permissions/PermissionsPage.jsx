@@ -98,7 +98,7 @@ function PermissionsPage() {
         <Page title={"Permissions"} isBtn={true} btnTitle={"Add Permission"} btnOnClick={toggleAddPermissionsModal} >
             <div className={"flex flex-col gap-6"}>
                 <div className="flex flex-col gap-2 h-full">
-                    <Table className="custom-class" title={"All Maanger Permissions"}
+                    <Table className="custom-class" title={"All Manager Permissions"}
                         headers={headers} isActions={true} rows={rows}
                         isFilter={true} />
                 </div>
