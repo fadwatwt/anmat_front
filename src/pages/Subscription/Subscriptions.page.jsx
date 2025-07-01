@@ -1,15 +1,15 @@
 import { useTranslation } from "react-i18next";
 import { RiBillLine, RiCalendarTodoLine, RiFileList3Line, RiFilePaperLine, RiMoneyDollarCircleLine, RiPencilLine, RiProfileLine, RiWalletLine } from "@remixicon/react";
-import TabModal from "../../components/Modal/TabsContener/TabModal.jsx";
-import Sidebar from "../../components/Subcomponents/Sidebar.jsx";
+import TabModal from "@/components/Modal/TabsContener/TabModal.jsx";
+import Sidebar from "@/components/Subcomponents/Sidebar.jsx";
 import { useState } from "react";
-import Details from "./Components/Details.jsx";
-import Orders from "./Components/Orders.jsx";
-import OrdersTable from "./Components/Orders.jsx";
-import Page from "../Page.jsx";
-import Pricing from "./Components/Pricing.jsx";
-import BillingHistory from "./Components/BillingHistory.jsx";
-import ChangeBillingInfoModal from "./Components/partials/ChangeBillingInfoModal.jsx";
+import Details from "@/pages/Subscription/Components/Details.jsx";
+import Orders from "@/pages/Subscription/Components/Orders.jsx";
+import OrdersTable from "@/pages/Subscription/Components/Orders.jsx";
+import Page from "@/pages/Page.jsx";
+import Pricing from "@/pages/Subscription/Components/Pricing.jsx";
+import BillingHistory from "@/pages/Subscription/Components/BillingHistory.jsx";
+import ChangeBillingInfoModal from "@/pages/Subscription/Components/partials/ChangeBillingInfoModal.jsx";
 
 
 function SubscriptionsPage() {

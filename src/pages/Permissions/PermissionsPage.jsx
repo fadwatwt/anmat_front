@@ -1,8 +1,8 @@
 import { t } from "i18next";
-import Table from "../../components/Tables/Table";
-import Page from "../Page";
+import Table from "@/components/Tables/Table";
+import Page from "@/pages/Page";
 import { RiCheckboxCircleFill, RiCloseCircleFill, RiQuestionLine } from "@remixicon/react";
-import AddPermissionModal from "./components/AddPermissionModal";
+import AddPermissionModal from "@/pages/Permissions/components/AddPermissionModal";
 import { useState } from "react";
 
 

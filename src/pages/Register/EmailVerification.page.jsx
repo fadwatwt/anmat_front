@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { GoMail } from "react-icons/go"; // Assuming you want this icon
 import { useState } from "react";
 import axios from "axios"; // Added axios import
-import { RootRoute } from "../../Root.Route"; // Added RootRoute import
+import { RootRoute } from "@/Root.Route"; // Added RootRoute import
 
 function EmailVerificationPage() {
   const { t } = useTranslation();

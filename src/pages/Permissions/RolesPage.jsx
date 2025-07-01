@@ -1,9 +1,9 @@
 import { t } from "i18next";
-import Table from "../../components/Tables/Table";
-import Page from "../Page";
 import { RiCheckboxCircleFill, RiCloseCircleFill, RiQuestionLine } from "@remixicon/react";
 import { useState } from "react";
-import AddRoleModal from "./components/AddRoleModal";
+import Page from "@/pages/Page";
+import AddRoleModal from "@/pages/Permissions/components/AddRoleModal";
+import Table from "@/components/Tables/Table";
 
 
 function RolesPage() {
