@@ -1,3 +1,4 @@
+"use client";
 import { RiApps2AiLine, RiBox2Line, RiCalendarTodoLine, RiErrorWarningLine, RiMacLine, RiPaletteLine, RiSettings4Line, RiUserSmileLine } from "@remixicon/react";
 
 const SelectYourBusiness = () => {
