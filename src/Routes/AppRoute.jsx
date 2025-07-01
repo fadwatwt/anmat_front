@@ -1,4 +1,4 @@
-import {Route, Routes} from "react-router";
+import {Route, Routes, Navigate} from "react-router";
 import DashboardPage from "../pages/Dashboard.page.jsx";
 import ConversationsPage from "../pages/Conversations/Conversations.page.jsx";
 import AnalyticsPage from "../pages/Analytics.page.jsx";
@@ -15,26 +15,156 @@ import EmployeeProfilePage from "../pages/Profile/EmployeeProfile.page.jsx";
 import TimeLinePage from "../pages/TimeLine.page.jsx";
 import Notifications from "../pages/Notifications/Notifications.jsx";
 import MangerProfilePage from "../pages/Profile/MangerProfile.page.jsx";
+import LoginPage from "../pages/Login/Login.page.jsx";
+import RegisterPage from "../pages/Register/Register.page.jsx";
+import EmailVerificationPage from "../pages/Register/EmailVerification.page.jsx";
+import AIPage from "../pages/AI.page.jsx";
+import AIAssistantPage from "../pages/AI.page.jsx";
+import { useSelector } from "react-redux";
+import Subscriptions from "../pages/Subscription/Subscriptions.page.jsx";
+import RolesPage from "../pages/Permissions/RolesPage.jsx";
+import PermissionsPage from "../pages/Permissions/PermissionsPage.jsx";
+import SelectYourBusiness from "../pages/Register/SelectYourBusiness.page.jsx";
+import SetupCompanyProfile from "../pages/Register/components/SetupCompanyProfile.jsx";
+import SetupEmployeeProfile from "../pages/Register/components/SetupEmployeeProfile.jsx";
+
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+  const { token } = useSelector((state) => state.auth);
+  // السماح بالدخول في وضع التطوير بدون تحقق
+  if (process.env.NODE_ENV === 'development') {
+    return children;
+  }
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+};
 
 function AppRoute() {
     return (
         <Routes>
-            <Route path={"/"} element={<DashboardPage/>}></Route>
-            <Route path={"/conversations"} element={<ConversationsPage/>}></Route>
-            <Route path={"/analytics"} element={<AnalyticsPage/>}></Route>
-            <Route path={"/projects"} element={<ProjectsPage/>}></Route>
-            <Route path={"projects/create"} element={<CreateProjectForm/>}></Route>
-            <Route path={"projects/:slug"} element={<ProjectDetailes/>}></Route>
-            <Route path={"/tasks"} element={<TasksPage/>}></Route>
-            <Route path={"/tasks/:slug"} element={<TaskDetails/>}></Route>
-            <Route path={"/tasks/create"} element={<CreateTask/>}></Route>
-            <Route path={"/social-media"} element={<SocialMediaPage/>}></Route>
-            <Route path={"/time-line"} element={<TimeLinePage/>}></Route>
-            <Route path={"/settings"} element={<SettingPage/>}></Route>
-            <Route path={"/hr-management"} element={<HRManagementPage/>}></Route>
-                <Route path={"/notifications"} element={<Notifications />} />
-            <Route path={"/employee-profile/:slug"} element={<EmployeeProfilePage />}></Route>
-            <Route path={"/manager-profile/:slug"} element={<MangerProfilePage />}></Route>
+            {/* Public Routes */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/email-verification-company" element={<EmailVerificationPage />} />
+
+            {/* Protected Routes */}
+            <Route path="/" element={
+                <ProtectedRoute>
+                    <DashboardPage />
+                </ProtectedRoute>
+            } />
+            <Route path="/conversations" element={
+                <ProtectedRoute>
+                    <ConversationsPage />
+                </ProtectedRoute>
+            } />
+            <Route path="/analytics" element={
+                <ProtectedRoute>
+                    <AnalyticsPage />
+                </ProtectedRoute>
+            } />
+            <Route path="/projects" element={
+                <ProtectedRoute>
+                    <ProjectsPage />
+                </ProtectedRoute>
+            } />
+            <Route path="projects/create" element={
+                <ProtectedRoute>
+                    <CreateProjectForm />
+                </ProtectedRoute>
+            } />
+            <Route path="projects/:slug" element={
+                <ProtectedRoute>
+                    <ProjectDetailes />
+                </ProtectedRoute>
+            } />
+            <Route path="/tasks" element={
+                <ProtectedRoute>
+                    <TasksPage />
+                </ProtectedRoute>
+            } />
+            <Route path="/tasks/:slug" element={
+                <ProtectedRoute>
+                    <TaskDetails />
+                </ProtectedRoute>
+            } />
+            <Route path="/tasks/create" element={
+                <ProtectedRoute>
+                    <CreateTask />
+                </ProtectedRoute>
+            } />
+            <Route path="/social-media" element={
+                <ProtectedRoute>
+                    <SocialMediaPage />
+                </ProtectedRoute>
+            } />
+            <Route path="/time-line" element={
+                <ProtectedRoute>
+                    <TimeLinePage />
+                </ProtectedRoute>
+            } />
+            <Route path="/settings" element={
+                <ProtectedRoute>
+                    <SettingPage />
+                </ProtectedRoute>
+            } />
+            <Route path="/hr-management" element={
+                <ProtectedRoute>
+                    <HRManagementPage />
+                </ProtectedRoute>
+            } />
+            <Route path="/notifications" element={
+                <ProtectedRoute>
+                    <Notifications />
+                </ProtectedRoute>
+            } />
+            <Route path="/employee-profile/:slug" element={
+                <ProtectedRoute>
+                    <EmployeeProfilePage />
+                </ProtectedRoute>
+            } />
+            <Route path="/manager-profile/:slug" element={
+                <ProtectedRoute>
+                    <MangerProfilePage />
+                </ProtectedRoute>
+            } />
+            <Route path="/ai-assistant" element={
+                <ProtectedRoute>
+                    <AIAssistantPage />
+                </ProtectedRoute>
+            } />
+            <Route path={"/subscription"} element={
+                <ProtectedRoute>
+                    <Subscriptions />
+                </ProtectedRoute>
+            } />
+            <Route path="/roles" element={
+                <ProtectedRoute>
+                    <RolesPage />
+                </ProtectedRoute>
+            } />
+            <Route path="/permissions" element={
+                <ProtectedRoute>
+                    <PermissionsPage />
+                </ProtectedRoute>
+            } />
+            <Route path="/business-select" element={
+                <ProtectedRoute>
+                    <SelectYourBusiness />
+                </ProtectedRoute>
+            } />
+            <Route path="/setup-company-profile" element={
+                <ProtectedRoute>
+                    <SetupCompanyProfile />
+                </ProtectedRoute>
+            } />
+            <Route path="/setup-employee-profile" element={
+                <ProtectedRoute>
+                    <SetupEmployeeProfile />
+                </ProtectedRoute>
+            } />
         </Routes>
     );
 }

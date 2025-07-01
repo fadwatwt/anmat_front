@@ -9,7 +9,7 @@ function Alert({
   message,
   isOpen,
   onClose,
-  isBtns = true,
+  isBtns = false,
   titleSubmitBtn,
   titleCancelBtn,
   onSubmit,

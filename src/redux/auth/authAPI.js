@@ -1,6 +1,6 @@
 // redux/auth/authAPI.js
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { RootRoute } from "../../Root.Route";
+import { RootRoute } from "@/Root.Route";
 
 export const authApi = createApi({
   reducerPath: "authApi",

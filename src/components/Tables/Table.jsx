@@ -110,7 +110,7 @@ function Table({
             {showControlBar && (
               <div className="flex items-center gap-6">
                 <div className="flex bg-gray-100 dark:bg-gray-900 rounded-lg p-1">
-                  {viewModalList.map((viewModal, index) => (
+                  {viewModalList?.map((viewModal, index) => (
                     <button
                       key={index}
                       className={`px-6 rounded-md text-sm dark:text-gray-200 text-gray-900 ${
@@ -199,7 +199,7 @@ function Table({
                   />
                 </th>
               )}
-              {headers.map((header, index) => (
+              {headers?.map((header, index) => (
                 <th
                   key={index}
                   className="p-2 text-start text-sm font-normal dark:bg-gray-900 dark:text-gray-300 "
@@ -219,7 +219,7 @@ function Table({
             </tr>
           </thead>
           <tbody>
-            {currentRows.map((row, rowIndex) => {
+            {currentRows?.map((row, rowIndex) => {
               const actualRowIndex = rowIndex + startIndex; // Calculate the actual index of the row
               return (
                 <tr

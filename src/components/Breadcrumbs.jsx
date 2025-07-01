@@ -1,10 +1,10 @@
 import React from 'react';
-import { Link } from 'react-router';
 import PropTypes from "prop-types";
 import {useTranslation} from "react-i18next";
+import Link from 'next/link';
 
 const Breadcrumbs = ({ breadcrumbs }) => {
-    const {t} = useTranslation()
+    const {t} = useTranslation("common")
     return (
         <nav className="text-sm text-gray-500 flex items-end">
             <ol className="list-reset flex">
@@ -12,7 +12,7 @@ const Breadcrumbs = ({ breadcrumbs }) => {
                     <React.Fragment key={index}>
                         <li>
                             {breadcrumb.path ? (
-                                <Link to={breadcrumb.path} className="text-blue-500 dark:text-primary-200 hover:underline">
+                                <Link href={breadcrumb.path} className="text-blue-500 dark:text-primary-200 hover:underline">
                                     {t(breadcrumb.title)}
                                 </Link>
                             ) : (

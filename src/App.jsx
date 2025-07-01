@@ -8,14 +8,20 @@ import useDarkMode from "./Hooks/useDarkMode.js";
 import "/i18n.js";
 import i18n from "i18next";
 import { setLanguage } from "./functions/Days.js";
+import { useSelector } from "react-redux";
 
 function App() {
   const [isSlidebarOpen, setSlidebarOpen] = useState(false);
   const location = useLocation();
+  const { token } = useSelector((state) => state.auth);
   const isSettingsPage = location.pathname === "/settings";
+  const isAuthPage = location.pathname === "/login" || location.pathname === "/register";
+
+  // Because there is a need to allow more pages without the main header
+  const pagesWithoutHeader = ["/settings", "/subscription"];
+
   const taggleSlidebarOpen = () => {
     setSlidebarOpen(!isSlidebarOpen);
-    console.log("bilal");
   };
 
   useEffect(() => {
@@ -44,16 +50,23 @@ function App() {
   setLanguage(i18n.language);
 
   useDarkMode();
+
+  if (isAuthPage) {
+    return <AppRoute />;
+  }
+
   return (
     <div className={`flex max-w-full w-screen max-h-screen`}>
-      <Menu
-        isSlidebarOpen={isSlidebarOpen}
-        taggleSlidebarOpen={taggleSlidebarOpen}
-      />
-      <div className={"md:w-[calc(100vw-16rem)] w-screen  flex-col"}>
-        {!isSettingsPage ? (
+      {token && (
+        <Menu
+          isSlidebarOpen={isSlidebarOpen}
+          taggleSlidebarOpen={taggleSlidebarOpen}
+        />
+      )}
+      <div className={`${token ? "md:w-[calc(100vw-16rem)]" : "w-screen"} flex-col`}>
+        {token && !pagesWithoutHeader.includes(location.pathname) ? (
           <Header taggleSlidebarOpen={taggleSlidebarOpen} />
-        ) : (
+        ) : token && (
           <Header
             className="md:hidden block"
             taggleSlidebarOpen={taggleSlidebarOpen}
