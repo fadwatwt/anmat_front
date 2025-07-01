@@ -18,17 +18,26 @@ import MangerProfilePage from "../pages/Profile/MangerProfile.page.jsx";
 import LoginPage from "../pages/Login/Login.page.jsx";
 import RegisterPage from "../pages/Register/Register.page.jsx";
 import EmailVerificationPage from "../pages/Register/EmailVerification.page.jsx";
+import AIPage from "../pages/AI.page.jsx";
+import AIAssistantPage from "../pages/AI.page.jsx";
 import { useSelector } from "react-redux";
 import Subscriptions from "../pages/Subscription/Subscriptions.page.jsx";
+import RolesPage from "../pages/Permissions/RolesPage.jsx";
+import PermissionsPage from "../pages/Permissions/PermissionsPage.jsx";
+import SelectYourBusiness from "../pages/Register/SelectYourBusiness.page.jsx";
+import SetupCompanyProfile from "../pages/Register/components/SetupCompanyProfile.jsx";
+import SetupEmployeeProfile from "../pages/Register/components/SetupEmployeeProfile.jsx";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
   const { token } = useSelector((state) => state.auth);
-  
+  // السماح بالدخول في وضع التطوير بدون تحقق
+  if (process.env.NODE_ENV === 'development') {
+    return children;
+  }
   if (!token) {
     return <Navigate to="/login" replace />;
   }
-
   return children;
 };
 
@@ -121,9 +130,39 @@ function AppRoute() {
                     <MangerProfilePage />
                 </ProtectedRoute>
             } />
+            <Route path="/ai-assistant" element={
+                <ProtectedRoute>
+                    <AIAssistantPage />
+                </ProtectedRoute>
+            } />
             <Route path={"/subscription"} element={
                 <ProtectedRoute>
                     <Subscriptions />
+                </ProtectedRoute>
+            } />
+            <Route path="/roles" element={
+                <ProtectedRoute>
+                    <RolesPage />
+                </ProtectedRoute>
+            } />
+            <Route path="/permissions" element={
+                <ProtectedRoute>
+                    <PermissionsPage />
+                </ProtectedRoute>
+            } />
+            <Route path="/business-select" element={
+                <ProtectedRoute>
+                    <SelectYourBusiness />
+                </ProtectedRoute>
+            } />
+            <Route path="/setup-company-profile" element={
+                <ProtectedRoute>
+                    <SetupCompanyProfile />
+                </ProtectedRoute>
+            } />
+            <Route path="/setup-employee-profile" element={
+                <ProtectedRoute>
+                    <SetupEmployeeProfile />
                 </ProtectedRoute>
             } />
         </Routes>

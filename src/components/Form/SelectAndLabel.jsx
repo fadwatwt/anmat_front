@@ -12,7 +12,8 @@ function SelectAndLabel({
   onBlur,
   error,
   placeholder,
-  isRequired
+  isRequired,
+  isMultiple = false
 }) {
   const { t,i18n } = useTranslation();
 
@@ -38,6 +39,7 @@ function SelectAndLabel({
                 ? "border-red-500 focus:ring-red-500"
                 : "border-soft-200 dark:border-gray-600 focus:ring-primary"
             }`}
+            multiple={isMultiple}
         >
           <option value="" disabled>
             {placeholder ? t(placeholder) : t(title)}
@@ -67,7 +69,8 @@ SelectAndLabel.propTypes = {
   onBlur: PropTypes.func.isRequired,
   error: PropTypes.string,
   placeholder: PropTypes.string, // New placeholder prop
-  isRequired: PropTypes.bool
+  isRequired: PropTypes.bool,
+  isMultiple: PropTypes.bool
 };
 
 export default SelectAndLabel;

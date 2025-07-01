@@ -1,4 +1,3 @@
-
 import PropTypes from 'prop-types';
 import SearchInput from "./Form/SearchInput.jsx";
 import MenuItem from "./Menu/MenuItem.jsx";
@@ -66,6 +65,7 @@ const Menu = React.memo(({ isSlidebarOpen, taggleSlidebarOpen }) => {
                         <MenuItem path={"/dashboard/social-media"} icon={<Share />} title={"Social Media"}/>
                         <MenuItem path={"/dashboard/time-line"} icon={<Edit />} title={"Timeline"}/>
                         <MenuItem path={"/dashboard/setting"} icon={<Setting />} title={"Settings"}/>
+                        <MenuItem path={"/ai-assistant"} icon={<svg width="20" height="20" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#4F46E5" strokeWidth="2" fill="#EEF2FF"/><path d="M12 8v4l3 2" stroke="#4F46E5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>} title={"AI Assistant"}/>
                     </div>
                 </div>
                 {/*<BriefTimeLine tweet={tweet} myAccount={myAccount}/>*/}
