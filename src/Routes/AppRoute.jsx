@@ -136,19 +136,19 @@ function AppRoute() {
                 </ProtectedRoute>
             } />
             <Route path={"/subscription"} element={
-                // <ProtectedRoute>
+                <ProtectedRoute>
                     <Subscriptions />
-                // </ProtectedRoute>
+                </ProtectedRoute>
             } />
             <Route path="/roles" element={
-                // <ProtectedRoute>
+                <ProtectedRoute>
                     <RolesPage />
-                // </ProtectedRoute>
+                </ProtectedRoute>
             } />
             <Route path="/permissions" element={
-                // <ProtectedRoute>
+                <ProtectedRoute>
                     <PermissionsPage />
-                // </ProtectedRoute>
+                </ProtectedRoute>
             } />
             <Route path="/business-select" element={
                 <ProtectedRoute>

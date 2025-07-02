@@ -27,7 +27,7 @@ const SetupCompanyProfile = () => {
 
     return (
         <>
-            <div className="flex flex-col items-start justify-start gap-8 p-8 bg-white">
+            <div className="flex flex-col items-start justify-start gap-8 overflow-hidden overflow-y-auto px-2">
                 {/* Title */}
                 <div className="flex flex-col items-start justify-start gap-2">
                     <sapn className="text-2xl text-gray-900">
@@ -39,7 +39,7 @@ const SetupCompanyProfile = () => {
                 </div>
 
                 {/* Form */}
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col w-full gap-4">
                     <InputAndLabel
                         title="Phone Number"
                         name="phone"
@@ -98,12 +98,14 @@ const SetupCompanyProfile = () => {
                 </div>
 
                 {/* Buttons */}
-                <div className="flex gap-8">
-                    <div className="bg-white text-gray-700 text-md w-48 py-2 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-100">
+                <div className="flex flex-col md:flex-row w-full items-center justify-center gap-8">
+                    <div className="bg-white text-gray-700 text-md w-48 py-2 border border-gray-200 rounded-xl cursor-pointer 
+                        hover:bg-gray-100 text-center">
                         Skip
                     </div>
 
-                    <div className="bg-primary-500 text-primary-50 text-md w-48 py-2 rounded-xl cursor-pointer hover:bg-primary-600">
+                    <div className="bg-primary-500 text-primary-50 text-md w-48 py-2 rounded-xl cursor-pointer 
+                        hover:bg-primary-600 text-center">
                         Next
                     </div>
                 </div>

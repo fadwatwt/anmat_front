@@ -9,6 +9,7 @@ import {
   RiTwitterXLine,
 } from "@remixicon/react";
 import Collapse from "@/components/LandingPage/Collapse.jsx";
+import Link from "next/link";
 function Desktop2Page() {
   let isOnSwitch = false;
   const handelIsOnSwitch = () => {
@@ -46,7 +47,7 @@ function Desktop2Page() {
             <div className={"flex items-center gap-3"}>
               <p className={" text-white"}>
                 {" "}
-                <a href="login"> {"Login"}</a>
+                <Link href="login"> {"Login"}</Link>
               </p>
               <button className={"bg-white py-1.5 px-3 rounded-md "}>
                 Sign up

@@ -42,9 +42,9 @@ const SelectYourBusiness = () => {
     const typeCard = (icon, title) => {
         return (
             <div className="flex items-center justify-start gap-3 px-4 py-4 bg-white dark:bg-gray-800 text-primary-500 dark:text-gray-50
-            cursor-pointer hover:bg-primary-500 hover:text-primary-50 rounded-xl w-[20rem] shadow-sm group">
+            cursor-pointer hover:bg-primary-500 hover:text-primary-50 rounded-xl w-[15rem] shadow-sm group">
                 {icon}
-                <span className="text-lg text-gray-900 group-hover:text-gray-50">
+                <span className="text-md text-gray-900 group-hover:text-gray-50">
                     {title}
                 </span>
             </div>
@@ -53,7 +53,7 @@ const SelectYourBusiness = () => {
 
     return (
         <>
-            <div className="flex flex-col items-center justify-start gap-8 p-8">
+            <div className="flex flex-col items-center justify-start gap-8 p-8 w-full overflow-hidden">
                 <div className="flex flex-col items-center justify-start gap-6">
                     <div className="flex flex-col items-center justify-start gap-4">
                         <sapn className="text-2xl text-gray-900">
@@ -63,16 +63,18 @@ const SelectYourBusiness = () => {
                             Chosse the best fit for your project or team. We'll help you get started.
                         </span>
                     </div>
-                    <div className="flex flex-wrap gap-4 md:w-[41rem]">
+                    <div className="flex flex-wrap gap-4 md:w-[31rem]">
                         {TYPES.map(type => typeCard(type.icon, type.title))}
                     </div>
                 </div>
                 <div className="flex gap-8">
-                    <div className="bg-white text-gray-700 text-md w-32 py-2 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-100">
+                    <div className="bg-white text-gray-700 text-md w-32 py-2 border border-gray-200 rounded-xl cursor-pointer
+                        hover:bg-gray-100 text-center">
                         Skip
                     </div>
 
-                    <div className="bg-primary-500 text-primary-50 text-md w-32 py-2 rounded-xl cursor-pointer hover:bg-primary-600">
+                    <div className="bg-primary-500 text-primary-50 text-md w-32 py-2 rounded-xl cursor-pointer
+                        hover:bg-primary-600 text-center">
                         Next
                     </div>
                 </div>
