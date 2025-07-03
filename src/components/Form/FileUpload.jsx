@@ -19,7 +19,7 @@ const FileUpload = () => {
     return (
         <div
             {...getRootProps()}
-            className={`border-2 border-dashed dark:border-gray-600 rounded-lg p-6 text-center cursor-pointer ${
+            className={`border-2 border-dashed dark:border-gray-600 rounded-lg p-6 text-center cursor-pointer w-full ${
                 isDragActive ? "border-blue-500 bg-blue-50" : "border-gray-300"
             }`}
         >

@@ -55,7 +55,7 @@ function Pricing() {
             <React.Fragment key={index}>
                 <div className={"rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 flex flex-col gap-6 overflow-hidden"}>
                     {/* Details */}
-                    <div className="flex items-start gap-4 justify-between px-8 py-8">
+                    <div className="flex items-center gap-4 justify-between px-8 py-8">
                         {/* Basic Info */}
                         <div className="flex flex-col items-center justify-center gap-2 w-5/12">
                             <div className="rounded-full p-2 bg-primary-100">
@@ -63,19 +63,19 @@ function Pricing() {
                                     <RiFlashlightLine size={25} className="rounded-full text-primary-500 stroke-[5px]" />
                                 </div>
                             </div>
-                            <span className="text-lg text-primary-700 font-semibold">
+                            <span className="text-lg text-primary-700 font-semibold text-center">
                                 {plan.name}
                             </span>
-                            <span className="text-3xl font-bold text-gray-900">
+                            <span className="text-3xl font-bold text-gray-900 text-center">
                                 {plan.price}
                             </span>
-                            <span className="text-md text-gray-500">
+                            <span className="text-md text-gray-500 text-center">
                                 {plan.description}
                             </span>
                         </div>
 
                         {/* Features */}
-                        <div className="flex items-start justify-start gap-4 flex-wrap">
+                        <div className="flex items-center justify-start gap-4 flex-wrap">
                             {planFeatures(plan)}
                         </div>
                     </div>
