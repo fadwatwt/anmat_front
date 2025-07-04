@@ -69,19 +69,19 @@ function PermissionsPage() {
             </span>
         </div>,
 
-        <div key="view" className="flex items-center justify-center">
+        <div key="view" className="flex items-center justify-start">
             <input type="checkbox" selected={permission.view} />
         </div>,
 
-        <div key="add" className="flex items-center justify-center">
+        <div key="add" className="flex items-center justify-start">
             <input type="checkbox" selected={permission.add} />
         </div>,
 
-        <div key="edit" className="flex items-center justify-center">
+        <div key="edit" className="flex items-center justify-start">
             <input type="checkbox" selected={permission.edit} />
         </div>,
 
-        <div key="delete" className="flex items-center justify-center">
+        <div key="delete" className="flex items-center justify-start">
             <input type="checkbox" selected={permission.delete} />
         </div>,
 

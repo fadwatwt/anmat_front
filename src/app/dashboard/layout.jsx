@@ -51,7 +51,7 @@ const MainLayout = ({ children }) => {
     // التوجيه إلى صفحة تسجيل الدخول في حال عدم وجود التوكن
     useEffect(() => {
         if (!authToken) {
-            router.push("/login");
+            // router.push("/login");
         }
     }, [authToken]);
 
