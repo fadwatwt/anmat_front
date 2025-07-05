@@ -45,6 +45,10 @@ function Table({
   selectedDate,
   classNameCell,
   viewModalList,
+  showIndustryFilter = false,
+  industryOptions = [],
+  selectedIndustry,
+  onIndustryChange
 }) {
   const { t, i18n } = useTranslation();
   const [isAllSelected, setIsAllSelected] = useState(false);
@@ -150,6 +154,17 @@ function Table({
                   value={selectedDate}
                 />
               </div>
+            )}
+            {showIndustryFilter && (
+              <SelectWithoutLabel
+                options={
+                 industryOptions.length ?industryOptions : defaultStatusOptions
+                }
+                value={selectedIndustry}
+                onChange={onIndustryChange}
+                placeholder={t("Select Industry")}
+                className="w-fit"
+              />
             )}
             {showStatusFilter && (
               <SelectWithoutLabel
@@ -373,6 +388,10 @@ Table.propTypes = {
   onDateChange: PropTypes.func,
   classNameCell: PropTypes.string,
   viewModalList: PropTypes.array,
+  showIndustryFilter: PropTypes.bool,
+  industryOptions: PropTypes.array,
+  selectedIndustry: PropTypes.string,
+  onIndustryChange: PropTypes.func
 };
 
 export default Table;

@@ -60,8 +60,8 @@ const MenuAdmin = React.memo(({ isSlidebarOpen, taggleSlidebarOpen }) => {
                         <MenuItem path={"/admin"} icon={<Category size={"18"} />} title={"Analytics"}/>
                         <MenuItem path={"/admin/companies"} icon={<NoteText/>} title={"Companies"}/>
                         <MenuItem path={"/admin/plans"} icon={<TaskSquare />} title={"Plans"}/>
-                        <MenuItem path={"/admin/Subscriptions"} icon={<Chart2 />} title={"Subscriptions"}/>
-                        <MenuItem path={"/admin/Orders"} icon={<Profile2User />} title={"Orders"}/>
+                        <MenuItem path={"/admin/subscriptions"} icon={<Chart2 />} title={"Subscriptions"}/>
+                        <MenuItem path={"/admin/orders"} icon={<Profile2User />} title={"Orders"}/>
                         <MenuItem path={"/ai-assistant"} icon={<svg width="20" height="20" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#4F46E5" strokeWidth="2" fill="#EEF2FF"/><path d="M12 8v4l3 2" stroke="#4F46E5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>} title={"AI Assistant"}/>
                     </div>
                 </div>
