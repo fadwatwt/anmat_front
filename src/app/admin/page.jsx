@@ -390,6 +390,7 @@ const TaskManagementDashboard = () => {
                 rows={rows}
                 isCheckInput={false}
                 isTitle={true}
+                classContainer={"h-full"}
             />
           </div>
 

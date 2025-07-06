@@ -114,7 +114,7 @@ function CompaniesSubscriptions() {
                 </div>
             </div>
             <div className="flex flex-col items-start justify-start gap-0">
-                <span className="text-lg text-gray-900">
+                <span className="text-lg text-gray-900 dark:text-gray-50">
                     {order.company}
                 </span>
                 <span className="text-sm text-gray-500">
@@ -130,7 +130,7 @@ function CompaniesSubscriptions() {
                     <RiFlashlightLine size={25} className="rounded-full text-primary-500 stroke-[5px]" />
                 </div>
             </div>
-            <span className="text-lg text-gray-900">
+            <span className="text-lg text-gray-900 dark:text-gray-50">
                 {order.plan}
             </span>
         </div>,
