@@ -1,0 +1,10 @@
+.menu-item:hover .gemini-sidebar-icon .gemini-star {
+  filter: drop-shadow(0 0 6px #4F8CFF) drop-shadow(0 0 12px #4F8CFF);
+  transition: filter 0.2s;
+}
+
+.menu-item:hover .gemini-sidebar-icon path {
+  stroke: #3B82F6 !important;
+  fill: #E0F2FE !important;
+  transition: stroke 0.2s, fill 0.2s;
+} 
