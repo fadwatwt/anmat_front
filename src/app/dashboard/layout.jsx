@@ -21,6 +21,9 @@ const MainLayout = ({ children }) => {
 
     useDarkMode();
 
+    console.log("Render MainLayout");
+
+
     const toggleSlidebarOpen = () => setSlidebarOpen(!isSlidebarOpen);
 
     // تغيير اتجاه الصفحة والخط حسب اللغة
@@ -56,10 +59,10 @@ const MainLayout = ({ children }) => {
     }, [authToken]);
 
     return (
-        <div className="flex max-w-full w-screen max-h-screen">
+        <div className="flex max-w-full w-screen h-screen">
             <Menu
                 isSlidebarOpen={isSlidebarOpen}
-                taggleSlidebarOpen={toggleSlidebarOpen}
+                toggleSlidebarOpen={toggleSlidebarOpen}
             />
             <div className="md:w-[calc(100vw-16rem)] w-screen flex-col">
                 {!isSettingsPage ? (

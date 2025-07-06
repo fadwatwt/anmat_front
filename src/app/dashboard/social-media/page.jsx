@@ -5,9 +5,18 @@ import { IoLogoInstagram } from "react-icons/io";
 import { CgMail } from "react-icons/cg";
 import { AiOutlineYoutube } from "react-icons/ai";
 import Tabs from "@/components/Tabs.jsx";
-import FacebookTab from "@/app/dashboard/social-media/_Tabs/Facebook.tab.jsx";
-import TweeterTab from "@/app/dashboard/social-media/_Tabs/Tweeter.tab.jsx";
 import Page from "../../../components/Page.jsx";
+import dynamic from "next/dynamic";
+
+const FacebookTab = dynamic(() => import("@/app/dashboard/social-media/_Tabs/Facebook.tab.jsx"), {
+    loading: () => <p>Loading Facebook...</p>,
+    ssr: false,
+});
+
+const TweeterTab = dynamic(() => import("@/app/dashboard/social-media/_Tabs/Tweeter.tab.jsx"), {
+    loading: () => <p>Loading Twitter...</p>,
+    ssr: false,
+});
 
 function SocialMediaPage() {
     const tabsData = [

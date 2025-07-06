@@ -1,12 +1,15 @@
+"use client"
+
 import PropTypes from 'prop-types';
 import SearchInput from "./Form/SearchInput.jsx";
 import MenuItem from "./Menu/MenuItem.jsx";
 import {useTranslation} from "react-i18next";
-import logo from "../../public/images/logo.png"
 import React from "react"
 import { Setting,Edit ,Share,Messages1,Category,Profile2User,TaskSquare,NoteText,Chart2,HambergerMenu} from 'iconsax-react';
 
-const Menu = React.memo(({ isSlidebarOpen, taggleSlidebarOpen }) => {
+const Menu = React.memo(({ isSlidebarOpen, toggleSlidebarOpen }) => {
+    console.log("Render Menu", { isSlidebarOpen });
+
     const {t,i18n} = useTranslation()
 
     // const tweet = {
@@ -25,7 +28,7 @@ const Menu = React.memo(({ isSlidebarOpen, taggleSlidebarOpen }) => {
     // }
     return (
         <div
-            className={`md:relative md:translate-x-0 bg-white dark:bg-gray-800 w-[272px] max-w-[272px] 
+            className={`md:relative md:translate-x-0 min-h--[100vh] bg-white dark:bg-gray-800 w-[272px] max-w-[272px] 
         h-screen fixed flex flex-col gap-5 top-0 z-40 transition-transform 
         ${i18n.language === "ar" ? "right-0" : "left-0"} 
         ${isSlidebarOpen ? "translate-x-0" : (i18n.language === "ar" ? "translate-x-full" : "-translate-x-full")}`}
@@ -43,7 +46,7 @@ const Menu = React.memo(({ isSlidebarOpen, taggleSlidebarOpen }) => {
                     isSlidebarOpen && (
                         <button className="inline-flex h-8 w-8 items-center p-2 text-sm text-gray-500
                 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
-                                onClick={taggleSlidebarOpen}>
+                                onClick={toggleSlidebarOpen}>
                             <HambergerMenu />
                         </button>
                     )
@@ -76,7 +79,9 @@ const Menu = React.memo(({ isSlidebarOpen, taggleSlidebarOpen }) => {
 
 Menu.propTypes = {
     isSlidebarOpen: PropTypes.bool,
-    taggleSlidebarOpen: PropTypes.func,
+    toggleSlidebarOpen: PropTypes.func,
 };
 
-export default Menu;
+Menu.displayName = "MenuComponent"
+
+export default React.memo(Menu);

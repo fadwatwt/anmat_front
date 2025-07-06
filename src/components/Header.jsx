@@ -1,3 +1,5 @@
+"use client"
+
 import SearchInput from "./Form/SearchInput.jsx";
 
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
@@ -59,6 +61,8 @@ const Header = React.memo(({ taggleSlidebarOpen, className }) => {
     </div>
   );
 });
+
+Header.displayName = "HeaderComponent"
 
 Header.propTypes = {
   taggleSlidebarOpen: PropTypes.func,
