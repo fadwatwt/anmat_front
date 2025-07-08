@@ -107,7 +107,7 @@ function Table({
         <div className={"flex justify-between items-baseline"}>
           <div className="flex items-center gap-4">
             <p
-              className={"text-gray-800 text-start text-sm dark:text-gray-400"}
+              className={"text-gray-800 text-start text-lg dark:text-gray-400"}
             >
               {t(title)}
             </p>

@@ -2,9 +2,8 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { format, parseISO } from "date-fns";
-import Table from "../../../../components/Tables/Table.jsx";
-import { fetchAllRotations } from "../../../../redux/rotation/rotationAPI";
+import Table from "@/components/Tables/Table.jsx";
+import { fetchAllRotations } from "@/redux/rotation/rotationAPI";
 
 const OffBadge = () => (
   <div className="w-full flex justify-center">
@@ -15,7 +14,7 @@ const OffBadge = () => (
   </div>
 );
 
-function RotationTap() {
+function RotationTable() {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { rotations, loading, error } = useSelector((state) => state.rotation);
@@ -97,7 +96,22 @@ function RotationTap() {
     })),
   ];
 
-  const rows = rotations
+  const dataRecords = [
+    {
+      _id: "emp1_id",
+      name: "Employer 1",
+      department: "Publishing Dep",
+      sat: "",
+      sun: "10:00 AM - 06:00 PM",
+      mon: "10:00 AM - 06:00 PM",
+      tue: "10:00 AM - 06:00 PM",
+      wed: "10:00 AM - 06:00 PM",
+      thu: "10:00 AM - 06:00 PM",
+      fri: ""
+    }
+  ]
+
+  const rows = dataRecords
     ?.filter((rotation) =>
       selectedDepartment === "all"
         ? true
@@ -105,53 +119,69 @@ function RotationTap() {
     )
     .map((rotation) => {
       const { employee, schedule } = rotation;
-      const shifts = weekDates.map((date) => {
-        const dateStr = date.toISOString().split("T")[0];
-        const entry = schedule.find((e) => {
-          const entryDate = new Date(e.date).toISOString().split("T")[0];
-          return entryDate === dateStr;
-        });
+      // const shifts = weekDates.map((date) => {
+      //   const dateStr = date.toISOString().split("T")[0];
+      //   const entry = schedule.find((e) => {
+      //     const entryDate = new Date(e.date).toISOString().split("T")[0];
+      //     return entryDate === dateStr;
+      //   });
 
-        if (!entry) return <OffBadge />;
-        return entry.status === "WORKING" ? (
-          <div className="flex flex-col text-sm dark:text-sub-300 text-center">
-            <span>{entry.startTime} to</span>
-            <span>{entry.endTime}</span>
-          </div>
-        ) : (
-          <OffBadge />
-        );
-      });
+      //   if (!entry) return <OffBadge />;
+      //   return entry.status === "WORKING" ? (
+      //     <div className="flex flex-col text-sm dark:text-sub-300 text-center">
+      //       <span>{entry.startTime} to</span>
+      //       <span>{entry.endTime}</span>
+      //     </div>
+      //   ) : (
+      //     <OffBadge />
+      //   );
+      // });
 
       return [
-        <div key={employee._id} className="flex items-center gap-2">
+        <div key={rotation._id} className="flex items-center gap-2">
           <img
             src={
-              employee.profilePicture ||
-              `https://ui-avatars.com/api/?name=${employee.name}`
+              rotation.image ||
+              `https://ui-avatars.com/api/?name=${rotation.name}`
             }
-            alt={employee.name}
-            className="w-8 h-8 rounded-full"
+            alt={rotation.name}
+            className="w-12 h-12 rounded-full"
           />
           <div className="flex flex-col">
             <span className="text-sm text-sub-500 dark:text-sub-300">
-              {employee.name}
+              {rotation.name}
             </span>
             <span className="text-gray-500 text-sm">
-              {employee.department?.name || "N/A"}
+              {rotation.department || "N/A"}
             </span>
           </div>
         </div>,
-        ...shifts.map((shift, i) => (
-          <div key={i} className="text-sm dark:text-sub-300">
-            {shift}
-          </div>
-        )),
+        <span className="text-gray-500 text-sm">
+          {rotation.sun ? rotation.sun : <OffBadge />}
+        </span>,
+        <span className="text-gray-500 text-sm">
+          {rotation.mon ? rotation.mon : <OffBadge />}
+        </span>,
+        <span className="text-gray-500 text-sm">
+          {rotation.tue ? rotation.tue : <OffBadge />}
+        </span>,
+        <span className="text-gray-500 text-sm">
+          {rotation.wed ? rotation.wed : <OffBadge />}
+        </span>,
+        <span className="text-gray-500 text-sm">
+          {rotation.thu ? rotation.thu : <OffBadge />}
+        </span>,
+        <span className="text-gray-500 text-sm">
+          {rotation.fri ? rotation.fri : <OffBadge />}
+        </span>,
+        <span className="text-gray-500 text-sm">
+          {rotation.sat ? rotation.sat : <OffBadge />}
+        </span>
       ];
     });
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div className="text-red-500 p-4">Error: {error}</div>;
+  // if (loading) return <div>Loading...</div>;
+  // if (error) return <div className="text-red-500 p-4">Error: {error}</div>;
 
   return (
     <div className="flex flex-col gap-6">
@@ -178,4 +208,4 @@ function RotationTap() {
   );
 }
 
-export default RotationTap;
+export default RotationTable;

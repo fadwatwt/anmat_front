@@ -43,7 +43,7 @@ export const StatusBadge = ({ status }) => {
   );
 };
 
-function AttendanceTab() {
+function AttendanceTable() {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { attendance, loading, error } = useSelector(
@@ -87,9 +87,9 @@ function AttendanceTab() {
   };
 
   const getStatus = (record) => {
-    if (!record?.checkin) return "Absent";
+    if (!record?.chekinTime) return "Absent";
     try {
-      const checkInTime = parseISO(record.checkin);
+      const checkInTime = parseISO(record.chekinTime);
       const officialStartTime = parseISO(record.officialStartTime);
       return checkInTime > officialStartTime ? "Late" : "On Time";
     } catch (error) {
@@ -98,41 +98,54 @@ function AttendanceTab() {
     }
   };
 
-  const rows = attendance?.map((record) => [
+  const dataRecords = [
+    {
+      _id: "emId_1",
+      name: "Employee 1",
+      image: "/images/users/user1.png",
+      date: "16 Jan, 2025",
+      officialStartTime: "10:00 AM",
+      officialEndTime: "6:00 PM",
+      chekinTime: "10:00 AM",
+      chekoutTime: "06:00 PM",
+      lateTime: "30 Min",
+      status: "On-time",
+      department: "Digital Publishing Division Dep Dep"
+    }
+  ]
+
+  const rows = dataRecords?.map((record) => [
     <div key={record._id} className="flex items-center gap-2">
       <img
         src={
-          record.employee?.profilePicture ||
+          record.image ||
           "https://ui-avatars.com/api/?name=John+Doe"
         }
-        alt={record.employee?.name}
-        className="w-8 h-8 rounded-full"
+        alt={record.name}
+        className="w-12 h-12 rounded-full"
       />
       <div className="flex flex-col">
         <span className="text-sm text-sub-500 dark:text-sub-300">
-          {record.employee?.name || "N/A"}
+          {record.name || "N/A"}
         </span>
         <span className="text-gray-500 text-sm">
-          {record.employee?.department?.name || "N/A"}
+          {record.department || "N/A"}
         </span>
       </div>
     </div>,
     <span key={`date-${record._id}`} className="text-sm dark:text-sub-300">
-      {record.date ? format(parseISO(record.date), "dd MMM yyyy") : "N/A"}
+      {record.date ? record.date : "N/A"}
     </span>,
     <span key={`hours-${record._id}`} className="text-sm dark:text-sub-300">
       {record.officialStartTime && record.officialEndTime
-        ? `${format(parseISO(record.officialStartTime), "h:mm a")} - ${format(
-            parseISO(record.officialEndTime),
-            "h:mm a"
-          )}`
+        ? `${record.officialStartTime} - ${record.officialEndTime}`
         : "N/A"}
     </span>,
     <span key={`checkin-${record._id}`} className="text-sm dark:text-sub-300">
-      {record.checkin ? format(parseISO(record.checkin), "h:mm a") : "-"}
+      {record.chekinTime ? record.chekinTime : "-"}
     </span>,
     <span key={`checkout-${record._id}`} className="text-sm dark:text-sub-300">
-      {record.checkout ? format(parseISO(record.checkout), "h:mm a") : "-"}
+      {record.chekoutTime ? record.chekoutTime : "-"}
     </span>,
     <span key={`late-${record._id}`} className="text-sm dark:text-sub-300">
       {calculateLateTime(record.checkin, record.officialStartTime)}
@@ -158,8 +171,8 @@ function AttendanceTab() {
     });
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div className="text-red-500 p-4">Error: {error}</div>;
+  // if (loading) return <div>Loading...</div>;
+  // if (error) return <div className="text-red-500 p-4">Error: {error}</div>;
 
   return (
     <div className="flex flex-col gap-6">
@@ -216,4 +229,4 @@ StatusBadge.prototype = {
   status: PropTypes.string.isRequired,
 };
 
-export default AttendanceTab;
+export default AttendanceTable;
