@@ -6,10 +6,9 @@ export const conversationsAPI = createApi({
   baseQuery: fetchBaseQuery({ 
     baseUrl: `${RootRoute}/chats`,
     prepareHeaders: (headers) => {
-      if (typeof window !== 'undefined') {
         // هذا الكود يشتغل فقط في المتصفح
-        const token = localStorage.getItem("token");
-      }
+        const token = typeof window !== "undefined" && localStorage.getItem("token");
+
       if (token) headers.set("Authorization", `Bearer ${token}`);
       return headers;
     }

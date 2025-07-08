@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+// import { useState } from "react";
 import { RiBuilding2Line } from "react-icons/ri";
 import Page from "@/components/Page.jsx";
 import AttendanceTable from "@/app/dashboard/profile/manager-profile/_components/AttendanceTable";
@@ -18,8 +18,8 @@ import RotationTable from "@/app/dashboard/profile/manager-profile/_components/R
 
 
 function ManagerProfilePage() {
-    const [slug, setSlug] = useState("66e69ec5845e00ff449e6d62-kirollos");
-    const [employeeId] = slug.split('-')[0];
+    // const [slug, setSlug] = useState("66e69ec5845e00ff449e6d62-kirollos");
+    // const [employeeId] = slug.split('-')[0];
     const { t, i18n } = useTranslation()
 
     return (
@@ -128,7 +128,7 @@ function ManagerProfilePage() {
 
                 {/* ToDo List */}
                 <div className={"w-full px-6 flex justify-start pb-16 "}>
-                    <div className={" rounded-2xl w-full p-4 dark:bg-gray-800"}>
+                    <div className={" rounded-2xl w-1/2 p-4 dark:bg-gray-800"}>
                         <ToDoList
                             list={[
                                 "Edit content for Marketing Trends 2024",

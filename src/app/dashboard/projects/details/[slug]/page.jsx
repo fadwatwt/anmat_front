@@ -15,9 +15,9 @@ import InfoCard from "@/app/dashboard/_components/InfoCard.jsx";
 import {useState} from "react";
 import {filterAndSortTasks} from "@/functions/functionsForTasks.js";
 import EditProjectModal from "../../_modal/EditProjectModal.jsx";
-import CreateProjectPage from "@/app/dashboard/projects/create/page";
 
 function ProjectDetailsPage({slug}) {
+    console.log(slug)
     const {t} = useTranslation()
     const [isOpenEditModal,setIsOpenEditModal] = useState(false)
     const breadcrumbItems = [

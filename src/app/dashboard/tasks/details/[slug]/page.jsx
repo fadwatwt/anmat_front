@@ -16,6 +16,7 @@ import EditTaskModal from "@/app/dashboard/tasks/_modal/EditTaskModal.jsx";
 import {filterOptions, tasks, comments, members, attachments, activityLogs} from "@/functions/FactoryData.jsx";
 
 function TaskPage({slug}) {
+    console.log(slug,"slug")
     const {t} = useTranslation()
     const [isOpenEditModal,setIsOpenEditModal] = useState(false)
     const breadcrumbItems = [

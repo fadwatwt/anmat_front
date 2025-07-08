@@ -26,7 +26,7 @@ function setDepartments(payload) {
 function AddPermissionModal({ isOpen, onClose }) {
   const dispatch = useDispatch();
 
-  const [permissions, setPermissions ] = useState(['Add', 'Edit', 'View', 'Delete']);
+  const [permissions ] = useState(['Add', 'Edit', 'View', 'Delete']);
   useEffect(() => {
     if (isOpen) {
       dispatch(fetchEmployees());

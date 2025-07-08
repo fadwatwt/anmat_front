@@ -2,6 +2,7 @@
 import Image from "next/image";
 
 function AuthLayout({ children }) {
+  console.log(children)
   return (
     <div className="w-full flex h-screen justify-start py-1 bg-white">
       <div className="flex flex-col w-[40%] gap-16 px-9 py-7">

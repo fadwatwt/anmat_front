@@ -27,7 +27,7 @@ function SelectAndLabel({
           name={name}
           value={value} // Controlled component
           onChange={(e) => {
-            const selectedOption = options.find(
+             options.find(
               (opt) => opt._id === e.target.value
             );
             onChange(e.target.value); // Send _id to backend

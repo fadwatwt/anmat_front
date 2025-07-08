@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import { IoIosArrowDown } from "react-icons/io";
 import { FaCircleInfo } from "react-icons/fa6";
 import { useState, useEffect, useRef } from "react";
+import {useTranslation} from "react-i18next";
 
 function MultiSelect({
   title,
@@ -17,6 +18,7 @@ function MultiSelect({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const selectRef = useRef(null);
+  const {t} = useTranslation()
 
   useEffect(() => {
     const handleClickOutside = (event) => {

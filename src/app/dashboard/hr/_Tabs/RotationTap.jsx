@@ -2,9 +2,9 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { format, parseISO } from "date-fns";
-import Table from "../../../../components/Tables/Table.jsx";
-import { fetchAllRotations } from "../../../../redux/rotation/rotationAPI";
+// import { format, parseISO } from "date-fns";
+import Table from "@/components/Tables/Table.jsx";
+import { fetchAllRotations } from "@/redux/rotation/rotationAPI";
 
 const OffBadge = () => (
   <div className="w-full flex justify-center">
@@ -46,11 +46,11 @@ function RotationTap() {
     dispatch(fetchAllRotations(dateRange));
   }, [dispatch, currentDate, viewMode]);
 
-  const handlePrev = () => {
-    const newDate = new Date(currentDate);
-    newDate.setUTCDate(newDate.getUTCDate() - 7);
-    setCurrentDate(newDate);
-  };
+  // const handlePrev = () => {
+  //   const newDate = new Date(currentDate);
+  //   newDate.setUTCDate(newDate.getUTCDate() - 7);
+  //   setCurrentDate(newDate);
+  // };
 
   const handleNext = () => {
     const newDate = new Date(currentDate);

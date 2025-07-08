@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import PropTypes from "prop-types";
@@ -17,13 +17,14 @@ import SelectAndLabel from "@/components/Form/SelectAndLabel.jsx";
 
 function AddRoleModal({ isOpen, onClose }) {
   const dispatch = useDispatch();
-  const { loading } = useSelector((state) => state.employees);
+  // const { loading } = useSelector((state) => state.employees);
 
   const [roles, setRoles] = useState([]);
   const [departments, setDepartments] = useState([]);
-  const [permissions, setPermissions] = useState(['Add Project', 'Edit Project']);
-  const [categories, setCategories] = useState(['Projects']);
-  const [states, setStates] = useState([]);
+  const [permissions] = useState(['Add Project', 'Edit Project']);
+  const [categories] = useState(['Projects']);
+  console.log(roles, "roles");
+  console.log(departments)
 
   useEffect(() => {
     if (isOpen) {

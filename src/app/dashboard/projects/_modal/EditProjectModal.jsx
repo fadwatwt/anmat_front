@@ -30,7 +30,7 @@ function EditProjectModal({ isOpen, onClose, project }) {
       assignedTo: updatedFields.manager
         ? {
             _id: updatedFields.manager,
-            name: users.find((u) => u.id === updatedFields.manager)?.name,
+            name: updatedFields.find((u) => u.id === updatedFields.manager)?.name,
           }
         : prev.assignedTo,
     }));

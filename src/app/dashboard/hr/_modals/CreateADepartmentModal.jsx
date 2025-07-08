@@ -47,7 +47,7 @@ function CreateADepartmentModal({ isOpen, onClose, department, onSuccess }) {
       onClose={onClose}
       isBtns={true}
       btnApplyTitle={t("Create")}
-      className="lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12"
+      className={"lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12"}
       title={t("Create a Department")}
       onClick={formik.handleSubmit}
     >

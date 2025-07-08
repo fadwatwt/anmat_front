@@ -1,4 +1,5 @@
 "use client";
+import React from 'react'
 import DefaultSelect from "@/components/Form/DefaultSelect.jsx";
 import {Bar}from "recharts/es6/cartesian/Bar"
 import { BarChart } from "recharts/es6/chart/BarChart";
@@ -159,7 +160,7 @@ const LastProjectItem = ({index, title, department}) => {
 }
 
 function AnalyticsPage() {
-    const {t,i18n} = useTranslation()
+    const {t} = useTranslation()
     const theme =  typeof window !== "undefined" ? localStorage.getItem("theme") : null
     const monthlyData = [
         { name: "Jan", onTime: 45, late: 35 },
@@ -218,7 +219,7 @@ function AnalyticsPage() {
 
     const departmentRowTable = () => {
         return departments.map((department) => [
-            <>
+            <React.Fragment key={department}>
                 <div className={"flex justify-start items-center gap-2"}>
                     <div className={"flex justify-center items-center rounded-full w-9 h-9 border border-gray-400 dark:border-gray-700"}>
                         <img src="/images/Department Brands/departmentBrand1.png" alt={""} className={"w-6 h-6 rounded-full"}/>
@@ -228,7 +229,7 @@ function AnalyticsPage() {
                         <p className={"text-sm text-gray-500"}>Manager: Ahmed Ali</p>
                     </div>
                 </div>
-            </>,
+            </React.Fragment>,
             "1",
             "3.5",
             "4",

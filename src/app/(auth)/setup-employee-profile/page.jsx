@@ -3,8 +3,7 @@ import { useFormik } from "formik";
 import InputAndLabel from "@/components/Form/InputAndLabel";
 import SelectAndLabel from "@/components/Form/SelectAndLabel";
 import * as Yup from 'yup';
-import FileUpload from "@/components/Form/FileUpload";
-import { t } from "i18next";
+// import { t } from "i18next";
 import { departments } from "@/functions/FactoryData";
 
 const SetupEmployeeProfile = () => {

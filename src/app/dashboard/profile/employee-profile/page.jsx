@@ -26,7 +26,7 @@ function EmployeeProfilePage() {
     const { slug } = useParams();
     console.log({ slug });
 
-    const employeeId = slug ? slug.split('-')[0] : null;
+    // const employeeId = slug ? slug.split('-')[0] : null;
     const [activeTab, setActiveTab] = useState("Leave");
     const [isAddRequestModal, setIsAddRequestModal] = useState(false);
     const headerTasksRating = [

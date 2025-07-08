@@ -1,4 +1,4 @@
-import { FiInfo } from "react-icons/fi";
+
 import DefaultButton from "@/components/Form/DefaultButton";
 import { useTranslation } from "react-i18next";
 import InlineAlert from "@/components/InlineAlert.jsx";
