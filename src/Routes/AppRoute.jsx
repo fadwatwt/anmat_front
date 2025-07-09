@@ -13,9 +13,9 @@ const ProtectedRoute = ({ children }) => {
   }, []);
 
   // Allow access in development mode without verification
-  if (process.env.NODE_ENV === 'development') {
-    return children;
-  }
+  // if (process.env.NODE_ENV === 'development') {
+  //   return children;
+  // }
 
   // Client-side checks only
   if (isClient) {

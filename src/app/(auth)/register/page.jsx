@@ -3,19 +3,18 @@
 import { useState } from "react";
 import { LiaUser } from "react-icons/lia";
 import { GoMail } from "react-icons/go";
-import { IoIosLock } from "react-icons/io";
 import { FcGoogle } from "react-icons/fc";
 import { useRouter } from "next/navigation";
 import { useLoginMutation } from "@/redux/auth/authAPI";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { loginSuccess, loginFailure } from "@/redux/auth/authSlice";
 
 function RegisterForm() {
     const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [rememberMe, setRememberMe] = useState(false);
+    const [password] = useState("");
+    // const [rememberMe, setRememberMe] = useState(false);
     const [login, { isLoading }] = useLoginMutation();
-    const { error } = useSelector((state) => state.auth);
+    // const { error } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
     const router = useRouter();
 
@@ -81,10 +80,10 @@ function RegisterForm() {
                         {isLoading ? "Loading..." : "Sign Up"}
                     </button>
 
-                    <div class="flex items-center justify-center my-4">
-                        <div class="flex-grow border-t border-gray-300"></div>
-                        <span class="mx-4 text-gray-500">Or</span>
-                        <div class="flex-grow border-t border-gray-300"></div>
+                    <div className="flex items-center justify-center my-4">
+                        <div className="flex-grow border-t border-gray-300"></div>
+                        <span className="mx-4 text-gray-500">Or</span>
+                        <div className="flex-grow border-t border-gray-300"></div>
                     </div>
 
                     <button

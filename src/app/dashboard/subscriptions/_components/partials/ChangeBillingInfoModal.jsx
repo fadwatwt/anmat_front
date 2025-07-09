@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import PropTypes from "prop-types";
@@ -17,12 +17,12 @@ import SelectAndLabel from "@/components/Form/SelectAndLabel.jsx";
 
 function ChangeBillingInfoModal({ isOpen, onClose }) {
   const dispatch = useDispatch();
-  const { loading } = useSelector((state) => state.employees);
+  // const { loading } = useSelector((state) => state.employees);
 
   const [roles, setRoles] = useState([]);
   const [departments, setDepartments] = useState([]);
-  const [countries, setCountries] = useState([]);
-  const [states, setStates] = useState([]);
+  const [countries] = useState([]);
+  const [states] = useState([]);
 
   useEffect(() => {
     if (isOpen) {
@@ -31,6 +31,8 @@ function ChangeBillingInfoModal({ isOpen, onClose }) {
       dispatch(fetchDepartments()).then((res) => setDepartments(res.payload)); // Fetch departments
     }
   }, [isOpen, dispatch]);
+  console.log(roles, "roles");
+  console.log(departments, "departments");
 
   const formik = useFormik({
     initialValues: {

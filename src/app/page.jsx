@@ -12,9 +12,9 @@ import Collapse from "@/components/LandingPage/Collapse.jsx";
 import Link from "next/link";
 function Desktop2Page() {
   let isOnSwitch = false;
-  const handelIsOnSwitch = () => {
-    isOnSwitch = !isOnSwitch;
-  };
+  // const handelIsOnSwitch = () => {
+  //   isOnSwitch = !isOnSwitch;
+  // };
   return (
     <div
       className={

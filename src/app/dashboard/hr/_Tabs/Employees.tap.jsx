@@ -13,7 +13,7 @@ import {
 
 function EmployeesTap() {
   const dispatch = useDispatch();
-  const { employees, loading, error } = useSelector((state) => state.employees);
+  const { employees, error } = useSelector((state) => state.employees);
   const { t } = useTranslation();
 
   // State for modals and alerts
@@ -27,8 +27,8 @@ function EmployeesTap() {
   // State for search and filtered employees
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredEmployees, setFilteredEmployees] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [currentPage] = useState(1);
+  const [itemsPerPage] = useState(5);
   // Table headers
   const headers = [
     { label: t("Employees"), width: "200px" },

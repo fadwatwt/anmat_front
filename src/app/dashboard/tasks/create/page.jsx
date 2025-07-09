@@ -1,7 +1,5 @@
 "use client"
 import CreateTaskForm from "@/app/dashboard/projects/_components/CreateProjectForm/CreateTaskForm.jsx";
-import {useState} from "react";
-import ProjectInfoForm from "@/app/dashboard/projects/_components/CreateProjectForm/ProjectInfoForm.jsx";
 import Page from "@/components/Page.jsx";
 import {useTranslation} from "react-i18next";
 
@@ -12,21 +10,21 @@ function CreateTask() {
         { title: 'Create a Task', path: '' }
     ];
 
-    const initialSteps = [
-        {
-            title: 'Project Info',
-            content: <ProjectInfoForm />,
-        },
-        {
-            title: 'Task',
-            content: <CreateTaskForm />,
-        },
-
-        {
-            title: 'Task',
-            content: <CreateTaskForm />,
-        },
-    ];
+    // const initialSteps = [
+    //     {
+    //         title: 'Project Info',
+    //         content: <ProjectInfoForm />,
+    //     },
+    //     {
+    //         title: 'Task',
+    //         content: <CreateTaskForm />,
+    //     },
+    //
+    //     {
+    //         title: 'Task',
+    //         content: <CreateTaskForm />,
+    //     },
+    // ];
 
     // const [steps, setSteps] = useState(initialSteps);
 

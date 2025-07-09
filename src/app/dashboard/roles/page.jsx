@@ -70,8 +70,8 @@ function PermissionsPage() {
 
         <div key="permissions" className="flex items-center justify-start gap-2">
             {
-                role.permissions.map(permission => [
-                    <span className="bg-primary-100 text-primary-500 px-3 py-1 rounded-2xl">
+                role.permissions.map((permission,index) => [
+                    <span key={index} className="bg-primary-100 text-primary-500 px-3 py-1 rounded-2xl">
                         {permission}
                     </span>
                 ])

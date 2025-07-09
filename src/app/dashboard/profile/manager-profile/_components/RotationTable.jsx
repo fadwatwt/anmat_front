@@ -17,7 +17,7 @@ const OffBadge = () => (
 function RotationTable() {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const { rotations, loading, error } = useSelector((state) => state.rotation);
+  const { rotations } = useSelector((state) => state.rotation);
   const [viewMode, setViewMode] = useState("week");
   const [selectedDepartment, setSelectedDepartment] = useState("all");
   const [currentDate, setCurrentDate] = useState(new Date());

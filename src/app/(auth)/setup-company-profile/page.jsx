@@ -34,7 +34,7 @@ const SetupCompanyProfile = () => {
                         {`Set up your company profile`}
                     </sapn>
                     <span className="text-sm text-gray-500">
-                        Let's get your company info set in two minutes.
+                        Let&#39;s get your company info set in two minutes.
                     </span>
                 </div>
 

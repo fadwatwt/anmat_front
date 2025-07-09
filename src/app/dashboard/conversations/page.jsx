@@ -17,7 +17,6 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   useGetChatsQuery,
   useGetMessagesQuery,
-  useSendMessageMutation,
 } from "@/redux/conversations/conversationsAPI";
 import {
   setActiveChat,
@@ -53,7 +52,7 @@ const ConversationPage = () => {
     refetch: refetchMessages,
   } = useGetMessagesQuery(activeChat?._id, { skip: !activeChat });
 
-  const [sendMessage] = useSendMessageMutation();
+  // const [sendMessage] = useSendMessageMutation();
 
   // State for UI
   const [activeTab, setActiveTab] = useState("Meetings");

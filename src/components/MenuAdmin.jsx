@@ -4,7 +4,12 @@ import SearchInput from "./Form/SearchInput.jsx";
 import MenuItem from "./Menu/MenuItem.jsx";
 import {useTranslation} from "react-i18next";
 import React from "react"
-import { Setting,Edit ,Share,Messages1,Category,Profile2User,TaskSquare,NoteText,Chart2,HambergerMenu} from 'iconsax-react';
+import {
+    // Setting,
+    // Edit ,
+    // Share,
+    // Messages1,
+    Category,Profile2User,TaskSquare,NoteText,Chart2,HambergerMenu} from 'iconsax-react';
 
 
 const MenuAdmin = React.memo(({ isSlidebarOpen, taggleSlidebarOpen }) => {

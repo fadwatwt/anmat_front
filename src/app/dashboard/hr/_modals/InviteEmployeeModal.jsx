@@ -5,14 +5,12 @@ import * as Yup from "yup";
 import PropTypes from "prop-types";
 import Modal from "@/components/Modal/Modal.jsx";
 import InputAndLabel from "@/components/Form/InputAndLabel.jsx";
-import SelectWithoutLabel from "@/components/Form/SelectWithoutLabel.jsx";
 import {
     updateEmployee,
     fetchEmployees,
 } from "@/redux/employees/employeeAPI.js";
 import { fetchRoles } from "@/redux/roles/rolesSlice.js";
 import { fetchDepartments } from "@/redux/departments/departmentAPI.js";
-import SelectAndLabel from "@/components/Form/SelectAndLabel";
 import DefaultButton from "@/components/Form/DefaultButton";
 
 function InviteEmployeeModal({ isOpen, onClose }) {
@@ -23,6 +21,7 @@ function InviteEmployeeModal({ isOpen, onClose }) {
     const [departments, setDepartments] = useState([]);
     console.log(roles, "roles");
     console.log(loading, "loading");
+    console.log(departments)
 
     useEffect(() => {
         if (isOpen) {
@@ -66,7 +65,7 @@ function InviteEmployeeModal({ isOpen, onClose }) {
             try {
                 setApiError("");
                 await dispatch(
-                    updateEmployee({ id: employee._id, employeeData: values })
+                    updateEmployee({ id: values._id, employeeData: values })
                 )?.unwrap();
                 dispatch(fetchEmployees());
                 onClose();

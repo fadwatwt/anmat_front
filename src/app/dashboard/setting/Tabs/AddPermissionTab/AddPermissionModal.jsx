@@ -7,12 +7,12 @@ import InputAndLabel from "@/components/Form/InputAndLabel.jsx";
 const AddPermissionModal = ({
                                  isOpen,
                                  onClose,
-                                 permissionName,
-                                 setPermissionName,
-                                 category,
+                                 // permissionName,
+                                 // setPermissionName,
+                                 // category,
                                  setCategory,
-                                 permissions,
-                                 setPermissions,
+                                 // permissions,
+                                 // setPermissions,
                              }) => {
     const { t } = useTranslation();
 

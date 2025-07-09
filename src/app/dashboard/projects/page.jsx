@@ -1,7 +1,6 @@
 "use client";
 import { useEffect } from "react";
 import { useState } from "react";
-import { memo } from 'react';
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
@@ -22,7 +21,7 @@ import {
   setPagination,
 } from "@/redux/projects/projectSlice";
 import {
-  selectProjectStatus,
+  // selectProjectStatus,
   selectPagination,
   selectAllProjects,
 } from "@/redux/projects/projectSelectors.js";
@@ -37,8 +36,8 @@ function ProjectPage() {
   const [isOpenEditModal, setIsOpenEditModal] = useState(false);
   const [isOpenDeleteAlert, setIsOpenDeleteAlert] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
-  const MemoizedNameAndDescription = memo(NameAndDescription);
-const MemoizedAccountDetails = memo(AccountDetails);
+//   const MemoizedNameAndDescription = memo(NameAndDescription);
+// const MemoizedAccountDetails = memo(AccountDetails);
 
   useEffect(() => {
     dispatch(fetchProjects());
