@@ -408,7 +408,7 @@ const ConversationPage = () => {
       dir="rtl"
       style={{ fontFamily: "Tajawal, sans-serif" }}
     >
-      <div className={"w-full rounded-2xl overflow-hidden flex "}>
+      <div className={"w-full overflow-hidden flex "}>
         {!showLeftSidebar && (
           <button
             className="md:hidden fixed top-11 left-1 z-50 bg-gray-800 text-white p-2 rounded"
@@ -697,7 +697,7 @@ const ConversationPage = () => {
           className={`w-60 border-l border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-700 
           ${
             showRightSidebar ? "block" : "hidden"
-          } md:block fixed md:relative top-0 right-0 h-full z-40`}
+          } md:block fixed md:relative top-0 right-0 h-full z-40 max-h-[100vh-72px] overflow-y-auto`}
         >
           {showRightSidebar && (
             <button
