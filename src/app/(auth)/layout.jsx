@@ -28,7 +28,7 @@ function AuthLayout({ children }) {
       </div>
 
       {/* Right Side Image/Placeholder */}
-      <div className="flex flex-col justify-center flex-1 rounded-xl bg-ui-gray relative overflow-hidden m-2">
+      <div className="flex flex-col justify-center flex-1 rounded-xl bg-main-900 relative overflow-hidden m-2">
         <div className="absolute top-12 left-36 w-full">
           <img src="/images/LandingPage/dashboardImage.png" alt="image" className="w-full" />
         </div>

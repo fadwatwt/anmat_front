@@ -63,7 +63,7 @@ const SelectYourBusiness = () => {
                     </div>
 
                     <div className="bg-primary-500 text-primary-50 text-md w-32 py-2 rounded-xl cursor-pointer
-                        hover:bg-primary-600 text-center">
+                        hover:bg-primary-600 text-center border border-primary-400">
                         Next
                     </div>
                 </div>

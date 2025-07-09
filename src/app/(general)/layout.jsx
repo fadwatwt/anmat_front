@@ -4,7 +4,7 @@ import Image from "next/image";
 function AuthLayout({ children }) {
     console.log(children)
     return (
-        <div className="w-full flex h-screen justify-start py-1 bg-white overflow-y-scroll">
+        <div className="w-full flex h-screen justify-start py-1 bg-main-900 overflow-y-scroll">
             <div className="flex flex-col w-full gap-16 px-9 py-7">
                 {/* Logo Section */}
                 <div className="flex items-center justify-start gap-3">
