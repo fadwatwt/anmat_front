@@ -2,18 +2,20 @@
 import PropTypes from 'prop-types';
 import SearchInput from "./Form/SearchInput.jsx";
 import MenuItem from "./Menu/MenuItem.jsx";
-import {useTranslation} from "react-i18next";
+import { useTranslation } from "react-i18next";
 import React from "react"
 import {
     // Setting,
     // Edit ,
     // Share,
     // Messages1,
-    Category,Profile2User,TaskSquare,NoteText,Chart2,HambergerMenu} from 'iconsax-react';
+    Category, Profile2User, TaskSquare, NoteText, Chart2, HambergerMenu,
+    Cpu
+} from 'iconsax-react';
 
 
 const MenuAdmin = React.memo(({ isSlidebarOpen, taggleSlidebarOpen }) => {
-    const {t,i18n} = useTranslation()
+    const { t, i18n } = useTranslation()
 
     // const tweet = {
     //     images: [
@@ -39,7 +41,7 @@ const MenuAdmin = React.memo(({ isSlidebarOpen, taggleSlidebarOpen }) => {
             <div className={" h-32 flex p-5 gap-2 border-b-2 dark:border-gray-600 items-center"}>
                 <div className={"profile-image"}>
                     <img src="/images/logo.png" alt={"img"}
-                         className={" w-10 h-10 rounded-full m-0 p-0"}/>
+                        className={" w-10 h-10 rounded-full m-0 p-0"} />
                 </div>
                 <div className={"flex flex-col  gap-2 justify-center  "}>
                     <p className={"text-sm dark:text-white text-start truncate w-28 md:w-full"}>{t("Employees Management")}</p>
@@ -49,7 +51,7 @@ const MenuAdmin = React.memo(({ isSlidebarOpen, taggleSlidebarOpen }) => {
                     isSlidebarOpen && (
                         <button className="inline-flex h-8 w-8 items-center p-2 text-sm text-gray-500
                 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
-                                onClick={taggleSlidebarOpen}>
+                            onClick={taggleSlidebarOpen}>
                             <HambergerMenu />
                         </button>
                     )
@@ -58,16 +60,22 @@ const MenuAdmin = React.memo(({ isSlidebarOpen, taggleSlidebarOpen }) => {
             </div>
             <div className={"overflow-y-auto flex flex-col  tab-content justify-between"}>
                 <div className="md:hidden px-5 pt-5">
-                    <SearchInput/>
+                    <SearchInput />
                 </div>
                 <div className={"flex  flex-col gap-2"}>
                     <div className={"py-5 menu-list sm:py-0 flex flex-col gap-2 text-gray-500"}>
-                        <MenuItem path={"/admin"} icon={<Category size={"18"} />} title={"Analytics"}/>
-                        <MenuItem path={"/admin/companies"} icon={<NoteText/>} title={"Companies"}/>
-                        <MenuItem path={"/admin/plans"} icon={<TaskSquare />} title={"Plans"}/>
-                        <MenuItem path={"/admin/subscriptions"} icon={<Chart2 />} title={"Subscriptions"}/>
-                        <MenuItem path={"/admin/orders"} icon={<Profile2User />} title={"Orders"}/>
-                        <MenuItem path={"/ai-assistant"} icon={<svg width="20" height="20" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#4F46E5" strokeWidth="2" fill="#EEF2FF"/><path d="M12 8v4l3 2" stroke="#4F46E5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>} title={"AI Assistant"}/>
+                        <MenuItem path={"/admin"} icon={<Category size="32"
+                            color="#375DFB" />} title={"Analytics"} />
+                        <MenuItem path={"/admin/companies"} icon={<NoteText size="32"
+                            color="#375DFB" />} title={"Companies"} />
+                        <MenuItem path={"/admin/plans"} icon={<TaskSquare size="32"
+                            color="#375DFB" />} title={"Plans"} />
+                        <MenuItem path={"/admin/subscriptions"} icon={<Chart2 size="32"
+                            color="#375DFB" />} title={"Subscriptions"} />
+                        <MenuItem path={"/admin/orders"} icon={<Profile2User size="32"
+                            color="#375DFB" />} title={"Orders"} />
+                        <MenuItem path={"/ai-assistant"} icon={<Cpu size="32"
+                            color="#375DFB" />} title={"AI Assistant"} />
                     </div>
                 </div>
                 {/*<BriefTimeLine tweet={tweet} myAccount={myAccount}/>*/}
