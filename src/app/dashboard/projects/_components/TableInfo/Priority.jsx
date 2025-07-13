@@ -1,24 +1,25 @@
 import PropTypes from "prop-types";
 import { FaCircle } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
+import {capitalize} from "@/functions/AnotherFunctions";
 
 function Priority({ type }) {
   const { t } = useTranslation();
 
   const priorityStyles = {
-    Urgent: {
+    urgent: {
       bg: "bg-[#FEF3EB]",
       text: "text-[#F17B2C]",
     },
-    High: {
+    high: {
       bg: "bg-red-100",
       text: "text-red-500",
     },
-    Medium: {
+    medium: {
       bg: "bg-[#EBF1FF]",
       text: "text-[#375DFB]",
     },
-    Low: {
+    low: {
       bg: "bg-gray-200 dark:bg-[#161922]",
       text: "text-sub-500 dark:text-[#CDD0D5]",
     },
@@ -28,10 +29,10 @@ function Priority({ type }) {
 
   return (
     <div
-      className={`rounded-md text-xs inline-flex py-1 px-2 gap-1 items-center ${priority.bg}`}
+      className={`rounded-md text-xs inline-flex py-1 px-2 gap-1 items-center ${priority.bg || "bg-gray-200 dark:bg-[#161922]"}`}
     >
       <FaCircle className={priority.text} />
-      <span className={priority.text}>{t(type)}</span>
+      <span className={priority.text}>{t(capitalize(type))}</span>
     </div>
   );
 }

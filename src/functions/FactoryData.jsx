@@ -21,7 +21,58 @@ const members = [
 const tasksRows = [
     {
         id: "1",
-        name: "Pulse Dashboard",
+        title: "Pulse Dashboard",
+        description: "Developing a dashboard for real-time performance.",
+        path: "/tasks/pulse_dashboard",
+        members: members,
+        maxVisibleMembers: 3,
+        account: {
+            name: "Fatma Ahmed Moh",
+            rule: "Product Manager",
+            imageProfile: "https://images.squarespace-cdn.com/content/v1/58865912a5790a87a29447e5/1501777422700-0WW6HYF16XLP8ZTJ0PMU/Image+Profile+Photography2.jpg"
+        },
+        dateStart: "2025-01-16T10:00:00",
+        dateEnd: "2025-01-16T10:00:00",
+        priority: { type: "Medium", title: "Medium" },
+        status: { type: "Scheduled", title: "Scheduled" },
+    },
+    {
+        id: "2",
+        title: "Pulse Dashboard",
+        description: "Developing a dashboard for real-time performance.",
+        path: "/tasks/pulse_dashboard",
+        members: members,
+        maxVisibleMembers: 3,
+        account: {
+            name: "Fatma Ahmed Moh",
+            rule: "Product Manager",
+            imageProfile: "https://images.squarespace-cdn.com/content/v1/58865912a5790a87a29447e5/1501777422700-0WW6HYF16XLP8ZTJ0PMU/Image+Profile+Photography2.jpg"
+        },
+        dateStart: "2025-01-16T10:00:00",
+        dateEnd: "2025-01-16T10:00:00",
+        priority: { type: "Low", title: "Low" },
+        status: { type: "Delayed", title: "Delayed" },
+    },
+    {
+        id: "3",
+        title: "Pulse Dashboard",
+        description: "Developing a dashboard for real-time performance.",
+        path: "/tasks/pulse_dashboard",
+        members: members,
+        maxVisibleMembers: 3,
+        account: {
+            name: "Fatma Ahmed Moh",
+            rule: "Product Manager",
+            imageProfile: "https://images.squarespace-cdn.com/content/v1/58865912a5790a87a29447e5/1501777422700-0WW6HYF16XLP8ZTJ0PMU/Image+Profile+Photography2.jpg"
+        },
+        dateStart: "2025-01-16T10:00:00",
+        dateEnd: "2025-01-16T10:00:00",
+        priority: { type: "High", title: "High" },
+        status: { type: "Inactive", title: "Inactive" },
+    },
+    {
+        id: "4",
+        title: "Pulse Dashboard",
         description: "Developing a dashboard for real-time performance.",
         path: "/tasks/pulse_dashboard",
         members: members,
@@ -34,58 +85,7 @@ const tasksRows = [
         dateStart: "2025-01-16T10:00:00",
         dateEnd: "2025-01-16T10:00:00",
         priority: { type: "Urgent", title: "Urgent" },
-        status: { type: "Active", title: "Active" }
-    },
-    {
-        id: "2",
-        name: "Pulse Dashboard",
-        description: "Developing a dashboard for real-time performance.",
-        path: "/tasks/pulse_dashboard",
-        members: members,
-        maxVisibleMembers: 3,
-        account: {
-            name: "Fatma Ahmed Moh",
-            rule: "Product Manager",
-            imageProfile: "https://images.squarespace-cdn.com/content/v1/58865912a5790a87a29447e5/1501777422700-0WW6HYF16XLP8ZTJ0PMU/Image+Profile+Photography2.jpg"
-        },
-        dateStart: "2025-01-16T10:00:00",
-        dateEnd: "2025-01-16T10:00:00",
-        priority: { type: "Urgent and Important", title: "High" },
-        status: { type: "In Progress", title: "Inactive" }
-    },
-    {
-        id: "3",
-        name: "Pulse Dashboard",
-        description: "Developing a dashboard for real-time performance.",
-        path: "/tasks/pulse_dashboard",
-        members: members,
-        maxVisibleMembers: 3,
-        account: {
-            name: "Fatma Ahmed Moh",
-            rule: "Product Manager",
-            imageProfile: "https://images.squarespace-cdn.com/content/v1/58865912a5790a87a29447e5/1501777422700-0WW6HYF16XLP8ZTJ0PMU/Image+Profile+Photography2.jpg"
-        },
-        dateStart: "2025-01-16T10:00:00",
-        dateEnd: "2025-01-16T10:00:00",
-        priority: { type: "Not Important", title: "Low" },
-        status: { type: "Not Started", title: "Delayed" }
-    },
-    {
-        id: "4",
-        name: "Pulse Dashboard",
-        description: "Developing a dashboard for real-time performance.",
-        path: "/tasks/pulse_dashboard",
-        members: members,
-        maxVisibleMembers: 3,
-        account: {
-            name: "Fatma Ahmed Moh",
-            rule: "Product Manager",
-            imageProfile: "https://images.squarespace-cdn.com/content/v1/58865912a5790a87a29447e5/1501777422700-0WW6HYF16XLP8ZTJ0PMU/Image+Profile+Photography2.jpg"
-        },
-        dateStart: "2025-01-16T10:00:00",
-        dateEnd: "2025-01-16T10:00:00",
-        priority: { type: "Urgent", title: "Medium" },
-        status: { type: "Completed", title: "Scheduled" }
+        status: { type: "Active", title: "Active" },
     }
 ];
 const date1 = "2025-01-15T14:30:00";

@@ -6,9 +6,9 @@ function NameAndDescription({ name, description, path }) {
   return (
     <Link href={path}>
       <p className="text-sm text-main-100 dark:text-main-900">{name}</p>
-      {/* <p className="text-xs text-sub-500 truncate dark:text-sub-300">
+       <p className="text-xs text-sub-500 truncate dark:text-sub-300">
         {description}
-      </p> */}
+      </p>
     </Link>
   );
 }
