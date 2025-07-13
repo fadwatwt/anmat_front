@@ -14,6 +14,7 @@ function Page({
   isBreadcrumbs,
   breadcrumbs,
   isNavs,
+  otherHeaderActions=null
 }) {
   const { t } = useTranslation();
   return (
@@ -51,6 +52,10 @@ function Page({
             </div>
           )}
 
+          {
+            otherHeaderActions && <>{otherHeaderActions}</>
+          }
+
           {isBreadcrumbs && <Breadcrumbs breadcrumbs={breadcrumbs} />}
         </div>
       )}
@@ -76,6 +81,7 @@ Page.propTypes = {
   className: PropTypes.string,
   btnOnClick: PropTypes.func,
   isNavs: PropTypes.bool,
+  otherHeaderActions: PropTypes.node
 };
 
 export default Page;

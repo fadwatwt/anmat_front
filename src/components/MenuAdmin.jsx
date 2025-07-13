@@ -10,7 +10,13 @@ import {
     // Share,
     // Messages1,
     Category, Profile2User, TaskSquare, NoteText, Chart2, HambergerMenu,
-    Cpu
+    Cpu,
+    Chart21,
+    Buildings,
+    PercentageCircle,
+    ReceiptItem,
+    Stickynote,
+    Setting
 } from 'iconsax-react';
 
 
@@ -64,18 +70,18 @@ const MenuAdmin = React.memo(({ isSlidebarOpen, taggleSlidebarOpen }) => {
                 </div>
                 <div className={"flex  flex-col gap-2"}>
                     <div className={"py-5 menu-list sm:py-0 flex flex-col gap-2 text-gray-500"}>
-                        <MenuItem path={"/admin"} icon={<Category size="32"
+                        <MenuItem path={"/admin/analytics"} icon={<Chart21 size="32"
                             color="#375DFB" />} title={"Analytics"} />
-                        <MenuItem path={"/admin/companies"} icon={<NoteText size="32"
+                        <MenuItem path={"/admin/companies"} icon={<Buildings size="32"
                             color="#375DFB" />} title={"Companies"} />
-                        <MenuItem path={"/admin/plans"} icon={<TaskSquare size="32"
+                        <MenuItem path={"/admin/plans"} icon={<PercentageCircle size="32"
                             color="#375DFB" />} title={"Plans"} />
-                        <MenuItem path={"/admin/subscriptions"} icon={<Chart2 size="32"
+                        <MenuItem path={"/admin/subscriptions"} icon={<ReceiptItem size="32"
                             color="#375DFB" />} title={"Subscriptions"} />
-                        <MenuItem path={"/admin/orders"} icon={<Profile2User size="32"
+                        <MenuItem path={"/admin/orders"} icon={<Stickynote size="32"
                             color="#375DFB" />} title={"Orders"} />
-                        <MenuItem path={"/ai-assistant"} icon={<Cpu size="32"
-                            color="#375DFB" />} title={"AI Assistant"} />
+                        <MenuItem path={"/settings"} icon={<Setting size="32"
+                            color="#375DFB" />} title={"Settings"} />
                     </div>
                 </div>
                 {/*<BriefTimeLine tweet={tweet} myAccount={myAccount}/>*/}
