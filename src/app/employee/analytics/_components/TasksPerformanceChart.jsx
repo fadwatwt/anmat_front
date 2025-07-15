@@ -3,7 +3,7 @@
 import DefaultSelect from "@/components/Form/DefaultSelect";
 import BarChartComponent from "@/app/_components/containers/BarChartComponent";
 
-const ProjectsPerformanceChart = () => {
+const TasksPerformanceChart = () => {
 
     const barGab = 4;
     const monthlyData = [
@@ -18,14 +18,14 @@ const ProjectsPerformanceChart = () => {
         {
             dataKey: 'onTime',
             fill: '#38C793',
-            name: 'New Companies',
+            name: 'On-Time Completed',
             radius: [15, 15, 0, 0],
             barSize: 15
         },
         {
             dataKey: 'late',
             fill: '#F17B2C',
-            name: 'Exist Companies',
+            name: 'Late Completed',
             radius: [15, 15, 0, 0],
             barSize: 15
         }
@@ -33,7 +33,8 @@ const ProjectsPerformanceChart = () => {
 
     return (
         <BarChartComponent
-            title={"Projects Performance"}
+            title={"Tasks Performance"}
+            subtitle={"Number of Tasks"}
             toolbar={
                 <div className="w-32 flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end">
                     <DefaultSelect options={[{ id: 1, value: "Last 6 Months" }]} />
@@ -46,4 +47,4 @@ const ProjectsPerformanceChart = () => {
     );
 };
 
-export default ProjectsPerformanceChart;
+export default TasksPerformanceChart;

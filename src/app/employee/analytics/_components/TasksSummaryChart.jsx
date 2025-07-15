@@ -3,29 +3,29 @@
 import DonutChartComponent from "@/app/_components/containers/DonutChartComponent";
 import DefaultSelect from "@/components/Form/DefaultSelect";
 
-const IndustriesChart = () => {
+const TasksSummaryChart = () => {
 
     const chartData = {
         total: 300,
         records: [
 
             {
-                title: "Fintech",
+                title: "Active",
                 value: 50,
                 color: "#375DFB"
             },
             {
-                title: "E-Commerce",
+                title: "Completed",
                 value: 75,
                 color: "#38C793"
             },
             {
-                title: "Ride-Sharing",
+                title: "Late-Completed",
                 value: 100,
                 color: "#F17B2C"
             },
             {
-                title: "Marketing Agencies",
+                title: "Overdue",
                 value: 75,
                 color: "#DF1C41"
             }
@@ -34,16 +34,16 @@ const IndustriesChart = () => {
 
     return (
         <DonutChartComponent
-            title={"Industries"}
+            title={"Tasks Summary"}
             toolbar={
                 <div className="w-32">
                     <DefaultSelect options={[{ id: 1, value: "Last Month" }]} />
                 </div>
             }
-            subtitle={"COMPANIES"}
+            subtitle={"TASKS"}
             data={chartData}
         />
     );
 };
 
-export default IndustriesChart;
+export default TasksSummaryChart;

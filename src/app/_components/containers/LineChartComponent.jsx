@@ -2,14 +2,13 @@
 
 import ContentCard from "@/app/_components/ContentCard";
 import { RiCircleFill } from "@remixicon/react";
-import BarChartDraw from "../drawers/BarChartDraw";
+import LineChartDrawer from "@/app/_components/drawers/LineChartDrawer";
 
-const BarChartComponent = ({
+const LineChartComponent = ({
     title,
     toolbar,
-    barGab,
-    monthlyData,
-    bars
+    data,
+    lines
 }) => {
 
     return (
@@ -18,18 +17,18 @@ const BarChartComponent = ({
             toolbar={toolbar}
             main={
                 <div className="flex justify-center mb-6 w-full">
-                    <BarChartDraw barGab={barGab} monthlyData={monthlyData} bars={bars} />
+                    <LineChartDrawer data={data} lines={lines} />
                 </div>
             }
             footer={
                 <div className="flex flex-wrap items-start gap-4 justify-center w-100">
                     {
-                        bars.map(bar => {
+                        lines.map(line => {
                             return (
                                 <div className="flex gap-1 items-center">
-                                    <RiCircleFill size={10} className={`text-[${bar.fill}]`} />
+                                    <RiCircleFill size={10} className={`text-[${line.stroke}]`} />
                                     <span className="text-sm text-gray-500">
-                                        {bar.name}
+                                        {line.dataKey}
                                     </span>
                                 </div>
                             );
@@ -41,4 +40,4 @@ const BarChartComponent = ({
     );
 };
 
-export default BarChartComponent;
+export default LineChartComponent;

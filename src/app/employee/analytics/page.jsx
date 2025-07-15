@@ -1,19 +1,17 @@
 "use client"
 
 import Page from "@/components/Page";
-import IndustriesChart from "@/app/admin/analytics/_components/charts/IndustriesChart";
-import SubscriptionsChart from "@/app/admin/analytics/_components/charts/SubscriptionsChart";
-import CompaniesContactedChart from "@/app/admin/analytics/_components/charts/CompaniesContactedChart";
-import CompaniesSubscriptionsChart from "@/app/admin/analytics/_components/charts/CompaniesSubscriptionsChart";
-import ProjectsPerformanceChart from "@/app/admin/analytics/_components/charts/ProjectsPerformanceChart";
-import TopCompaniesList from "@/app/admin/analytics/_components/lists/TopCompaniesList";
-import LastProjectsList from "@/app/admin/analytics/_components/lists/LastProjectsList";
-import ProjectTimelineChart from "@/app/admin/analytics/_components/charts/ProjectTimelineChart";
-import RevenuesChart from "@/app/admin/analytics/_components/charts/RevenuesChart";
-import ProjectsPerformanceList from "@/app/admin/analytics/_components/lists/ProjectsPerformanceList";
+import ProjectsPerformanceChart from "@/app/employee/analytics/_components/ProjectsPerformanceChart";
+import LastProjectsList from "@/app/employee/analytics/_components/LastProjectsList";
+import ProjectTimelineChart from "@/app/employee/analytics/_components/ProjectTimelineChart";
+import ProjectsPerformanceList from "@/app/employee/analytics/_components/ProjectsPerformanceList";
 import DefaultSelect from "@/components/Form/DefaultSelect";
+import TasksSummaryChart from "@/app/employee/analytics/_components/TasksSummaryChart";
+import TasksPerformanceChart from "@/app/employee/analytics/_components/TasksPerformanceChart";
+import TasksTimelineChart from "@/app/employee/analytics/_components/TasksTimelineChart";
+import TasksRatingChart from "@/app/employee/analytics/_components/TasksRatingChart";
 
-const AdminAnalyticsPage = () => {
+const EmployeeAnalyticsPage = () => {
 
     return (
         <Page
@@ -33,18 +31,18 @@ const AdminAnalyticsPage = () => {
                 </span>
                 <div className="flex flex-col md:flex-row items-stretch gap-4 justify-between w-full">
                     <div className="w-full md:w-1/2">
-                        <IndustriesChart />
+                        <TasksSummaryChart />
                     </div>
                     <div className="w-full md:w-1/2">
-                        <SubscriptionsChart />
+                        <TasksPerformanceChart />
                     </div>
                 </div>
                 <div className="flex flex-col md:flex-row items-stretch gap-4 justify-between w-full">
                     <div className="w-full md:w-1/2">
-                        <CompaniesSubscriptionsChart />
+                        <TasksTimelineChart />
                     </div>
                     <div className="w-full md:w-1/2">
-                        <TopCompaniesList />
+                        <TasksRatingChart />
                     </div>
                 </div>
             </div>
@@ -52,7 +50,7 @@ const AdminAnalyticsPage = () => {
             {/* Tasks Analytics */}
             <div className="flex flex-col items-start justify-start gap-4">
                 <span className="text-lg text-gray-500">
-                    Tasks
+                    Projects Analysis
                 </span>
                 <div className="flex flex-col md:flex-row items-stretch gap-4 justify-between w-full">
                     <div className="w-full md:w-1/2">
@@ -71,23 +69,9 @@ const AdminAnalyticsPage = () => {
                     </div>
                 </div>
             </div>
-
-            {/* Other Analytics */}
-            <div className="flex flex-col items-start justify-start gap-4 w-full">
-                <span className="text-lg text-gray-500">
-                    Other Analytics
-                </span>
-                <div className="flex flex-col md:flex-row items-stretch gap-4 justify-between w-full">
-                    <div className="w-full md:w-1/2">
-                        <CompaniesContactedChart />
-                    </div>
-                    <div className="w-full md:w-1/2">
-                        <RevenuesChart />
-                    </div>
-                </div>
-            </div>
+            
         </Page>
     );
 }
 
-export default AdminAnalyticsPage;
+export default EmployeeAnalyticsPage;
