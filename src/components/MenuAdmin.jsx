@@ -9,8 +9,7 @@ import {
     // Edit ,
     // Share,
     // Messages1,
-    Category, Profile2User, TaskSquare, NoteText, Chart2, HambergerMenu,
-    Cpu,
+    HambergerMenu,
     Chart21,
     Buildings,
     PercentageCircle,
@@ -70,18 +69,12 @@ const MenuAdmin = React.memo(({ isSlidebarOpen, taggleSlidebarOpen }) => {
                 </div>
                 <div className={"flex  flex-col gap-2"}>
                     <div className={"py-5 menu-list sm:py-0 flex flex-col gap-2 text-gray-500"}>
-                        <MenuItem path={"/admin/analytics"} icon={<Chart21 size="32"
-                            color="#375DFB" />} title={"Analytics"} />
-                        <MenuItem path={"/admin/companies"} icon={<Buildings size="32"
-                            color="#375DFB" />} title={"Companies"} />
-                        <MenuItem path={"/admin/plans"} icon={<PercentageCircle size="32"
-                            color="#375DFB" />} title={"Plans"} />
-                        <MenuItem path={"/admin/subscriptions"} icon={<ReceiptItem size="32"
-                            color="#375DFB" />} title={"Subscriptions"} />
-                        <MenuItem path={"/admin/orders"} icon={<Stickynote size="32"
-                            color="#375DFB" />} title={"Orders"} />
-                        <MenuItem path={"/settings"} icon={<Setting size="32"
-                            color="#375DFB" />} title={"Settings"} />
+                        <MenuItem path={"/admin/analytics"} icon={<Chart21 />} title={"Analytics"} />
+                        <MenuItem path={"/admin/companies"} icon={<Buildings />} title={"Companies"} />
+                        <MenuItem path={"/admin/plans"} icon={<PercentageCircle  />} title={"Plans"} />
+                        <MenuItem path={"/admin/subscriptions"} icon={<ReceiptItem  />} title={"Subscriptions"} />
+                        <MenuItem path={"/admin/orders"} icon={<Stickynote  />} title={"Orders"} />
+                        <MenuItem path={"/settings"} icon={<Setting  />} title={"Settings"} />
                     </div>
                 </div>
                 {/*<BriefTimeLine tweet={tweet} myAccount={myAccount}/>*/}

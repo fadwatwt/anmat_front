@@ -59,26 +59,16 @@ const Menu = React.memo(({ isSlidebarOpen, toggleSlidebarOpen }) => {
                 </div>
                 <div className={"flex  flex-col gap-2"}>
                     <div className={"py-5 menu-list sm:py-0 flex flex-col gap-2 text-gray-500"}>
-                        <MenuItem path={"/dashboard"} icon={<Category size="32"
-                            color="#375DFB" />} title={"Dashboard"} />
-                        <MenuItem path={"/dashboard/projects"} icon={<NoteText size="32"
-                            color="#375DFB" />} title={"Projects"} />
-                        <MenuItem path={"/dashboard/tasks"} icon={<TaskSquare size="32"
-                            color="#375DFB" />} title={"Tasks"} />
-                        <MenuItem path={"/dashboard/analytics"} icon={<Chart2 size="32"
-                            color="#375DFB" />} title={"Analytics"} />
-                        <MenuItem path={"/dashboard/hr"} icon={<Profile2User size="32"
-                            color="#375DFB" />} title={"HR Management"} />
-                        <MenuItem path={"/dashboard/conversations"} icon={<Messages1 size="32"
-                            color="#375DFB" />} title={"Conversations"} />
-                        <MenuItem path={"/dashboard/social-media"} icon={<Share size="32"
-                            color="#375DFB" />} title={"Social Media"} />
-                        <MenuItem path={"/dashboard/time-line"} icon={<Edit size="32"
-                            color="#375DFB" />} title={"Timeline"} />
-                        <MenuItem path={"/dashboard/setting"} icon={<Setting size="32"
-                            color="#375DFB" />} title={"Settings"} />
-                        <MenuItem path={"/ai-assistant"} icon={<Cpu size="32"
-                            color="#375DFB" />} title={"AI Assistant"} />
+                        <MenuItem path={"/dashboard"} icon={<Category/>} title={"Dashboard"} />
+                        <MenuItem path={"/dashboard/projects"} icon={<NoteText />} title={"Projects"} />
+                        <MenuItem path={"/dashboard/tasks"} icon={<TaskSquare />} title={"Tasks"} />
+                        <MenuItem path={"/dashboard/analytics"} icon={<Chart2/>} title={"Analytics"} />
+                        <MenuItem path={"/dashboard/hr"} icon={<Profile2User  />} title={"HR Management"} />
+                        <MenuItem path={"/dashboard/conversations"} icon={<Messages1  />} title={"Conversations"} />
+                        <MenuItem path={"/dashboard/social-media"} icon={<Share  />} title={"Social Media"} />
+                        <MenuItem path={"/dashboard/time-line"} icon={<Edit  />} title={"Timeline"} />
+                        <MenuItem path={"/dashboard/setting"} icon={<Setting  />} title={"Settings"} />
+                        <MenuItem path={"/ai-assistant"} icon={<Cpu  />} title={"AI Assistant"} />
                     </div>
                 </div>
                 {/*<BriefTimeLine tweet={tweet} myAccount={myAccount}/>*/}

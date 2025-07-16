@@ -14,7 +14,7 @@ function MenuItem({path,icon,title}) {
                 className={"flex gap-1 w-11/12 items-center p-3 group-hover:bg-[#EBF1FF] dark:group-hover:bg-primary-700 cursor-pointer hover:text-black rounded-lg group-[.active]:bg-primary-100"}>
                 {icon && React.cloneElement(icon, {
                     size: 25,
-                    className: "dark:text-white dark:group-hover:text-primary-200"
+                    color:`${pathname === path ? '#375DFB' : '#504e4e'}`,
                 })}
                 <p className={"dark:text-gray-300 text-sm dark:group-[.active]:text-primary-500 dark:group-hover:text-primary-200"}>{t(title)}</p>
             </div>
