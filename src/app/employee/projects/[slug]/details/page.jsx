@@ -274,7 +274,7 @@ function ProjectDetailsPage({slug}) {
                 <div className={"flex-1 flex flex-col gap-6"}>
                     <ProjectMembers members={members}/>
                     <AttachmentsList attachments={attachments}/>
-                    <ActivityLogs activityLogs={activityLogs}/>
+                    <ActivityLogs activityLogs={activityLogs} className={"h-72"}/>
                     <TimeLine/>
                 </div>
 

@@ -65,17 +65,12 @@ const MenuEmployee = React.memo(({isSlidebarOpen, taggleSlidebarOpen}) => {
                 </div>
                 <div className={"flex  flex-col gap-2"}>
                     <div className={"py-5 menu-list sm:py-0 flex flex-col gap-2 text-gray-500"}>
-                        <MenuItem path={"/employee/analytics"} icon={<Chart21 size="32"
-                                                                              color="#375DFB"/>} title={"Analytics"}/>
-                        <MenuItem path={"/employee/projects"} icon={<NoteText size="32"
-                                                                              color="#375DFB"/>} title={"Projects"}/>
-                        <MenuItem path={"/employee/tasks"} icon={<TaskSquare size="32"
-                                                                             color="#375DFB"/>} title={"Tasks"}/>
-                        <MenuItem path={"/employee/conversations"} icon={<Messages1 size="32"
-                                                                                    color="#375DFB"/>}
+                        <MenuItem path={"/employee/analytics"} icon={<Chart21 />} title={"Analytics"}/>
+                        <MenuItem path={"/employee/projects"} icon={<NoteText />} title={"Projects"}/>
+                        <MenuItem path={"/employee/tasks"} icon={<TaskSquare />} title={"Tasks"}/>
+                        <MenuItem path={"/employee/conversations"} icon={<Messages1 />}
                                   title={"Conversations"}/>
-                        <MenuItem path={"/settings"} icon={<Setting size="32"
-                                                                    color="#375DFB"/>} title={"Settings"}/>
+                        <MenuItem path={"/settings"} icon={<Setting />} title={"Settings"}/>
                     </div>
                 </div>
                 {/*<BriefTimeLine tweet={tweet} myAccount={myAccount}/>*/}

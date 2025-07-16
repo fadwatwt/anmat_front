@@ -59,34 +59,16 @@ const Menu = React.memo(({ isSlidebarOpen, toggleSlidebarOpen }) => {
                 </div>
                 <div className={"flex  flex-col gap-2"}>
                     <div className={"py-5 menu-list sm:py-0 flex flex-col gap-2 text-gray-500"}>
-                        <MenuItem path={"/dashboard"} icon={<Category size="32"
-                            color="#375DFB" />} title={"Dashboard"} />
-                        <MenuItem path={"/dashboard/projects"} icon={<NoteText size="32"
-                            color="#375DFB" />} title={"Projects"} />
-                        <MenuItem path={"/dashboard/tasks"} icon={<TaskSquare size="32"
-                            color="#375DFB" />} title={"Tasks"} />
-                        <MenuItem path={"/dashboard/analytics"} icon={<Chart2 size="32"
-                            color="#375DFB" />} title={"Analytics"} />
-                        <MenuItem path={"/dashboard/hr"} icon={<Profile2User size="32"
-                            color="#375DFB" />} title={"HR Management"} />
-                        <MenuItem path={"/dashboard/conversations"} icon={<Messages1 size="32"
-                            color="#375DFB" />} title={"Conversations"} />
-                        <MenuItem path={"/dashboard/social-media"} icon={<Share size="32"
-                            color="#375DFB" />} title={"Social Media"} />
-                        <MenuItem path={"/dashboard/time-line"} icon={<Edit size="32"
-                            color="#375DFB" />} title={"Timeline"} />
-                        <MenuItem path={"/dashboard/setting"} icon={<Setting size="32"
-                            color="#375DFB" />} title={"Settings"} />
-                        <MenuItem path={"/dashboard/ai"} icon={
-                            <span className="ai-assistant-icon group relative inline-block align-middle">
-                              <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <circle cx="32" cy="32" r="28" className="ai-assistant-bg" />
-                                <path className="ai-assistant-star ai-assistant-star-large" d="M27 13l4.5 9 9 4.5-9 4.5-4.5 9-4.5-9-9-4.5 9-4.5 4.5-9z" />
-                                <path className="ai-assistant-star ai-assistant-star-medium" d="M47 36l2 4 4 2-4 2-2 4-2-4-4-2 4-2 2-4z" />
-                                <path className="ai-assistant-star ai-assistant-star-small" d="M32 52l1.2 2.4L36 56l-2.4 1.2L32 60l-1.2-2.4L28 56l2.4-1.2L32 52z" />
-                              </svg>
-                            </span>
-                        } title={"AI Assistant"}/>
+                        <MenuItem path={"/dashboard"} icon={<Category/>} title={"Dashboard"} />
+                        <MenuItem path={"/dashboard/projects"} icon={<NoteText />} title={"Projects"} />
+                        <MenuItem path={"/dashboard/tasks"} icon={<TaskSquare />} title={"Tasks"} />
+                        <MenuItem path={"/dashboard/analytics"} icon={<Chart2/>} title={"Analytics"} />
+                        <MenuItem path={"/dashboard/hr"} icon={<Profile2User  />} title={"HR Management"} />
+                        <MenuItem path={"/dashboard/conversations"} icon={<Messages1  />} title={"Conversations"} />
+                        <MenuItem path={"/dashboard/social-media"} icon={<Share  />} title={"Social Media"} />
+                        <MenuItem path={"/dashboard/time-line"} icon={<Edit  />} title={"Timeline"} />
+                        <MenuItem path={"/dashboard/setting"} icon={<Setting  />} title={"Settings"} />
+                        <MenuItem path={"/ai-assistant"} icon={<Cpu  />} title={"AI Assistant"} />
                     </div>
                 </div>
                 {/*<BriefTimeLine tweet={tweet} myAccount={myAccount}/>*/}
