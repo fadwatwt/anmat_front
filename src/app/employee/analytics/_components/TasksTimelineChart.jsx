@@ -3,7 +3,7 @@
 import DefaultSelect from "@/components/Form/DefaultSelect";
 import LineChartComponent from "@/app/_components/containers/LineChartComponent";
 
-const ProjectTimelineChart = () => {
+const TasksTimelineChart = () => {
 
     const data = [
         { name: '', "Expected Time": 1, "Actual Time": 3 },
@@ -28,10 +28,10 @@ const ProjectTimelineChart = () => {
 
     return (
         <LineChartComponent
-            title={"Project Timeline"}
+            title={"Tasks Timeline"}
             toolbar={
                 <div className="w-32 flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end">
-                    <DefaultSelect options={[{ id: 1, value: "Last 6 Months" }]} />
+                    <DefaultSelect options={[{ id: 1, value: "Last Months" }]} />
                 </div>
             }
             data={data}
@@ -40,4 +40,4 @@ const ProjectTimelineChart = () => {
     );
 };
 
-export default ProjectTimelineChart;
+export default TasksTimelineChart;

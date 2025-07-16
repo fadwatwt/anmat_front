@@ -1,7 +1,7 @@
 "use client";
 
 import DefaultSelect from "@/components/Form/DefaultSelect";
-import BarChartComponent from "@/app/admin/analytics/_components/charts/containers/BarChartComponent";
+import BarChartComponent from "@/app/_components/containers/BarChartComponent";
 
 const CompaniesSubscriptionsChart = () => {
 
