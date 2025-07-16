@@ -1,235 +1,402 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect } from 'react';
-import { Send, MessageSquare, Plus, Menu, User, Bot, Mic } from 'lucide-react';
+import React, { useState, useRef, useLayoutEffect } from "react";
+import Page from "@/components/Page.jsx";
+import { Mic, Paperclip, Copy, Edit2, Save } from "lucide-react";
 
-export default function AIAssistant() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      type: 'ai',
-      content: 'Welcome! 👋\nStart your journey with AI Assistant.\nLearn more about the advantages of AI.',
-      timestamp: new Date()
+// Gemini/Bard-style logo (sidebar style)
+const GeminiIcon = () => (
+    <span className="ai-assistant-icon group relative inline-block align-middle">
+    <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="32" cy="32" r="28" className="ai-assistant-bg" />
+      <path className="ai-assistant-star ai-assistant-star-large" d="M27 13l4.5 9 9 4.5-9 4.5-4.5 9-4.5-9-9-4.5 9-4.5 4.5-9z" />
+      <path className="ai-assistant-star ai-assistant-star-medium" d="M47 36l2 4 4 2-4 2-2 4-2-4-4-2 4-2 2-4z" />
+      <path className="ai-assistant-star ai-assistant-star-small" d="M32 52l1.2 2.4L36 56l-2.4 1.2L32 60l-1.2-2.4L28 56l2.4-1.2L32 52z" />
+    </svg>
+  </span>
+);
+
+const suggestions = [
+  "What should I work on next ?",
+  "What are my urgent tasks?",
+  "What tasks are created & closed by me ?"
+];
+
+const USER_AVATAR = "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
+
+const AssistantPage = () => {
+  const [input, setInput] = useState("");
+  const [messages, setMessages] = useState([]); // Chat messages state
+  const [loading, setLoading] = useState(false); // Loading state for AI response
+  const [hasStarted, setHasStarted] = useState(false); // Track if user has sent a message
+  const [editingIdx, setEditingIdx] = useState(null); // Index of message being edited
+  const [editValue, setEditValue] = useState("");
+  const fileInputRef = useRef(null);
+  // const navigate = useNavigate(); // Not used in Next.js
+  const userBubbleRef = useRef(null);
+  const aiBubbleRef = useRef(null);
+  const [userBubbleDims, setUserBubbleDims] = useState({ width: undefined, height: undefined });
+  const [aiBubbleDims, setAiBubbleDims] = useState({ width: undefined, height: undefined });
+  const userEditRefs = useRef({});
+  const aiEditRefs = useRef({});
+  const [editDims, setEditDims] = useState({});
+  const [thinking, setThinking] = useState(false); // Track if AI is thinking
+  const [thinkingBubbles, setThinkingBubbles] = useState([]); // Track thinking bubbles for display
+  const chatContainerRef = useRef(null); // Ref for chat container
+  const inputRef = useRef(null); // Ref for input field
+
+  const aiThoughts = [
+    'Analyzing your request...',
+    'Checking agenda templates...',
+    'Summarizing points...',
+    'Almost ready...'
+  ];
+
+  useLayoutEffect(() => {
+    if (editingIdx === messages.length-2 && userBubbleRef.current) {
+      setUserBubbleDims({
+        width: userBubbleRef.current.offsetWidth,
+        height: userBubbleRef.current.offsetHeight
+      });
     }
-  ]);
-  const [inputValue, setInputValue] = useState('');
-  const [conversations, setConversations] = useState([
-    { id: 1, title: 'Create an agenda meeting for "Lorem ipsum project"', active: false },
-    { id: 2, title: 'Tell me the assignees of Echo "AI Assistant: Voice Command Setup" task', active: true }
-  ]);
-  const messagesEndRef = useRef(null);
+    if (editingIdx === messages.length-1 && aiBubbleRef.current) {
+      setAiBubbleDims({
+        width: aiBubbleRef.current.offsetWidth,
+        height: aiBubbleRef.current.offsetHeight
+      });
+    }
+  }, [editingIdx]);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  // Auto-resize textarea height to fit content
+  useLayoutEffect(() => {
+    if (editingIdx !== null) {
+      const ref = userEditRefs.current[editingIdx] || aiEditRefs.current[editingIdx];
+      if (ref) {
+        setEditDims({
+          [editingIdx]: {
+            width: ref.offsetWidth,
+            height: ref.offsetHeight
+          }
+        });
+      }
+    }
+  }, [editingIdx]);
+
+  // Auto-scroll to bottom when new messages are added
+  useLayoutEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [messages, loading]);
+
+  // Auto-focus input when component mounts
+  useLayoutEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
+
+  const handleSuggestionClick = (text) => {
+    setInput(text);
   };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+  const handleMicClick = () => {
+    // Placeholder for mic functionality
+    console.log("mic clicked");
+  };
 
-  const handleSendMessage = () => {
-    if (!inputValue.trim()) return;
+  const handleAttachmentClick = () => {
+    if (fileInputRef.current) fileInputRef.current.click();
+  };
 
-    const newMessage = {
-      id: messages.length + 1,
-      type: 'user',
-      content: inputValue,
-      timestamp: new Date()
-    };
+  const handleFileChange = (e) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      console.log("Selected files:", files);
+    }
+  };
 
-    setMessages(prev => [...prev, newMessage]);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+    setHasStarted(true);
+    const userMessage = { sender: "user", text: input };
+    setMessages(prev => [...prev, userMessage]);
+    setInput("");
+    setLoading(true);
+    setThinking(true);
 
-    // Simulate AI response
+    // Refocus input after sending message
     setTimeout(() => {
-      const aiResponse = {
-        id: messages.length + 2,
-        type: 'ai',
-        content: 'I understand your request. Let me help you with that. Here\'s what I can do for you...',
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, aiResponse]);
-    }, 1000);
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 0);
 
-    setInputValue('');
+    // Simulate AI response with two-part message
+    setTimeout(() => {
+      setThinking(false);
+      setLoading(false);
+      setMessages(prev => [
+        ...prev,
+        {
+          sender: "ai",
+          thought: "Analyzing your request... lorem ipsum dummy text lorem ipsum dummy text lorem ipsum dummy text lorem ipsum dummy text. ",
+          text: "Got it, lorem ipsum dummy text lorem ipsum dummy text lorem ipsum dummy text lorem ipsum dummy text."
+        }
+      ]);
+
+      // Refocus input after AI response
+      setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      }, 0);
+    }, 1200);
   };
 
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
+  const handleCopy = (text) => {
+    navigator.clipboard.writeText(text);
   };
 
-  const createNewConversation = () => {
-    const newConv = {
-      id: conversations.length + 1,
-      title: 'New conversation',
-      active: false
-    };
-    setConversations(prev => prev.map(c => ({...c, active: false})));
-    setConversations(prev => [...prev, {...newConv, active: true}]);
-    setMessages([{
-      id: 1,
-      type: 'ai',
-      content: 'Hello! How can I help you today?',
-      timestamp: new Date()
-    }]);
+  const handleEdit = (idx, text) => {
+    setEditingIdx(idx);
+    setEditValue(text);
   };
 
-  const switchConversation = (id) => {
-    setConversations(prev => prev.map(c => ({...c, active: c.id === id})));
+  const handleEditChange = (e) => {
+    setEditValue(e.target.value);
+  };
+
+  const handleEditSave = (idx) => {
+    setMessages((prev) => prev.map((msg, i) => i === idx ? { ...msg, text: editValue } : msg));
+    setEditingIdx(null);
+    setEditValue("");
   };
 
   return (
-    <div className="fixed left-0 top-0 h-full z-50">
-      {/* Toggle Button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="absolute left-4 top-4 z-60 bg-blue-600 text-white p-2 rounded-lg shadow-lg hover:bg-blue-700 transition-colors"
-      >
-        <MessageSquare size={20} />
-      </button>
-
-      {/* Sidebar */}
-      <div className={`
-        h-full bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 
-        transition-transform duration-300 ease-in-out shadow-xl
-        ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-        w-80
-      `}>
-        {/* Header */}
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                <Bot size={16} className="text-white" />
-              </div>
-              <h2 className="font-semibold text-gray-900 dark:text-white">AI Assistant</h2>
+      <Page isTitle={false}>
+        <div className="flex flex-col h-[calc(100vh-80px)] bg-gray-50 dark:bg-gray-900">
+          {/* Main content area */}
+          <div className="flex-1 overflow-y-auto">
+            <div className="flex flex-col items-center justify-center w-full min-h-full gap-8 p-8 pb-32">
+              {/* Hide welcome and suggestions after chat starts */}
+              {!hasStarted && (
+                  <>
+                    <div className="flex flex-col items-center gap-4 mt-12">
+                      <GeminiIcon />
+                      <h2 className="text-2xl font-semibold text-center text-gray-900 dark:text-white mt-2">
+                        Welcome <span className="text-primary-500 font-bold">Mai Haggag</span>,<br/>
+                        <span className="font-normal">Start your journey with <span className="font-semibold">AI Assistant</span></span>
+                      </h2>
+                      <p className="text-gray-400 text-center text-base max-w-xl">Lorem ipsum dummy text Lorem ipsum dummy text</p>
+                    </div>
+                    <div className="flex flex-row gap-4 mt-2 mb-8">
+                      {suggestions.map((s, i) => (
+                          <button
+                              key={i}
+                              className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-6 py-3 text-gray-900 dark:text-gray-200 shadow-sm hover:bg-primary-50 dark:hover:bg-primary-900 transition"
+                              onClick={() => handleSuggestionClick(s)}
+                          >
+                            {s}
+                          </button>
+                      ))}
+                    </div>
+                  </>
+              )}
+              {/* Chat message list, only show after chat starts */}
+              {hasStarted && messages.length > 0 && (
+                  <div className="w-full max-w-3xl flex flex-col gap-6">
+                    {/* Show all chat bubbles in order */}
+                    {messages.map((msg, idx) => (
+                        <React.Fragment key={idx}>
+                          {msg.sender === "user" ? (
+                              <div className="flex justify-start items-start gap-3">
+                                <img
+                                    src={USER_AVATAR}
+                                    alt="User"
+                                    className="w-10 h-10 rounded-full object-cover border border-gray-200"
+                                />
+                                <div className="flex flex-col items-start w-full max-w-[70%]">
+                                  {editingIdx === idx ? (
+                                      <div className="flex flex-col w-full">
+                              <textarea
+                                  className="text-base text-gray-900 w-full font-sans font-semibold leading-relaxed box-border text-left outline-none border-none mb-2 resize-none"
+                                  style={{
+                                    wordBreak: 'break-word',
+                                    width: editDims[idx]?.width ? editDims[idx].width + 'px' : '100%',
+                                    height: editDims[idx]?.height ? editDims[idx].height + 'px' : 'auto',
+                                    minHeight: editDims[idx]?.height ? editDims[idx].height + 'px' : 'auto',
+                                    minWidth: editDims[idx]?.width ? editDims[idx].width + 'px' : '100%'
+                                  }}
+                                  value={editValue}
+                                  onChange={handleEditChange}
+                                  autoFocus
+                                  rows={1}
+                              />
+                                        <div className="flex gap-2 mt-1">
+                                          <button onClick={() => handleCopy(editValue)} title="Copy" className="text-gray-400 hover:text-primary-500"><Copy size={18} /></button>
+                                          <button onClick={() => handleEditSave(idx)} title="Save" className="text-gray-400 hover:text-primary-500"><Save size={18} /></button>
+                                        </div>
+                                      </div>
+                                  ) : (
+                                      <>
+                                        <div ref={el => userEditRefs.current[idx] = el} className="text-base text-gray-900 w-full font-sans font-semibold leading-relaxed box-border text-left" style={{wordBreak: 'break-word'}}>
+                                          {msg.text}
+                                        </div>
+                                        <div className="flex gap-2 mt-1">
+                                          <button onClick={() => handleCopy(msg.text)} title="Copy" className="text-gray-400 hover:text-primary-500"><Copy size={18} /></button>
+                                          <button onClick={() => handleEdit(idx, msg.text)} title="Edit" className="text-gray-400 hover:text-primary-500"><Edit2 size={18} /></button>
+                                        </div>
+                                      </>
+                                  )}
+                                </div>
+                              </div>
+                          ) : (
+                              <div className="flex justify-start items-start gap-3">
+                        <span className="inline-block w-12 h-12 rounded-full bg-[#4F8CFF] flex items-center justify-center shadow-lg">
+                          <svg width="32" height="32" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="32" cy="32" r="28" fill="#4F8CFF" />
+                            <path d="M27 13l4.5 9 9 4.5-9 4.5-4.5 9-4.5-9-9-4.5 9-4.5 4.5-9z" fill="#fff"/>
+                            <path d="M47 36l2 4 4 2-4 2-2 4-2-4-4-2 4-2 2-4z" fill="#fff"/>
+                            <path d="M32 52l1.2 2.4L36 56l-2.4 1.2L32 60l-1.2-2.4L28 56l2.4-1.2L32 52z" fill="#fff"/>
+                          </svg>
+                        </span>
+                                <div className="flex flex-col items-start w-full max-w-[70%]">
+                                  {editingIdx === idx ? (
+                                      <div className="flex flex-col w-full">
+                                        {msg.thought && (
+                                            <div className="text-gray-400 text-sm mb-2 font-sans font-semibold text-left">
+                                              {msg.thought}
+                                            </div>
+                                        )}
+                                        {msg.thought && <hr className="my-2 border-gray-200" />}
+                                        <textarea
+                                            className="text-base text-gray-900 w-full font-sans font-semibold leading-relaxed box-border text-left outline-none border-none mb-2 resize-none"
+                                            style={{
+                                              wordBreak: 'break-word',
+                                              width: editDims[idx]?.width ? editDims[idx].width + 'px' : '100%',
+                                              height: editDims[idx]?.height ? editDims[idx].height + 'px' : 'auto',
+                                              minHeight: editDims[idx]?.height ? editDims[idx].height + 'px' : 'auto',
+                                              minWidth: editDims[idx]?.width ? editDims[idx].width + 'px' : '100%'
+                                            }}
+                                            value={editValue}
+                                            onChange={handleEditChange}
+                                            autoFocus
+                                            rows={1}
+                                        />
+                                        <div className="flex gap-2 mt-1">
+                                          <button onClick={() => handleCopy(editValue)} title="Copy" className="text-gray-400 hover:text-primary-500"><Copy size={18} /></button>
+                                          <button onClick={() => handleEditSave(idx)} title="Save" className="text-gray-400 hover:text-primary-500"><Save size={18} /></button>
+                                        </div>
+                                      </div>
+                                  ) : (
+                                      <>
+                                        {msg.thought && (
+                                            <div className="text-gray-400 text-sm mb-2 font-sans font-semibold text-left">
+                                              {msg.thought}
+                                            </div>
+                                        )}
+                                        {msg.thought && <hr className="my-2 border-gray-200" />}
+                                        <div ref={el => aiEditRefs.current[idx] = el} className="text-base text-gray-900 w-full font-sans font-semibold leading-relaxed box-border text-left" style={{wordBreak: 'break-word'}}>
+                                          {msg.text}
+                                        </div>
+                                        <div className="flex gap-2 mt-1">
+                                          <button onClick={() => handleCopy(msg.text)} title="Copy" className="text-gray-400 hover:text-primary-500"><Copy size={18} /></button>
+                                          <button onClick={() => handleEdit(idx, msg.text)} title="Edit" className="text-gray-400 hover:text-primary-500"><Edit2 size={18} /></button>
+                                        </div>
+                                      </>
+                                  )}
+                                </div>
+                              </div>
+                          )}
+                          {/* Add line between AI messages */}
+                          {msg.sender === "ai" && idx < messages.length - 1 && messages[idx + 1]?.sender === "ai" && (
+                              <hr className="my-4 border-gray-200 dark:border-gray-700" />
+                          )}
+                        </React.Fragment>
+                    ))}
+                  </div>
+              )}
+              {/* Thinking and answer bubbles */}
+              {hasStarted && (loading || thinkingBubbles.length > 0) && (
+                  <div className="w-full max-w-3xl flex flex-col gap-6 mb-4">
+                    {/* AI thinking bubble with modern animation */}
+                    <div className="flex justify-start items-start gap-3">
+                  <span className="inline-block w-12 h-12 rounded-full bg-[#4F8CFF] flex items-center justify-center shadow-lg">
+                    <svg width="32" height="32" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="32" cy="32" r="28" fill="#4F8CFF" />
+                      <path d="M27 13l4.5 9 9 4.5-9 4.5-4.5 9-4.5-9-9-4.5 9-4.5 4.5-9z" fill="#fff"/>
+                      <path d="M47 36l2 4 4 2-4 2-2 4-2-4-4-2 4-2 2-4z" fill="#fff"/>
+                      <path d="M32 52l1.2 2.4L36 56l-2.4 1.2L32 60l-1.2-2.4L28 56l2.4-1.2L32 52z" fill="#fff"/>
+                    </svg>
+                  </span>
+                      <div className="rounded-xl px-6 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 shadow-lg">
+                        <div className="flex items-center gap-3">
+                          <div className="flex gap-1">
+                            <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                            <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                            <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                          </div>
+                          <span className="text-blue-700 font-medium">Thinking...</span>
+                        </div>
+                        <div className="mt-2 flex items-center gap-2 text-xs text-blue-600">
+                          <div className="w-1 h-1 bg-blue-400 rounded-full animate-pulse"></div>
+                          <span>Processing your request</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+              )}
             </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-            >
-              <Menu size={18} />
-            </button>
-          </div>
-          
-          <button
-            onClick={createNewConversation}
-            className="w-full flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <Plus size={16} />
-            New Conversation
-          </button>
-        </div>
-
-        {/* Conversations List */}
-        <div className="flex-1 overflow-y-auto p-4 max-h-48">
-          <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wide">Recent</h3>
-          <div className="space-y-2">
-            {conversations.map((conv) => (
-              <button
-                key={conv.id}
-                onClick={() => switchConversation(conv.id)}
-                className={`
-                  w-full text-left p-3 rounded-lg text-sm transition-colors
-                  ${conv.active 
-                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800' 
-                    : 'hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300'
-                  }
-                `}
-              >
-                <div className="line-clamp-2">
-                  {conv.title}
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Chat Area */}
-        <div className="flex-1 flex flex-col">
-          {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex gap-3 ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                {message.type === 'ai' && (
-                  <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Bot size={16} className="text-white" />
-                  </div>
-                )}
-                
-                <div className={`
-                  max-w-[70%] p-3 rounded-lg
-                  ${message.type === 'user' 
-                    ? 'bg-blue-600 text-white rounded-br-sm' 
-                    : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-bl-sm'
-                  }
-                `}>
-                  <div className="whitespace-pre-wrap text-sm">
-                    {message.content}
-                  </div>
-                  <div className={`text-xs mt-1 opacity-70 ${message.type === 'user' ? 'text-blue-100' : 'text-gray-500'}`}>
-                    {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </div>
-                </div>
-                
-                {message.type === 'user' && (
-                  <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
-                    <User size={16} className="text-gray-600" />
-                  </div>
-                )}
-              </div>
-            ))}
-            <div ref={messagesEndRef} />
           </div>
 
-          {/* Input Area */}
-          <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-            <div className="flex gap-2">
-              <div className="flex-1 relative">
-                <textarea
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder="Type your message..."
-                  className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
-                  rows="2"
-                />
-                <button className="absolute right-2 bottom-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                  <Mic size={16} />
+          {/* Fixed input at bottom */}
+          <div className="flex-shrink-0 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+            <div className="max-w-3xl mx-auto p-4">
+              <form className="flex items-center gap-2 bg-white dark:bg-gray-800 rounded-2xl shadow-lg px-4 py-3 border border-gray-200 dark:border-gray-600" onSubmit={handleSubmit}>
+                <button type="button" className="text-gray-400 hover:text-primary-500 p-2 transition-colors" onClick={handleAttachmentClick}>
+                  <Paperclip size={20} />
                 </button>
-              </div>
-              <button
-                onClick={handleSendMessage}
-                disabled={!inputValue.trim()}
-                className="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <Send size={16} />
-              </button>
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    style={{ display: "none" }}
+                    onChange={handleFileChange}
+                    multiple
+                />
+                <button type="button" className="text-gray-400 hover:text-primary-500 p-2 transition-colors" onClick={handleMicClick}>
+                  <Mic size={20} />
+                </button>
+                <input
+                    type="text"
+                    ref={inputRef}
+                    className="flex-1 rounded-lg border-none bg-transparent px-4 py-2 focus:outline-none focus:ring-0 dark:bg-transparent dark:text-white text-gray-900 placeholder-gray-500 dark:placeholder-gray-400"
+                    placeholder="Type your message..."
+                    value={input}
+                    onChange={e => setInput(e.target.value)}
+                    disabled={loading}
+                />
+                <button
+                    type="submit"
+                    className={`p-2 rounded-lg transition-colors ${input.trim() && !loading ? 'text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900' : 'text-gray-300'}`}
+                    disabled={loading || !input.trim()}
+                >
+                  {loading ? (
+                      <div className="w-5 h-5 border-2 border-gray-300 border-t-primary-500 rounded-full animate-spin"></div>
+                  ) : (
+                      <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <path d="M22 2L11 13"/>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                      </svg>
+                  )}
+                </button>
+              </form>
             </div>
           </div>
         </div>
-
-        {/* Footer */}
-        <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-          <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
-            AI Assistant • Online
-          </div>
-        </div>
-      </div>
-
-      {/* Overlay */}
-      {isOpen && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-25 z-40"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
-    </div>
+      </Page>
   );
-}
+};
+
+export default AssistantPage;

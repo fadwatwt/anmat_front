@@ -132,4 +132,52 @@ p,div{
     background: #161922;
 }
 
+/* AI Assistant Sidebar Icon Styling */
+.ai-assistant-bg {
+  fill: #fff;
+  transition: fill 0.3s;
+}
+.dark .ai-assistant-bg {
+  fill: #23272f;
+}
+
+.ai-assistant-star {
+  fill: #4F8CFF;
+  filter: drop-shadow(0 0 0px #fff0);
+  transition: filter 0.3s, fill 0.3s;
+}
+.dark .ai-assistant-star {
+  fill: #fff;
+}
+
+/* Remove the base hover rule for all stars if present */
+.ai-assistant-icon:hover .ai-assistant-star {
+  /* No base filter here, handled per star below */
+}
+.ai-assistant-icon:hover .ai-assistant-star-large {
+  filter: drop-shadow(0 0 16px #fff) drop-shadow(0 0 32px #4F8CFF) drop-shadow(0 0 8px #fff);
+  animation: twinkle-large 0.8s infinite alternate;
+}
+.ai-assistant-icon:hover .ai-assistant-star-medium {
+  filter: drop-shadow(0 0 12px #fff) drop-shadow(0 0 24px #4F8CFF) drop-shadow(0 0 6px #fff);
+  animation: twinkle-medium 0.7s infinite alternate;
+}
+.ai-assistant-icon:hover .ai-assistant-star-small {
+  filter: drop-shadow(0 0 8px #fff) drop-shadow(0 0 16px #4F8CFF) drop-shadow(0 0 4px #fff);
+  animation: twinkle-small 0.6s infinite alternate;
+}
+
+@keyframes twinkle-large {
+  0% { filter: drop-shadow(0 0 8px #fff8) drop-shadow(0 0 16px #4F8CFF88); }
+  100% { filter: drop-shadow(0 0 16px #fff) drop-shadow(0 0 32px #4F8CFF); }
+}
+@keyframes twinkle-medium {
+  0% { filter: drop-shadow(0 0 6px #fff6) drop-shadow(0 0 12px #4F8CFF66); }
+  100% { filter: drop-shadow(0 0 12px #fff) drop-shadow(0 0 24px #4F8CFF); }
+}
+@keyframes twinkle-small {
+  0% { filter: drop-shadow(0 0 4px #fff4) drop-shadow(0 0 8px #4F8CFF44); }
+  100% { filter: drop-shadow(0 0 8px #fff) drop-shadow(0 0 16px #4F8CFF); }
+}
+
 

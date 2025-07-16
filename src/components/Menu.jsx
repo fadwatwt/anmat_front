@@ -77,8 +77,16 @@ const Menu = React.memo(({ isSlidebarOpen, toggleSlidebarOpen }) => {
                             color="#375DFB" />} title={"Timeline"} />
                         <MenuItem path={"/dashboard/setting"} icon={<Setting size="32"
                             color="#375DFB" />} title={"Settings"} />
-                        <MenuItem path={"/ai-assistant"} icon={<Cpu size="32"
-                            color="#375DFB" />} title={"AI Assistant"} />
+                        <MenuItem path={"/dashboard/ai"} icon={
+                            <span className="ai-assistant-icon group relative inline-block align-middle">
+                              <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="32" cy="32" r="28" className="ai-assistant-bg" />
+                                <path className="ai-assistant-star ai-assistant-star-large" d="M27 13l4.5 9 9 4.5-9 4.5-4.5 9-4.5-9-9-4.5 9-4.5 4.5-9z" />
+                                <path className="ai-assistant-star ai-assistant-star-medium" d="M47 36l2 4 4 2-4 2-2 4-2-4-4-2 4-2 2-4z" />
+                                <path className="ai-assistant-star ai-assistant-star-small" d="M32 52l1.2 2.4L36 56l-2.4 1.2L32 60l-1.2-2.4L28 56l2.4-1.2L32 52z" />
+                              </svg>
+                            </span>
+                        } title={"AI Assistant"}/>
                     </div>
                 </div>
                 {/*<BriefTimeLine tweet={tweet} myAccount={myAccount}/>*/}

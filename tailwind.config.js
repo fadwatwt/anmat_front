@@ -1,5 +1,3 @@
-
-
 /** @type {import('tailwindcss').Config} */
 const tailwindConfig= {
   content: [
@@ -61,7 +59,8 @@ const tailwindConfig= {
         weak:{
           100:"#F6F8FA",
           800:"#161922"
-        }
+        },
+        'ui-gray': "#F6F8FA"
       },
       fontFamily: {
         ar: ['"Almarai"', 'sans-serif'], // الخط المستخدم للغة العربية
