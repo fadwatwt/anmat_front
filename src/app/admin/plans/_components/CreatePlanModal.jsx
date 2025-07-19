@@ -10,9 +10,10 @@ import {
   createEmployee,
 } from "@/redux/employees/employeeAPI.js";
 import SelectAndLabel from "@/components/Form/SelectAndLabel";
+import TagInput from "@/components/Form/TagInput";
 
 function CreatePlanModal({ isOpen, onClose }) {
-  
+
   const formik = useFormik({
     initialValues: {
       plan_name: "",
@@ -75,19 +76,9 @@ function CreatePlanModal({ isOpen, onClose }) {
             isRequired={true}
           />
 
-          <SelectAndLabel
-            title="Features"
-            options={[{name: 'feature-1', value: 'feature-1'}, {name: 'feature-2', value: 'feature-2'}]}
-            value={formik.values.features}
-            onChange={formik.handleChange}
-            placeholder=""
-            error={
-              formik.touched.features && formik.errors.features
-                ? formik.errors.features
-                : ""
-            }
-            isRequired={true}
-          />
+          <TagInput title="Features" isRequired={true}
+            suggestions={[{ name: 'feature-1', id: 'feature-1' }, { name: 'feature-2', id: 'feature-2' }]}
+            placeholder="Select Features..." />
 
         </div>
       </div>

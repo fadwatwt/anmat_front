@@ -3,7 +3,7 @@ import { t } from "i18next";
 import Table from "@/components/Tables/Table";
 import Page from "@/components/Page";
 import { RiCheckboxCircleFill, RiCloseCircleFill, RiQuestionLine } from "@remixicon/react";
-import AddPermissionModal from "./components/AddPermissionModal";
+import AddPermissionModal from "./_components/AddPermissionModal";
 import { useState } from "react";
 
 

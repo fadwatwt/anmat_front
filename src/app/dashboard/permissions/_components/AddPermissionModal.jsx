@@ -14,18 +14,20 @@ import {
 import { fetchRoles } from "@/redux/roles/rolesSlice.js";
 import { fetchDepartments } from "@/redux/departments/departmentAPI.js";
 import SelectAndLabel from "@/components/Form/SelectAndLabel.jsx";
+import TagInput from "@/components/Form/TagInput";
 
-function AddRoleModal({ isOpen, onClose }) {
+function setRoles(data) {
+  console.log(data)
+}
+
+function setDepartments(payload) {
+  console.log(payload)
+}
+
+function AddPermissionModal({ isOpen, onClose }) {
   const dispatch = useDispatch();
-  // const { loading } = useSelector((state) => state.employees);
 
-  const [roles, setRoles] = useState([]);
-  const [departments, setDepartments] = useState([]);
-  const [permissions] = useState(['Add Project', 'Edit Project']);
-  const [categories] = useState(['Projects']);
-  console.log(roles, "roles");
-  console.log(departments)
-
+  const [permissions ] = useState(['Add', 'Edit', 'View', 'Delete']);
   useEffect(() => {
     if (isOpen) {
       dispatch(fetchEmployees());
@@ -37,12 +39,10 @@ function AddRoleModal({ isOpen, onClose }) {
   const formik = useFormik({
     initialValues: {
       name: "",
-      categories: "",
       permissions: "",
     },
     validationSchema: Yup.object({
       name: Yup.string().required("Required"),
-      categories: Yup.array().required("Required"),
       permissions: Yup.array(),
     }),
     onSubmit: (values, { resetForm }) => {
@@ -54,6 +54,13 @@ function AddRoleModal({ isOpen, onClose }) {
     },
   });
 
+  const suggestions = [
+    {id: 'add', name: 'add'},
+    {id: 'edit', name: 'edit'},
+    {id: 'view', name: 'view'},
+    {id: 'delete', name: 'delete'},
+  ];
+
   return (
     <Modal
       isOpen={isOpen}
@@ -62,17 +69,17 @@ function AddRoleModal({ isOpen, onClose }) {
       btnApplyTitle={"Save"}
       onClick={formik.handleSubmit}
       className={"lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12"}
-      title={"Add Role"}
+      title={"Add Permission"}
     >
       <div className="px-1">
         <div className="flex flex-col gap-4">
           <InputAndLabel
-            title="Role Name"
+            title="Permission Category"
             name="name"
             value={formik.values.name}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            placeholder="Enter Role Name..."
+            placeholder="Enter Permission Category..."
             error={
               formik.touched.name && formik.errors.name
                 ? formik.errors.name
@@ -81,37 +88,7 @@ function AddRoleModal({ isOpen, onClose }) {
             isRequired={true}
           />
 
-          <SelectAndLabel
-            title={"Categories"}
-            name="categories"
-            value={formik.values.categories} // Ensure it’s controlled
-            onChange={(val) => formik.setFieldValue("categories", val)} // Send _id
-            onBlur={formik.handleBlur}
-            options={categories} // Ensure _id is used internally but name is displayed
-            error={
-              formik.touched.categories && formik.errors.categories
-                ? formik.errors.categories
-                : ""
-            }
-            placeholder={"Select Categories..."}
-            isRequired={true}
-          />
-
-          <SelectAndLabel
-            title={"Permissions"}
-            name="permissions"
-            value={formik.values.permissions} // Ensure it’s controlled
-            onChange={(val) => formik.setFieldValue("permissions", val)} // Send _id
-            onBlur={formik.handleBlur}
-            options={permissions} // Ensure _id is used internally but name is displayed
-            error={
-              formik.touched.permissions && formik.errors.permissions
-                ? formik.errors.permissions
-                : ""
-            }
-            placeholder={"Select Permissions..."}
-            isRequired={true}
-          />
+          <TagInput title="Permissions" isRequired={true} suggestions={suggestions} placeholder="Select Permissions..." />
 
         </div>
       </div>
@@ -119,9 +96,9 @@ function AddRoleModal({ isOpen, onClose }) {
   );
 }
 
-AddRoleModal.propTypes = {
+AddPermissionModal.propTypes = {
   isOpen: PropTypes.bool,
   onClose: PropTypes.func,
 };
 
-export default AddRoleModal;
+export default AddPermissionModal;

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
 
-const TagInput = ({ suggestions, placeholder }) => {
+const TagInput = ({ suggestions, placeholder, title, isRequired }) => {
     const [tags, setTags] = useState([]);
     const [inputValue, setInputValue] = useState("");
     const [isFocused, setIsFocused] = useState(false); // تتبع حالة التركيز
@@ -38,35 +38,40 @@ const TagInput = ({ suggestions, placeholder }) => {
 
     return (
         <div className="w-full max-w-lg">
-            <div className="flex flex-wrap dark:bg-gray-900 gap-1 px-1 items-center border dark:border-none py-2 rounded-lg w-full">
-                {tags.map((tag) => (
-                    <div
-                        key={tag.id}
-                        className="flex items-center space-x-2 bg-gray-100 dark:border-gray-800 dark:bg-gray-800 gap-2 border rounded-full px-3 py-1"
-                    >
-                        <img
-                            src={tag.image}
-                            alt={tag.name}
-                            className="w-6 h-6 rounded-full"
-                        />
-                        <span className="text-sm text-gray-700 dark:text-gray-400">{tag.name}</span>
-                        <button
-                            onClick={() => removeTag(tag.id)}
-                            className="text-gray-500 hover:text-red-500"
+            <div className={`relative flex flex-col gap-1 w-full items-start`}>
+                {title && <label className="text-gray-900 dark:text-gray-200 text-sm">
+                    {title}{isRequired && <span className={"text-red-500 ms-1"}>*</span>}
+                </label>}
+                <div className="flex flex-wrap dark:bg-gray-900 gap-1 px-1 items-center border dark:border-none py-2 rounded-lg w-full">
+                    {tags.map((tag) => (
+                        <div
+                            key={tag.id}
+                            className="flex items-center space-x-2 bg-primary-100 dark:border-primary-800 dark:bg-primary-800 gap-2 border rounded-full px-3 py-1"
                         >
-                            ×
-                        </button>
-                    </div>
-                ))}
-                <input
-                    type="text"
-                    placeholder={placeholder}
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value.trimStart())}
-                    onFocus={() => setIsFocused(true)}
-                    onBlur={() => setTimeout(() => setIsFocused(false), 200)} // تأخير لإتاحة الوقت للنقر
-                    className="flex-grow focus:outline-none text-sm p-1 w-full dark:bg-gray-900"
-                />
+                            {tag.image && <img
+                                src={tag.image}
+                                alt={tag.name}
+                                className="w-6 h-6 rounded-full"
+                            />}
+                            <span className="text-sm text-primary-700 dark:text-primary-400">{tag.name}</span>
+                            <button
+                                onClick={() => removeTag(tag.id)}
+                                className="text-primary-500 hover:text-red-500"
+                            >
+                                ×
+                            </button>
+                        </div>
+                    ))}
+                    <input
+                        type="text"
+                        placeholder={placeholder}
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value.trimStart())}
+                        onFocus={() => setIsFocused(true)}
+                        onBlur={() => setTimeout(() => setIsFocused(false), 200)} // تأخير لإتاحة الوقت للنقر
+                        className="flex-grow focus:outline-none text-sm p-1 w-full dark:bg-gray-900"
+                    />
+                </div>
             </div>
             {(inputValue || isFocused) && filteredSuggestions().length > 0 && (
                 <div className="mt-2 border dark:border-gray-700 dark:bg-gray-900 rounded-lg shadow bg-white">
@@ -76,11 +81,11 @@ const TagInput = ({ suggestions, placeholder }) => {
                             onMouseDown={() => addTag(person)} // معالجة الإضافة عند النقر
                             className="flex items-center gap-2 dark:bg-gray-900 p-2 hover:bg-gray-100 cursor-pointer"
                         >
-                            <img
+                            {person.image && <img
                                 src={person.image}
                                 alt={person.name}
                                 className="w-6 h-6 rounded-full mr-2"
-                            />
+                            />}
                             <span className="text-sm text-gray-700 dark:text-gray-400">{person.name}</span>
                         </div>
                     ))}
@@ -93,6 +98,8 @@ const TagInput = ({ suggestions, placeholder }) => {
 TagInput.propTypes = {
     suggestions: PropTypes.array.isRequired,
     placeholder: PropTypes.string,
+    title: PropTypes.string,
+    isRequired: PropTypes.bool
 };
 
 export default TagInput;
