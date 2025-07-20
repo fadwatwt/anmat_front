@@ -56,7 +56,7 @@ function SubscriptionsPage() {
             <Page title={t(listSideBar.find(item => item.id === activeTab)?.title || "Subscriptions")}
                 isBtn={activeTab === 'billing-history'} btnTitle={t("Change Billing Info")} btnOnClick={toggleBillingInfoModal}
                 btnIcon={<RiPencilLine className="text-white text-md dark:text-black" />}
-                className="h-[calc(100vh-196px)] flex flex-col gap-4 box-border mx-auto py-5 md:px-10 px-3"
+                className="h-[calc(100vh-200px)] flex flex-col gap-4 box-border mx-auto py-5 md:px-10 px-3"
             >
                 <div className="">
                     <ChangeBillingInfoModal isOpen={billingInfoModalOpen} onClose={toggleBillingInfoModal} />

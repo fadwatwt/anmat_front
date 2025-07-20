@@ -1,44 +1,60 @@
+"use client";
+
 import { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import Avatar from "./Avatar";
-import {RiNotification3Line} from "@remixicon/react";
-import {useTranslation} from "react-i18next";
+import { RiNotification3Line } from "@remixicon/react";
+import { useTranslation } from "react-i18next";
 
 const NotificationsDropdown = ({ notifications }) => {
-  const [showNotifications, setShowNotifications] = useState(false);
-  const {t,i18n} = useTranslation()
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const notificationRef = useRef(null);
+  const { t, i18n } = useTranslation();
+  const timeoutRef = useRef(null);
 
   useEffect(() => {
     function handleClickOutside(event) {
       if (
-        showNotifications &&
+        isMenuOpen &&
         notificationRef.current &&
         !notificationRef.current.contains(event.target)
       ) {
-        setShowNotifications(false);
+        setIsMenuOpen(false);
       }
     }
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
     };
-  }, [showNotifications]);
+  }, [isMenuOpen]);
 
-  const toggleNotifications = () => {
-    setShowNotifications((prev) => !prev);
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    setIsMenuOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setIsMenuOpen(false);
+    }, 200); // 200ms delay to allow smooth transition
   };
 
   return (
-    <div className="w-10">
+    <div className="w-10 relative" ref={notificationRef}>
       <div
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
         className={`icon-notification flex items-center h-10 ${
-          showNotifications
+          isMenuOpen
             ? "bg-blue-100 text-blue-500 dark:bg-blue-900 dark:text-blue-300"
             : "bg-gray-100 dark:bg-gray-900"
         } rounded-lg py-1 px-3 text-center cursor-pointer`}
-        onClick={toggleNotifications}
       >
         <div className="relative">
           <RiNotification3Line className="dark:text-gray-100 text-gray-600" size={20} />
@@ -48,14 +64,15 @@ const NotificationsDropdown = ({ notifications }) => {
         </div>
       </div>
 
-      {showNotifications && (
+      {isMenuOpen && (
         <>
           {/* Overlay for mobile */}
           <div className="fixed inset-0 bg-black/50 sm:hidden z-40"></div>
 
           {/* Dropdown container */}
           <div
-            ref={notificationRef}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
             className={`fixed sm:absolute inset-0 sm:inset-auto top-1/2 ${i18n.language === "ar" ? "sm:-right-0" : "sm:right-0"} sm:mt-2 sm:w-[343px] w-full max-w-[343px] mx-auto sm:mx-0 transform -translate-y-1/2 sm:translate-y-0 h-[686px] sm:h-auto sm:max-h-[70vh] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-[20px] shadow-lg z-50`}
             style={{ borderWidth: "0.5px" }}
           >

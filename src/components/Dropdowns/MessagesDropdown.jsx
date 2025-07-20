@@ -1,44 +1,60 @@
+"use client";
+
 import { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import Avatar from "./Avatar";
-import {RiChat3Line} from "@remixicon/react";
-import {useTranslation} from "react-i18next";
+import { RiChat3Line } from "@remixicon/react";
+import { useTranslation } from "react-i18next";
 
 const MessagesDropdown = ({ messages }) => {
-  const [showMessages, setShowMessages] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const messageRef = useRef(null);
-  const {t,i18n} = useTranslation()
+  const { t, i18n } = useTranslation();
+  const timeoutRef = useRef(null);
 
   useEffect(() => {
     function handleClickOutside(event) {
       if (
-        showMessages &&
+        isMenuOpen &&
         messageRef.current &&
         !messageRef.current.contains(event.target)
       ) {
-        setShowMessages(false);
+        setIsMenuOpen(false);
       }
     }
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
     };
-  }, [showMessages]);
+  }, [isMenuOpen]);
 
-  const toggleMessages = () => {
-    setShowMessages((prev) => !prev);
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    setIsMenuOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setIsMenuOpen(false);
+    }, 200);
   };
 
   return (
-    <div className="w-10">
+    <div className="w-10 relative" ref={messageRef}>
       <div
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
         className={`icon-message flex items-center h-10 ${
-          showMessages
+          isMenuOpen
             ? "bg-blue-100 text-blue-500 dark:bg-blue-900 dark:text-blue-300"
             : "bg-gray-100 dark:bg-gray-900"
         } rounded-lg py-1 px-3 text-center cursor-pointer`}
-        onClick={toggleMessages}
       >
         <div className="relative">
           <RiChat3Line className="dark:text-gray-100 text-gray-600" size={20} />
@@ -48,12 +64,13 @@ const MessagesDropdown = ({ messages }) => {
         </div>
       </div>
 
-      {showMessages && (
+      {isMenuOpen && (
         <>
           <div className="fixed inset-0 right-3 bg-black/50 sm:hidden z-40"></div>
           <div
-            ref={messageRef}
-            className={`fixed sm:absolute inset-0 sm:inset-auto top-1/2 ${i18n.language === "ar" ? "sm:-right-0" : "sm:right-0"}  sm:mt-2 sm:w-[343px] w-full max-w-[343px] mx-auto sm:mx-0 transform -translate-y-1/6 sm:translate-y-0 h-[686px] sm:h-auto sm:max-h-[70vh] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-[20px] shadow-lg z-50`}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            className={`fixed sm:absolute inset-0 sm:inset-auto top-1/2 ${i18n.language === "ar" ? "sm:-right-0" : "sm:right-0"} sm:mt-2 sm:w-[343px] w-full max-w-[343px] mx-auto sm:mx-0 transform -translate-y-1/6 sm:translate-y-0 h-[686px] sm:h-auto sm:max-h-[70vh] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-[20px] shadow-lg z-50`}
             style={{ borderWidth: "0.5px" }}
           >
             <div className="flex justify-between items-center px-4 py-3 border-b dark:border-gray-700">
