@@ -1,7 +1,7 @@
 "use client";
 
 import DefaultSelect from "@/components/Form/DefaultSelect";
-import LineChartComponent from "@/app/_components/containers/LineChartComponent";
+import LineChartComponent from "@/components/containers/chart/LineChartComponent";
 
 const TasksTimelineChart = () => {
 

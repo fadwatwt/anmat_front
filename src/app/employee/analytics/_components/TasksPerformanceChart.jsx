@@ -1,7 +1,7 @@
 "use client";
 
 import DefaultSelect from "@/components/Form/DefaultSelect";
-import BarChartComponent from "@/app/_components/containers/BarChartComponent";
+import BarChartComponent from "@/components/containers/chart/BarChartComponent";
 
 const TasksPerformanceChart = () => {
 

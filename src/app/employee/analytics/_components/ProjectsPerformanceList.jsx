@@ -1,4 +1,4 @@
-import ContentCard from '@/app/_components/ContentCard';
+import ContentCard from '@/components/containers/ContentCard';
 import DefaultSelect from '@/components/Form/DefaultSelect';
 import React from 'react';
 

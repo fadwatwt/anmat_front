@@ -2,7 +2,7 @@
 
 import { RiFacebookCircleFill, RiInstagramFill, RiLinkedinBoxFill, RiMailFill, RiTwitterXFill, RiYoutubeFill } from "@remixicon/react";
 
-const EmployerInvitation = () => {
+const MailInvitation = () => {
     return (
         <>
             <div className="relative rounded-xl px-8 py-8 border mb-4">
@@ -79,4 +79,4 @@ const EmployerInvitation = () => {
     );
 };
 
-export default EmployerInvitation;
+export default MailInvitation;

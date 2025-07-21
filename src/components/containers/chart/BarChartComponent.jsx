@@ -1,8 +1,8 @@
 "use client";
 
-import ContentCard from "@/app/_components/ContentCard";
+import ContentCard from "@/components/containers/ContentCard";
 import { RiCircleFill } from "@remixicon/react";
-import BarChartDraw from "../drawers/BarChartDraw";
+import BarChartDraw from "../../drawers/BarChartDraw";
 
 const BarChartComponent = ({
     title,

@@ -1,6 +1,6 @@
 "use client";
 
-import DonutChartComponent from "@/app/_components/containers/DonutChartComponent";
+import DonutChartComponent from "@/components/containers/chart/DonutChartComponent";
 import DefaultSelect from "@/components/Form/DefaultSelect";
 
 const SubscriptionsChart = () => {

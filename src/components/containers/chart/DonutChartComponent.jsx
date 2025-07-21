@@ -1,7 +1,7 @@
 "use client";
 
-import ContentCard from "@/app/_components/ContentCard";
-import DonutChartDraw from "@/app/_components/drawers/DonutChartDraw";
+import ContentCard from "@/components/containers/ContentCard";
+import DonutChartDraw from "@/components/drawers/DonutChartDraw";
 import { t } from "i18next";
 import { RiCircleFill } from "@remixicon/react";
 

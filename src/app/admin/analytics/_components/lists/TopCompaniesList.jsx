@@ -1,4 +1,4 @@
-const { default: ContentCard } = require("@/app/_components/ContentCard");
+const { default: ContentCard } = require("@/components/containers/ContentCard");
 const { default: DefaultSelect } = require("@/components/Form/DefaultSelect");
 
 const TopCompaniesList = () => {

@@ -2,7 +2,7 @@
 
 import DefaultSelect from "@/components/Form/DefaultSelect";
 import React from 'react'
-import ContentCard from "@/app/_components/ContentCard";
+import ContentCard from "@/components/containers/ContentCard";
 import { RiCircleFill } from "@remixicon/react";
 import { Line, LineChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 
