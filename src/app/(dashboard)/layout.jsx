@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import useDarkMode from "@/Hooks/useDarkMode";
 import i18n from "i18next";
 import { setLanguage } from "@/functions/Days";
-import Menu from "@/components/Menu"
 import Header from "@/components/Header"
 import "../globals.css";
 import PropTypes from "prop-types";

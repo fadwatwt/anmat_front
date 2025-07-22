@@ -6,7 +6,7 @@ import MenuItem from "./Menu/MenuItem.jsx";
 import { useTranslation } from "react-i18next";
 import React from "react"
 import {  HambergerMenu } from 'iconsax-react';
-import { dashboardSideMenuItes } from '@/config/menuItems.js';
+import { dashboardSideMenuItems } from '@/config/menuItems.js';
 
 const Menu = React.memo(({ isSlidebarOpen, toggleSlidebarOpen }) => {
 
@@ -50,8 +50,8 @@ const Menu = React.memo(({ isSlidebarOpen, toggleSlidebarOpen }) => {
                 <div className={"flex  flex-col gap-2"}>
                     <div className={"py-5 menu-list sm:py-0 flex flex-col gap-2 text-gray-500"}>
                         {
-                            dashboardSideMenuItes.filter(item => item.allowed_to.includes(authUserType)).map(item => {
-                                return (<MenuItem path={item.path} icon={item.icon} title={item.title} />);
+                            dashboardSideMenuItems.filter(item => item.allowed_to.includes(authUserType)).map((item,index) => {
+                                return (<MenuItem key={index} path={item.path} icon={item.icon} title={item.title} ></MenuItem>);
                             })
                         }
                     </div>
