@@ -13,8 +13,8 @@ const Menu = React.memo(({ isSlidebarOpen, toggleSlidebarOpen }) => {
     // const [authUserType, setAuthUserType] = useState('admin');
     const { t, i18n } = useTranslation()
     // Try to change user type to see the effect of dynamic reload elements
-    // allowed user types: 'admin' | 'company-manager' | 'employee'
-    const authUserType = 'admin';
+    // allowed user types: ['Admin', 'Company-Manager', 'Employee']
+    const authUserType = 'Company-Manager';
 
     return (
         <div

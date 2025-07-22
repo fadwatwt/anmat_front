@@ -1,89 +1,139 @@
 // dashboardSideMenuItems.js
-import { Setting, Edit, Share, Messages1, Category, Profile2User, TaskSquare, NoteText, Chart2, Cpu } from 'iconsax-react';
+import { Setting, Edit, Share, Messages1, Category, Profile2User, TaskSquare, NoteText, Chart2, Cpu, PercentageCircle, Buildings, Stickynote, Setting4, Setting5, ReceiptText } from 'iconsax-react';
+
+// ['Admin', 'Company-Manager', 'Employee']
 
 export const dashboardSideMenuItems = [
     {
-        allowed_to: ['admin'],
-        title: 'Dashboard',
-        path: '/dashboard',
-        icon: <Category />
+        allowed_to: ['Admin'],
+        title: 'Companies',
+        path: '/companies',
+        icon: <Buildings />
     },
     {
-        allowed_to: ['company-manager'],
-        title: 'Dashboard',
-        path: '/dashboard',
-        icon: <Category />
+        allowed_to: ['Admin'],
+        title: 'Plans',
+        path: '/plans',
+        icon: <PercentageCircle />
     },
     {
-        allowed_to: ['employee'],
-        title: 'Dashboard',
-        path: '/dashboard',
-        icon: <Category />
+        allowed_to: ['Admin', 'Company-Manager'],
+        title: 'Subscriptions',
+        path: '/subscriptions',
+        icon: <ReceiptText />
     },
     {
-        allowed_to: ['admin', 'company-manager'],
-        title: 'Projects',
-        path: '/dashboard/projects',
-        icon: <NoteText />
+        allowed_to: ['Admin'],
+        title: 'Orders',
+        path: '/orders',
+        icon: <Stickynote />
     },
     {
-        allowed_to: ['admin', 'company-manager', 'employee'],
-        title: 'Tasks',
-        path: '/dashboard/tasks',
-        icon: <TaskSquare />
-    },
-    {
-        allowed_to: ['admin'],
-        title: 'Analytics',
-        path: '/admin/analytics',
-        icon: <Chart2 />
-    },
-    {
-        allowed_to: ['company-manager'],
-        title: 'Analytics',
-        path: '/dashboard/analytics',
-        icon: <Chart2 />
-    },
-    {
-        allowed_to: ['company-manager'],
-        title: 'Analytics',
-        path: '/employee/analytics',
-        icon: <Chart2 />
-    },
-    {
-        allowed_to: ['admin', 'company-manager'],
+        allowed_to: ['Company-Manager'],
         title: 'HR Management',
-        path: '/dashboard/hr',
+        path: '/hr',
         icon: <Profile2User />
     },
     {
-        allowed_to: ['admin', 'employee','company-manager'],
+        allowed_to: ['Company-Manager'],
+        title: 'Roles',
+        path: '/roles',
+        icon: <Setting4 />
+    },
+    {
+        allowed_to: ['Company-Manager'],
+        title: 'Permissions',
+        path: '/permissions',
+        icon: <Setting5 />
+    },
+    {
+        allowed_to: ['Admin', 'Company-Manager', 'Employee'],
+        title: 'Analytics',
+        path: '/analytics',
+        icon: <Chart2 />
+    },
+    {
+        allowed_to: ['Company-Manager', 'Employee'],
         title: 'Conversations',
-        path: '/dashboard/conversations',
+        path: '/conversations',
         icon: <Messages1 />
     },
     {
-        allowed_to: ['admin', 'company-manager'],
+        allowed_to: ['Company-Manager'],
         title: 'Social Media',
-        path: '/dashboard/social-media',
+        path: '/social-media',
         icon: <Share />
     },
     {
-        allowed_to: ['admin', 'company-manager', 'employee'],
+        allowed_to: ['Company-Manager', 'Employee'],
         title: 'Timeline',
-        path: '/dashboard/time-line',
+        path: '/time-line',
         icon: <Edit />
     },
     {
-        allowed_to: ['admin','company-manager', 'employee'],
+        allowed_to: ['Admin', 'Company-Manager', 'Employee'],
         title: 'Settings',
-        path: '/dashboard/setting',
+        path: '/setting',
         icon: <Setting />
     },
     {
-        allowed_to: ['admin','company-manager'],
+        allowed_to: ['Company-Manager'],
         title: 'AI Assistant',
-        path: '/ai-assistant',
+        path: '/ai',
         icon: <Cpu />
     }
+    // {
+    //     allowed_to: ['admin'],
+    //     title: 'Dashboard',
+    //     path: '/dashboard',
+    //     icon: <Category />
+    // },
+    // {
+    //     allowed_to: ['company-manager'],
+    //     title: 'Dashboard',
+    //     path: '/dashboard',
+    //     icon: <Category />
+    // },
+    // {
+    //     allowed_to: ['employee'],
+    //     title: 'Dashboard',
+    //     path: '/dashboard',
+    //     icon: <Category />
+    // },
+    // {
+    //     allowed_to: ['admin', 'company-manager'],
+    //     title: 'Projects',
+    //     path: '/dashboard/projects',
+    //     icon: <NoteText />
+    // },
+    // {
+    //     allowed_to: ['admin', 'company-manager', 'employee'],
+    //     title: 'Tasks',
+    //     path: '/dashboard/tasks',
+    //     icon: <TaskSquare />
+    // },
+    // {
+    //     allowed_to: ['admin'],
+    //     title: 'Analytics',
+    //     path: '/admin/analytics',
+    //     icon: <Chart2 />
+    // },
+    // {
+    //     allowed_to: ['company-manager'],
+    //     title: 'Analytics',
+    //     path: '/dashboard/analytics',
+    //     icon: <Chart2 />
+    // },
+    // {
+    //     allowed_to: ['company-manager'],
+    //     title: 'Analytics',
+    //     path: '/employee/analytics',
+    //     icon: <Chart2 />
+    // },
+    // {
+    //     allowed_to: ['admin','company-manager'],
+    //     title: 'AI Assistant',
+    //     path: '/ai-assistant',
+    //     icon: <Cpu />
+    // }
 ];

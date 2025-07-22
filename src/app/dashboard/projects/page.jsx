@@ -7,7 +7,7 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import Page from "@/components/Page.jsx";
 import Table from "@/components/Tables/Table.jsx";
-import EditProjectModal from "../projects/_modal/EditProjectModal.jsx";
+import EditProjectModal from "./_modal/EditProjectModal.jsx";
 import Alert from "@/components/Alert.jsx";
 import NameAndDescription from "@/app/dashboard/projects/_components/TableInfo/NameAndDescription.jsx";
 import AccountDetails from "@/app/dashboard/projects/_components/TableInfo/AccountDetails.jsx";

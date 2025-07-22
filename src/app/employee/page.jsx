@@ -13,7 +13,7 @@ const ProjectRatingModal = dynamic(() => import("../dashboard/projects/_modal/Pr
 const Alert = dynamic(() => import("@/components/Alert"), { ssr: false });
 const Page = dynamic(() => import("@/components/Page"));
 const DefaultSelect = dynamic(() => import("@/components/Form/DefaultSelect"));
-import { StatusBadge } from "@/app/dashboard/hr/_Tabs/AttendanceTab";
+import { StatusBadge } from "@/app/(dashboard)/hr/_Tabs/AttendanceTab";
 
 const DonutChart = ({ data, total }) => {
   const createCoordinatesForPercent = (percent) => {

@@ -2,7 +2,7 @@
 import Status from "@/app/dashboard/projects/_components/TableInfo/Status.jsx";
 import { PiDotsThreeVerticalBold } from "react-icons/pi";
 import ReadMore from "@/functions/ReadMore.jsx";
-import ProjectProgress from "@/app//dashboard/projects/details/[slug]/components/ProjectProgress.jsx";
+import ProjectProgress from "@/app/dashboard/projects/details/[slug]/components/ProjectProgress.jsx";
 import { FaTasks } from "react-icons/fa";
 import { FaCircleCheck } from "react-icons/fa6";
 import { HiOutlineCalendarDateRange } from "react-icons/hi2";

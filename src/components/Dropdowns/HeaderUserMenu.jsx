@@ -78,7 +78,7 @@ const HeaderUserMenu = () => {
                     className={`absolute right-0 mt-2 w-[200px] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50`}
                 >
                     <Link
-                        href="/dashboard/profile/manager-profile"
+                        href="/profile"
                         className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                     >
                         <RiUser3Line className="mr-2" size={18} />
