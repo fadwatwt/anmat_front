@@ -4,17 +4,7 @@ import React, { useState, useRef, useLayoutEffect } from "react";
 import Page from "@/components/Page.jsx";
 import { Mic, Paperclip, Copy, Edit2, Save } from "lucide-react";
 
-// Gemini/Bard-style logo (sidebar style)
-const GeminiIcon = () => (
-    <span className="ai-assistant-icon group relative inline-block align-middle">
-    <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="32" cy="32" r="28" className="ai-assistant-bg" />
-      <path className="ai-assistant-star ai-assistant-star-large" d="M27 13l4.5 9 9 4.5-9 4.5-4.5 9-4.5-9-9-4.5 9-4.5 4.5-9z" />
-      <path className="ai-assistant-star ai-assistant-star-medium" d="M47 36l2 4 4 2-4 2-2 4-2-4-4-2 4-2 2-4z" />
-      <path className="ai-assistant-star ai-assistant-star-small" d="M32 52l1.2 2.4L36 56l-2.4 1.2L32 60l-1.2-2.4L28 56l2.4-1.2L32 52z" />
-    </svg>
-  </span>
-);
+// Remove GeminiIcon if not used elsewhere
 
 const suggestions = [
   "What should I work on next ?",
@@ -184,22 +174,22 @@ const AssistantPage = () => {
               {!hasStarted && (
                   <>
                     <div className="flex flex-col items-center gap-4 mt-12">
-                      <GeminiIcon />
+                      <img src="/images/AiAssistant/file.svg" alt="Assistant Logo" style={{ width: '96px', height: '96px' }} />
                       <h2 className="text-2xl font-semibold text-center text-gray-900 dark:text-white mt-2">
                         Welcome <span className="text-primary-500 font-bold">Mai Haggag</span>,<br/>
                         <span className="font-normal">Start your journey with <span className="font-semibold">AI Assistant</span></span>
                       </h2>
                       <p className="text-gray-400 text-center text-base max-w-xl">Lorem ipsum dummy text Lorem ipsum dummy text</p>
                     </div>
-                    <div className="flex flex-row gap-4 mt-2 mb-8">
+                    <div className="flex flex-row gap-4 justify-center mt-8 mb-8 w-full">
                       {suggestions.map((s, i) => (
-                          <button
-                              key={i}
-                              className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-6 py-3 text-gray-900 dark:text-gray-200 shadow-sm hover:bg-primary-50 dark:hover:bg-primary-900 transition"
-                              onClick={() => handleSuggestionClick(s)}
-                          >
-                            {s}
-                          </button>
+                        <button
+                          key={i}
+                          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-6 py-3 text-gray-900 dark:text-gray-200 shadow-sm hover:bg-primary-50 dark:hover:bg-primary-900 transition text-base font-medium"
+                          onClick={() => setInput(s)}
+                        >
+                          {s}
+                        </button>
                       ))}
                     </div>
                   </>
@@ -254,12 +244,45 @@ const AssistantPage = () => {
                               </div>
                           ) : (
                               <div className="flex justify-start items-start gap-3">
-                        <span className="inline-block w-12 h-12 rounded-full bg-[#4F8CFF] flex items-center justify-center shadow-lg">
-                          <svg width="32" height="32" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="32" cy="32" r="28" fill="#4F8CFF" />
-                            <path d="M27 13l4.5 9 9 4.5-9 4.5-4.5 9-4.5-9-9-4.5 9-4.5 4.5-9z" fill="#fff"/>
-                            <path d="M47 36l2 4 4 2-4 2-2 4-2-4-4-2 4-2 2-4z" fill="#fff"/>
-                            <path d="M32 52l1.2 2.4L36 56l-2.4 1.2L32 60l-1.2-2.4L28 56l2.4-1.2L32 52z" fill="#fff"/>
+                        <span className="inline-block w-12 h-12 flex items-center justify-center">
+                          <svg width="48" height="48" viewBox="0 0 61 61" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g filter="url(#filter0_di_33_14814)">
+                              <rect x="6" y="2" width="49" height="49" rx="24.5" fill="#375DFB"/>
+                              <rect x="6" y="2" width="49" height="49" rx="24.5" fill="white" fillOpacity="0.1"/>
+                              <path fillRule="evenodd" clipRule="evenodd" d="M27.125 18.0625C27.5017 18.0625 27.8328 18.3122 27.9363 18.6745L28.8511 21.8764C29.2516 23.2779 30.3471 24.3734 31.7486 24.7739L34.9505 25.6887C35.3128 25.7922 35.5625 26.1233 35.5625 26.5C35.5625 26.8767 35.3128 27.2078 34.9505 27.3113L31.7486 28.2261C30.3471 28.6266 29.2516 29.7221 28.8511 31.1236L27.9363 34.3255C27.8328 34.6878 27.5017 34.9375 27.125 34.9375C26.7483 34.9375 26.4172 34.6878 26.3137 34.3255L25.3989 31.1236C24.9984 29.7221 23.9029 28.6266 22.5014 28.2261L19.2995 27.3113C18.9372 27.2078 18.6875 26.8767 18.6875 26.5C18.6875 26.1233 18.9372 25.7922 19.2995 25.6887L22.5014 24.7739C23.9029 24.3734 24.9984 23.2779 25.3989 21.8764L26.3137 18.6745C26.4172 18.3122 26.7483 18.0625 27.125 18.0625Z" fill="url(#paint0_linear_33_14814)"/>
+                              <path fillRule="evenodd" clipRule="evenodd" d="M37.25 14.6875C37.6372 14.6875 37.9747 14.951 38.0686 15.3266L38.3598 16.4915C38.6243 17.5496 39.4504 18.3757 40.5085 18.6402L41.6734 18.9314C42.049 19.0253 42.3125 19.3628 42.3125 19.75C42.3125 20.1372 42.049 20.4747 41.6734 20.5686L40.5085 20.8598C39.4504 21.1243 38.6243 21.9504 38.3598 23.0085L38.0686 24.1734C37.9747 24.549 37.6372 24.8125 37.25 24.8125C36.8628 24.8125 36.5253 24.549 36.4314 24.1734L36.1402 23.0085C35.8757 21.9504 35.0496 21.1243 33.9915 20.8598L32.8266 20.5686C32.451 20.4747 32.1875 20.1372 32.1875 19.75C32.1875 19.3628 32.451 19.0253 32.8266 18.9314L33.9915 18.6402C35.2366 18.3757 36.0059 17.5496 36.1402 16.4915L36.4314 15.3266C36.5253 14.951 36.8628 14.6875 37.25 14.6875Z" fill="url(#paint1_linear_33_14814)"/>
+                              <path fillRule="evenodd" clipRule="evenodd" d="M35.5625 29.875C35.9257 29.875 36.2481 30.1074 36.363 30.4519L36.8065 31.7825C36.9744 32.2864 37.3699 32.6818 37.8737 32.8498L39.2043 33.2933C39.5489 33.4081 39.7812 33.7306 39.7812 34.0938C39.7812 34.4569 39.5489 34.7794 39.2043 34.8942L37.8737 35.3377C37.3699 35.5057 36.9744 35.9011 36.8065 36.405L36.363 37.7356C36.2481 38.0801 35.9257 38.3125 35.5625 38.3125C35.1993 38.3125 34.8769 38.0801 34.762 37.7356L34.3185 36.405C34.1506 35.9011 33.7552 35.5057 33.2513 35.3377L31.9207 34.8942C31.5761 34.7794 31.3438 34.4569 31.3438 34.0938C31.3438 33.7306 31.5761 33.4081 31.9207 33.2933L33.2513 32.8498C33.7552 32.6818 34.1506 32.2864 34.3185 31.7825L34.762 30.4519C34.8769 30.1074 35.1993 29.875 35.5625 29.875Z" fill="url(#paint2_linear_33_14814)"/>
+                            </g>
+                            <defs>
+                              <filter id="filter0_di_33_14814" x="0.2" y="-2" width="60.6" height="62.8" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                                <feFlood floodOpacity="0" result="BackgroundImageFix"/>
+                                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                                <feOffset dy="4"/>
+                                <feGaussianBlur stdDeviation="2.9"/>
+                                <feComposite in2="hardAlpha" operator="out"/>
+                                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.07 0"/>
+                                <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_33_14814"/>
+                                <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_33_14814" result="shape"/>
+                                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                                <feOffset dy="-4"/>
+                                <feGaussianBlur stdDeviation="4"/>
+                                <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+                                <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.64 0"/>
+                                <feBlend mode="normal" in2="shape" result="effect2_innerShadow_33_14814"/>
+                              </filter>
+                              <linearGradient id="paint0_linear_33_14814" x1="30.5" y1="14.6875" x2="30.5" y2="38.3125" gradientUnits="userSpaceOnUse">
+                                <stop stopColor="white"/>
+                                <stop offset="1" stopColor="white" stopOpacity="0.5"/>
+                              </linearGradient>
+                              <linearGradient id="paint1_linear_33_14814" x1="30.5" y1="14.6875" x2="30.5" y2="38.3125" gradientUnits="userSpaceOnUse">
+                                <stop stopColor="white"/>
+                                <stop offset="1" stopColor="white" stopOpacity="0.5"/>
+                              </linearGradient>
+                              <linearGradient id="paint2_linear_33_14814" x1="30.5" y1="14.6875" x2="30.5" y2="38.3125" gradientUnits="userSpaceOnUse">
+                                <stop stopColor="white"/>
+                                <stop offset="1" stopColor="white" stopOpacity="0.5"/>
+                              </linearGradient>
+                            </defs>
                           </svg>
                         </span>
                                 <div className="flex flex-col items-start w-full max-w-[70%]">
@@ -323,12 +346,45 @@ const AssistantPage = () => {
                   <div className="w-full max-w-3xl flex flex-col gap-6 mb-4">
                     {/* AI thinking bubble with modern animation */}
                     <div className="flex justify-start items-start gap-3">
-                  <span className="inline-block w-12 h-12 rounded-full bg-[#4F8CFF] flex items-center justify-center shadow-lg">
-                    <svg width="32" height="32" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <circle cx="32" cy="32" r="28" fill="#4F8CFF" />
-                      <path d="M27 13l4.5 9 9 4.5-9 4.5-4.5 9-4.5-9-9-4.5 9-4.5 4.5-9z" fill="#fff"/>
-                      <path d="M47 36l2 4 4 2-4 2-2 4-2-4-4-2 4-2 2-4z" fill="#fff"/>
-                      <path d="M32 52l1.2 2.4L36 56l-2.4 1.2L32 60l-1.2-2.4L28 56l2.4-1.2L32 52z" fill="#fff"/>
+                  <span className="inline-block w-12 h-12 flex items-center justify-center">
+                    <svg width="48" height="48" viewBox="0 0 61 61" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <g filter="url(#filter0_di_33_14814)">
+                        <rect x="6" y="2" width="49" height="49" rx="24.5" fill="#375DFB"/>
+                        <rect x="6" y="2" width="49" height="49" rx="24.5" fill="white" fillOpacity="0.1"/>
+                        <path fillRule="evenodd" clipRule="evenodd" d="M27.125 18.0625C27.5017 18.0625 27.8328 18.3122 27.9363 18.6745L28.8511 21.8764C29.2516 23.2779 30.3471 24.3734 31.7486 24.7739L34.9505 25.6887C35.3128 25.7922 35.5625 26.1233 35.5625 26.5C35.5625 26.8767 35.3128 27.2078 34.9505 27.3113L31.7486 28.2261C30.3471 28.6266 29.2516 29.7221 28.8511 31.1236L27.9363 34.3255C27.8328 34.6878 27.5017 34.9375 27.125 34.9375C26.7483 34.9375 26.4172 34.6878 26.3137 34.3255L25.3989 31.1236C24.9984 29.7221 23.9029 28.6266 22.5014 28.2261L19.2995 27.3113C18.9372 27.2078 18.6875 26.8767 18.6875 26.5C18.6875 26.1233 18.9372 25.7922 19.2995 25.6887L22.5014 24.7739C23.9029 24.3734 24.9984 23.2779 25.3989 21.8764L26.3137 18.6745C26.4172 18.3122 26.7483 18.0625 27.125 18.0625Z" fill="url(#paint0_linear_33_14814)"/>
+                        <path fillRule="evenodd" clipRule="evenodd" d="M37.25 14.6875C37.6372 14.6875 37.9747 14.951 38.0686 15.3266L38.3598 16.4915C38.6243 17.5496 39.4504 18.3757 40.5085 18.6402L41.6734 18.9314C42.049 19.0253 42.3125 19.3628 42.3125 19.75C42.3125 20.1372 42.049 20.4747 41.6734 20.5686L40.5085 20.8598C39.4504 21.1243 38.6243 21.9504 38.3598 23.0085L38.0686 24.1734C37.9747 24.549 37.6372 24.8125 37.25 24.8125C36.8628 24.8125 36.5253 24.549 36.4314 24.1734L36.1402 23.0085C35.8757 21.9504 35.0496 21.1243 33.9915 20.8598L32.8266 20.5686C32.451 20.4747 32.1875 20.1372 32.1875 19.75C32.1875 19.3628 32.451 19.0253 32.8266 18.9314L33.9915 18.6402C35.2366 18.3757 36.0059 17.5496 36.1402 16.4915L36.4314 15.3266C36.5253 14.951 36.8628 14.6875 37.25 14.6875Z" fill="url(#paint1_linear_33_14814)"/>
+                        <path fillRule="evenodd" clipRule="evenodd" d="M35.5625 29.875C35.9257 29.875 36.2481 30.1074 36.363 30.4519L36.8065 31.7825C36.9744 32.2864 37.3699 32.6818 37.8737 32.8498L39.2043 33.2933C39.5489 33.4081 39.7812 33.7306 39.7812 34.0938C39.7812 34.4569 39.5489 34.7794 39.2043 34.8942L37.8737 35.3377C37.3699 35.5057 36.9744 35.9011 36.8065 36.405L36.363 37.7356C36.2481 38.0801 35.9257 38.3125 35.5625 38.3125C35.1993 38.3125 34.8769 38.0801 34.762 37.7356L34.3185 36.405C34.1506 35.9011 33.7552 35.5057 33.2513 35.3377L31.9207 34.8942C31.5761 34.7794 31.3438 34.4569 31.3438 34.0938C31.3438 33.7306 31.5761 33.4081 31.9207 33.2933L33.2513 32.8498C33.7552 32.6818 34.1506 32.2864 34.3185 31.7825L34.762 30.4519C34.8769 30.1074 35.1993 29.875 35.5625 29.875Z" fill="url(#paint2_linear_33_14814)"/>
+                      </g>
+                      <defs>
+                        <filter id="filter0_di_33_14814" x="0.2" y="-2" width="60.6" height="62.8" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                          <feFlood floodOpacity="0" result="BackgroundImageFix"/>
+                          <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                          <feOffset dy="4"/>
+                          <feGaussianBlur stdDeviation="2.9"/>
+                          <feComposite in2="hardAlpha" operator="out"/>
+                          <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.07 0"/>
+                          <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_33_14814"/>
+                          <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_33_14814" result="shape"/>
+                          <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                          <feOffset dy="-4"/>
+                          <feGaussianBlur stdDeviation="4"/>
+                          <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+                          <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.64 0"/>
+                          <feBlend mode="normal" in2="shape" result="effect2_innerShadow_33_14814"/>
+                        </filter>
+                        <linearGradient id="paint0_linear_33_14814" x1="30.5" y1="14.6875" x2="30.5" y2="38.3125" gradientUnits="userSpaceOnUse">
+                          <stop stopColor="white"/>
+                          <stop offset="1" stopColor="white" stopOpacity="0.5"/>
+                        </linearGradient>
+                        <linearGradient id="paint1_linear_33_14814" x1="30.5" y1="14.6875" x2="30.5" y2="38.3125" gradientUnits="userSpaceOnUse">
+                          <stop stopColor="white"/>
+                          <stop offset="1" stopColor="white" stopOpacity="0.5"/>
+                        </linearGradient>
+                        <linearGradient id="paint2_linear_33_14814" x1="30.5" y1="14.6875" x2="30.5" y2="38.3125" gradientUnits="userSpaceOnUse">
+                          <stop stopColor="white"/>
+                          <stop offset="1" stopColor="white" stopOpacity="0.5"/>
+                        </linearGradient>
+                      </defs>
                     </svg>
                   </span>
                       <div className="rounded-xl px-6 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 shadow-lg">
@@ -355,8 +411,11 @@ const AssistantPage = () => {
           <div className="flex-shrink-0 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
             <div className="max-w-3xl mx-auto p-4">
               <form className="flex items-center gap-2 bg-white dark:bg-gray-800 rounded-2xl shadow-lg px-4 py-3 border border-gray-200 dark:border-gray-600" onSubmit={handleSubmit}>
+                <button type="button" className="text-gray-400 hover:text-primary-500 p-2 transition-colors" onClick={handleMicClick}>
+                  <img src="/images/AiAssistant/IconSet.svg" alt="Mic" className="w-5 h-5" />
+                </button>
                 <button type="button" className="text-gray-400 hover:text-primary-500 p-2 transition-colors" onClick={handleAttachmentClick}>
-                  <Paperclip size={20} />
+                  <img src="/images/AiAssistant/ic_outline-attachment.svg" alt="Attach" className="w-5 h-5" />
                 </button>
                 <input
                     type="file"
@@ -365,9 +424,6 @@ const AssistantPage = () => {
                     onChange={handleFileChange}
                     multiple
                 />
-                <button type="button" className="text-gray-400 hover:text-primary-500 p-2 transition-colors" onClick={handleMicClick}>
-                  <Mic size={20} />
-                </button>
                 <input
                     type="text"
                     ref={inputRef}
@@ -384,11 +440,12 @@ const AssistantPage = () => {
                 >
                   {loading ? (
                       <div className="w-5 h-5 border-2 border-gray-300 border-t-primary-500 rounded-full animate-spin"></div>
-                  ) : (
-                      <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path d="M22 2L11 13"/>
-                        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                  ) : input.trim() ? (
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17.1564 9.44375L3.40636 2.56875C3.29859 2.51486 3.17754 2.49326 3.05778 2.50657C2.93803 2.51988 2.82467 2.56752 2.73136 2.64375C2.64225 2.71844 2.57574 2.8165 2.5393 2.92691C2.50287 3.03732 2.49795 3.1557 2.52511 3.26875L4.18136 9.375H11.2501V10.625H4.18136L2.50011 16.7125C2.47463 16.8069 2.47165 16.906 2.49143 17.0018C2.5112 17.0975 2.55317 17.1873 2.61396 17.2639C2.67475 17.3405 2.75267 17.4018 2.84144 17.4428C2.93022 17.4838 3.02738 17.5034 3.12511 17.5C3.22295 17.4994 3.31928 17.4759 3.40636 17.4313L17.1564 10.5563C17.2587 10.5038 17.3447 10.4241 17.4046 10.326C17.4646 10.2278 17.4964 10.115 17.4964 10C17.4964 9.88497 17.4646 9.77218 17.4046 9.67403C17.3447 9.57589 17.2587 9.4962 17.1564 9.44375Z" fill="#375DFB"/>
                       </svg>
+                  ) : (
+                      <img src="/images/AiAssistant/PaperPlaneRight.svg" alt="Send" className="w-5 h-5" />
                   )}
                 </button>
               </form>
