@@ -2,7 +2,7 @@
 import { useParams } from 'next/navigation';
 import Table from "@/components/Tables/Table.jsx";
 import Page from "@/components/Page.jsx";
-import Status from "@/app/dashboard/projects/_components/TableInfo/Status.jsx";
+import Status from "@/app/(dashboard)/projects/_components/TableInfo/Status.jsx";
 import {useTranslation} from "react-i18next";
 import SelectWithoutLabel from "@/components/Form/SelectWithoutLabel.jsx";
 import TabsOutContent from "@/components/Modal/TabsContener/TabsOutContent.jsx";

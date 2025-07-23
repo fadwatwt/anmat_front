@@ -6,7 +6,7 @@ import CompanySubscriptions from "@/app/(dashboard)/subscriptions/_components/Co
 const SubscriptionsPage = () => {
     // Try to change user type to see the effect of dynamic reload elements
     // allowed user types: ['Admin', 'Company-Manager']
-    const authUserType = 'Admin';
+    const authUserType = 'Company-Manager';
 
     const analyticsMap = {
         Admin: <AdminCompaniesSubscriptions />,

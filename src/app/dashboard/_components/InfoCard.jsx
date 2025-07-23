@@ -1,5 +1,5 @@
 "use client";
-import Status from "@/app/dashboard/projects/_components/TableInfo/Status.jsx";
+import Status from "@/app/(dashboard)/projects/_components/TableInfo/Status.jsx";
 import { PiDotsThreeVerticalBold } from "react-icons/pi";
 import ReadMore from "@/functions/ReadMore.jsx";
 import ProjectProgress from "@/app/dashboard/projects/details/[slug]/components/ProjectProgress.jsx";

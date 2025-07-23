@@ -9,11 +9,11 @@ import { useSelector } from "react-redux";
 import Page from "@/components/Page.jsx";
 import Table from "@/components/Tables/Table.jsx";
 import Alert from "@/components/Alert.jsx";
-import NameAndDescription from "@/app/dashboard/projects/_components/TableInfo/NameAndDescription.jsx";
-import AccountDetails from "@/app/dashboard/projects/_components/TableInfo/AccountDetails.jsx";
+import NameAndDescription from "@/app/(dashboard)/projects/_components/TableInfo/NameAndDescription.jsx";
+import AccountDetails from "@/app/(dashboard)/projects/_components/TableInfo/AccountDetails.jsx";
 import { translateDate } from "@/functions/Days.js";
-import Priority from "@/app/dashboard/projects/_components/TableInfo/Priority.jsx";
-import Status from "@/app/dashboard/projects/_components/TableInfo/Status.jsx";
+import Priority from "@/app/(dashboard)/projects/_components/TableInfo/Priority.jsx";
+import Status from "@/app/(dashboard)/projects/_components/TableInfo/Status.jsx";
 import { convertToSlug } from "@/functions/AnotherFunctions.js";
 import {
   fetchProjects,
@@ -26,8 +26,8 @@ import {
 } from "@/redux/projects/projectSelectors.js";
 import { defaultPhoto } from "@/Root.Route.js";
 import {projects} from "@/functions/FactoryData"
-import EditProjectModal from "@/app/dashboard/projects/_modal/EditProjectModal";
-import EmployeeProjectStates from "@/app/employee/_components/EmployeeStates";
+import EditProjectModal from "@/app/(dashboard)/projects/_modal/EditProjectModal";
+import EmployeeProjectStates from "@/app/(dashboard)/_components/EmployeeStates";
 
 function ProjectPage() {
   const { t } = useTranslation();

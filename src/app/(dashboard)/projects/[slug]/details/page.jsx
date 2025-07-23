@@ -14,7 +14,7 @@ import {getTimeDifference} from "@/functions/Days.js";
 import InfoCard from "@/app/dashboard/_components/InfoCard.jsx";
 import {useState} from "react";
 import {filterAndSortTasks} from "@/functions/functionsForTasks.js";
-import EditProjectModal from "@/app/dashboard/projects/_modal/EditProjectModal.jsx";
+import EditProjectModal from "@/app/(dashboard)/projects/_modal/EditProjectModal.jsx";
 
 function ProjectDetailsPage({slug}) {
     console.log(slug)

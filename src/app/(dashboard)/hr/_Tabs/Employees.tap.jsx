@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import Table from "../../../../components/Tables/Table.jsx";
 import EditAnEmployeeModal from "@/app/(dashboard)/hr/_modals/EditAnEmployeeModal.jsx";
-import AccountDetails from "@/app/dashboard/projects/_components/TableInfo/AccountDetails.jsx";
+import AccountDetails from "@/app/(dashboard)/projects/_components/TableInfo/AccountDetails.jsx";
 import Rating from "../Rating.jsx";
 import Alert from "../../../../components/Alert.jsx";
 import {

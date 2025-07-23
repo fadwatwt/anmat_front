@@ -1,9 +1,9 @@
 "use client"
 import { useState } from 'react';
-import StepsComponent from "@/app/dashboard/projects/_components/CreateProjectForm/StepsComponent.jsx";
+import StepsComponent from "@/app/(dashboard)/projects/_components/CreateProjectForm/StepsComponent.jsx";
 import Page from "@/components/Page.jsx";
-import ProjectInfoForm from "@/app/dashboard/projects/_components/CreateProjectForm/ProjectInfoForm.jsx";
-import CreateTaskForm from "@/app/dashboard/projects/_components/CreateProjectForm/CreateTaskForm.jsx";
+import ProjectInfoForm from "@/app/(dashboard)/projects/_components/CreateProjectForm/ProjectInfoForm.jsx";
+import CreateTaskForm from "@/app/(dashboard)/projects/_components/CreateProjectForm/CreateTaskForm.jsx";
 
 function CreateProjectPage() {
     const breadcrumbItems = [

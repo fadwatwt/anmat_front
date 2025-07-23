@@ -1,5 +1,5 @@
 "use client"
-import CreateTaskForm from "@/app/dashboard/projects/_components/CreateProjectForm/CreateTaskForm.jsx";
+import CreateTaskForm from "@/app/(dashboard)/projects/_components/CreateProjectForm/CreateTaskForm.jsx";
 import Page from "@/components/Page.jsx";
 import {useTranslation} from "react-i18next";
 

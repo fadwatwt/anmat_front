@@ -7,13 +7,13 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import Page from "@/components/Page.jsx";
 import Table from "@/components/Tables/Table.jsx";
-import EditProjectModal from "./_modal/EditProjectModal.jsx";
+import EditProjectModal from "../../(dashboard)/projects/_modal/EditProjectModal.jsx";
 import Alert from "@/components/Alert.jsx";
-import NameAndDescription from "@/app/dashboard/projects/_components/TableInfo/NameAndDescription.jsx";
-import AccountDetails from "@/app/dashboard/projects/_components/TableInfo/AccountDetails.jsx";
+import NameAndDescription from "@/app/(dashboard)/projects/_components/TableInfo/NameAndDescription.jsx";
+import AccountDetails from "@/app/(dashboard)/projects/_components/TableInfo/AccountDetails.jsx";
 import { translateDate } from "@/functions/Days.js";
-import Priority from "@/app/dashboard/projects/_components/TableInfo/Priority.jsx";
-import Status from "@/app/dashboard/projects/_components/TableInfo/Status.jsx";
+import Priority from "@/app/(dashboard)/projects/_components/TableInfo/Priority.jsx";
+import Status from "@/app/(dashboard)/projects/_components/TableInfo/Status.jsx";
 import { convertToSlug } from "@/functions/AnotherFunctions.js";
 import {
   fetchProjects,

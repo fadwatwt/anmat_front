@@ -13,13 +13,13 @@ import { convertToSlug } from "@/functions/AnotherFunctions.js";
 
 // ✅ Lazy-loaded components
 const TimeLine = dynamic(() => import("@/components/TimeLine/TimeLine"), { ssr: false });
-const EditTaskModal = dynamic(() => import("@/app/dashboard/tasks/_modal/EditTaskModal"), { ssr: false });
+const EditTaskModal = dynamic(() => import("@/app/(dashboard)/tasks/_modal/EditTaskModal"), { ssr: false });
 const Alert = dynamic(() => import("@/components/Alert"), { ssr: false });
 
-const NameAndDescription = dynamic(() => import("@/app/dashboard/projects/_components/TableInfo/NameAndDescription"), { ssr: false });
-const AccountDetails = dynamic(() => import("@/app/dashboard/projects/_components/TableInfo/AccountDetails"), { ssr: false });
-const Priority = dynamic(() => import("@/app/dashboard/projects/_components/TableInfo/Priority"), { ssr: false });
-const Status = dynamic(() => import("@/app/dashboard/projects/_components/TableInfo/Status"), { ssr: false });
+const NameAndDescription = dynamic(() => import("@/app/(dashboard)/projects/_components/TableInfo/NameAndDescription"), { ssr: false });
+const AccountDetails = dynamic(() => import("@/app/(dashboard)/projects/_components/TableInfo/AccountDetails"), { ssr: false });
+const Priority = dynamic(() => import("@/app/(dashboard)/projects/_components/TableInfo/Priority"), { ssr: false });
+const Status = dynamic(() => import("@/app/(dashboard)/projects/_components/TableInfo/Status"), { ssr: false });
 const MembersListXLine = dynamic(() => import("../projects/details/[slug]/components/MembersListXLine"), { ssr: false });
 
 function TasksPage() {

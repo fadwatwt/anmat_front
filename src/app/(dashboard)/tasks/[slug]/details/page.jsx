@@ -12,7 +12,7 @@ import {useTranslation} from "react-i18next";
 import InfoCard from "@/app/dashboard/_components/InfoCard.jsx";
 import {useState} from "react";
 import {filterAndSortTasks} from "@/functions/functionsForTasks.js";
-import EditTaskModal from "@/app/dashboard/tasks/_modal/EditTaskModal.jsx";
+import EditTaskModal from "@/app/(dashboard)/tasks/_modal/EditTaskModal.jsx";
 import {filterOptions, tasks, comments, members, attachments, activityLogs} from "@/functions/FactoryData.jsx";
 
 function TaskDetailsPage({slug}) {

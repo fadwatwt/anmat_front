@@ -3,7 +3,7 @@ import MembersListXLine from "./MembersListXLine.jsx";
 import StateOfTask from "./StateOfTask.jsx";
 import PropTypes from "prop-types";
 import StarRating from "@/components/StarRating.jsx";
-import ProjectRatingModal from "@/app/dashboard/projects/_modal/ProjectRatingModal.jsx";
+import ProjectRatingModal from "@/app/(dashboard)/projects/_modal/ProjectRatingModal.jsx";
 import {useState} from "react";
 import {useTranslation} from "react-i18next";
 import {translateDate} from "@/functions/Days.js";

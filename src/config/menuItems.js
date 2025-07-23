@@ -54,6 +54,18 @@ export const dashboardSideMenuItems = [
     },
     {
         allowed_to: ['Company-Manager', 'Employee'],
+        title: 'Tasks',
+        path: '/tasks',
+        icon: <TaskSquare />
+    },
+    {
+        allowed_to: ['Company-Manager', 'Employee'],
+        title: 'Projects',
+        path: '/projects',
+        icon: <NoteText />
+    },
+    {
+        allowed_to: ['Company-Manager', 'Employee'],
         title: 'Conversations',
         path: '/conversations',
         icon: <Messages1 />
@@ -99,41 +111,5 @@ export const dashboardSideMenuItems = [
     //     title: 'Dashboard',
     //     path: '/dashboard',
     //     icon: <Category />
-    // },
-    // {
-    //     allowed_to: ['admin', 'company-manager'],
-    //     title: 'Projects',
-    //     path: '/dashboard/projects',
-    //     icon: <NoteText />
-    // },
-    // {
-    //     allowed_to: ['admin', 'company-manager', 'employee'],
-    //     title: 'Tasks',
-    //     path: '/dashboard/tasks',
-    //     icon: <TaskSquare />
-    // },
-    // {
-    //     allowed_to: ['admin'],
-    //     title: 'Analytics',
-    //     path: '/admin/analytics',
-    //     icon: <Chart2 />
-    // },
-    // {
-    //     allowed_to: ['company-manager'],
-    //     title: 'Analytics',
-    //     path: '/dashboard/analytics',
-    //     icon: <Chart2 />
-    // },
-    // {
-    //     allowed_to: ['company-manager'],
-    //     title: 'Analytics',
-    //     path: '/employee/analytics',
-    //     icon: <Chart2 />
-    // },
-    // {
-    //     allowed_to: ['admin','company-manager'],
-    //     title: 'AI Assistant',
-    //     path: '/ai-assistant',
-    //     icon: <Cpu />
     // }
 ];

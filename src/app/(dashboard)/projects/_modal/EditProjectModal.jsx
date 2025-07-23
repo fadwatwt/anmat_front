@@ -1,8 +1,8 @@
 import Modal from "@/components/Modal/Modal.jsx";
 import PropTypes from "prop-types";
-import StepsComponent from "@/app/dashboard/projects/_components/CreateProjectForm/StepsComponent.jsx";
-import ProjectInfoForm from "@/app/dashboard/projects/_components/CreateProjectForm/ProjectInfoForm.jsx";
-import CreateTaskForm from "@/app/dashboard/projects/_components/CreateProjectForm/CreateTaskForm.jsx";
+import StepsComponent from "@/app/(dashboard)/projects/_components/CreateProjectForm/StepsComponent.jsx";
+import ProjectInfoForm from "@/app/(dashboard)/projects/_components/CreateProjectForm/ProjectInfoForm.jsx";
+import CreateTaskForm from "@/app/(dashboard)/projects/_components/CreateProjectForm/CreateTaskForm.jsx";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { updateProject } from "@/redux/projects/projectSlice";
