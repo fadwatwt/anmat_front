@@ -2,18 +2,16 @@
 
 import dynamic from 'next/dynamic';
 
-const AnalyticsPage = () => {
+const DashboardPage = () => {
 
-    const authUserType = 'Employee';
+    const authUserType = 'Company-Manager';
 
     const DynamicComponent = dynamic(() => {
         switch (authUserType) {
-            case 'Admin':
-                return import('@/app/(dashboard)/analytics/_components/AdminAnalytics');
             case 'Company-Manager':
-                return import('@/app/(dashboard)/analytics/_components/CompanyManagerAnalytics');
+                return import('@/app/(dashboard)/dashboard/_components/CompanyManagerDashboard');
             case 'Employee':
-                return import('@/app/(dashboard)/analytics/_components/EmployeeAnalytics');
+                return import('@/app/(dashboard)/dashboard/_components/EmployeeDashboard');
             default:
                 return Promise.resolve({ default: () => <div>Unknown User Type</div> });
         }
@@ -26,4 +24,4 @@ const AnalyticsPage = () => {
     );
 };
 
-export default AnalyticsPage;
+export default DashboardPage;

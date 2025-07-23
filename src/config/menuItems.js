@@ -5,6 +5,12 @@ import { Setting, Edit, Share, Messages1, Category, Profile2User, TaskSquare, No
 
 export const dashboardSideMenuItems = [
     {
+        allowed_to: ['Admin', 'Company-Manager', 'Employee'],
+        title: 'Dashboard',
+        path: '/dashboard',
+        icon: <Category />
+    },
+    {
         allowed_to: ['Admin'],
         title: 'Companies',
         path: '/companies',
@@ -94,22 +100,4 @@ export const dashboardSideMenuItems = [
         path: '/ai',
         icon: <Cpu />
     }
-    // {
-    //     allowed_to: ['admin'],
-    //     title: 'Dashboard',
-    //     path: '/dashboard',
-    //     icon: <Category />
-    // },
-    // {
-    //     allowed_to: ['company-manager'],
-    //     title: 'Dashboard',
-    //     path: '/dashboard',
-    //     icon: <Category />
-    // },
-    // {
-    //     allowed_to: ['employee'],
-    //     title: 'Dashboard',
-    //     path: '/dashboard',
-    //     icon: <Category />
-    // }
 ];

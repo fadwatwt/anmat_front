@@ -243,7 +243,7 @@ function CompanyManagerAnalytics() {
         <Page isTitle={true} title={"All Analytics Overview"}>
             <div className={"flex flex-col justify-center items-center gap-5"}>
                 <p className={"w-full text-start text-sm dark:text-gray-200"}>{t("Tasks Analytics")}</p>
-                <div className={"flex justify-center items-center flex-col md:flex-row gap-3"}>
+                <div className={"flex justify-center items-center flex-col md:flex-row gap-3 w-full"}>
                     <div className="bg-white rounded-xl shadow-sm p-6 dark:bg-gray-800 md:flex-1 w-full">
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
