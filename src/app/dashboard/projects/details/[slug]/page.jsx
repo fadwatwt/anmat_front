@@ -1,17 +1,17 @@
 "use client"
 // import propTypes from "prop-types"
 import Page from "@/components/Page.jsx";
-import ProjectMembers from "./components/ProjectMembers.jsx";
+import ProjectMembers from "../../../../(dashboard)/projects/[slug]/_components/ProjectMembers.jsx";
 import SelectWithoutLabel from "@/components/Form/SelectWithoutLabel.jsx";
-import TasksList from "./components/TasksList.jsx";
-import TaskComments from "./components/TaskComments.jsx";
+import TasksList from "../../../../(dashboard)/projects/[slug]/_components/TasksList.jsx";
+import TaskComments from "../../../../(dashboard)/projects/[slug]/_components/TaskComments.jsx";
 import CommentInput from "@/components/CommentInput.jsx";
-import AttachmentsList from "./components/AttachmentsList.jsx";
+import AttachmentsList from "../../../../(dashboard)/projects/[slug]/_components/AttachmentsList.jsx";
 import ActivityLogs from "@/components/ActivityLogs.jsx";
 import TimeLine from "@/components/TimeLine/TimeLine.jsx";
 import {useTranslation} from "react-i18next";
 import {getTimeDifference} from "@/functions/Days.js";
-import InfoCard from "@/app/dashboard/_components/InfoCard.jsx";
+import InfoCard from "@/app/(dashboard)/_components/InfoCard.jsx";
 import {useState} from "react";
 import {filterAndSortTasks} from "@/functions/functionsForTasks.js";
 import EditProjectModal from "../../../../(dashboard)/projects/_modal/EditProjectModal.jsx";

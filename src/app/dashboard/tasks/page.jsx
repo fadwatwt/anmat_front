@@ -20,7 +20,7 @@ const NameAndDescription = dynamic(() => import("@/app/(dashboard)/projects/_com
 const AccountDetails = dynamic(() => import("@/app/(dashboard)/projects/_components/TableInfo/AccountDetails"), { ssr: false });
 const Priority = dynamic(() => import("@/app/(dashboard)/projects/_components/TableInfo/Priority"), { ssr: false });
 const Status = dynamic(() => import("@/app/(dashboard)/projects/_components/TableInfo/Status"), { ssr: false });
-const MembersListXLine = dynamic(() => import("../projects/details/[slug]/components/MembersListXLine"), { ssr: false });
+const MembersListXLine = dynamic(() => import("../../(dashboard)/projects/[slug]/_components/MembersListXLine"), { ssr: false });
 
 function TasksPage() {
   const { t } = useTranslation();

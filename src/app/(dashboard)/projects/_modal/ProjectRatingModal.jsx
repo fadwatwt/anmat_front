@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { useState } from "react";
 import FileUpload from "@/components/Form/FileUpload.jsx";
 import { FaStar } from "react-icons/fa";
-import StateOfTask from "@/app/dashboard/projects/details/[slug]/components/StateOfTask.jsx";
+import StateOfTask from "@/app/(dashboard)/projects/[slug]/_components/StateOfTask.jsx";
 import { useTranslation } from "react-i18next";
 
 function ProjectRatingModal({ isOpen, onClose, project }) {
