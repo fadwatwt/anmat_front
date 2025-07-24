@@ -1,36 +1,27 @@
 import {useEffect, useState} from "react";
 
 export default function useDarkMode() {
-    const [theme, setTheme] = useState("system");
+    const [theme, setTheme] = useState("light");
 
     useEffect(() => {
         if (typeof window !== "undefined") {
-            const storedTheme = localStorage.getItem("theme") || "system";
-            setTheme(storedTheme);
-            applyTheme(storedTheme);
+            applyTheme("light");
+            localStorage.setItem("theme", "light");
         }
     }, []);
 
     useEffect(() => {
         if (typeof window !== "undefined") {
-            applyTheme(theme);
-            localStorage.setItem("theme", theme);
+            applyTheme("light");
+            localStorage.setItem("theme", "light");
         }
     }, [theme]);
 
-    const applyTheme = (theme) => {
-        if (typeof window === "undefined") return; // تجنب الأخطاء في الخادم
-
+    const applyTheme = () => {
+        if (typeof window === "undefined") return;
         const root = document.documentElement;
-        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-
-        root.classList.remove("dark", "light");
-
-        if (theme === "system") {
-            root.classList.add(systemTheme);
-        } else {
-            root.classList.add(theme);
-        }
+        root.classList.remove("dark");
+        root.classList.add("light");
     };
 
     return [theme, setTheme];
