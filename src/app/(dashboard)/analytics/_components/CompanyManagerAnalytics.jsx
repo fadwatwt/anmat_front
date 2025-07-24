@@ -19,6 +19,7 @@ import PropTypes from "prop-types";
 import Page from "@/components/Page.jsx";
 import {RiUser3Line} from "@remixicon/react";
 import Table from "@/components/Tables/Table.jsx";
+
 const DonutChart = ({ data, total }) => {
     let cumulativePercent = 0;
 

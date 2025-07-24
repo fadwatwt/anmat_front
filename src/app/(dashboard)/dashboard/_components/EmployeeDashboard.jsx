@@ -3,10 +3,8 @@
 import Page from "@/components/Page";
 import TasksSummaryChart from "@/app/(dashboard)/analytics/_components/employee/TasksSummaryChart";
 import ActivityLogs from "@/components/ActivityLogs.jsx";
-import dynamic from "next/dynamic";
 import TasksPerformanceChart from "@/app/(dashboard)/analytics/_components/employee/TasksPerformanceChart";
-
-const Table = dynamic(() => import("@/components/Tables/Table"), { ssr: false });
+import Table from "@/components/Tables/Table";
 
 const EmployeeDashboard = () => {
 

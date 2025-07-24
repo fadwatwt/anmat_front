@@ -1,13 +1,11 @@
 "use client";
 
 import Page from "@/components/Page";
-import dynamic from "next/dynamic";
 import ContentCard from "@/components/containers/ContentCard";
 import DefaultSelect from "@/components/Form/DefaultSelect";
 import IndustriesChart from "@/app/(dashboard)/analytics/_components/admin/charts/IndustriesChart";
 import CompaniesSubscriptionsChart from "@/app/(dashboard)/analytics/_components/admin/charts/CompaniesSubscriptionsChart";
-
-const Table = dynamic(() => import("@/components/Tables/Table"), { ssr: false });
+import Table from "@/components/Tables/Table";
 
 const CompanyManagerDashboard = () => {
 
