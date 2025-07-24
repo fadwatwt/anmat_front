@@ -20,7 +20,7 @@ function Page({
   return (
     <div
       className={
-        "h-[calc(100vh-72px)] overflow-auto tab-content dark:bg-gray-900 " +
+        "tab-content dark:bg-gray-900 " +
         (className
           ? className
           : "flex flex-col gap-4 box-border mx-auto py-5 md:px-10 px-3")

@@ -53,7 +53,7 @@ function Pricing() {
         <div className="flex flex-col items-stretch justify-start gap-6">
         {pricingData.map((plan, index) => [
             <React.Fragment key={index}>
-                <div className={"rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 flex flex-col gap-6 overflow-hidden"}>
+                <div className={"rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 flex flex-col gap-6 overflow-hidden shadow-md"}>
                     {/* Details */}
                     <div className="flex items-center gap-4 justify-between px-8 py-8">
                         {/* Basic Info */}

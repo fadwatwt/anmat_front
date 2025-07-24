@@ -15,7 +15,7 @@ const MainLayout = ({ children }) => {
     const [isSlidebarOpen, setSlidebarOpen] = useState(false);
     const router = useRouter();
 
-    const isSettingsPage = router.asPath === "/settings";
+    const isSettingsPage = router.asPath === "/setting";
     const authToken =
         typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
@@ -64,7 +64,7 @@ const MainLayout = ({ children }) => {
                 isSlidebarOpen={isSlidebarOpen}
                 toggleSlidebarOpen={toggleSlidebarOpen}
             />
-            <div className="md:w-[calc(100vw-16rem)] w-screen flex-col">
+            <div className="h-full w-screen flex-col">
                 {!isSettingsPage ? (
                     <Header taggleSlidebarOpen={toggleSlidebarOpen} />
                 ) : (
@@ -73,7 +73,9 @@ const MainLayout = ({ children }) => {
                         taggleSlidebarOpen={toggleSlidebarOpen}
                     />
                 )}
-                <main>{children}</main>
+                <main className="h-[calc(100vh-72px)] overflow-auto tab-content dark:bg-gray-900">
+                    {children}
+                </main>
             </div>
         </div>
     );

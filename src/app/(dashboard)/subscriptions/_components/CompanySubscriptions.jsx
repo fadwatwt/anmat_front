@@ -55,35 +55,26 @@ function CompanySubscriptions() {
             <Page title={t(listSideBar.find(item => item.id === activeTab)?.title || "Subscriptions")}
                 isBtn={activeTab === 'billing-history'} btnTitle={t("Change Billing Info")} btnOnClick={toggleBillingInfoModal}
                 btnIcon={<RiPencilLine className="text-white text-md dark:text-black" />}
-                className="h-[calc(100vh-196px)] flex flex-col gap-4 box-border mx-auto py-5 md:px-10 px-3"
             >
                 <div className="">
                     <ChangeBillingInfoModal isOpen={billingInfoModalOpen} onClose={toggleBillingInfoModal} />
-                    <div className="flex flex-col gap-4">
-                        <div className={"flex md:gap-8 gap-4 w-full md:flex-row flex-col h-full"}>
-                            <div className={"hidden md:block"}>
-                                <div className={"bg-white dark:bg-gray-800 py-3 px-2 w-64 flex flex-col gap-2 rounded-2xl border border-gray-200"}>
-                                    <p className={"uppercase text-sm px-3 text-start dark:text-gray-200"}>{t("select menu")}</p>
-                                    <Sidebar activeItem={activeTab} onClick={handelChangeActiveTab} list={listSideBar} />
-                                </div>
+                    <div className={"flex flex-col gap-4 md:gap-8 md:flex-row w-full h-full"}>
+                        <div className={"hidden md:block"}>
+                            <div className={"bg-white dark:bg-gray-800 py-3 px-2 w-64 flex flex-col gap-2 rounded-2xl border border-gray-200"}>
+                                <p className={"uppercase text-sm px-3 text-start dark:text-gray-200"}>{t("select menu")}</p>
+                                <Sidebar activeItem={activeTab} onClick={handelChangeActiveTab} list={listSideBar} />
                             </div>
-                            <div>
-                                {/* <div className={"md:hidden block"}>
-                                    <TabModal classNameItem={"justify-start mx-1 "} classNameContent={"h-[20rem]"} tabs={tabsData} />
-                                </div> */}
-
-                                <div className={"hidden md:block"}>
-                                    {
-                                        listSideBar.map((tab, index) => (
-                                            <div key={index} className={`tab-content ${activeTab === tab.id ? 'block' : 'hidden'}`}>
-                                                {tab.content}
-                                            </div>
-                                        ))
-                                    }
-                                </div>
-                            </div>
-
                         </div>
+                        <div className={"hidden md:block"}>
+                            {
+                                listSideBar.map((tab, index) => (
+                                    <div key={index} className={`tab-content ${activeTab === tab.id ? 'block' : 'hidden'}`}>
+                                        {tab.content}
+                                    </div>
+                                ))
+                            }
+                        </div>
+
                     </div>
                 </div>
             </Page>
