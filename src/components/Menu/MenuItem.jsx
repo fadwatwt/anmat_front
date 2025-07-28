@@ -12,9 +12,9 @@ function MenuItem({path,icon,title}) {
                 className={"flex gap-1 w-11/12 items-center p-3  group-hover:bg-[#EBF1FF] dark:group-hover:bg-primary-700  cursor-pointer hover:text-black rounded-lg"}>
                 {icon && React.cloneElement(icon, {
                     size: 25,
-                    className: "dark:text-white dark:group-hover:text-primary-200"
+                    className: "text-gray-700 dark:text-gray-200 group-hover:text-primary-500 dark:group-hover:text-primary-200"
                 })}
-                <p className={"dark:text-gray-300 text-sm dark:group-hover:text-primary-200"}>{t(title)}</p>
+                <p className={"text-gray-700 dark:text-gray-200 text-sm group-hover:text-primary-500 dark:group-hover:text-primary-200"}>{t(title)}</p>
             </div>
         </Link>
     );

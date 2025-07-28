@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 
 export default function useDarkMode() {
-    const [theme, setTheme] = useState("system");
+    const [theme, setTheme] = useState("light");
 
     useEffect(() => {
         if (typeof window !== "undefined") {
