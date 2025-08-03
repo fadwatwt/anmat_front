@@ -22,6 +22,7 @@ import { selectPagination, selectAllProjects } from "@/redux/projects/projectSel
 import { defaultPhoto } from "@/Root.Route.js";
 import EditProjectModal from "@/app/(dashboard)/projects/_modal/EditProjectModal";
 import EmployeeProjectStates from "@/app/(dashboard)/_components/EmployeeStates";
+import useAuthStore from '@/store/authStore.js';
 
 // Sample projects data
 const sampleProjects = [
@@ -68,7 +69,7 @@ function ProjectPage() {
   const [selectedProject, setSelectedProject] = useState(null);
 
   // Define authUserType (e.g., from context or state management)
-  const authUserType = "Employee"; // Change to "Employee" or "Company-Manager"
+  const { authUserType } = useAuthStore();
 
   useEffect(() => {
     dispatch(fetchProjects());

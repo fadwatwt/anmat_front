@@ -7,14 +7,16 @@ import { useTranslation } from "react-i18next";
 import React from "react"
 import {  HambergerMenu } from 'iconsax-react';
 import { dashboardSideMenuItems } from '@/config/menuItems.js';
+import useAuthStore from '@/store/authStore.js';
 
 const Menu = React.memo(({ isSlidebarOpen, toggleSlidebarOpen }) => {
+
+    const { authUserType } = useAuthStore();
 
     // const [authUserType, setAuthUserType] = useState('admin');
     const { t, i18n } = useTranslation()
     // Try to change user type to see the effect of dynamic reload elements
     // allowed user types: ['Admin', 'Company-Manager', 'Employee']
-    const authUserType = 'Company-Manager';
 
     return (
         <div

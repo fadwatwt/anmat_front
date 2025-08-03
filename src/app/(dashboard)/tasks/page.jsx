@@ -9,6 +9,7 @@ import { fetchTasks, deleteTask } from "@/redux/tasks/tasksAPI";
 import Page from "@/components/Page.jsx";
 import Table from "@/components/Tables/Table.jsx";
 import EmployeeProjectStates from "@/app/(dashboard)/_components/EmployeeStates";
+import useAuthStore from '@/store/authStore.js';
 
 // ✅ Lazy-loaded components
 const NameAndDescription = dynamic(() => import("@/app/(dashboard)/projects/_components/TableInfo/NameAndDescription"), { ssr: false });
@@ -71,7 +72,7 @@ function TasksPage() {
   const [taskToDelete, setTaskToDelete] = useState(null);
 
   // Define authUserType (e.g., from context or state management)
-  const authUserType = "Employee"; // Change to "Employee" or "Company-Manager"
+  const { authUserType } = useAuthStore();
 
   // ✅ Fetch tasks only if needed
   useEffect(() => {
