@@ -24,10 +24,10 @@ const EmployeeAnalytics = () => {
                 </div>
             }
         >
-            {/* Companies Analytics */}
+            {/* Tasks Analytics Analytics */}
             <div className="flex flex-col items-start justify-start gap-4">
                 <span className="text-lg text-gray-500">
-                    Companies
+                    Tasks Analytics
                 </span>
                 <div className="flex flex-col md:flex-row items-stretch gap-4 justify-between w-full">
                     <div className="w-full md:w-1/2">

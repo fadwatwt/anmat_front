@@ -18,14 +18,14 @@ const ProjectsPerformanceChart = () => {
         {
             dataKey: 'onTime',
             fill: '#38C793',
-            name: 'New Companies',
+            name: 'On-Time Completed',
             radius: [15, 15, 0, 0],
             barSize: 15
         },
         {
             dataKey: 'late',
             fill: '#F17B2C',
-            name: 'Exist Companies',
+            name: 'Late Completed',
             radius: [15, 15, 0, 0],
             barSize: 15
         }
@@ -42,6 +42,7 @@ const ProjectsPerformanceChart = () => {
             barGab={barGab}
             monthlyData={monthlyData}
             bars={bars}
+            yaxisTitle="Number of projects"
         />
     );
 };

@@ -6,25 +6,33 @@ import { YAxis } from "recharts/es6/cartesian/YAxis";
 
 const LineChartDrawer = ({
     data,
-    lines
+    lines,
+    yaxisTitle = ''
 }) => {
     const theme = typeof window !== "undefined" ? localStorage.getItem("theme") : null;
 
     return (
         <div className="w-full">
-            <LineChart width={500} height={300} data={data}>
-                <YAxis ticks={[1, 5, 10, 15]} axisLine={false}
-                    tickLine={false} tick={theme === "dark" ? { fill: "#d1d2d3", fontSize: 12 } : {
-                        fill: "#6B7280",
-                        fontSize: 12
-                    }} />
-                {lines.map((line, index) => (
-                    <Line
-                        key={index}
-                        {...line}
-                    />
-                ))}
-            </LineChart>
+            <div className="flex flex-col items-start justify-start gap-0">
+                <span
+                    className='text-md text-gray-500 dark:text-gray-200 ps-4'
+                >
+                    {yaxisTitle}
+                </span>
+                <LineChart width={500} height={300} data={data}>
+                    <YAxis ticks={[1, 5, 10, 15]} axisLine={false}
+                        tickLine={false} tick={theme === "dark" ? { fill: "#d1d2d3", fontSize: 12 } : {
+                            fill: "#6B7280",
+                            fontSize: 12
+                        }} />
+                    {lines.map((line, index) => (
+                        <Line
+                            key={index}
+                            {...line}
+                        />
+                    ))}
+                </LineChart>
+            </div>
         </div>
     );
 };

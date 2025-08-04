@@ -14,7 +14,7 @@ const TasksRatingChart = () => {
                 color: "#375DFB"
             },
             {
-                title: "Low Ratingleted",
+                title: "Low Rating",
                 value: 50,
                 color: "#F2AE40"
             }

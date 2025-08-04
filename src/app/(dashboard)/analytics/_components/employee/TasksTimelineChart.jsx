@@ -19,10 +19,10 @@ const TasksTimelineChart = () => {
     ];
     const lines = [
         {
-            type: "monotone", dataKey: "Expected Time", stroke: "#C2D6FF", allowReorder: "no", dot: false
+            type: "monotone", dataKey: "Expected Time", stroke: "#38C793", allowReorder: "no", dot: false
         },
         {
-            type: "monotone", strokeDasharray: "5 5", dataKey: "Actual Time", dot: "false", stroke: "#38C793"
+            type: "monotone", strokeDasharray: "5 5", dataKey: "Actual Time", dot: "false", stroke: "#35B9E9"
         }
     ];
 
@@ -36,6 +36,7 @@ const TasksTimelineChart = () => {
             }
             data={data}
             lines={lines}
+            yaxisTitle="Hours"
         />
     );
 };

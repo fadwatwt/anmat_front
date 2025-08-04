@@ -34,7 +34,6 @@ const TasksPerformanceChart = () => {
     return (
         <BarChartComponent
             title={"Tasks Performance"}
-            subtitle={"Number of Tasks"}
             toolbar={
                 <div className="w-32 flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end">
                     <DefaultSelect options={[{ id: 1, value: "Last 6 Months" }]} />
@@ -43,6 +42,7 @@ const TasksPerformanceChart = () => {
             barGab={barGab}
             monthlyData={monthlyData}
             bars={bars}
+            yaxisTitle="Number of tasks"
         />
     );
 };

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 const useAuthStore = create((set) => ({
-  authUserType: 'Company-Manager', // Initial state
+  authUserType: 'Employee', // Initial state
   setAuthUserType: async () => {
     // Simulate API call returning a static string
     const userType = ''; // Replace with actual API call: await fetch('/api/auth')
