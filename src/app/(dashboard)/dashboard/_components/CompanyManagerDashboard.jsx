@@ -6,6 +6,7 @@ import DefaultSelect from "@/components/Form/DefaultSelect";
 import IndustriesChart from "@/app/(dashboard)/analytics/_components/admin/charts/IndustriesChart";
 import CompaniesSubscriptionsChart from "@/app/(dashboard)/analytics/_components/admin/charts/CompaniesSubscriptionsChart";
 import Table from "@/components/Tables/Table";
+import EmployeeRequests from "@/app/(dashboard)/dashboard/_components/employee/EmployeeRequests";
 
 const CompanyManagerDashboard = () => {
 
@@ -133,6 +134,9 @@ const CompanyManagerDashboard = () => {
                             }
                         />
                     </div>
+                </div>
+                <div className="w-full">
+                    <EmployeeRequests />
                 </div>
             </div>
 
