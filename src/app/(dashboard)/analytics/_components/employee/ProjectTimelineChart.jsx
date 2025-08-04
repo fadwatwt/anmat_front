@@ -36,6 +36,7 @@ const ProjectTimelineChart = () => {
             }
             data={data}
             lines={lines}
+            yaxisTitle="Hours"
         />
     );
 };

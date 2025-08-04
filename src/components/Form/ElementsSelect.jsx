@@ -72,7 +72,7 @@ function ElementsSelect({
       </label>
 
       {/* Custom Select */}
-      <div className=" max-w-full w-full">
+      <div className=" max-w-full w-full relative">
         {/* Selected Options */}
         <div
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -121,7 +121,7 @@ function ElementsSelect({
         {/* Dropdown */}
         {isDropdownOpen && (
           <div
-            className={`absolute z-20  bg-white dark:bg-white-0 border border-gray-300 dark:border-gray-500 p-2 w-11/12 rounded-2xl shadow-md mt-1 max-h-60 overflow-y-auto ${dropDownClassName}`}
+            className={`absolute z-20 overflow-auto  bg-white dark:bg-white-0 border border-gray-300 dark:border-gray-500 p-2 w-full rounded-2xl shadow-md mt-1 max-h-60 overflow-y-auto ${dropDownClassName}`}
           >
             {options.map((option) => (
               <div

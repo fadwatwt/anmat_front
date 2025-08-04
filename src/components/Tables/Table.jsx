@@ -20,6 +20,7 @@ import {
 import DateInput from "@/components/Form/DateInput.jsx";
 
 function Table({
+                   customTitle = null,
                    title,
                    classContainer,
                    className,
@@ -50,6 +51,8 @@ function Table({
                    industryOptions = [],
                    selectedIndustry,
                    onIndustryChange,
+                   hideSearchInput = false,
+                   toolbarCustomContent = null
                }) {
     const {t, i18n} = useTranslation();
     const [isAllSelected, setIsAllSelected] = useState(false);
@@ -100,18 +103,18 @@ function Table({
     return (
         <div
             className={
-                "rounded-lg md:w-full pb-10 overflow-hidden overflow-x-auto tab-content dark:bg-gray-800 border border-gary-200 dark:border-gray-700 p-3 flex flex-col gap-4 bg-white " +
+                "rounded-2xl md:w-full pb-10 overflow-x-auto tab-content dark:bg-gray-800 border border-gary-200 dark:border-gray-700 p-3 flex flex-col gap-4 bg-white " +
                 (classContainer ? classContainer : "")
             }
         >
             {isTitle && (
                 <div className={"flex justify-between items-baseline"}>
                     <div className="flex items-center gap-4">
-                        <p
+                        {customTitle || <p
                             className={"text-gray-800 text-start text-lg dark:text-gray-400"}
                         >
                             {t(title)}
-                        </p>
+                        </p>}
                         {showControlBar && (
                             <div className="flex items-center gap-6">
                                 <div className="flex bg-gray-100 dark:bg-gray-900 rounded-lg p-1">
@@ -143,7 +146,7 @@ function Table({
                         )}
                     </div>
                     <div className="flex items-center gap-2">
-                        <SearchInput/>
+                        {!hideSearchInput && <SearchInput/>}
                         {showDatePicker && (
                             <div className={"flex items-center justify-center"}>
                                 <DateInput
@@ -192,7 +195,9 @@ function Table({
                             <TfiImport size={15}/>
                             {t("Export")}
                         </button>
+                        {toolbarCustomContent}
                     </div>
+                    
                 </div>
             )}
             <div
@@ -217,7 +222,7 @@ function Table({
                             </th>
                         )}
                         {headers?.map((header, index) => (
-                            <th
+                            header&&<th
                                 key={index}
                                 className="p-2 text-start text-sm font-normal dark:bg-gray-900 dark:text-gray-300 "
                                 style={{
@@ -257,10 +262,10 @@ function Table({
                                     </td>
                                 )}
                                 {row.map((cell, cellIndex) => (
-                                    <td
+                                    cell&&<td
                                         key={cellIndex}
                                         className={
-                                            "text-sm text-start max-w-10 sm:max-w-24 text-nowrap truncate overflow-hidden dark:text-gray-300 " +
+                                            "text-sm text-start max-w-10 sm:max-w-24 text-nowrap dark:text-gray-300 " +
                                             (classNameCell ? classNameCell : "px-2 py-6")
                                         }
                                         style={{
@@ -373,6 +378,7 @@ function Table({
 }
 
 Table.propTypes = {
+    customTitle: PropTypes.node,
     className: PropTypes.string,
     title: PropTypes.string,
     classContainer: PropTypes.string,
@@ -409,7 +415,9 @@ Table.propTypes = {
     industryOptions: PropTypes.array,
     selectedIndustry: PropTypes.string,
     onIndustryChange: PropTypes.func,
-    customActions:PropTypes.func
+    customActions:PropTypes.func,
+    hideSearchInput: PropTypes.bool,
+    toolbarCustomContent: PropTypes.node
 };
 
 export default Table;

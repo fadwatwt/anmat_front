@@ -5,6 +5,7 @@ import TasksSummaryChart from "@/app/(dashboard)/analytics/_components/employee/
 import ActivityLogs from "@/components/ActivityLogs.jsx";
 import TasksPerformanceChart from "@/app/(dashboard)/analytics/_components/employee/TasksPerformanceChart";
 import Table from "@/components/Tables/Table";
+import EmployeeRequests from "@/app/(dashboard)/dashboard/_components/employee/EmployeeRequests";
 
 const EmployeeDashboard = () => {
 
@@ -83,15 +84,18 @@ const EmployeeDashboard = () => {
                         isCheckInput={false}
                         isTitle={true}
                         classContainer={"w-full md:w-2/3"}
-                        // ={
-                        //     <button className="bg-white text-gray-500 hover:bg-gray-50 px-4 py-2">
-                        //         See All
-                        //     </button>
-                        // }
+                        toolbarCustomContent={
+                            <button className="bg-white text-gray-700 hover:bg-gray-50 px-4 py-2flex dark:text-gray-400 text-sm items-baseline p-2 gap-2 rounded-lg border border-gray-200 dark:border-gray-600">
+                                See All
+                            </button>
+                        }
                     />
                     <div className="w-full md:w-1/3">
                         <ActivityLogs activityLogs={activityLogs} className={"max-h-[30rem]"} />
                     </div>
+                </div>
+                <div className="w-full">
+                    <EmployeeRequests />
                 </div>
             </div>
 

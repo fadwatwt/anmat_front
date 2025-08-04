@@ -2,9 +2,10 @@
 
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
+import useAuthStore from '@/store/authStore.js';
 
 const SubscriptionsPage = () => {
-  const authUserType = "Company-Manager"; // Should come from context/state in real app
+  const { authUserType } = useAuthStore();
 
   const DynamicComponent = dynamic(() => {
     switch (authUserType) {

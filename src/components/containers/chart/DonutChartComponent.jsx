@@ -2,7 +2,6 @@
 
 import ContentCard from "@/components/containers/ContentCard";
 import DonutChartDraw from "@/components/drawers/DonutChartDraw";
-import { t } from "i18next";
 import { RiCircleFill } from "@remixicon/react";
 
 const DonutChartComponent = ({title, toolbar, subtitle, data}) => {

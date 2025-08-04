@@ -4,6 +4,7 @@ import InputAndLabel from "@/components/Form/InputAndLabel";
 import SelectAndLabel from "@/components/Form/SelectAndLabel";
 import * as Yup from 'yup';
 import { departments } from "@/functions/FactoryData";
+import ElementsSelect from "@/components/Form/ElementsSelect";
 
 const SetupPersonalProfile = () => {
 
@@ -27,8 +28,13 @@ const SetupPersonalProfile = () => {
         onSubmit: () => { },
     });
 
-    const countries = ["Palestine", "Syria"];
-    const cities = ["Gaza"];
+    const optionsStatus = [
+        { id: "1", element: "role 1" },
+        { id: "2", element: "role 2" },
+        { id: "3", element: "role 3" },
+    ];
+    const countries = [{ name: "Palestine", value: "Palestine" }, { name: "Syria", value: "Syria" }];
+    const cities = [{ name: "Gaza", value: "Gaza" }];
 
     return (
         <>
@@ -92,21 +98,8 @@ const SetupPersonalProfile = () => {
                         isRequired={true}
                     />
 
-                    <SelectAndLabel
-                        title={"Role"}
-                        name="role"
-                        value={formik.values.role} // Ensure it’s controlled
-                        onChange={(val) => formik.setFieldValue("role", val)} // Send _id
-                        onBlur={formik.handleBlur}
-                        options={cities} // Ensure _id is used internally but name is displayed
-                        error={
-                            formik.touched.role && formik.errors.role
-                                ? formik.errors.role
-                                : ""
-                        }
-                        placeholder={"Select Role..."}
-                        isRequired={true}
-                    />
+                    <ElementsSelect options={optionsStatus} classNameItemSelected={"p-1 px-2 bg-primary-100 text-black rounded-md"} isMultiple={true} isRemoveBtn={false}
+                        title={"Roles"} classNameContainer={"w-full"} onChange={() => { }} />
 
                     <SelectAndLabel
                         title={"Job Type"}

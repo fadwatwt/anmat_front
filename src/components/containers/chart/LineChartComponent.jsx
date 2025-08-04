@@ -8,7 +8,8 @@ const LineChartComponent = ({
     title,
     toolbar,
     data,
-    lines
+    lines,
+    yaxisTitle = ''
 }) => {
 
     return (
@@ -17,7 +18,7 @@ const LineChartComponent = ({
             toolbar={toolbar}
             main={
                 <div className="flex justify-center mb-6 w-full">
-                    <LineChartDrawer data={data} lines={lines} />
+                    <LineChartDrawer data={data} lines={lines} yaxisTitle={yaxisTitle} />
                 </div>
             }
             footer={

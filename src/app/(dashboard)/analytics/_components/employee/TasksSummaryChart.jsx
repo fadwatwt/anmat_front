@@ -15,12 +15,12 @@ const TasksSummaryChart = () => {
                 color: "#375DFB"
             },
             {
-                title: "Completed",
+                title: "Completed before due date",
                 value: 75,
                 color: "#38C793"
             },
             {
-                title: "Late-Completed",
+                title: "Late Completed",
                 value: 100,
                 color: "#F17B2C"
             },

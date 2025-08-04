@@ -2,9 +2,10 @@
 
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
+import useAuthStore from '@/store/authStore.js';
 
 const AnalyticsPage = () => {
-  const authUserType = "Employee"; // Should come from context/state in real app
+  const { authUserType } = useAuthStore();
 
   // Dynamically import components with loading fallback
   const DynamicComponent = dynamic(() => {

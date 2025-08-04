@@ -69,7 +69,7 @@ function RegisterForm() {
                     </div>
                 </div>
 
-                <div className="flex flex-col gap-4 w-full">
+                <div className="flex flex-col gap-2 w-full">
 
                     <button
                         type="submit"
@@ -80,7 +80,7 @@ function RegisterForm() {
                         {isLoading ? "Loading..." : "Sign Up"}
                     </button>
 
-                    <div className="flex items-center justify-center my-4">
+                    <div className="flex items-center justify-center my-2">
                         <div className="flex-grow border-t border-gray-300"></div>
                         <span className="mx-4 text-gray-500">Or</span>
                         <div className="flex-grow border-t border-gray-300"></div>
