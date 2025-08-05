@@ -3,7 +3,7 @@
 import DefaultSelect from "@/components/Form/DefaultSelect";
 import BarChartComponent from "@/components/containers/chart/BarChartComponent";
 
-const CompaniesSubscriptionsChart = () => {
+const DepartmentsAnalytics = () => {
 
     const barGab = 4;
     const monthlyData = [
@@ -18,14 +18,14 @@ const CompaniesSubscriptionsChart = () => {
         {
             dataKey: 'onTime',
             fill: '#38C793',
-            name: 'New Companies',
+            name: 'On-Time Completed',
             radius: [15, 15, 0, 0],
             barSize: 15
         },
         {
             dataKey: 'late',
             fill: '#F17B2C',
-            name: 'Exist Companies',
+            name: 'Late Completed',
             radius: [15, 15, 0, 0],
             barSize: 15
         }
@@ -33,18 +33,25 @@ const CompaniesSubscriptionsChart = () => {
 
     return (
         <BarChartComponent
-            title={"Companies Subscriptions"}
+            title={"Departments Analytics"}
             toolbar={
-                <div className="w-32 flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end">
-                    <DefaultSelect options={[{ id: 1, value: "Last 6 Months" }]} />
+                <div className="w-64 flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end">
+                    <DefaultSelect
+                        classNameContainer={"w-28"}
+                        options={[{ id: "", value: "Department" }]}
+                    />
+                    <DefaultSelect
+                        classNameContainer={"w-32"}
+                        options={[{ id: "", value: "Last 6 months" }]}
+                    />
                 </div>
             }
             barGab={barGab}
             monthlyData={monthlyData}
             bars={bars}
-            yaxisTitle="Number of subscriptions"
+            yaxisTitle="Number of tasks"
         />
     );
 };
 
-export default CompaniesSubscriptionsChart;
+export default DepartmentsAnalytics;

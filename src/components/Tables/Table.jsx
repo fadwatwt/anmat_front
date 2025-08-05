@@ -103,7 +103,7 @@ function Table({
     return (
         <div
             className={
-                "rounded-lg md:w-full pb-10 overflow-x-auto tab-content dark:bg-gray-800 border border-gary-200 dark:border-gray-700 p-3 flex flex-col gap-4 bg-white " +
+                "rounded-2xl md:w-full pb-10 overflow-x-auto tab-content dark:bg-gray-800 border border-gary-200 dark:border-gray-700 p-3 flex flex-col gap-4 bg-white " +
                 (classContainer ? classContainer : "")
             }
         >
