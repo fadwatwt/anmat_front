@@ -1,9 +1,7 @@
 "use client";
 
-import { useEffect, useState, useMemo, useCallback } from "react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend } from "recharts";
+import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import PropTypes from "prop-types";
 import dynamic from "next/dynamic";
 
 // Dynamic imports
@@ -12,61 +10,11 @@ const ActivityLogs = dynamic(() => import("@/components/ActivityLogs"), { ssr: f
 const ProjectRatingModal = dynamic(() => import("@/app/(dashboard)/projects/_modal/ProjectRatingModal"), { ssr: false });
 const Alert = dynamic(() => import("@/components/Alert"), { ssr: false });
 const Page = dynamic(() => import("@/components/Page"));
-const DefaultSelect = dynamic(() => import("@/components/Form/DefaultSelect"));
-import { StatusBadge } from "@/app/(dashboard)/hr/_Tabs/AttendanceTab";
 import TasksSummaryChart from "../../analytics/_components/employee/TasksSummaryChart";
-import TasksPerformanceChart from "../../analytics/_components/employee/TasksPerformanceChart";
-import DepartmentsAnalytics from "../../analytics/_components/company_manager/DepartmentsAnalytics";
+import DepartmentsAnalytics from "../../analytics/_components/company_manager/departments/DepartmentsAnalytics";
 import EmployeeRequests from "./employee/EmployeeRequests";
 
-const DonutChart = ({ data, total }) => {
-  const createCoordinatesForPercent = (percent) => {
-    const x = Math.cos(2 * Math.PI * percent);
-    const y = Math.sin(2 * Math.PI * percent);
-    return [x, y];
-  };
-
-  const paths = useMemo(() => {
-    let cumulativePercent = 0;
-    return data.map((segment) => {
-      const percent = segment.value / total;
-      const [startX, startY] = createCoordinatesForPercent(cumulativePercent);
-      cumulativePercent += percent;
-      const [endX, endY] = createCoordinatesForPercent(cumulativePercent);
-      const largeArcFlag = percent > 0.5 ? 1 : 0;
-
-      return (
-        <path
-          key={segment.color}
-          d={`M ${startX} ${startY} A 1 1 0 ${largeArcFlag} 1 ${endX} ${endY}`}
-          stroke={segment.color}
-          strokeWidth="0.2"
-          fill="none"
-        />
-      );
-    });
-  }, [data, total]);
-
-  return (
-    <svg viewBox="-1.1 -1.1 2.2 2.2" style={{ transform: "rotate(-90deg)" }}>
-      <circle cx="0" cy="0" r="1" fill="none" stroke="#E5E7EB" strokeWidth="0.1" />
-      {paths}
-    </svg>
-  );
-};
-
-DonutChart.propTypes = {
-  data: PropTypes.arrayOf(
-    PropTypes.shape({
-      value: PropTypes.number.isRequired,
-      color: PropTypes.string.isRequired,
-    })
-  ).isRequired,
-  total: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-};
-
 const AdminDashboard = () => {
-  const [requestType] = useState("Leave Request");
   const { t } = useTranslation("common");
   // const [theme, setTheme] = useState("light");
   const [isRatingModal, setIsModalSetting] = useState(false);
@@ -84,14 +32,6 @@ const AdminDashboard = () => {
   const handelConfirmApprovalAlert = useCallback(() => {
     setIsConfirmApprovalAlert((prev) => !prev);
   }, []);
-
-  const viewModalList = [
-    { id: "Leave", title: "Leave" },
-    { id: "Financial", title: "Financial" },
-  ];
-
-  const [viewMode, setViewMode] = useState("week");
-  const [currentDate] = useState(new Date());
 
   const activityLogs = [
     {
@@ -118,28 +58,6 @@ const AdminDashboard = () => {
       assignees: ["/api/placeholder/32/32"],
       date: "15 Nov, 2024",
       rating: 0,
-    },
-  ];
-
-  const leaveRequests = [
-    {
-      id: 1,
-      employee: "John Doe",
-      requestedDate: "2024-03-01",
-      daysRequested: 3,
-      daysLeft: 12,
-      status: "Pending",
-    },
-  ];
-
-  const financialRequests = [
-    {
-      id: 1,
-      employee: "Jane Smith",
-      requestedDate: "2024-03-05",
-      daysRequested: 2,
-      daysLeft: 7,
-      status: "Pending",
     },
   ];
 

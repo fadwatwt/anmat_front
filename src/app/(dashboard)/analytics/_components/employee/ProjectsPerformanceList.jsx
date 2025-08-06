@@ -20,11 +20,11 @@ const ProjectsPerformanceList = () => {
                 </div>
             }
             main={
-                <div className="space-y-4">
+                <div className="flex flex-col gap-8 h-full">
                     {projects.map((project, index) => (
                         <div key={index} className="flex items-start gap-4 justify-between flex-col md:flex-row">
                             <div>
-                                <h3 className="text-md font-medium text-gray-900">{project.name}</h3>
+                                <h3 className="text-md font-medium text-gray-900 dark:text-gray-300">{project.name}</h3>
                             </div>
                             <div className="flex flex-col gap-1 w-full md:w-3/4">
                                 <div className="w-full bg-gray-200 rounded-full h-2.5">

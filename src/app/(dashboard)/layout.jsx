@@ -19,7 +19,7 @@ const MainLayout = ({ children }) => {
     const authToken =
         typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-    useDarkMode();
+    // useDarkMode();
 
     console.log("Render MainLayout");
 
