@@ -1,21 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { LiaUser } from "react-icons/lia";
 import { GoMail } from "react-icons/go";
-import { FcGoogle } from "react-icons/fc";
 import { useRouter } from "next/navigation";
 import { useLoginMutation } from "@/redux/auth/authAPI";
 import { useDispatch } from "react-redux";
 import { loginSuccess, loginFailure } from "@/redux/auth/authSlice";
-import { Buildings } from "iconsax-react";
+import { Buildings2 } from "iconsax-react";
 
 function RegisterForm() {
     const [email, setEmail] = useState("");
     const [password] = useState("");
-    // const [rememberMe, setRememberMe] = useState(false);
+
     const [login, { isLoading }] = useLoginMutation();
-    // const { error } = useSelector((state) => state.auth);
+
     const dispatch = useDispatch();
     const router = useRouter();
 
@@ -38,7 +36,7 @@ function RegisterForm() {
             <div className="flex flex-col items-center gap-6">
                 <div className="flex w-20 h-20 justify-center items-center rounded-full bg-[#F3F3F4]">
                     <div className="flex w-12 h-12 justify-center items-center rounded-full bg-white shadow-md">
-                        <Buildings size={30} color="#525866" />
+                        <Buildings2 size={30} color="#525866" />
                     </div>
                 </div>
 
@@ -47,7 +45,7 @@ function RegisterForm() {
                     <sapn className="text-2xl text-gray-900">
                         {`Register your company now`}
                     </sapn>
-                    <span className="text-sm text-gray-500">
+                    <span className="text-md text-gray-500">
                         {'Let’s get your company info set in two minutes'}
                     </span>
                 </div>

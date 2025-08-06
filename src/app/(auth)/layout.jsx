@@ -1,5 +1,8 @@
 "use server";
+import DropdownMenu from "@/components/Dropdowns/DropdownMenu";
+import { RiGlobalLine } from "@remixicon/react";
 import Image from "next/image";
+import Link from "next/link";
 
 function AuthLayout({ children }) {
   console.log(children)
@@ -22,8 +25,24 @@ function AuthLayout({ children }) {
         </div>
 
         {/* Placeholder for login form (this should be a Client Component) */}
-        <div className="px-12 overflow-auto">
-          {children}
+        <div className="w-full flex flex-col items-center gap-8 justify-between h-full">
+          <div className="w-full px-12 overflow-auto">
+            {children}
+          </div>
+          <div className="w-full flex flex-wrap gap-4 items-center justify-between">
+            <button className="flex gap-2 items-center bg-transparent">
+              <RiGlobalLine size={20} />
+              <span className="text-md text-gray-700">عربي</span>
+            </button>
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <span className="text-md text-gray-700 dark:text-gray-300">
+                Already have an account?
+              </span>
+              <Link href="/sign-in" className="text-primary-500 hover:text-primary-600">
+                Login
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
 
