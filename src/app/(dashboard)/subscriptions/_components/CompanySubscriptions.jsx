@@ -8,20 +8,22 @@ import OrdersTable from "@/app/(dashboard)/subscriptions/_components/company_man
 import Page from "@/components/Page";
 import Pricing from "@/app/(dashboard)/subscriptions/_components/company_manager/Pricing.jsx";
 import BillingHistory from "@/app/(dashboard)/subscriptions/_components/company_manager/BillingHistory.jsx";
-import ChangeBillingInfoModal from "./company_manager/partials/ChangeBillingInfoModal.jsx";
+import ChangeBillingInfoModal from "@/app/(dashboard)/subscriptions/_components/company_manager/partials/ChangeBillingInfoModal.jsx";
 import History from "@/app/(dashboard)/subscriptions/_components/company_manager/History.jsx";
 import PaymentMethods from "@/app/(dashboard)/subscriptions/_components/company_manager/PaymentMethods.jsx";
+import AddNewPaymentModal from "@/app/(dashboard)/subscriptions/_components/company_manager/partials/AddNewPaymentModal.jsx";
+import { Card, Coin, Coin1, Note, Receipt, Receipt2, Timer } from "iconsax-react";
 
 function CompanySubscriptions() {
     const { t } = useTranslation()
 
     const listSideBar = [
-        { id: "subscription-info", title: "Subscription Information", content: <Details />, icon: <RiFileList3Line /> },
-        { id: "subscription-history", title: "Subscription History", content: <History />, icon: <RiHourglass2Line /> },
-        { id: "billing-history", title: "Billing History", content: <BillingHistory />, icon: <RiBillLine /> },
-        { id: "orders", title: "Orders", content: <OrdersTable />, icon: <RiCalendarTodoLine /> },
-        { id: "payent-methods", title: "Payment Methods", content: <PaymentMethods />, icon: <RiBankCardLine /> },
-        { id: "pricing", title: "Pricing", content: <Pricing />, icon: <RiMoneyDollarCircleLine /> }
+        { id: "subscription-info", title: "Subscription Information", content: <Details />, icon: <Receipt2 color="currentColor" /> },
+        { id: "subscription-history", title: "Subscription History", content: <History />, icon: <Timer color="currentColor" /> },
+        { id: "billing-history", title: "Billing History", content: <BillingHistory />, icon: <Receipt color="currentColor" /> },
+        { id: "orders", title: "Orders", content: <OrdersTable />, icon: <Note color="currentColor" /> },
+        { id: "payent-methods", title: "Payment Methods", content: <PaymentMethods />, icon: <Card color="currentColor" /> },
+        { id: "pricing", title: "Pricing", content: <Pricing />, icon: <Coin1 color="currentColor" /> }
     ]
     const [activeTab, setActiveTab] = useState('subscription-info');
 
@@ -33,6 +35,25 @@ function CompanySubscriptions() {
 
     const toggleBillingInfoModal = () => {
         setBillingInfoModalOpen(!billingInfoModalOpen);
+    }
+
+    const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+
+    const toggleNewPaymentModal = () => {
+        setPaymentModalOpen(!paymentModalOpen);
+    }
+
+    const buttons = {
+        "billing-history": {
+            btnTitle: t("Change Billing Info"),
+            btnOnClick: toggleBillingInfoModal,
+            btnIcon: <RiPencilLine className="text-white text-md dark:text-black" />
+        },
+        "payent-methods": {
+            btnTitle: t("Add new method"),
+            btnOnClick: toggleNewPaymentModal,
+            btnIcon: null
+        }
     }
 
     return (
@@ -53,11 +74,12 @@ function CompanySubscriptions() {
                 </div>
             </div>
             <Page title={t(listSideBar.find(item => item.id === activeTab)?.title || "Subscriptions")}
-                isBtn={activeTab === 'billing-history'} btnTitle={t("Change Billing Info")} btnOnClick={toggleBillingInfoModal}
-                btnIcon={<RiPencilLine className="text-white text-md dark:text-black" />}
+                isBtn={buttons[activeTab]} btnTitle={buttons[activeTab]?.btnTitle} btnOnClick={buttons[activeTab]?.btnOnClick}
+                btnIcon={buttons[activeTab]?.btnIcon}
             >
                 <div className="">
                     <ChangeBillingInfoModal isOpen={billingInfoModalOpen} onClose={toggleBillingInfoModal} />
+                    <AddNewPaymentModal isOpen={paymentModalOpen} onClose={toggleNewPaymentModal} />
                     <div className={"flex flex-col gap-4 md:gap-8 md:flex-row w-full h-full"}>
                         <div className={"hidden md:block"}>
                             <div className={"bg-white dark:bg-gray-800 py-3 px-2 w-64 flex flex-col gap-2 rounded-2xl border border-gray-200"}>

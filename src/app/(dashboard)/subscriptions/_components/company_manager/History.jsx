@@ -24,7 +24,7 @@ function History() {
                                             </div>
                                         </div>
                                         <div className="flex flex-col items-start justify-start gap-1">
-                                            <span className="text-2xl text-primary-500 font-bold">
+                                            <span className="text-2xl text-primary-700 font-bold">
                                                 {t("Professional Plan")}
                                             </span>
                                         </div>
@@ -60,7 +60,7 @@ function History() {
 
                                     {/* actions */}
                                     <div className="flex items-start justify-center gap-4">
-                                        <button className="text-lg bg-primary-50 text-primary-500 px-4 py-2 rounded-lg hover:bg-primary-100 transition-colors w-full">
+                                        <button className="text-lg bg-primary-lighter text-primary-500 px-4 py-2 rounded-lg hover:bg-primary-50 transition-colors w-full">
                                             {t("Re Order")}
                                         </button>
                                     </div>

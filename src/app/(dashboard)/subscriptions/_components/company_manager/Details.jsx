@@ -17,7 +17,7 @@ function Details() {
                         <span className="text-xl text-gray-700">
                             {t("You're subscribed on")}
                         </span>
-                        <span className="text-2xl text-primary-500 font-bold">
+                        <span className="text-2xl text-primary-700 font-bold">
                             {t("Professional Plan")}
                         </span>
                     </div>
