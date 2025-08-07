@@ -135,9 +135,6 @@ const CompanyManagerDashboard = () => {
                         />
                     </div>
                 </div>
-                <div className="w-full">
-                    <EmployeeRequests />
-                </div>
             </div>
 
         </Page>
