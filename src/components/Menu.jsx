@@ -36,7 +36,7 @@ const Menu = React.memo(({ isSlidebarOpen, toggleSlidebarOpen }) => {
             <div className={" h-32 flex p-5 gap-2 border-b-2 dark:border-gray-600 items-center"}>
                 <div className={"profile-image"}>
                     <img src="/images/logo.png" alt={"img"}
-                        className={" w-10 h-10 rounded-full m-0 p-0"} />
+                         className={" w-10 h-10 rounded-full m-0 p-0"} />
                 </div>
                 <div className={"flex flex-col  gap-2 justify-center  "}>
                     <p className={"text-sm dark:text-white text-start truncate w-28 md:w-full"}>{t("Employees Management")}</p>
@@ -46,7 +46,7 @@ const Menu = React.memo(({ isSlidebarOpen, toggleSlidebarOpen }) => {
                     isSlidebarOpen && (
                         <button className="inline-flex h-8 w-8 items-center p-2 text-sm text-gray-500
                 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
-                            onClick={toggleSlidebarOpen}>
+                                onClick={toggleSlidebarOpen}>
                             <HambergerMenu />
                         </button>
                     )
