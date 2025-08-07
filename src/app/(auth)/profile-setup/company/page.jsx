@@ -22,8 +22,8 @@ const SetupCompanyProfile = () => {
         onSubmit: () => { },
     });
 
-    const countries = ["Palestine", "Syria"];
-    const cities = ["Gaza"];
+    const countries = [{name: "Palestine", value: "Palestine"}, {name: "Syria", value: "Syria"}];
+    const cities = [{name: "Gaza", value: "Gaza"}];
 
     return (
         <>
@@ -33,7 +33,7 @@ const SetupCompanyProfile = () => {
                     <sapn className="text-2xl text-gray-900">
                         {`Set up your company profile`}
                     </sapn>
-                    <span className="text-sm text-gray-500">
+                    <span className="text-md text-gray-500">
                         Let&#39;s get your company info set in two minutes.
                     </span>
                 </div>

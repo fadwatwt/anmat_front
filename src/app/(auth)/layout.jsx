@@ -7,8 +7,8 @@ import Link from "next/link";
 function AuthLayout({ children }) {
   console.log(children)
   return (
-    <div className="w-full flex h-screen justify-start py-1 bg-white">
-      <div className="flex flex-col w-[40%] gap-16 px-9 py-7">
+    <div className="w-full flex justify-start py-1 bg-white">
+      <div className="flex flex-col w-[40%] h-screen overflow-y-auto gap-16 px-9 py-7">
         {/* Logo Section */}
         <div className="flex items-center justify-start gap-3">
           <Image
@@ -26,7 +26,7 @@ function AuthLayout({ children }) {
 
         {/* Placeholder for login form (this should be a Client Component) */}
         <div className="w-full flex flex-col items-center gap-8 justify-between h-full">
-          <div className="w-full px-12 overflow-auto">
+          <div className="w-full px-12">
             {children}
           </div>
           <div className="w-full flex flex-wrap gap-4 items-center justify-between">
