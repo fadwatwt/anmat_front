@@ -12,6 +12,7 @@ import {
 } from "@/redux/employees/employeeAPI.js";
 import { fetchRoles } from "@/redux/roles/rolesSlice.js";
 import { fetchDepartments } from "@/redux/departments/departmentAPI.js";
+import SelectAndLabel from "@/components/Form/SelectAndLabel";
 
 function EditAnEmployeeModal({ isOpen, onClose, employee }) {
   const dispatch = useDispatch();
@@ -53,20 +54,26 @@ function EditAnEmployeeModal({ isOpen, onClose, employee }) {
 
   const formik = useFormik({
     initialValues: {
-      name: employee?.name || "",
+      role: employee?.role || "",
       email: employee?.email || "",
       workingHours: employee?.workingHours || "",
-      holidays: employee?.holidays || "",
+      salary: employee?.salary || "",
       department: employee?.department?._id || "",
+      jobTitle: employee?.jobTitle || "",
+      workingDays: employee?.workingDays || "",
+      annualLeaveDays: employee?.annualLeaveDays || ""
     },
     validationSchema: Yup.object({
-      name: Yup.string().required("Name is required"),
+      role: Yup.string().required("Role is required"),
       email: Yup.string()
         .email("Invalid email address")
         .required("Email is required"),
       workingHours: Yup.number().required("Working hours are required"),
-      holidays: Yup.number().required("Holidays are required"),
+      salary: Yup.number().required("Holidays are required"),
       department: Yup.string().required("Department is required"),
+      jobTitle: Yup.string().required("Job title is required"),
+      workingDays: Yup.number().required("Working days are required"),
+      annualLeaveDays: Yup.number().required("Annual leave days are required")
     }),
     onSubmit: async (values, { setSubmitting }) => {
       try {
@@ -123,18 +130,43 @@ function EditAnEmployeeModal({ isOpen, onClose, employee }) {
         )}
 
         <div className="flex flex-col gap-4">
-          <InputAndLabel
-            title="Name"
-            name="name"
-            {...formik.getFieldProps("name")}
-            error={formik.errors.name}
-          />
+
           <InputAndLabel
             title="Email"
             name="email"
             {...formik.getFieldProps("email")}
             error={formik.errors.email}
           />
+
+          <InputAndLabel
+            title="Role"
+            name="role"
+            {...formik.getFieldProps("role")}
+            error={formik.errors.role}
+          />
+
+          <InputAndLabel
+            title="Job Title"
+            name="jobTitle"
+            {...formik.getFieldProps("jobTitle")}
+            error={formik.errors.jobTitle}
+          />
+
+          <InputAndLabel
+            title="Salary"
+            name="salary"
+            {...formik.getFieldProps("salary")}
+            error={formik.errors.salary}
+          />
+
+          <SelectAndLabel
+            title="Department"
+            name="department"
+            value={formik.values.department}
+            onChange={(val) => formik.setFieldValue("department", val)} // Sending _id
+            options={departments} // Ensure the correct structure
+            error={formik.errors.department}
+           onBlur={() => {}}/>
 
           <InputAndLabel
             title="Working Hours"
@@ -145,21 +177,21 @@ function EditAnEmployeeModal({ isOpen, onClose, employee }) {
           />
 
           <InputAndLabel
-            title="Holidays"
-            name="holidays"
+            title="Working Days"
+            name="workingDays"
             type="number"
-            {...formik.getFieldProps("holidays")}
-            error={formik.errors.holidays}
+            {...formik.getFieldProps("workingDays")}
+            error={formik.errors.workingDays}
           />
 
-          <SelectWithoutLabel
-            title="Department"
-            name="department"
-            value={formik.values.department}
-            onChange={(val) => formik.setFieldValue("department", val)} // Sending _id
-            options={departments} // Ensure the correct structure
-            error={formik.errors.department}
-           onBlur={() => {}}/>
+          <InputAndLabel
+            title="Annual Leave Days"
+            name="annualLeaveDays"
+            type="number"
+            {...formik.getFieldProps("annualLeaveDays")}
+            error={formik.errors.annualLeaveDays}
+          />
+
         </div>
       </div>
     </Modal>

@@ -99,34 +99,53 @@ function InviteEmployeeModal({ isOpen, onClose }) {
         }
     }, [isOpen, dispatch]);
 
+    const usersResult = [];
+
     return (
         <Modal
             isOpen={isOpen}
             onClose={onClose}
             isBtns={false}
             customBtns={<DefaultButton type={'button'} title={"Invite"}
-                className={"bg-primary-500 font-medium dark:bg-primary-200 dark:text-black text-white"} />}
+                className={"bg-primary-500 font-medium dark:bg-primary-200 dark:text-black text-white mt-4"} />}
             btnApplyTitle={formik.isSubmitting ? "Saving..." : "Invite"}
             onClick={formik.handleSubmit}
             className={"lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12"}
             title={"Invite New Employee"}
             disableSubmit={formik.isSubmitting || !formik.isValid}
         >
-            <div className="px-1">
-                {apiError && (
-                    <div className="mb-4 text-red-500 text-sm">{apiError}</div>
-                )}
+            <div className="flex flex-col gap-2">
+                <div className="px-1">
+                    {apiError && (
+                        <div className="mb-4 text-red-500 text-sm">{apiError}</div>
+                    )}
 
-                <div className="flex flex-col gap-4">
-                    <InputAndLabel
-                        title="Email"
-                        name="email"
-                        placeholder="Enter employer email"
-                        {...formik.getFieldProps("email")}
-                        error={formik.errors.email}
-                    />
+                    <div className="flex flex-col gap-4">
+                        <InputAndLabel
+                            title="Email"
+                            name="email"
+                            placeholder="Enter employer email"
+                            {...formik.getFieldProps("email")}
+                            error={formik.errors.email}
+                        />
 
+                    </div>
                 </div>
+                {usersResult.length > 0 && <div className="flex flex-col gap-2 border border-gray-200 rounded-xl px-4 py-2">
+                    {usersResult.map(() => <div className="flex items-top gap-1 px-2 py-1 border-b border-gray-200">
+                        <div className="rounded-full w-8 h-8">
+                            <img src="" alt="avatar" className="w-full h-full" />
+                        </div>
+                        <div className="flex flex-col gap-0">
+                            <span className="text-md text-gray-800">
+                                User Name
+                            </span>
+                            <span className="text-md text-gray-500">
+                                user@name.com
+                            </span>
+                        </div>
+                    </div>)}
+                </div>}
             </div>
         </Modal>
     );
