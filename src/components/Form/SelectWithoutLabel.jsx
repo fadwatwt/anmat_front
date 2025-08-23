@@ -35,11 +35,11 @@ function SelectWithoutLabel({
                 : "border-soft-200 dark:border-gray-600 focus:ring-primary"
             }`}
         >
-          <option value="" disabled>
+          <option key="placeholder" value="" disabled>
             {placeholder ? t(placeholder) : t(title)}
           </option>
           {options?.map((option) => (
-            <option key={option._id} value={option._id}>
+            <option key={option._id || option.id || option.value || option.name} value={option._id || option.id || option.value}>
               {option.name}
             </option>
           ))}

@@ -139,8 +139,12 @@ function Table({
                                     {t("Today")}
                                 </button>
                                 <div className="text-gray-600 dark:text-gray-300 text-lg ">
-                                    {currentDate.toLocaleString("default", {month: "long"})}{" "}
-                                    {currentDate.getFullYear()}
+                                    {currentDate ? (
+                                      <>
+                                        {new Intl.DateTimeFormat(i18n.language, { month: 'long' }).format(currentDate)}{" "}
+                                        {currentDate.getFullYear()}
+                                      </>
+                                    ) : null}
                                 </div>
                             </div>
                         )}

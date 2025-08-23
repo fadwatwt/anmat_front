@@ -7,6 +7,11 @@ export const fetchAllAttendance = createAsyncThunk(
   async (_, { getState, rejectWithValue }) => {
     try {
       const { auth } = getState();
+      
+      if (!auth.token) {
+        return rejectWithValue('No authentication token found. Please log in again.');
+      }
+      
       const config = {
         headers: {
           Authorization: `Bearer ${auth.token}`,
@@ -31,7 +36,7 @@ export const recordCheckIn = createAsyncThunk(
         },
       };
       const response = await axios.post(
-        `${RootRoute}/checkin`,
+        `${RootRoute}/attendance/checkin`,
         { employeeId },
         config
       );
@@ -53,7 +58,7 @@ export const recordCheckOut = createAsyncThunk(
         },
       };
       const response = await axios.post(
-        `${RootRoute}/checkout`,
+        `${RootRoute}/attendance/checkout`,
         { employeeId },
         config
       );

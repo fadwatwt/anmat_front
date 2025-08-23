@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
+import ClientOnly from "@/components/ClientOnly";
 // import { format, parseISO } from "date-fns";
 import Table from "@/components/Tables/Table.jsx";
 import { fetchAllRotations } from "@/redux/rotation/rotationAPI";
@@ -39,11 +40,14 @@ function RotationTap() {
   const weekDates = generateWeekDates(currentDate);
 
   useEffect(() => {
-    const dateRange = {
-      startDate: weekDates[0].toISOString(),
-      endDate: weekDates[6].toISOString(),
-    };
-    dispatch(fetchAllRotations(dateRange));
+    const token = localStorage.getItem('token');
+    if (token) {
+      const dateRange = {
+        startDate: weekDates[0].toISOString(),
+        endDate: weekDates[6].toISOString(),
+      };
+      dispatch(fetchAllRotations(dateRange));
+    }
   }, [dispatch, currentDate, viewMode]);
 
   // const handlePrev = () => {

@@ -5,12 +5,18 @@ import { RootRoute } from "../../Root.Route";
 // Fetch all departments
 export const fetchDepartments = createAsyncThunk(
   "departments/fetchAll",
-  async (_, { rejectWithValue }) => {
+  async (_, { rejectWithValue, getState }) => {
     try {
-      const response = await axios.get(`${RootRoute}/departments`);
+      const { auth } = getState();
+      const config = {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      };
+      const response = await axios.get(`${RootRoute}/departments`, config);
       return response.data.data;
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );
@@ -18,17 +24,23 @@ export const fetchDepartments = createAsyncThunk(
 // Update department
 export const updateDepartment = createAsyncThunk(
   "departments/update",
-  async ({ id, departmentData }, { rejectWithValue }) => {
+  async ({ id, departmentData }, { rejectWithValue, getState }) => {
     try {
-      console.log({ departmentData });
+      const { auth } = getState();
+      const config = {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      };
 
       const response = await axios.patch(
         `${RootRoute}/departments/${id}`,
-        departmentData
+        departmentData,
+        config
       );
       return response.data.data;
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );
@@ -36,12 +48,18 @@ export const updateDepartment = createAsyncThunk(
 // Delete department
 export const deleteDepartment = createAsyncThunk(
   "departments/delete",
-  async (id, { rejectWithValue }) => {
+  async (id, { rejectWithValue, getState }) => {
     try {
-      await axios.delete(`${RootRoute}/departments/${id}`);
+      const { auth } = getState();
+      const config = {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      };
+      await axios.delete(`${RootRoute}/departments/${id}`, config);
       return id;
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );

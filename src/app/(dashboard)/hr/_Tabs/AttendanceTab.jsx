@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { format, parseISO } from "date-fns";
+import ClientOnly from "@/components/ClientOnly";
 import Table from "@/components/Tables/Table";
 import {
   fetchAllAttendance,
@@ -55,10 +56,19 @@ function AttendanceTab() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    dispatch(fetchAllAttendance());
-  }, [dispatch]);
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isClient) return;
+    const token = localStorage.getItem('token');
+    if (token) {
+      dispatch(fetchAllAttendance());
+    }
+  }, [dispatch, isClient]);
 
   const headers = [
     { label: t("Employee"), width: "200px" },
@@ -158,10 +168,13 @@ function AttendanceTab() {
     });
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div className="text-red-500 p-4">Error: {error}</div>;
-
   return (
+    <ClientOnly fallback={<div>Loading...</div>}>
+      {!isClient ? null : loading ? (
+        <div>Loading...</div>
+      ) : error ? (
+        <div className="text-red-500 p-4">Error: {error}</div>
+      ) : (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2 h-full">
         <Table
@@ -210,9 +223,12 @@ function AttendanceTab() {
         isBtns={false}
       />
     </div>
+      )}
+    </ClientOnly>
   );
 }
-StatusBadge.prototype = {
+
+StatusBadge.propTypes = {
   status: PropTypes.string.isRequired,
 };
 
