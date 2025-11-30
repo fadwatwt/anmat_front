@@ -122,7 +122,7 @@ function PlansPage() {
                     <RiFlashlightLine size={25} className="rounded-full text-primary-500 stroke-[5px]" />
                 </div>
             </div>
-            <span className="text-lg text-gray-900 dark:text-gray-50">
+            <span className="text-md text-gray-900 dark:text-gray-50">
                 {plan.name}
             </span>
         </div>,

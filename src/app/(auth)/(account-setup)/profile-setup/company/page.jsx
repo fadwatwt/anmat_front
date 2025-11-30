@@ -27,13 +27,14 @@ const SetupCompanyProfile = () => {
 
     return (
         <>
-            <div className="flex flex-col items-start justify-start gap-8 overflow-hidden overflow-y-auto px-2">
+            <div className="flex flex-col items-start w-5/12 p-10 justify-start gap-8 bg-white rounded-xl ">
                 {/* Title */}
-                <div className="flex flex-col items-start justify-start gap-2">
+                <div className="flex flex-col items-center text-center justify-start gap-2 w-full">
+                    <span className={"text-primary-500"}>Profile</span>
                     <sapn className="text-2xl text-gray-900">
                         {`Set up your company profile`}
                     </sapn>
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm text-gray-500 ">
                         Let&#39;s get your company info set in two minutes.
                     </span>
                 </div>

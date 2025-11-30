@@ -71,7 +71,7 @@ function TaskMainInfo({ task, type = "task",values,handleChange }) {
     },
   ];
 
-  // Formik setup
+  // Formik
   const formik = useFormik({
     initialValues: {
       taskName: task?.name || "",

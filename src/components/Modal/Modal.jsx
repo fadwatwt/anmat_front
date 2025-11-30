@@ -12,11 +12,11 @@ const Modal = ({ isOpen, onClose, children,title,className,isBtns,customBtns,cla
             onClick={onClose}
         >
             <div
-                className={` bg-white dark:bg-gray-800 rounded-xl  shadow-lg p-4 ${className ? className : "lg:w-1/3 md:w-8/12 sm:w-7/12 w-11/12"}`}
+                className={` bg-white dark:bg-gray-800 rounded-xl  shadow-lg ${className ? className : "lg:w-1/3 md:w-8/12 sm:w-7/12 w-11/12 p-4"}`}
                 onClick={(e) => e.stopPropagation()} // منع إغلاق عند النقر داخل المودال
             >
                 {title &&
-                <div className={`flex justify-between items-center mb-4 ${title && "border-b-2"}  dark:border-gray-700 pb-3`}>
+                <div className={`flex justify-between items-center mb-4 p-4 ${title && "border-b-2"}  dark:border-gray-700 pb-3`}>
                     <h2 className="dark:text-gray-200 text-base text-black">{t(title)}</h2>
                     <button
                         onClick={onClose}
@@ -26,13 +26,13 @@ const Modal = ({ isOpen, onClose, children,title,className,isBtns,customBtns,cla
                     </button>
                 </div>
                 }
-                <div className={" relative flex flex-col px-1"}>
+                <div className={" relative flex flex-col"}>
                     <div className={"max-h-[70vh] overflow-hidden tab-content overflow-y-auto"}>
                         {children}
                     </div>
                     {
                         isBtns && (
-                            <div className={"flex gap-2 py-3 w-full " + classNameBtns}>
+                            <div className={"flex gap-2 py-3 w-full p-4 " + classNameBtns}>
                                 <DefaultButton type={'button'} title={("Cancel")}
                                                className={"font-medium dark:text-gray-200"}/>
                                 <DefaultButton onClick={onClick} type={'button'} title={btnApplyTitle ? btnApplyTitle:"Apply"}
