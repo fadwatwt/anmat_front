@@ -19,7 +19,7 @@ const Status = dynamic(() => import("@/app/(dashboard)/projects/_components/Tabl
 const MembersListXLine = dynamic(() => import("@/app/(dashboard)/projects/[slug]/_components/MembersListXLine"), { ssr: false });
 const TimeLine = dynamic(() => import("@/components/TimeLine/TimeLine"), { ssr: false });
 const EditTaskModal = dynamic(() => import("@/app/(dashboard)/tasks/_modal/EditTaskModal"), { ssr: false });
-const Alert = dynamic(() => import("@/components/Alert"), { ssr: false });
+const Alert = dynamic(() => import("@/components/Alerts/Alert"), { ssr: false });
 
 // Hardcoded sample tasks data
 const sampleTasks = [

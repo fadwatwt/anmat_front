@@ -11,7 +11,7 @@ import {
 import { BsClockFill, BsSlashCircleFill } from "react-icons/bs";
 import { GoCheckCircleFill } from "react-icons/go";
 
-import Alert from "@/components/Alert.jsx";
+import Alert from "@/components/Alerts/Alert.jsx";
 import EditAttendanceModal from "@/app/(dashboard)/hr/_modals/EditAttendanceModal";
 import PropTypes from "prop-types";
 

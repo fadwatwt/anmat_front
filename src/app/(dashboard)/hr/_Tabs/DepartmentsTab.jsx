@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Table from "@/components/Tables/Table.jsx";
 import EditDepartmentModal from "@/app/(dashboard)/hr/_modals/EditDepartmentModal.jsx";
-import Alert from "@/components/Alert.jsx";
+import Alert from "@/components/Alerts/Alert.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchDepartments,

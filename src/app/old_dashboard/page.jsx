@@ -10,7 +10,7 @@ import dynamic from "next/dynamic";
 const Table = dynamic(() => import("@/components/Tables/Table"), { ssr: false });
 const ActivityLogs = dynamic(() => import("@/components/ActivityLogs"), { ssr: false });
 const ProjectRatingModal = dynamic(() => import("../(dashboard)/projects/_modal/ProjectRatingModal"), { ssr: false });
-const Alert = dynamic(() => import("@/components/Alert"), { ssr: false });
+const Alert = dynamic(() => import("@/components/Alerts/Alert"), { ssr: false });
 const Page = dynamic(() => import("@/components/Page"));
 const DefaultSelect = dynamic(() => import("@/components/Form/DefaultSelect"));
 import { StatusBadge } from "@/app/(dashboard)/hr/_Tabs/AttendanceTab";

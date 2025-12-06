@@ -2,7 +2,7 @@
 
 import {
     RiCheckboxCircleFill,
-    RiCloseCircleFill,
+    RiCloseCircleFill, RiCloseCircleLine, RiEditLine, RiEyeLine,
     RiFlashlightLine,
     RiQuestionLine,
 } from "@remixicon/react";
@@ -10,6 +10,11 @@ import Table from "@/components/Tables/Table";
 import Page from "@/components/Page";
 import { useState } from "react";
 import CreatePlanModal from "./_components/CreatePlanModal";
+import CheckAlert from "@/components/Alerts/CheckِِAlert";
+import {useTranslation} from "react-i18next";
+import StatusActions from "@/components/Dropdowns/StatusActions";
+import {RiDeleteBin7Line} from "react-icons/ri";
+import {statusCell} from "@/components/StatusCell";
 
 const headers = [
     { label: "Plan", width: "300px" },
@@ -70,47 +75,50 @@ const plansData = [
     }
 ];
 
-const statusConfig = {
-    Active: {
-        bgColor: "bg-green-50",
-        icon: <RiCheckboxCircleFill size={15} className="text-green-700" />,
-        textColor: "text-green-700",
-    },
-    'Not-active': {
-        bgColor: "bg-red-50",
-        icon: <RiCloseCircleFill size={15} className="text-red-700" />,
-        textColor: "text-red-700",
-    }
-};
+
+const  PlanActions = ({actualRowIndex,handelDeleteAction}) => {
+    const {t, i18n} = useTranslation();
+    const statesActions = [
+        {
+            text: "View", icon: <RiEyeLine className="text-primary-400"/>, onClick: () => {
+                console.log(actualRowIndex)
+            }
+        },
+        {
+            text: "Edit", icon: <RiEditLine className="text-primary-400"/>, onClick: () => {
+                console.log(actualRowIndex)
+            },
+        },
+        {
+            text: "Stop Free Trial", icon: <RiCloseCircleLine className="text-red-500"/>, onClick: () => {
+                console.log(actualRowIndex)
+            },
+        },
+        {
+            text: "Delete", icon: <RiDeleteBin7Line className="text-red-500"/>, onClick: () => {
+                handelDeleteAction()
+                console.log(actualRowIndex)
+            },
+        }
+    ]
+    return (
+        <StatusActions states={statesActions}  className={`${
+            i18n.language === "ar" ? "left-0" : "right-0"
+        }`}/>
+    );
+}
 
 function PlansPage() {
 
     const [createPlanModalOpen, setCreatePlanModal] = useState();
+    const [checkAlertDeletePlanModal, setCheckAlertDeletePlanModal] = useState();
     const toggleCreatePlanModalOpen = () => {
         setCreatePlanModal(!createPlanModalOpen);
     }
+    const toggleCheckAlertDeletePlanModal = () => {
+        setCheckAlertDeletePlanModal(!checkAlertDeletePlanModal);
+    }
 
-    const statusCell = (status, _id) => {
-        const config = statusConfig[status] || {
-            bgColor: "bg-gray-50",
-            icon: <RiQuestionLine size={15} className="text-gray-700" />,
-            textColor: "text-gray-700",
-        };
-
-        return (
-            <div key={`${_id}_status`} className="px-2 py-1">
-                <div
-                    key={`status-${status}`}
-                    className={`flex items-center justify-center gap-1 ${config.bgColor} px-1 py-1 rounded-md`}
-                >
-                    {config.icon}
-                    <span className={`text-xs ${config.textColor}`}>
-                        {status}
-                    </span>
-                </div>
-            </div>
-        );
-    };
 
     // Transform data into the format expected by the Table component
     const rows = plansData.map(plan => [
@@ -156,10 +164,17 @@ function PlansPage() {
                 classContainer={"rounded-2xl px-8"}
                 title="All Plans"
                 headers={headers}
-                isActions={true}
+                isActions={false}
+                handelDelete={toggleCheckAlertDeletePlanModal}
                 rows={rows}
+                customActions={(actualRowIndex) => (
+                    <PlanActions handelDeleteAction={toggleCheckAlertDeletePlanModal}
+                                 actualRowIndex={actualRowIndex} />)
+            }
                 isFilter={true}
             />
+                <CheckAlert isOpen={checkAlertDeletePlanModal}  title={"Stop Free Trial "} titleSubmitBtn={"Yes, Stop"} titleCancelBtn={"Cancel"}
+                        feature={"Basic plan"} subFeature={"Stop Free Trial"} onSubmit={() => {}} onClose={toggleCheckAlertDeletePlanModal} isBtns={true}  />
             <CreatePlanModal isOpen={createPlanModalOpen} onClose={toggleCreatePlanModalOpen} />
         </Page>
     );

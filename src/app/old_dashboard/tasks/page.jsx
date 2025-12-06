@@ -14,7 +14,7 @@ import { convertToSlug } from "@/functions/AnotherFunctions.js";
 // ✅ Lazy-loaded components
 const TimeLine = dynamic(() => import("@/components/TimeLine/TimeLine"), { ssr: false });
 const EditTaskModal = dynamic(() => import("@/app/(dashboard)/tasks/_modal/EditTaskModal"), { ssr: false });
-const Alert = dynamic(() => import("@/components/Alert"), { ssr: false });
+const Alert = dynamic(() => import("@/components/Alerts/Alert"), { ssr: false });
 
 const NameAndDescription = dynamic(() => import("@/app/(dashboard)/projects/_components/TableInfo/NameAndDescription"), { ssr: false });
 const AccountDetails = dynamic(() => import("@/app/(dashboard)/projects/_components/TableInfo/AccountDetails"), { ssr: false });

@@ -1,4 +1,4 @@
-import Modal from "./Modal/Modal.jsx";
+import Modal from "../Modal/Modal.jsx";
 import { IoCheckmarkCircle, IoWarning } from "react-icons/io5";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
