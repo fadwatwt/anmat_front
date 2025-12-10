@@ -1,10 +1,8 @@
 "use client"
 
 import {
-    RiCheckboxCircleFill,
-    RiCloseCircleFill, RiCloseCircleLine, RiEditLine, RiEyeLine,
-    RiFlashlightLine,
-    RiQuestionLine,
+     RiCloseCircleLine, RiEditLine, RiEyeLine,
+    RiFlashlightLine
 } from "@remixicon/react";
 import Table from "@/components/Tables/Table";
 import Page from "@/components/Page";

@@ -406,6 +406,89 @@ export const defaultStatusOptions = [
   { value: "absent", name: "Absent" },
 ];
 
+export const MoanyReceivingMethods = [
+    {
+        "_id": 1,
+        "name": "Online Payment",
+        "type": "Credit Card",
+        "provider": "Master Card",
+        "currency": "USD",
+        "added_at": "May 24, 2025",
+        "status": "active",
+        "default_status": ""
+    },
+    {
+        "_id": 2,
+        "name": "Online Payment",
+        "type": "Credit Card",
+        "provider": "Master Card",
+        "currency": "USD",
+        "added_at": "May 24, 2025",
+        "status": "in-active",
+        "default_status": ""
+    },
+    {
+        "_id": 3,
+        "name": "Online Payment",
+        "type": "Credit Card",
+        "provider": "Master Card",
+        "currency": "USD",
+        "added_at": "May 24, 2025",
+        "status": "active",
+        "default_status": ""
+    },
+    {
+        "_id": 4,
+        "name": "Online Payment",
+        "type": "Credit Card",
+        "provider": "Master Card",
+        "currency": "USD",
+        "added_at": "May 24, 2025",
+        "status": "in-active",
+        "default_status": ""
+    },
+    {
+        "_id": 5,
+        "name": "Online Payment",
+        "type": "Credit Card",
+        "provider": "Master Card",
+        "currency": "USD",
+        "added_at": "May 24, 2025",
+        "status": "Active",
+        "default_status": "default"
+    },
+    {
+        "_id": 6,
+        "name": "Online Payment",
+        "type": "Credit Card",
+        "provider": "Master Card",
+        "currency": "USD",
+        "added_at": "May 24, 2025",
+        "status": "Not-active",
+        "default_status": ""
+    },
+    {
+        "_id": 7,
+        "name": "Bank Transfer",
+        "type": "Account",
+        "provider": "Local Bank",
+        "currency": "EUR",
+        "added_at": "June 01, 2025",
+        "status": "active",
+        "default_status": ""
+    },
+    {
+        "_id": 8,
+        "name": "Digital Wallet",
+        "type": "E-Wallet",
+        "provider": "PayPal",
+        "currency": "USD",
+        "added_at": "April 15, 2025",
+        "status": "active",
+        "default_status": "default"
+    }
+]
+
 export {tasks,date1,date2,
     members,
     activityLogs,comments,attachments,
