@@ -16,7 +16,7 @@ const Modal = ({ isOpen, onClose, children,title,className,isBtns,customBtns,cla
                 onClick={(e) => e.stopPropagation()} // منع إغلاق عند النقر داخل المودال
             >
                 {title &&
-                <div className={`flex justify-between items-center mb-4 p-4 ${title && "border-b-2"}  dark:border-gray-700 pb-3`}>
+                <div className={`flex justify-between items-center mb-4 ${title && "border-b-2"}  dark:border-gray-700 pb-3`}>
                     <h2 className="dark:text-gray-200 text-base text-black">{t(title)}</h2>
                     <button
                         onClick={onClose}

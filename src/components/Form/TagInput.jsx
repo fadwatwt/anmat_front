@@ -42,11 +42,11 @@ const TagInput = ({ suggestions, placeholder, title, isRequired }) => {
                 {title && <label className="text-gray-900 dark:text-gray-200 text-sm">
                     {title}{isRequired && <span className={"text-red-500 ms-1"}>*</span>}
                 </label>}
-                <div className="flex flex-wrap dark:bg-gray-900 gap-1 px-1 items-center border dark:border-none py-2 rounded-lg w-full">
+                <div className="relative flex  crsor-pointer flex-wrap dark:bg-gray-900 gap-1 px-1 items-center border dark:border-none py-2 rounded-lg w-full">
                     {tags.map((tag) => (
                         <div
                             key={tag.id}
-                            className="flex items-center space-x-2 bg-primary-100 dark:border-primary-800 dark:bg-primary-800 gap-2 border rounded-full px-3 py-1"
+                            className="flex items-center z-25 space-x-2 bg-primary-100 dark:border-primary-800 dark:bg-primary-800 gap-2 border rounded-full px-3 py-1"
                         >
                             {tag.image && <img
                                 src={tag.image}
@@ -68,8 +68,8 @@ const TagInput = ({ suggestions, placeholder, title, isRequired }) => {
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value.trimStart())}
                         onFocus={() => setIsFocused(true)}
-                        onBlur={() => setTimeout(() => setIsFocused(false), 200)} // تأخير لإتاحة الوقت للنقر
-                        className="flex-grow focus:outline-none text-sm p-1 w-full dark:bg-gray-900"
+                        onBlur={() => setTimeout(() => setIsFocused(false), 200)}
+                        className="flex-grow bg-transparent focus:outline-none text-sm p-1 min-w-[150px]"
                     />
                 </div>
             </div>

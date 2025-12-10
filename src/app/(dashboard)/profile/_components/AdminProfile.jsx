@@ -11,12 +11,23 @@ import Page from "@/components/Page";
 import {useTranslation} from "react-i18next";
 import {useParams} from "next/navigation";
 import Status from "@/app/(dashboard)/projects/_components/TableInfo/Status";
+import EditAdminProfileModal from "@/app/(dashboard)/profile/_components/modals/admin/EditAdminProfile.modal";
+import {useState} from "react";
+import ChangePasswordModal from "@/app/(dashboard)/profile/_components/modals/ChangePassword.modal";
 
 function AdminProfile() {
     const {t,i18n} = useTranslation()
+    const [isEditAdminProfileModal,setIsEditAdminProfileModal] = useState(false);
+    const [isChangePasswordModal,setIsChangePasswordModal] = useState(false);
     const { slug } = useParams();
     console.log({ slug });
 
+    const handelEditAdminProfileModal = () => {
+        setIsEditAdminProfileModal(!isEditAdminProfileModal)
+    }
+    const handelChangePasswordModal = () => {
+        setIsChangePasswordModal(!isChangePasswordModal)
+    }
     // const employeeId = slug ? slug.split('-')[0] : null;
     return (
         <Page isTitle={false} className={"w-full"}>
@@ -75,10 +86,12 @@ function AdminProfile() {
                                     </div>
                                 </div>
                                 <button
+                                    onClick={handelChangePasswordModal}
                                     className={"p-1.5 rounded-lg hidden md:block text-nowrap bg-blue-100 text-blue-500 border text-sm self-start dark:text-gray-200 dark:border-gray-700"}>
                                     {t("Change password")}
                                 </button>
                                 <button
+                                    onClick={handelEditAdminProfileModal}
                                     className={"p-1.5 rounded-lg hidden md:block text-nowrap bg-none border text-sm self-start dark:text-gray-200 dark:border-gray-700"}>
                                     {t("Edit profile")}
                                 </button>
@@ -125,6 +138,9 @@ function AdminProfile() {
                     </div>
                 </div>
             </div>
+
+            <EditAdminProfileModal isOpen={isEditAdminProfileModal} onClose={handelEditAdminProfileModal} onClick={() => {}} />
+            <ChangePasswordModal isOpen={isChangePasswordModal} onClose={handelChangePasswordModal} onClick={() => {}} />
         </Page>
     );
 }
