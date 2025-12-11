@@ -8,9 +8,11 @@ import {useTranslation} from "react-i18next";
 import {RiCheckboxLine, RiCloseCircleLine, RiEditLine, RiEyeLine} from "@remixicon/react";
 import {RiDeleteBin7Line} from "react-icons/ri";
 import StatusActions from "@/components/Dropdowns/StatusActions";
-import moneyReceivingLogo from "../../../../public/images/MoneyMethods/money-methods-logo.png"
+import CreateMoneyReceivingModal from "@/app/(dashboard)/money-receiving/modal/CreateMoneyReceiving.modal";
+import {useState} from "react";
 
 function MoneyReceivingPage() {
+    const [isCreateReceiveMoneyOpen,setisCreateReceiveMoneyOpen]=useState(false)
     const headers = [
         { label: "money receiving method Name", width: "300px" },
         { label: "Type", width: "150px" },
@@ -21,6 +23,10 @@ function MoneyReceivingPage() {
         { label: "Default Status", width: "125px" },
         { label: "", width: "50px" }
     ];
+
+    const handleOpenReceiveModal=()=>{
+        setisCreateReceiveMoneyOpen(!isCreateReceiveMoneyOpen)
+    }
 
     const  MoneyReceivingActions = ({actualRowIndex,handelDeleteAction}) => {
         const {t, i18n} = useTranslation();
@@ -98,7 +104,7 @@ function MoneyReceivingPage() {
         </div>
     ]));
     return (
-        <Page title="Money Receiving Methods" isBtn={true} btnTitle="Add receiving method" btnOnClick={() => {}}>
+        <Page title="Money Receiving Methods" isBtn={true} btnTitle="Add receiving method" btnOnClick={handleOpenReceiveModal}>
             <Table
                 classContainer={"rounded-2xl px-8"}
                 title="All money receiving methods"
@@ -112,6 +118,7 @@ function MoneyReceivingPage() {
                 }
                 isFilter={true}
             />
+            <CreateMoneyReceivingModal isOpen={isCreateReceiveMoneyOpen} onClose={handleOpenReceiveModal} />
         </Page>
     );
 }
