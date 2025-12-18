@@ -27,7 +27,7 @@ const SetupCompanyProfile = () => {
 
     return (
         <>
-            <div className="flex flex-col items-start w-5/12 p-10 justify-start gap-8 bg-white rounded-xl ">
+            <div className="flex flex-col items-start w-5/12 p-10 justify-start gap-8 bg-white rounded-xl mb-12">
                 {/* Title */}
                 <div className="flex flex-col items-center text-center justify-start gap-2 w-full">
                     <span className={"text-primary-500"}>Profile</span>

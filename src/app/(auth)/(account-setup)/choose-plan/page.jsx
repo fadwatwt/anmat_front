@@ -7,7 +7,7 @@ import PlanCard from "@/components/containers/PlanCard";
 function Page() {
     const [isOnSwitch,setIsOnSwitch] = useState(false);
     return (
-        <div className={"flex flex-col items-start w-full gap-7"}>
+        <div className={"flex flex-col items-start w-full gap-7 mb-4"}>
             <div className="flex flex-col items-center text-center justify-start gap-7 w-full">
                 <div className={"flex flex-col items-center text-center justify-start gap-2 w-full"}>
                     <span className={"text-primary-500"}>Pricing</span>
