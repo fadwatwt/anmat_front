@@ -74,7 +74,7 @@ const plansData = [
 ];
 
 
-const  PlanActions = ({actualRowIndex,handelDeleteAction}) => {
+const  PlanActions = ({actualRowIndex}) => {
     const {t, i18n} = useTranslation();
     const statesActions = [
         {

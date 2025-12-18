@@ -4,10 +4,11 @@ import {useCallback} from "react";
 import {VscCloudUpload} from "react-icons/vsc";
 import {useTranslation} from "react-i18next";
 
-const FileUpload = () => {
+const FileUpload = ({title,callBack}) => {
     const {t} = useTranslation()
     const onDrop = useCallback((acceptedFiles) => {
-        console.log(acceptedFiles); // معالجة الملفات المرفوعة
+        console.log(acceptedFiles);
+        callBack && callBack(acceptedFiles[0])
     }, []);
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -17,6 +18,8 @@ const FileUpload = () => {
     });
 
     return (
+        <div className="flex flex-col justify-center gap-3">
+            <label >{title}</label>
         <div
             {...getRootProps()}
             className={`border-2 border-dashed dark:border-gray-600 rounded-lg p-6 text-center cursor-pointer w-full ${
@@ -34,6 +37,7 @@ const FileUpload = () => {
                     {t("Browse File")}
                 </button>
             </div>
+        </div>
         </div>
     );
 };

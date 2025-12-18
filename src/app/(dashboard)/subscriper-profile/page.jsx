@@ -26,12 +26,14 @@ import {useState} from "react";
 import ChangePasswordModal from "@/app/(dashboard)/profile/_components/modals/ChangePassword.modal";
 import Table from "@/components/Tables/Table";
 import {statusCell} from "@/components/StatusCell";
+import CheckAlert from "@/components/Alerts/CheckِِAlert";
 
 function AdminProfile() {
     const {t,i18n} = useTranslation()
     const [isEditAdminProfileModal,setIsEditAdminProfileModal] = useState(false);
     const [isChangePasswordModal,setIsChangePasswordModal] = useState(false);
     const { slug } = useParams();
+    const [isDeleteCatalogAert,setIsDeleteCatalogAert] = useState(false);
     console.log({ slug });
 
     const handelEditAdminProfileModal = () => {
@@ -39,6 +41,10 @@ function AdminProfile() {
     }
     const handelChangePasswordModal = () => {
         setIsChangePasswordModal(!isChangePasswordModal)
+    }
+
+    const handleDeleteCatalogAert = () => {
+        setIsDeleteCatalogAert(!isDeleteCatalogAert);
     }
 
     const headers = [
@@ -176,16 +182,27 @@ function AdminProfile() {
                                         </div>
                                     </div>
                                 </div>
-                                <button
-                                    onClick={handelChangePasswordModal}
-                                    className={"p-1.5 rounded-lg hidden md:block text-nowrap bg-blue-100 text-blue-500 border text-sm self-start dark:text-gray-200 dark:border-gray-700"}>
-                                    {t("Change password")}
-                                </button>
-                                <button
-                                    onClick={handelEditAdminProfileModal}
-                                    className={"p-1.5 rounded-lg hidden md:block text-nowrap bg-none border text-sm self-start dark:text-gray-200 dark:border-gray-700"}>
-                                    {t("Edit profile")}
-                                </button>
+                                <div className={"flex flex-col justify-between h-full "}>
+                                    <div className={"flex justify-center items-center gap-3"}>
+                                        <button
+                                            onClick={handelChangePasswordModal}
+                                            className={"p-1.5 rounded-lg hidden md:block text-nowrap bg-blue-100 text-blue-500 border text-sm self-start dark:text-gray-200 dark:border-gray-700"}>
+                                            {t("Change password")}
+                                        </button>
+                                        <button
+                                            onClick={handelEditAdminProfileModal}
+                                            className={"p-1.5 rounded-lg hidden md:block text-nowrap bg-none border text-sm self-start dark:text-gray-200 dark:border-gray-700"}>
+                                            {t("Edit Subscriber Profile")}
+                                        </button>
+                                    </div>
+                                    <div className={"flex justify-end items-end"}>
+                                        <button
+                                            onClick={handleDeleteCatalogAert}
+                                            className={"p-1.5 rounded-lg hidden md:block text-red-500 text-nowrap bg-none border text-sm self-start dark:text-gray-200 dark:border-gray-700"}>
+                                            {t("Delete")}
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -306,6 +323,8 @@ function AdminProfile() {
 
             <EditAdminProfileModal isOpen={isEditAdminProfileModal} onClose={handelEditAdminProfileModal} onClick={() => {}} />
             <ChangePasswordModal isOpen={isChangePasswordModal} onClose={handelChangePasswordModal} onClick={() => {}} />
+            <CheckAlert isOpen={isDeleteCatalogAert}  title={"Cancel Subscription"} titleSubmitBtn={"Yes, Stop"} titleCancelBtn={"Cancel"}
+                        feature={"Account subscription"} subFeature={"Delete Catalog "} onClose={handleDeleteCatalogAert} onSubmit={handleDeleteCatalogAert} isBtns={true}  />
         </Page>
     );
 }

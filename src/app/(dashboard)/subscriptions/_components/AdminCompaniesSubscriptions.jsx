@@ -11,6 +11,8 @@ import {companyList} from "@/functions/FactoryData";
 import {statusCell} from "@/components/StatusCell";
 import {RiDeleteBin7Line} from "react-icons/ri";
 import StatusActions from "@/components/Dropdowns/StatusActions";
+import CheckAlert from "@/components/Alerts/CheckِِAlert";
+import {useState} from "react";
 
 const headers = [
     { label: "Subscriber", width: "300px" },
@@ -25,6 +27,11 @@ const headers = [
 
 
 function AdminCompaniesSubscriptions() {
+    const [isDeleteSubAert,setIsDeleteSubAert] = useState(false);
+
+    const handleDeleteSubAert = () => {
+        setIsDeleteSubAert(!isDeleteSubAert);
+    }
 
     // Transform data into the format expected by the Table component
     const rows = companyList.map(company => [
@@ -111,6 +118,7 @@ function AdminCompaniesSubscriptions() {
             },
             {
                 text: "Delete", icon: <RiDeleteBin7Line className="text-red-500"/>, onClick: () => {
+                    handleCloseCheckAert()
                     console.log(actualRowIndex)
                 },
             }
@@ -138,6 +146,8 @@ function AdminCompaniesSubscriptions() {
                 }
                 industryOptions={industryOptions}
             />
+            <CheckAlert isOpen={isDeleteSubAert}  title={"Cancel Subscription "} titleSubmitBtn={"Yes, Stop"} titleCancelBtn={"Cancel"}
+                        feature={"this client"} subFeature={"Delete Subscription"} onClose={handleDeleteSubAert} onSubmit={handleDeleteSubAert} isBtns={true}  />
         </Page>
     );
 }

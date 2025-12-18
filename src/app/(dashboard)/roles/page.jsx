@@ -1,16 +1,28 @@
 "use client"
 import { t } from "i18next";
-import { RiCheckboxCircleFill, RiCloseCircleFill, RiQuestionLine } from "@remixicon/react";
+import {
+    RiCheckboxCircleFill,
+    RiCheckboxCircleLine,
+    RiCloseCircleFill, RiCloseCircleLine,
+    RiEditLine, RiEyeLine,
+    RiQuestionLine
+} from "@remixicon/react";
 import { useState } from "react";
 import Page from "@/components/Page";
 import AddRoleModal from "../permissions/_components/AddRoleModal";
 import Table from "@/components/Tables/Table";
+import {useTranslation} from "react-i18next";
+import {RiDeleteBin7Line} from "react-icons/ri";
+import StatusActions from "@/components/Dropdowns/StatusActions";
+import {statusCell} from "@/components/StatusCell";
+import CheckAlert from "@/components/Alerts/CheckِِAlert";
 
 
 function PermissionsPage() {
     const headers = [
         { label: t("Role Name"), width: "200px" },
-        { label: t("Permissions"), width: "400px" },
+        { label: t("Permission Category"), width: "400px" },
+        { label: t("Permission Type"), width: "400px" },
         { label: t("Status"), width: "100px" },
         { label: "", width: "50px" },
     ];
@@ -28,64 +40,77 @@ function PermissionsPage() {
         }
     ];
 
-    const statusConfig = {
-        Active: {
-            bgColor: "bg-white",
-            icon: <RiCheckboxCircleFill size={15} className="text-green-700" />,
-            textColor: "text-green-700",
-        },
-        'Not-active': {
-            bgColor: "bg-white",
-            icon: <RiCloseCircleFill size={15} className="text-red-700" />,
-            textColor: "text-red-700",
-        }
-    };
-
-    const statusCell = (status) => {
-        const config = statusConfig[status] || {
-            bgColor: "bg-white",
-            icon: <RiQuestionLine size={15} className="text-gray-700" />,
-            textColor: "text-gray-700",
-        };
-
-        return (
-            <div
-                key={`status-${status}`}
-                className={`flex items-center justify-center gap-1 ${config.bgColor} border px-1 py-1 rounded-md w-24`}
-            >
-                {config.icon}
-                <span className={`text-xs ${config.textColor}`}>
-                    {status}
-                </span>
-            </div>
-        );
-    };
-
     const rows = rolesData.map(role => [
         <div key="name" className="flex items-center justify-start gap-2">
-            <span className="text-lg text-gray-900">
+            <span className=" text-md text-gray-900">
                 {role.name}
             </span>
         </div>,
 
         <div key="permissions" className="flex items-center justify-start gap-2">
+            <div className={"grid grid-cols-3 gap-2 w-full "}>
             {
                 role.permissions.map((permission,index) => [
-                    <span key={index} className="bg-primary-100 text-primary-500 px-3 py-1 rounded-2xl">
+                    <span key={index} className="bg-primary-100 text-primary-500 text-xs px-3 py-1 rounded-2xl">
                         {permission}
                     </span>
                 ])
             }
+            </div>
+        </div>,
+        <div key="permissions" className="flex items-center justify-start gap-2 px-4">
+            <div className={"grid grid-cols-3 gap-2 w-full"}>
+                {
+                    role.permissions.map((permission,index) => [
+                        <span key={index} className="bg-primary-100 text-primary-500 text-xs px-3 py-1 rounded-2xl">
+                        {permission}
+                    </span>
+                    ])
+                }
+            </div>
+
         </div>,
 
         // Status cell
         statusCell(role.status)
     ]);
 
+const  SubscriptionActions = ({actualRowIndex}) => {
+    const {t, i18n} = useTranslation();
+    const statesActions = [
+        {
+            text: "Edit", icon: <RiEditLine className="text-primary-400"/>, onClick: () => {
+                console.log(actualRowIndex)
+            },
+        },
+        {
+            text: "View Permissions", icon: <RiEyeLine className="text-primary-400"/>, onClick: () => {
+                console.log(actualRowIndex)
+            }
+        },
+        {
+            text: "Delete", icon: <RiDeleteBin7Line className="text-red-500"/>, onClick: () => {
+                console.log(actualRowIndex)
+                handleDeleteRoleAert()
+            },
+        }
+    ]
+    return (
+        <StatusActions states={statesActions}  className={`${
+            i18n.language === "ar" ? "left-0" : "right-0"
+        }`}/>
+    );
+}
+
     const [addRoleModalOpen, setBillingInfoModalOpen] = useState(false);
+    const [isDeleteRoleAert,setIsDeleteRoleAert] = useState(false);
 
     const toggleAddRoleModal = () => {
         setBillingInfoModalOpen(!addRoleModalOpen);
+    }
+
+    const handleDeleteRoleAert = () => {
+        setIsDeleteRoleAert(!isDeleteRoleAert);
     }
 
     return (
@@ -93,7 +118,10 @@ function PermissionsPage() {
             <div className={"flex flex-col gap-6"}>
                 <div className="flex flex-col gap-2 h-full">
                     <Table className="custom-class" title={"All Roles"}
-                        headers={headers} isActions={true} rows={rows}
+                        headers={headers} isActions={false} rows={rows}
+                           customActions={(actualRowIndex) => (
+                               <SubscriptionActions actualRowIndex={actualRowIndex} />)
+                           }
                         isFilter={true} />
                 </div>
                 <div className={"flex md:w-[37.5%] w-screen"}>
@@ -101,6 +129,8 @@ function PermissionsPage() {
                 </div>
             </div>
             <AddRoleModal isOpen={addRoleModalOpen} onClose={toggleAddRoleModal} />
+            <CheckAlert isOpen={isDeleteRoleAert}  title={"Delete Role"} titleSubmitBtn={"Yes, Delete"} titleCancelBtn={"Cancel"}
+                        subFeature={"Delete Manager Role"} onClose={handleDeleteRoleAert} onSubmit={handleDeleteRoleAert} isBtns={true}  />
         </Page>
     );
 }
