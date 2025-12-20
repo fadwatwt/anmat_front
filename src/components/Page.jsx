@@ -45,7 +45,7 @@ function Page({
                 className="bg-primary-base dark:bg-primary-200 flex gap-1 items-center p-[10px] rounded-[10px]"
               >
                 <FiPlus className="text-white text-md dark:text-black" />
-                <span className="text-white text-md text-nowrap dark:text-black">
+                <span className="text-white text-sm text-nowrap dark:text-black">
                   {t(btnTitle)}
                 </span>
               </button>

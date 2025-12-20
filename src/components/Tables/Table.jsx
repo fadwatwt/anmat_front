@@ -250,7 +250,7 @@ function Table({
                             >
                                 {isCheckInput && (
                                     <td
-                                        className="px-1 py-6 text-center"
+                                        className="px- py-6 text-center"
                                         style={{borderBottomLeftRadius: "8px"}}
                                     >
                                         <input

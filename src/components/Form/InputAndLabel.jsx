@@ -1,9 +1,11 @@
+'use client'
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 function InputAndLabel({
   title,
   placeholder,
+    disabled = false,
   type,
   className,
   value,
@@ -22,6 +24,7 @@ function InputAndLabel({
       </label>
       <input
         type={type}
+        disabled={disabled}
         name={name}
         onChange={onChange}
         onBlur={onBlur}
@@ -42,6 +45,7 @@ InputAndLabel.propTypes = {
     type: PropTypes.string,
     className: PropTypes.string,
     value:PropTypes.string,
+    disabled:PropTypes.bool,
     name:PropTypes.string,
     onChange: PropTypes.func,
     isRequired: PropTypes.bool,

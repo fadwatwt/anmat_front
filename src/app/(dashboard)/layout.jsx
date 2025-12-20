@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import useDarkMode from "@/Hooks/useDarkMode";
 import i18n from "i18next";
 import { setLanguage } from "@/functions/Days";
 import Header from "@/components/Header"

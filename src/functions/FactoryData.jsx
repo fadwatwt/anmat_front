@@ -406,6 +406,234 @@ export const defaultStatusOptions = [
   { value: "absent", name: "Absent" },
 ];
 
+export const MoanyReceivingMethods = [
+    {
+        "_id": 1,
+        "name": "Online Payment",
+        "type": "Credit Card",
+        "provider": "Master Card",
+        "currency": "USD",
+        "added_at": "May 24, 2025",
+        "status": "active",
+        "default_status": ""
+    },
+    {
+        "_id": 2,
+        "name": "Online Payment",
+        "type": "Credit Card",
+        "provider": "Master Card",
+        "currency": "USD",
+        "added_at": "May 24, 2025",
+        "status": "in-active",
+        "default_status": ""
+    },
+    {
+        "_id": 3,
+        "name": "Online Payment",
+        "type": "Credit Card",
+        "provider": "Master Card",
+        "currency": "USD",
+        "added_at": "May 24, 2025",
+        "status": "active",
+        "default_status": ""
+    },
+    {
+        "_id": 4,
+        "name": "Online Payment",
+        "type": "Credit Card",
+        "provider": "Master Card",
+        "currency": "USD",
+        "added_at": "May 24, 2025",
+        "status": "in-active",
+        "default_status": ""
+    },
+    {
+        "_id": 5,
+        "name": "Online Payment",
+        "type": "Credit Card",
+        "provider": "Master Card",
+        "currency": "USD",
+        "added_at": "May 24, 2025",
+        "status": "Active",
+        "default_status": "default"
+    },
+    {
+        "_id": 6,
+        "name": "Online Payment",
+        "type": "Credit Card",
+        "provider": "Master Card",
+        "currency": "USD",
+        "added_at": "May 24, 2025",
+        "status": "Not-active",
+        "default_status": ""
+    },
+    {
+        "_id": 7,
+        "name": "Bank Transfer",
+        "type": "Account",
+        "provider": "Local Bank",
+        "currency": "EUR",
+        "added_at": "June 01, 2025",
+        "status": "active",
+        "default_status": ""
+    },
+    {
+        "_id": 8,
+        "name": "Digital Wallet",
+        "type": "E-Wallet",
+        "provider": "PayPal",
+        "currency": "USD",
+        "added_at": "April 15, 2025",
+        "status": "active",
+        "default_status": "default"
+    }
+]
+
+export const companyList = [
+    {
+        "subscriber_details": {
+            "name": "Ahmed Ibrahim",
+            "subscribed_at": "Jan 15, 2025",
+            "plan": "Basic plan",
+            "logo": "http://example.com/logo1.png"
+        },
+        "product_manager": "Project Manager",
+        "company_name": "TechSolutions",
+        "company_website": "techsolutions.com",
+        "industry": "Technology",
+        "users": 12000,
+        "status": "Active"
+    },
+    {
+        "subscriber_details": {
+            "name": "Layla Khaled",
+            "subscribed_at": "Feb 28, 2025",
+            "plan": "Basic plan",
+            "logo": "http://example.com/logo2.png"
+        },
+        "product_manager": "Operations Lead",
+        "company_name": "HealthCorp",
+        "company_website": "healthcorp.org",
+        "industry": "Healthcare",
+        "users": 5600,
+        "status": "In-active"
+    },
+    {
+        "subscriber_details": {
+            "name": "Omar Mustafa",
+            "subscribed_at": "Mar 10, 2025",
+            "plan": "Basic plan",
+            "logo": "http://example.com/logo3.png"
+        },
+        "product_manager": "Marketing Director",
+        "company_name": "RetailPros",
+        "company_website": "retailpros.net",
+        "industry": "Retail",
+        "users": 89000,
+        "status": "Active"
+    },
+    {
+        "subscriber_details": {
+            "name": "Sara Ali",
+            "subscribed_at": "Apr 01, 2025",
+            "plan": "Basic plan",
+            "logo": "http://example.com/logo4.png"
+        },
+        "product_manager": "Finance Analyst",
+        "company_name": "GlobalFinance",
+        "company_website": "globalfinance.com",
+        "industry": "Fintech",
+        "users": 3400,
+        "status": "Active"
+    },
+    {
+        "subscriber_details": {
+            "name": "Youssef Hamed",
+            "subscribed_at": "May 05, 2025",
+            "plan": "Basic plan",
+            "logo": "http://example.com/logo5.png"
+        },
+        "product_manager": "Software Engineer",
+        "company_name": "CodeBuilders",
+        "company_website": "codebuilders.io",
+        "industry": "Software",
+        "users": 750,
+        "status": "In-active"
+    },
+    {
+        "subscriber_details": {
+            "name": "Nour Tamer",
+            "subscribed_at": "Jun 20, 2025",
+            "plan": "Basic plan",
+            "logo": "http://example.com/logo6.png"
+        },
+        "product_manager": "HR Manager",
+        "company_name": "PeopleFirst",
+        "company_website": "peoplefirst.net",
+        "industry": "Human Resources",
+        "users": 21000,
+        "status": "Active"
+    },
+    {
+        "subscriber_details": {
+            "name": "Karim Saeed",
+            "subscribed_at": "Jul 12, 2025",
+            "plan": "Basic plan",
+            "logo": "http://example.com/logo7.png"
+        },
+        "product_manager": "Sales Director",
+        "company_name": "SalesGenius",
+        "company_website": "salesgenius.com",
+        "industry": "Sales",
+        "users": 4000,
+        "status": "In-active"
+    },
+    {
+        "subscriber_details": {
+            "name": "Hana Mostafa",
+            "subscribed_at": "Aug 30, 2025",
+            "plan": "Basic plan",
+            "logo": "http://example.com/logo8.png"
+        },
+        "product_manager": "UX Designer",
+        "company_name": "DesignStudio",
+        "company_website": "designstudio.io",
+        "industry": "Design",
+        "users": 980,
+        "status": "Active"
+    },
+    {
+        "subscriber_details": {
+            "name": "Adel Fahmy",
+            "subscribed_at": "Sep 14, 2025",
+            "plan": "Basic plan",
+            "logo": "http://example.com/logo9.png"
+        },
+        "product_manager": "IT Manager",
+        "company_name": "NetSecure",
+        "company_website": "netsecure.org",
+        "industry": "Cybersecurity",
+        "users": 15000,
+        "status": "Active"
+    },
+    {
+        "subscriber_details": {
+            "name": "Mona Wahba",
+            "subscribed_at": "Oct 1, 2025",
+            "plan": "Basic plan",
+            "logo": "http://example.com/logo10.png"
+        },
+        "product_manager": "Content Strategist",
+        "company_name": "ContentCreators",
+        "company_website": "contentcreators.net",
+        "industry": "Media",
+        "users": 6700,
+        "status": "In-active"
+    }
+]
+
+
+
 export {tasks,date1,date2,
     members,
     activityLogs,comments,attachments,

@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 import Page from "@/components/Page.jsx";
 import Table from "@/components/Tables/Table.jsx";
 import EditProjectModal from "../../(dashboard)/projects/_modal/EditProjectModal.jsx";
-import Alert from "@/components/Alert.jsx";
+import Alert from "@/components/Alerts/Alert.jsx";
 import NameAndDescription from "@/app/(dashboard)/projects/_components/TableInfo/NameAndDescription.jsx";
 import AccountDetails from "@/app/(dashboard)/projects/_components/TableInfo/AccountDetails.jsx";
 import { translateDate } from "@/functions/Days.js";

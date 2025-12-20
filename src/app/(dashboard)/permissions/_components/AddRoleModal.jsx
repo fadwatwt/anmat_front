@@ -71,7 +71,7 @@ function AddRoleModal({ isOpen, onClose }) {
       isBtns={true}
       btnApplyTitle={"Save"}
       onClick={formik.handleSubmit}
-      className={"lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12"}
+      className={"lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12 px-3"}
       title={"Add Role"}
     >
       <div className="px-1">
@@ -91,9 +91,9 @@ function AddRoleModal({ isOpen, onClose }) {
             isRequired={true}
           />
 
-          <TagInput title="Categories" isRequired={true} suggestions={categoriesSuggestions} placeholder="Select Categories..." />
+          <TagInput title="Role Permissions Categories" isRequired={true} suggestions={categoriesSuggestions} placeholder="Select Categories..." />
 
-          <TagInput title="Permissions" isRequired={true} suggestions={permissionsSuggestions} placeholder="Select Permissions..." />
+          <TagInput title="Permission Type" isRequired={true} suggestions={permissionsSuggestions} placeholder="Select Permissions..." />
 
         </div>
       </div>

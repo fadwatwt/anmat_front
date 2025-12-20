@@ -1,5 +1,4 @@
 "use server";
-import DropdownMenu from "@/components/Dropdowns/DropdownMenu";
 import { RiGlobalLine } from "@remixicon/react";
 import Image from "next/image";
 import Link from "next/link";

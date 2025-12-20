@@ -10,7 +10,7 @@ const ProfilePage = () => {
   const DynamicComponent = dynamic(() => {
     switch (authUserType) {
       case "Admin":
-        return Promise.resolve({ default: () => <div className="text-xl text-gray-500">Admin Profile Page not-developed yet.</div> });
+        return import("@/app/(dashboard)/profile/_components/AdminProfile");
       case "Company-Manager":
         return import("@/app/(dashboard)/profile/_components/CompanyManagerProfile");
       case "Employee":

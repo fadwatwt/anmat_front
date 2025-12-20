@@ -1,11 +1,11 @@
-import Modal from "./Modal/Modal.jsx";
+import Modal from "../Modal/Modal.jsx";
 import { IoCheckmarkCircle, IoWarning } from "react-icons/io5";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 function Alert({
   type,
-  title,
+  title = "",
   message,
   isOpen,
   onClose,
@@ -30,7 +30,7 @@ function Alert({
         <Modal
           isOpen={isOpen}
           onClose={onClose}
-          className={"rounded-2xl lg:w-1/3 md:w-8/12 sm:w-7/12 w-11/12"}
+          className={"rounded-2xl lg:w-1/4 md:w-7/12 sm:w-6/12 w-11/12"}
         >
           <div
             className={"flex flex-col gap-4 justify-center items-center p-5"}
@@ -39,7 +39,7 @@ function Alert({
               <IoCheckmarkCircle size={30} className={"text-green-500"} />
             </div>
             <div className={"flex flex-col justify-center items-center"}>
-              <p className={"text-center text-md dark:text-gray-200"}>
+              <p className={"text-center text-md dark:text-gray-200 font-semibold"}>
                 {t(title)}
               </p>
               <p

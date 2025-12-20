@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Table from "@/components/Tables/Table";
 import { fetchEmployees } from "@/redux/employees/employeeAPI";
 import { deleteFinancialRecord } from "@/redux/financial/financialAPI";
-import Alert from "@/components/Alert";
+import Alert from "@/components/Alerts/Alert";
 import EditFinancialModal from "../_modals/EditFinancialModal";
 
 const RequestTag = ({ request }) => (
