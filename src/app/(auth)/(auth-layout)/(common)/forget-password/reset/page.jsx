@@ -42,7 +42,7 @@ function ResetPasswordPage() {
 
                 <div className="flex flex-col items-center justify-center gap-2 text-center">
                     <sapn className="text-2xl text-gray-900">
-                        {`Reset password`}
+                        {`Reset Password`}
                     </sapn>
                     <span className="text-sm text-gray-500">
             {'Enter your new password'}

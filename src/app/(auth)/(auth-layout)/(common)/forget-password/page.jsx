@@ -44,7 +44,7 @@ function ForgetPasswordPage() {
                         {`Forget Password`}
                     </sapn>
                     <span className="text-sm text-gray-500">
-            {'Enter your details to reset passowrd.'}
+            {'Enter your email to got a reset link.'}
           </span>
                 </div>
 
@@ -73,8 +73,14 @@ function ForgetPasswordPage() {
                             disabled={isLoading}
                             className="w-full rounded-lg bg-primary-base text-white py-1.5"
                         >
-                            {isLoading ? "Loading..." : "Send"}
+                            {isLoading ? "Loading..." : "Get Reset Link"}
                         </button>
+                        <a
+                            href="/sign-in"
+                            className="w-full rounded-lg text-end text-primary-base hover:text-primary-600"
+                        >
+                            Return to login
+                        </a>
                     </div>
                 </div>
             </div>
