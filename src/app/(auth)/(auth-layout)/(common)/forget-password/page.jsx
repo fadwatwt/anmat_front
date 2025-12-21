@@ -7,6 +7,7 @@ import { useLoginMutation } from "@/redux/auth/authAPI";
 import { useDispatch, useSelector } from "react-redux";
 import { loginSuccess, loginFailure } from "@/redux/auth/authSlice";
 import {RiUserSettingsLine} from "@remixicon/react";
+import Link from "next/link";
 
 function ForgetPasswordPage() {
     const [email, setEmail] = useState("");
@@ -75,12 +76,12 @@ function ForgetPasswordPage() {
                         >
                             {isLoading ? "Loading..." : "Get Reset Link"}
                         </button>
-                        <a
+                        <Link
                             href="/sign-in"
                             className="w-full rounded-lg text-end text-primary-base hover:text-primary-600"
                         >
                             Return to login
-                        </a>
+                        </Link>
                     </div>
                 </div>
             </div>
