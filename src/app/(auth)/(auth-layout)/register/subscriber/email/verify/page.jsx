@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 const VerifyEmail = () => {
     return (
         <>
@@ -29,13 +31,13 @@ const VerifyEmail = () => {
                             We have sent you a link to your email for verifying and complete registering, please check your email and continue.
                         </span>
 
-                        <a
+                        <Link
                             href="/sign-in"
                             className="bg-primary-500 text-primary-50 text-nowrap text-md px-12 py-2 rounded-lg cursor-pointer
                                         hover:bg-primary-600 text-center"
                         >
                             {"Return"}
-                        </a>
+                        </Link>
                     </div>
 
                 </div>

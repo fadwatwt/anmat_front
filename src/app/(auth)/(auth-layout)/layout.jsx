@@ -5,41 +5,35 @@ import Image from "next/image";
 function AuthLayout({children}) {
     console.log(children)
     return (<div className="w-full flex justify-start py-1 bg-white">
-        <div className="flex flex-col w-[40%] h-screen overflow-y-auto gap-16 px-9 py-7">
+        <div className="flex flex-col w-[40%] h-screen overflow-hidden gap-8 px-9 py-7">
             {/* Logo Section */}
-            <div className="flex items-center justify-start gap-3">
+            <div className="flex items-center justify-start gap-3 mb-8">
                 <Image
-                    className="w-10 h-10 rounded-full"
+                    className="w-12 h-12 rounded-full"
                     src="/images/logo.png"
                     alt="Company Logo"
-                    width={40}
-                    height={40}
+                    width={48}
+                    height={48}
                 />
                 <div className="text-sm text-sub-500 text-start dark:text-sub-300">
-                    <h3 className="font-semibold">Organizations HR </h3>
-                    <h3 className="font-semibold">Management System</h3>
+                    <h1 className="font-bold text-xl">ANMAT</h1>
+                    <h3 className="">Organizations Management</h3>
+                    {/*<h3 className="font-semibold">Management System</h3>*/}
                 </div>
             </div>
 
             {/* Placeholder for login form (this should be a Client Component) */}
-            <div className="w-full flex flex-col items-center gap-8 justify-between h-full">
+            <div className="w-full flex flex-col items-center gap-8 justify-between h-full overflow-auto">
                 <div className="w-full px-12">
                     {children}
                 </div>
-                <div className="w-full flex flex-wrap gap-4 items-center justify-between">
-                    <button className="flex gap-2 items-center bg-transparent">
-                        <RiGlobalLine size={20}/>
-                        <span className="text-md text-gray-700">عربي</span>
-                    </button>
-                    {/*<div className="flex flex-wrap items-center justify-end gap-2">*/}
-                    {/*    <span className="text-md text-gray-700 dark:text-gray-300">*/}
-                    {/*        Already have an account?*/}
-                    {/*    </span>*/}
-                    {/*    <Link href="/sign-in" className="text-primary-500 hover:text-primary-600">*/}
-                    {/*        Login*/}
-                    {/*    </Link>*/}
-                    {/*</div>*/}
-                </div>
+            </div>
+
+            <div className="w-full flex flex-wrap gap-4 items-center justify-between">
+                <button className="flex gap-2 items-center bg-transparent">
+                    <RiGlobalLine size={20}/>
+                    <span className="text-md text-gray-700">عربي</span>
+                </button>
             </div>
         </div>
 
