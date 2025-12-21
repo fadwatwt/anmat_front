@@ -1,7 +1,6 @@
 "use client"
 import {useState} from "react";
 import Switch2 from "@/components/Form/Switch2";
-import {RiBuilding4Line, RiCheckLine, RiCopperDiamondLine, RiFlashlightLine} from "@remixicon/react";
 import PlanCard from "@/components/containers/PlanCard";
 
 function Page() {

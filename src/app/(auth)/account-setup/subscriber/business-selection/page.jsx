@@ -10,6 +10,7 @@ import {
     RiUserSmileLine
 } from "@remixicon/react";
 import { BoxTick, Category2, ColorSwatch, Happyemoji, InfoCircle, Monitor, Setting2, Stickynote } from "iconsax-react";
+import Link from "next/link";
 
 const SelectYourBusiness = () => {
     const username = 'Mai';
@@ -63,10 +64,10 @@ const SelectYourBusiness = () => {
                         Skip
                     </div>
 
-                    <div className="bg-primary-500 text-primary-50 text-sm w-32 py-2 rounded-xl cursor-pointer
+                    <Link href={"/account-setup/subscriber/org-profile-setup"} className="bg-primary-500 text-primary-50 text-sm w-32 py-2 rounded-xl cursor-pointer
                         hover:bg-primary-600 text-center border border-primary-400">
                         Next
-                    </div>
+                    </Link>
                 </div>
             </div>
         </>);
