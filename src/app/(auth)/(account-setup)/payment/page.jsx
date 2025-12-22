@@ -4,11 +4,32 @@ import {RiCopperCoinLine} from "@remixicon/react";
 import {RiTicketFill} from "react-icons/ri";
 import Alert from "@/components/Alerts/Alert";
 import PropTypes from "prop-types";
+import SavedPaymentMethods from "@/app/(auth)/(account-setup)/payment/components/SavedPaymentMethods";
+import PaymentProviderSelector from "@/app/(auth)/(account-setup)/payment/components/paymentProviderSelector";
+import {useState} from "react";
+import SavedMethodsGroup from "@/app/(auth)/(account-setup)/payment/components/SavedPaymentMethods";
 
 function PaymentPage({
                                  type = "",
                                  prise = ""
                              }) {
+
+    const [selectedSaved, setSelectedSaved] = useState('1');
+    const [provider, setProvider] = useState('mastercard');
+    const [mySavedCards] = useState([
+        {
+            id: '1',
+            last4: '8304',
+            type: 'Visa',
+            logo: "/images/payments/visacard.png"
+        },
+        {
+            id: '2',
+            last4: '8304',
+            type: 'Paypal',
+            logo: "/images/payments/paypal.png"
+        }
+    ]);
     return (
         <div className={"absolute top-0 left-0 w-screen max-h-[100vh] overflow-hidden flex flex-col justify-start"}>
             <div className={" flex justify-start z-10 items-start"}>
@@ -17,42 +38,18 @@ function PaymentPage({
                         <div className={"text-primary-500 text-sm cursor-pointer font-bold "}>
                             Back
                         </div>
-                        <div className={"flex flex-col gap-4 w-full"}>
-                            <p className={"text-sm"}>Payment method</p>
-                            <div className={"w-full flex justify-between items-center"}>
-                                <div className={"border border-2 border-primary-500 rounded-xl py-2 px-4  w-[48%] flex justify-between items-center"}>
-                                    <div className={"flex gap-3 items-center"}>
-                                        <div className={"flex items-start mt-1 self-start"}>
-                                            <input type={"radio"} name={"payment1"} className={""}/>
-                                        </div>
-                                        <div className={"flex flex-col justify-start items-center"}>
-                                            <p>**** 8304</p>
-                                            <p className={"text-xs text-gray-500"}>Visa . Edit</p>
-                                        </div>
-                                    </div>
-                                    <div className={"w-[3rem]  flex justify-center items-center"}>
-                                        <img src={"https://www.pngall.com/wp-content/uploads/2017/05/Visa-Logo-High-Quality-PNG.png"} alt={""} className={"max-w-full w-full h-[1.2rem]"} />
-                                    </div>
-                                </div>
-                                <div className={"border  border-gray-500 rounded-xl py-2 px-4  w-[48%] flex justify-between items-center"}>
-                                    <div className={"flex gap-3 items-center"}>
-                                        <div className={"flex items-start mt-1 self-start"}>
-                                            <input type={"radio"} name={"payment1"} className={""}/>
-                                        </div>
-                                        <div className={"flex flex-col justify-start items-center"}>
-                                            <p>**** 8304</p>
-                                            <p className={"text-xs text-gray-500"}>Visa . Edit</p>
-                                        </div>
-                                    </div>
-                                    <div className={"w-[3rem]  flex justify-center items-center"}>
-                                        <img src={"https://www.pngall.com/wp-content/uploads/2017/05/Visa-Logo-High-Quality-PNG.png"} alt={""} className={"max-w-full w-full h-[1.2rem]"} />
-                                    </div>
-                                </div>
-                            </div>
-                            <div className={"w-full p-2 flex justify-center items-center bg-primary-100 rounded-lg text-md text-primary-500 cursor-pointer"}>
-                                + Other payment method
-                            </div>
-                        </div>
+                        <SavedMethodsGroup
+                            methods={mySavedCards}
+                            selectedId={selectedSaved}
+                            onSelect={setSelectedSaved}
+                            onEdit={(id) => console.log('Edit', id)}
+                            onAddNew={() =>{}}
+                        />
+
+                        <PaymentProviderSelector
+                            selectedProvider={provider}
+                            onProviderChange={setProvider}
+                        />
                         <div className={"flex flex-col gap-2 w-full"}>
                                 <InputAndLabel
                                     title={"Name on card"}
@@ -175,7 +172,7 @@ function PaymentPage({
                     </div>
                 </div>
             </div>
-            <Alert type={'success'} isOpen={true} title={"Success"} isBtns={true} titleCancelBtn={"Cancel"} cancelColor={"gray"} message={"Congratulations, you have successfully subscribed to the Basic Plan."} />
+            <Alert type={'success'} isOpen={false} title={"Success"} isBtns={true} titleCancelBtn={"Cancel"} cancelColor={"gray"} message={"Congratulations, you have successfully subscribed to the Basic Plan."} />
         </div>
     );
 }
