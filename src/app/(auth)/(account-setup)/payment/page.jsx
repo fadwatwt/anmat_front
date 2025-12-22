@@ -1,17 +1,19 @@
 "use client"
 import InputAndLabel from "@/components/Form/InputAndLabel";
-import {RiCopperCoinLine, RiTicket2Fill} from "@remixicon/react";
+import {RiCopperCoinLine} from "@remixicon/react";
 import {RiTicketFill} from "react-icons/ri";
+import Alert from "@/components/Alerts/Alert";
+import PropTypes from "prop-types";
 
-function Page({
+function PaymentPage({
                                  type = "",
                                  prise = ""
                              }) {
     return (
         <div className={"absolute top-0 left-0 w-screen max-h-[100vh] overflow-hidden flex flex-col justify-start"}>
             <div className={" flex justify-start z-10 items-start"}>
-                <div className={"w-1/3 bg-white max-h-[100vh] h-[100vh] flex justify-start px-10 pt-28"}>
-                    <div className={"max-h-[80vh] h-[60rem] flex flex-col gap-4 w-full overflow-y-auto"}>
+                <div className={"w-1/3 bg-white max-h-[100vh] h-[100vh] flex justify-start px-10 pt-28 overflow-y-auto"}>
+                    <div className={"max-h-[80vh] h-[60rem] flex flex-col gap-4 w-full pb-3"}>
                         <div className={"text-primary-500 text-sm cursor-pointer font-bold "}>
                             Back
                         </div>
@@ -149,10 +151,36 @@ function Page({
                             <p className={"text-primary-500 font-bold"}>Apply</p>
                         </div>
                     </div>
+                    <div className={"flex flex-col gap-3 w-full py-3 border-b border-t border-gray-200 "}>
+                        <div className={"w-full flex justify-between item-baseline"}>
+                            <span className={"text-gray-400"}>Subtotal</span>
+                            <span className={"text-black"}>$56.00</span>
+                        </div>
+                        <div className={"w-full flex justify-between item-baseline"}>
+                            <span className={"text-gray-400"}>Subtotal</span>
+                            <span className={"text-black"}>$56.00</span>
+                        </div>
+                        <div className={"w-full flex justify-between item-baseline"}>
+                            <span className={"text-gray-400"}>Subtotal</span>
+                            <span className={"text-black"}>$56.00</span>
+                        </div>
+                        <div className={"w-full flex justify-between item-baseline"}>
+                            <span className={"text-gray-400"}>Subtotal</span>
+                            <span className={"text-black"}>$56.00</span>
+                        </div>
+                    </div>
+                    <div className={"w-full flex justify-between items-baseline"}>
+                        <span className={"font-bold"}>Total</span>
+                        <span className={"font-bold"}>$51.00</span>
+                    </div>
                 </div>
             </div>
+            <Alert type={'success'} isOpen={true} title={"Success"} isBtns={true} titleCancelBtn={"Cancel"} cancelColor={"gray"} message={"Congratulations, you have successfully subscribed to the Basic Plan."} />
         </div>
     );
 }
-
-export default Page;
+PaymentPage.prototype = {
+    type: PropTypes.string,
+    prise: PropTypes.string
+};
+export default PaymentPage;
