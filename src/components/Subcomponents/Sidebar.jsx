@@ -13,7 +13,7 @@ function Sidebar({ list, onClick, activeItem }) {
           key={index}
           onClick={() => onClick(item.id)}
           className={`flex group dark:hover:bg-gray-900 ${
-            activeItem === item.id ? "dark:bg-gray-900" : ""
+            activeItem === item.id ? "dark:bg-gray-900 bg-gray-100" : ""
           } py-2 px-3 cursor-pointer rounded-lg justify-between items-end ${
             activeItem === item.title && "bg-gray-50"
           }`}
@@ -21,7 +21,7 @@ function Sidebar({ list, onClick, activeItem }) {
           <div className={"flex gap-2 items-center"}>
             {item.icon &&
               React.cloneElement(item.icon, {
-                size: 15,
+                size: 24,
                 className:
                   activeItem === item.id
                     ? "text-primary-500 dark:text-primary-200"

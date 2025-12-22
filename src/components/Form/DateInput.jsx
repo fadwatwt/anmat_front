@@ -12,7 +12,7 @@ function DateInput({className,id,classNameLabel,classNameInput,onChange,title,na
     }
     return (
         <div className={`${title && "flex flex-col items-start gap-2 " }` + className}>
-            <p className={"text-sm dark:text-white"}> {t(title)}</p>
+            <p className={"text-sm dark:text-white text-gray-900"}> {t(title)}</p>
             <label
                 className={"flex w-full items-center text-xs dark:bg-white-0 dark:border-gray-700 border-2 rounded-xl  focus:outline-none focus:border-blue-500 dark:text-gray-200 " + (classNameLabel ? classNameLabel :"pl-2 px-2")}
                 htmlFor={id}>

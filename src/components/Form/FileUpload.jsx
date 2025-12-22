@@ -18,7 +18,7 @@ const FileUpload = ({title,callBack}) => {
     });
 
     return (
-        <div className="flex flex-col justify-center gap-3">
+        <div className="flex flex-col justify-center gap-3 w-full">
             <label >{title}</label>
         <div
             {...getRootProps()}

@@ -26,63 +26,42 @@ const AdminAnalytics = () => {
                 </div>
             }
         >
-            {/* Companies Analytics */}
-            <div className="flex flex-col items-start justify-start gap-4">
-                <span className="text-lg text-gray-500">
-                    Companies
-                </span>
-                <div className="flex flex-col md:flex-row items-stretch gap-4 justify-between w-full">
-                    <div className="w-full md:w-1/2">
-                        <IndustriesChart />
+            <div className="flex flex-col gap-12">
+                {/* Companies Analytics */}
+                <div className="flex flex-col items-start justify-start gap-4">
+                    <span className="text-lg text-gray-500">
+                        Companies
+                    </span>
+                    <div className="flex flex-col md:flex-row items-stretch gap-4 justify-between w-full">
+                        <div className="w-full md:w-1/2">
+                            <IndustriesChart />
+                        </div>
+                        <div className="w-full md:w-1/2">
+                            <SubscriptionsChart />
+                        </div>
                     </div>
-                    <div className="w-full md:w-1/2">
-                        <SubscriptionsChart />
+                    <div className="flex flex-col md:flex-row items-stretch gap-4 justify-between w-full">
+                        <div className="w-full md:w-1/2">
+                            <CompaniesSubscriptionsChart />
+                        </div>
+                        <div className="w-full md:w-1/2">
+                            <TopCompaniesList />
+                        </div>
                     </div>
                 </div>
-                <div className="flex flex-col md:flex-row items-stretch gap-4 justify-between w-full">
-                    <div className="w-full md:w-1/2">
-                        <CompaniesSubscriptionsChart />
-                    </div>
-                    <div className="w-full md:w-1/2">
-                        <TopCompaniesList />
-                    </div>
-                </div>
-            </div>
 
-            {/* Tasks Analytics */}
-            <div className="flex flex-col items-start justify-start gap-4">
-                <span className="text-lg text-gray-500">
-                    Tasks
-                </span>
-                <div className="flex flex-col md:flex-row items-stretch gap-4 justify-between w-full">
-                    <div className="w-full md:w-1/2">
-                        <ProjectsPerformanceChart />
-                    </div>
-                    <div className="w-full md:w-1/2">
-                        <ProjectTimelineChart />
-                    </div>
-                </div>
-                <div className="flex flex-col md:flex-row items-stretch gap-4 justify-between w-full">
-                    <div className="w-full md:w-2/3">
-                        <ProjectsPerformanceList />
-                    </div>
-                    <div className="w-full md:w-1/3">
-                        <LastProjectsList />
-                    </div>
-                </div>
-            </div>
-
-            {/* Other Analytics */}
-            <div className="flex flex-col items-start justify-start gap-4 w-full">
-                <span className="text-lg text-gray-500">
-                    Other Analytics
-                </span>
-                <div className="flex flex-col md:flex-row items-stretch gap-4 justify-between w-full">
-                    <div className="w-full md:w-1/2">
-                        <CompaniesContactedChart />
-                    </div>
-                    <div className="w-full md:w-1/2">
-                        <RevenuesChart />
+                {/* Other Analytics */}
+                <div className="flex flex-col items-start justify-start gap-4 w-full">
+                    <span className="text-lg text-gray-500">
+                        Other Analytics
+                    </span>
+                    <div className="flex flex-col md:flex-row items-stretch gap-4 justify-between w-full">
+                        <div className="w-full md:w-1/2">
+                            <CompaniesContactedChart />
+                        </div>
+                        <div className="w-full md:w-1/2">
+                            <RevenuesChart />
+                        </div>
                     </div>
                 </div>
             </div>

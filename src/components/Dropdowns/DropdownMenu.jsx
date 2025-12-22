@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 
-const DropdownMenu = ({button, content}) => {
+const DropdownMenu = ({button, content, removeDefaultButtonStyling=false}) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuRef = useRef(null);
     const timeoutRef = useRef(null);
@@ -46,13 +46,13 @@ const DropdownMenu = ({button, content}) => {
             <div
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
-                className={`flex rounded-lg border-2 dark:border-gray-700 md:py-0.5 md:px-1 px-0.5 py-0.5 items-center justify-between cursor-pointer ${isMenuOpen
+                className={removeDefaultButtonStyling ? '' : `flex rounded-lg border-2 dark:border-gray-700 md:py-0.5 md:px-1 px-0.5 py-0.5 items-center justify-between cursor-pointer ${isMenuOpen
                         ? "bg-gray-100 text-gray-500 dark:bg-gray-900 dark:text-gray-300"
                         : "bg-white dark:bg-gray-900"
                     }`}
             >
                 {button}
-                <MdOutlineKeyboardArrowDown />
+                {!removeDefaultButtonStyling && <MdOutlineKeyboardArrowDown />}
             </div>
 
             {isMenuOpen && (

@@ -119,6 +119,21 @@ function ChangeBillingInfoModal({ isOpen, onClose }) {
             isRequired={true}
           />
 
+          <InputAndLabel
+            title="Adress"
+            name="address"
+            value={formik.values.address}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            placeholder="Enter Adress..."
+            error={
+              formik.touched.address && formik.errors.address
+                ? formik.errors.address
+                : ""
+            }
+            isRequired={true}
+          />
+
           <SelectAndLabel
             title={"Country"}
             name="country"

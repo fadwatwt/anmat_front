@@ -10,9 +10,10 @@ import AttendanceTab from "@/app/(dashboard)/hr/_Tabs/AttendanceTab.jsx";
 import FinancialsTab from "@/app/(dashboard)/hr/_Tabs/financialData.jsx";
 import CreateADepartmentModal from "@/app/(dashboard)/hr/_modals/CreateADepartmentModal.jsx";
 import InviteEmployeeModal from "./_modals/InviteEmployeeModal";
+import EditAnEmployeeModal from "@/app/(dashboard)/hr/_modals/AddingAnEmployeeModal.jsx";
 
 function HRPage() {
-  const [isAddEmployeeModal, setIsAddEmployeeModal] = useState(false);
+  const [isEditEmployeeModal, setIsEditEmployeeModal] = useState(false);
   const [isInviteEmployeeModal, setIsInviteEmployeeModal] = useState(false);
   const [isAddDepartmentModal, setIsAddDepartmentModal] = useState(false);
   const [activeTab, setActiveTab] = useState("Employees");
@@ -40,8 +41,8 @@ function HRPage() {
     },
   ];
 
-  const handelAddEmployeeModal = () => {
-    setIsAddEmployeeModal(!isAddEmployeeModal);
+  const handelEditEmployeeModal = () => {
+    setIsEditEmployeeModal(!isEditEmployeeModal);
   };
 
   const handleInviteEmployeeModal = () => {
@@ -72,9 +73,9 @@ function HRPage() {
         <Tabs tabs={tabsData} setActiveTitleTab={setActiveTab} />
       </Page>
 
-      <AddingAnEmployeeModal
-        isOpen={isAddEmployeeModal}
-        onClose={handelAddEmployeeModal}
+      <EditAnEmployeeModal
+        isOpen={isEditEmployeeModal}
+        onClose={handelEditEmployeeModal}
         employee={{}} />
 
       <InviteEmployeeModal
