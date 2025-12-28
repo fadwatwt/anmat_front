@@ -51,7 +51,7 @@ function PermissionsPage() {
             <div className={"grid grid-cols-3 gap-2 w-full "}>
             {
                 role.permissions.map((permission,index) => [
-                    <span key={index} className="bg-primary-100 text-primary-500 text-xs px-3 py-1 rounded-2xl">
+                    <span key={index} className="bg-primary-100 text-primary-500 text-xs text-center px-3 py-1 rounded-2xl">
                         {permission}
                     </span>
                 ])
@@ -62,7 +62,7 @@ function PermissionsPage() {
             <div className={"grid grid-cols-3 gap-2 w-full"}>
                 {
                     role.permissions.map((permission,index) => [
-                        <span key={index} className="bg-primary-100 text-primary-500 text-xs px-3 py-1 rounded-2xl">
+                        <span key={index} className="bg-primary-100 text-primary-500 text-xs text-center px-3 py-1 rounded-2xl">
                         {permission}
                     </span>
                     ])
@@ -129,8 +129,19 @@ const  SubscriptionActions = ({actualRowIndex}) => {
                 </div>
             </div>
             <AddRoleModal isOpen={addRoleModalOpen} onClose={toggleAddRoleModal} />
-            <CheckAlert isOpen={isDeleteRoleAert}  title={"Delete Role"} titleSubmitBtn={"Yes, Delete"} titleCancelBtn={"Cancel"}
-                        subFeature={"Delete Manager Role"} onClose={handleDeleteRoleAert} onSubmit={handleDeleteRoleAert} isBtns={true}  />
+            <CheckAlert
+                isOpen={isDeleteRoleAert}
+                onClose={handleDeleteRoleAert}
+                type="cancel"
+                title="Delete Role"
+                confirmBtnText="Yes, Delete"
+                description={
+                    <p>
+                        Are you sure you want to <span className="font-bold text-black">Delete Manager Role</span>?
+                    </p>
+                }
+                onSubmit={() => {}}
+            />
         </Page>
     );
 }

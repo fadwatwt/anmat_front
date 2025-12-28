@@ -81,13 +81,13 @@ function CompanySubscriptions() {
                     <ChangeBillingInfoModal isOpen={billingInfoModalOpen} onClose={toggleBillingInfoModal} />
                     <AddNewPaymentModal isOpen={paymentModalOpen} onClose={toggleNewPaymentModal} />
                     <div className={"flex flex-col gap-4 md:gap-8 md:flex-row w-full h-full"}>
-                        <div className={"hidden md:block"}>
-                            <div className={"bg-white dark:bg-gray-800 py-3 px-2 w-64 flex flex-col gap-2 rounded-2xl border border-gray-200"}>
+                        <div className={"hidden md:block w-3/12"}>
+                            <div className={"bg-white dark:bg-gray-800 py-3 px-2 flex flex-col gap-2 rounded-2xl border border-gray-200"}>
                                 <p className={"uppercase text-sm px-3 text-start dark:text-gray-200"}>{t("select menu")}</p>
                                 <Sidebar activeItem={activeTab} onClick={handelChangeActiveTab} list={listSideBar} />
                             </div>
                         </div>
-                        <div className={"hidden md:block"}>
+                        <div className={"hidden md:block flex-1"}>
                             {
                                 listSideBar.map((tab, index) => (
                                     <div key={index} className={`tab-content ${activeTab === tab.id ? 'block' : 'hidden'}`}>

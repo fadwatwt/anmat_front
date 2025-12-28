@@ -107,7 +107,7 @@ function OrdersTable() {
                     <RiHourglass2Line size={25} className="rounded-full text-primary-500 stroke-[5px]" />
                 </div>
             </div>
-            <span className="text-lg text-gray-900">
+            <span className="text-md text-gray-900">
                 {order.product}
             </span>
         </div>,
@@ -115,7 +115,7 @@ function OrdersTable() {
         // Payment Method cell
         <div key="payment" className="flex items-center justify-start gap-2">
             {order.paymentMethod === 'Visa' ? <RiVisaFill size={35} className="rounded-full stroke-[5px]" /> : <RiMastercardFill size={35} className="rounded-full stroke-[5px]" />}
-            <span className="text-lg text-gray-900">
+            <span className="text-md text-gray-900">
                 {order.paymentMethod}
             </span>
         </div>,

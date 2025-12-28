@@ -1,7 +1,11 @@
 "use client"
 
-import {RiCheckboxCircleFill, RiCloseCircleFill, RiFlashlightLine, RiQuestionLine} from "@remixicon/react";
+import {RiCloseCircleLine, RiEditLine, RiEyeLine, RiFlashlightLine} from "@remixicon/react";
 import Table from "@/components/Tables/Table";
+import {statusCell} from "@/components/StatusCell";
+import {useTranslation} from "react-i18next";
+import {RiDeleteBin7Line} from "react-icons/ri";
+import StatusActions from "@/components/Dropdowns/StatusActions";
 
 const headers = [
     { label: "Product", width: "300px" },
@@ -9,7 +13,7 @@ const headers = [
     { label: "Date", width: "150px" },
     { label: "Amount", width: "100px" },
     { label: "Status", width: "125px" },
-    { label: "", width: "50px" }
+    // { label: "", width: "50px" }
 ];
 
 // Sample data - replace with your actual data
@@ -44,50 +48,7 @@ const ordersData = [
     }
 ];
 
-const statusConfig = {
-    Paid: {
-        bgColor: "bg-green-50",
-        icon: <RiCheckboxCircleFill size={15} className="text-green-700" />,
-        textColor: "text-green-700",
-    },
-    // Pending: {
-    //     bgColor: "bg-yellow-50",
-    //     icon: <RiTimeLine size={15} className="text-yellow-700" />,
-    //     textColor: "text-yellow-700",
-    // },
-    "Not-paid": {
-        bgColor: "bg-red-50",
-        icon: <RiCloseCircleFill size={15} className="text-red-700" />,
-        textColor: "text-red-700",
-    },
-    // Completed: {
-    //     bgColor: "bg-blue-50",
-    //     icon: <RiCheckDoubleFill size={15} className="text-blue-700" />,
-    //     textColor: "text-blue-700",
-    // }
-};
-
 function BillingHistory() {
-
-    const statusCell = (status) => {
-        const config = statusConfig[status] || {
-            bgColor: "bg-gray-50",
-            icon: <RiQuestionLine size={15} className="text-gray-700" />,
-            textColor: "text-gray-700",
-        };
-
-        return (
-            <div
-                key={`status-${status}`}
-                className={`flex items-center justify-center gap-1 ${config.bgColor} px-1 py-1 rounded-md`}
-            >
-                {config.icon}
-                <span className={`text-xs ${config.textColor}`}>
-                    {status}
-                </span>
-            </div>
-        );
-    };
 
     // Transform data into the format expected by the Table component
     const rows = ordersData.map(order => [
@@ -98,7 +59,7 @@ function BillingHistory() {
                     <RiFlashlightLine size={25} className="rounded-full text-primary-500 stroke-[5px]" />
                 </div>
             </div>
-            <span className="text-lg text-gray-900">
+            <span className="text-sm text-gray-900">
                 {order.product}
             </span>
         </div>,
@@ -125,7 +86,7 @@ function BillingHistory() {
             classContainer={"rounded-2xl px-8"}
             title="Invoices"
             headers={headers}
-            isActions={true}
+            isActions={false}
             rows={rows}
             isFilter={true}
         />

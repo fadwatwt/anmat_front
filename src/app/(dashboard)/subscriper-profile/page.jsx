@@ -323,8 +323,20 @@ function AdminProfile() {
 
             <EditAdminProfileModal isOpen={isEditAdminProfileModal} onClose={handelEditAdminProfileModal} onClick={() => {}} />
             <ChangePasswordModal isOpen={isChangePasswordModal} onClose={handelChangePasswordModal} onClick={() => {}} />
-            <CheckAlert isOpen={isDeleteCatalogAert}  title={"Cancel Subscription"} titleSubmitBtn={"Yes, Stop"} titleCancelBtn={"Cancel"}
-                        feature={"Account subscription"} subFeature={"Delete Catalog "} onClose={handleDeleteCatalogAert} onSubmit={handleDeleteCatalogAert} isBtns={true}  />
+            <CheckAlert
+                isOpen={isDeleteCatalogAert}
+                onClose={handleDeleteCatalogAert}
+                type="cancel"
+                title="Cancel Subscription"
+                confirmBtnText="Yes, Stop"
+                description={
+                    <p>
+                        Are you sure you want to <span className="font-bold text-black">Delete Catalog</span> of the
+                        <span className="font-bold text-black"> Account subscription</span>?
+                    </p>
+                }
+                onSubmit={() => {}}
+            />
         </Page>
     );
 }

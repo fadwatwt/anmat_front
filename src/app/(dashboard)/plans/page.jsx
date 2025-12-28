@@ -171,8 +171,20 @@ function PlansPage() {
             }
                 isFilter={true}
             />
-                <CheckAlert isOpen={checkAlertDeletePlanModal}  title={"Stop Free Trial "} titleSubmitBtn={"Yes, Stop"} titleCancelBtn={"Cancel"}
-                        feature={"Basic plan"} subFeature={"Stop Free Trial"} onSubmit={() => {}} onClose={toggleCheckAlertDeletePlanModal} isBtns={true}  />
+            <CheckAlert
+                isOpen={checkAlertDeletePlanModal}
+                onClose={toggleCheckAlertDeletePlanModal}
+                type="cancel"
+                title="Stop Free Trial"
+                confirmBtnText="Yes, Stop"
+                description={
+                    <p>
+                        Are you sure you want to <span className="font-bold text-black">Stop Free Trial</span> of the
+                        <span className="font-bold text-black"> Basic plan</span>?
+                    </p>
+                }
+                onSubmit={() => {}}
+            />
             <CreatePlanModal isOpen={createPlanModalOpen} onClose={toggleCreatePlanModalOpen} />
         </Page>
     );

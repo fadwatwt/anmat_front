@@ -146,8 +146,20 @@ function AdminCompaniesSubscriptions() {
                 }
                 industryOptions={industryOptions}
             />
-            <CheckAlert isOpen={isDeleteSubAert}  title={"Cancel Subscription "} titleSubmitBtn={"Yes, Stop"} titleCancelBtn={"Cancel"}
-                        feature={"this client"} subFeature={"Delete Subscription"} onClose={handleDeleteSubAert} onSubmit={handleDeleteSubAert} isBtns={true}  />
+            <CheckAlert
+                isOpen={isDeleteSubAert}
+                onClose={handleDeleteSubAert}
+                type="cancel"
+                title="Cancel Subscription"
+                confirmBtnText="Yes, Stop"
+                description={
+                    <p>
+                        Are you sure you want to <span className="font-bold text-black">Delete Subscription</span> of the
+                        <span className="font-bold text-black"> this client</span>?
+                    </p>
+                }
+                onSubmit={() => {}}
+            />
         </Page>
     );
 }

@@ -36,7 +36,7 @@ function AddNewPaymentModal({ isOpen, onClose }) {
       isBtns={true}
       btnApplyTitle={"Save"}
       onClick={formik.handleSubmit}
-      className={"lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12"}
+      className={"lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12 p-4"}
       title={"Add New Payment Method"}
     >
       <div className="px-1">

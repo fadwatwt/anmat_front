@@ -1,75 +1,133 @@
 "use client"
-import { t } from "i18next";
-import { RiVipDiamondLine } from "react-icons/ri";
+
+import { RiFlashlightLine} from "@remixicon/react";
+import Table from "@/components/Tables/Table";
+import {statusCell} from "@/components/StatusCell";
+import {useTranslation} from "react-i18next";
+import StatusActions from "@/components/Dropdowns/StatusActions";
+import CheckAlert from "@/components/Alerts/CheckِِAlert";
+import Alert from "@/components/Alerts/Alert";
+
+const headers = [
+    { label: "Product", width: "200px" },
+    { label: "Payment Method", width: "200px" },
+    { label: "Date", width: "150px" },
+    { label: "Amount", width: "100px" },
+    { label: "Status", width: "125px" },
+    { label: "", width: "50px" }
+];
+
+// Sample data - replace with your actual data
+const ordersData = [
+    {
+        product: "Basic Plan",
+        paymentMethod: "Master Card",
+        date: "2023-05-15",
+        amount: "$99.00",
+        status: "Paid"
+    },
+    {
+        product: "Premium Plan",
+        paymentMethod: "Master Card",
+        date: "2023-05-16",
+        amount: "$199.00",
+        status: "Not-paid"
+    },
+    {
+        product: "Basic Plan",
+        paymentMethod: "Master Card",
+        date: "2023-05-15",
+        amount: "$99.00",
+        status: "Paid"
+    },
+    {
+        product: "Premium Plan",
+        paymentMethod: "Master Card",
+        date: "2023-05-16",
+        amount: "$199.00",
+        status: "Paid"
+    }
+];
 
 function History() {
-    const history = [
-        { users: '2345 of 6789 Users', endDate: 'May 12, 2025', price: '$120' },
-        { users: '2345 of 6789 Users', endDate: 'May 12, 2025', price: '$120' },
-    ];
+
+    const  HistoryActions = ({actualRowIndex}) => {
+        const {t, i18n} = useTranslation();
+        const statesActions = [
+            {
+                text: "Re-order", icon:null, onClick: () => {
+                    console.log(actualRowIndex)
+                }
+            },
+        ]
+        return (
+            <StatusActions states={statesActions}  className={` *:text-blue-500 p-1 bg-blue-100 block text-center rounded ${
+                i18n.language === "ar" ? "left-0" : "right-0"
+            }`}/>
+        );
+    }
+
+    // Transform data into the format expected by the Table component
+    const rows = ordersData.map(order => [
+        // Product cell
+        <div key="product" className="flex items-center justify-start gap-2">
+            <div className="rounded-full p-2 bg-primary-100">
+                <div className="rounded-full p-2 bg-primary-200">
+                    <RiFlashlightLine size={25} className="rounded-full text-primary-500 stroke-[5px]" />
+                </div>
+            </div>
+            <span className="text-sm text-gray-900">
+                {order.product}
+            </span>
+        </div>,
+
+        // Payment Method cell
+        <div key="product" className="flex items-center justify-start gap-2">
+                <div className="p-2 h-12 w-18">
+                    <img src={"/images/payments/mastercard.png"} alt={"img"} className={"w-full h-full object-cover"} />
+                </div>
+            <span className="text-sm text-gray-900">
+                {order.paymentMethod}
+            </span>
+        </div>,
+
+        // Date cell
+        <div key="date">{order.date}</div>,
+
+        // Amount cell
+        <div key="amount">{order.amount}</div>,
+
+        // Status cell
+        statusCell(order.status)
+    ]);
 
     return (
         <>
-            <div className="flex flex-col items-start justify-center gap-4">
-                {
-                    history.map(plan => {
-                        return (
-                            <div className={"md:p-5 p-2 rounded-2xl bg-white dark:bg-gray-800 border border-gray-200"}>
-                                <div className="flex flex-col gap-8 w-full">
-                                    {/* header */}
-                                    <div className="flex items-center gap-2 w-full">
-                                        <div className="rounded-full p-2 bg-primary-100">
-                                            <div className="rounded-full p-3 bg-primary-200">
-                                                <RiVipDiamondLine size={25} className="rounded-full text-primary-700 stroke-[2px] border-2 border-primary-500 p-1" />
-                                            </div>
-                                        </div>
-                                        <div className="flex flex-col items-start justify-start gap-1">
-                                            <span className="text-2xl text-primary-700 font-bold">
-                                                {t("Professional Plan")}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    {/* info */}
-                                    <div className="flex items-start gap-8 justify-between w-full">
-                                        <div className="flex flex-col items-start justify-start gap-0 min-w-[15rem]">
-                                            <span className="text-lg text-gray-700">
-                                                {t("Users")}
-                                            </span>
-                                            <span className="text-lg text-gray-900 font-bold">
-                                                {plan.users}
-                                            </span>
-                                        </div>
-                                        <div className="flex flex-col items-start justify-start gap-0 min-w-[15rem]">
-                                            <span className="text-lg text-gray-700">
-                                                {t("Subscription end date")}
-                                            </span>
-                                            <span className="text-lg text-gray-900 font-bold">
-                                                {plan.endDate}
-                                            </span>
-                                        </div>
-                                        <div className="flex flex-col items-start justify-start gap-0 min-w-[15rem]">
-                                            <span className="text-lg text-gray-700">
-                                                {t("Price estimate")}
-                                            </span>
-                                            <span className="text-lg text-gray-900 font-bold">
-                                                {plan.price}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    {/* actions */}
-                                    <div className="flex items-start justify-center gap-4">
-                                        <button className="text-lg bg-primary-lighter text-primary-500 px-4 py-2 rounded-lg hover:bg-primary-50 transition-colors w-full">
-                                            {t("Re Order")}
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        )
-                    })
+        <Table
+            classContainer={"rounded-2xl px-8"}
+            title="Invoices"
+            headers={headers}
+            isActions={false}
+            rows={rows}
+            isFilter={true}
+            customActions={(actualRowIndex) => (
+                <HistoryActions actualRowIndex={actualRowIndex} />)
+            }
+        />
+            <CheckAlert
+                isOpen={true}
+                onClose={() => {}}
+                type="warning"
+                title="Confirm Re-Order"
+                confirmBtnText="Confirm"
+                description={
+                    <p>
+                        Are you sure you want to <span className="font-bold text-black">Re-Order</span> the
+                        <span className="font-bold text-black"> professional plan</span>?
+                    </p>
                 }
-            </div>
+                onSubmit={() => {}}
+            />
         </>
     );
 }

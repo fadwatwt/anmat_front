@@ -9,11 +9,17 @@ const normalizeStatus = (status) => {
     if (lowerStatus === "active") {
         return "active";
     }
+    if (lowerStatus === "paid") {
+        return "paid";
+    }
 
     // توحيد حالات إلغاء التفعيل (تقبل كل الصيغ المذكورة)
     if (["not-active", "not active", "in-active", "inactive"].includes(lowerStatus)) {
         // قم بتغيير 'in-active' أدناه إلى الصيغة التي يتوقعها مكون statusCell لعرض اللون الأحمر
         return "in-active";
+    }
+    if (["not-paid", "not paid"].includes(lowerStatus)) {
+        return "Not-paid";
     }
 
     return lowerStatus;
@@ -28,6 +34,16 @@ const normalizeStatus = (status) => {
             bgColor: "bg-red-50",
             icon: <RiCloseCircleFill size={15} className="text-red-700" />,
             textColor: "text-red-700",
+        },
+        "Not-paid": {
+            bgColor: "bg-red-50",
+            icon: <RiCloseCircleFill size={15} className="text-red-700" />,
+            textColor: "text-red-700",
+        },
+        "paid": {
+            bgColor: "bg-green-50",
+            icon: <RiCheckboxCircleFill size={15} className="text-green-700" />,
+            textColor: "text-green-700",
         },
     };
 const statusCell = (status, _id) => {
