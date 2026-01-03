@@ -36,7 +36,7 @@ const StepsComponent = ({
 
   return (
     <div className="w-full">
-      <div className="flex items-center justify-center gap-4 mb-6">
+      <div className="flex items-center gap-1 justify-center mb-6">
         {steps.map((step, index) => (
           <React.Fragment key={index}>
             <div className="flex items-center">
@@ -50,7 +50,7 @@ const StepsComponent = ({
               >
                 <div className="flex items-center">
                   <span
-                    className={`rounded-full group w-5 h-5 text-xs flex items-center justify-center md:mx-2 mx-0.5 ${
+                    className={`rounded-full group w-5 h-5 text-xs flex items-center justify-center ${
                       currentStep > index + 1
                         ? "p-0"
                         : currentStep === index + 1
@@ -68,13 +68,13 @@ const StepsComponent = ({
                     )}
                   </span>
                   <span className="ml-2 text-sm dark:text-primary-150 text-nowrap">
-                    {index > 0 ? `(${index})` : null} {t(step.title)}
+                     {t(step.title)}
                   </span>
                 </div>
               </div>
             </div>
             {index < steps.length - 1 && (
-              <IoIosArrowForward className={`text-sm text-gray-400`} />
+              <IoIosArrowForward  className={`text-lg text-gray-400`} />
             )}
           </React.Fragment>
         ))}
@@ -104,7 +104,7 @@ const StepsComponent = ({
                       })}
                       {type === "create" && (
                         <div className={"w-full flex justify-between mt-4"}>
-                          <div className={"flex gap-4 justify-start"}>
+                          <div className={"flex  justify-start"}>
                             {index < steps.length - 1 && (
                               <button
                                 onClick={nextStep}

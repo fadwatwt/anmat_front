@@ -1,16 +1,16 @@
 import PropTypes from "prop-types";
-import {useState} from "react";
+import { useState } from "react";
 import {
     MdOutlineKeyboardArrowLeft,
     MdOutlineKeyboardArrowRight,
     MdOutlineKeyboardDoubleArrowLeft,
     MdOutlineKeyboardDoubleArrowRight,
 } from "react-icons/md";
-import {PiDotsThreeVerticalBold} from "react-icons/pi";
+import { PiDotsThreeVerticalBold } from "react-icons/pi";
 import ActionsBtns from "../ActionsBtns.jsx";
-import {useTranslation} from "react-i18next";
+import { useTranslation } from "react-i18next";
 import SearchInput from "../Form/SearchInput.jsx";
-import {TfiImport} from "react-icons/tfi";
+import { TfiImport } from "react-icons/tfi";
 import SelectWithoutLabel from "../Form/SelectWithoutLabel.jsx";
 import useDropdown from "@/Hooks/useDropdown.js";
 import {
@@ -52,9 +52,10 @@ function Table({
                    selectedIndustry,
                    onIndustryChange,
                    hideSearchInput = false,
-                   toolbarCustomContent = null
+                   toolbarCustomContent = null,
+                   headerActions = null
                }) {
-    const {t, i18n} = useTranslation();
+    const { t, i18n } = useTranslation();
     const [isAllSelected, setIsAllSelected] = useState(false);
     const [selectedRows, setSelectedRows] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -94,27 +95,25 @@ function Table({
     const handleRowsPerPageChange = (event) => {
         setRowsPerPage(Number(event.target.value));
         setCurrentPage(1);
-        setSelectedRows([]); // Reset selected rows when changing rows per page
+        setSelectedRows([]);
     };
 
     const startIndex = (currentPage - 1) * rowsPerPage;
     const currentRows = rows.slice(startIndex, startIndex + rowsPerPage);
 
     return (
-        <div
-            className={
-                "rounded-2xl md:w-full pb-10 overflow-x-auto tab-content dark:bg-gray-800 border border-gary-200 dark:border-gray-700 p-3 flex flex-col gap-4 bg-white " +
-                (classContainer ? classContainer : "")
-            }
-        >
+        <div className={"rounded-2xl md:w-full pb-10 overflow-x-auto tab-content dark:bg-gray-800 border border-gary-200 dark:border-gray-700 p-3 flex flex-col gap-4 bg-white " + (classContainer ? classContainer : "")}>
             {isTitle && (
-                <div className={"flex justify-between items-baseline"}>
-                    <div className="flex items-center gap-4">
-                        {customTitle || <p
-                            className={"text-gray-800 text-start text-lg dark:text-gray-400"}
-                        >
-                            {t(title)}
-                        </p>}
+                <div className={"flex flex-wrap justify-between items-center gap-4 mb-2"}>
+                    <div className="flex flex-wrap items-center gap-4">
+                        {customTitle || <p className={"text-gray-800 text-start text-lg dark:text-gray-400"}>{t(title)}</p>}
+
+                        {headerActions && (
+                            <div className="flex items-center gap-2">
+                                {headerActions}
+                            </div>
+                        )}
+
                         {showControlBar && (
                             <div className="flex items-center gap-6">
                                 <div className="flex bg-gray-100 dark:bg-gray-900 rounded-lg p-1">
@@ -132,21 +131,19 @@ function Table({
                                         </button>
                                     ))}
                                 </div>
-                                <button
-                                    disabled
-                                    className="w-[64px] text-gray-200 h-[36px] rounded-[8px] border-[1px] border-gray-200 dark:border-gray-600 opacity-50 pl-[10px] pr-[8px] gap-[4px]"
-                                >
+                                <button disabled className="w-[64px] text-gray-200 h-[36px] rounded-[8px] border-[1px] border-gray-200 dark:border-gray-600 opacity-50 pl-[10px] pr-[8px] gap-[4px]">
                                     {t("Today")}
                                 </button>
                                 <div className="text-gray-600 dark:text-gray-300 text-lg ">
-                                    {currentDate.toLocaleString("default", {month: "long"})}{" "}
+                                    {currentDate.toLocaleString("default", { month: "long" })}{" "}
                                     {currentDate.getFullYear()}
                                 </div>
                             </div>
                         )}
                     </div>
-                    <div className="flex items-center gap-2">
-                        {!hideSearchInput && <SearchInput/>}
+
+                    <div className="flex flex-wrap items-center gap-2">
+                        {!hideSearchInput && <SearchInput />}
                         {showDatePicker && (
                             <div className={"flex items-center justify-center"}>
                                 <DateInput
@@ -161,9 +158,7 @@ function Table({
                         )}
                         {showIndustryFilter && (
                             <SelectWithoutLabel
-                                options={
-                                    industryOptions.length ? industryOptions : defaultStatusOptions
-                                }
+                                options={industryOptions.length ? industryOptions : defaultStatusOptions}
                                 value={selectedIndustry}
                                 onChange={onIndustryChange}
                                 placeholder={t("Select Industry")}
@@ -172,9 +167,7 @@ function Table({
                         )}
                         {showStatusFilter && (
                             <SelectWithoutLabel
-                                options={
-                                    statusOptions.length ? statusOptions : defaultStatusOptions
-                                }
+                                options={statusOptions.length ? statusOptions : defaultStatusOptions}
                                 value={selectedStatus}
                                 onChange={onStatusChange}
                                 placeholder={t("Select Status")}
@@ -190,25 +183,17 @@ function Table({
                                 placeholder={t("Select Department")}
                             />
                         )}
-                        <button
-                            className="flex dark:text-gray-400 text-sm items-baseline p-2 gap-2 rounded-lg border border-gray-200 dark:border-gray-600">
-                            <TfiImport size={15}/>
+                        <button className="flex dark:text-gray-400 text-sm items-baseline p-2 gap-2 rounded-lg border border-gray-200 dark:border-gray-600">
+                            <TfiImport size={15} />
                             {t("Export")}
                         </button>
                         {toolbarCustomContent}
                     </div>
-                    
                 </div>
             )}
-            <div
-                className={
-                    "flex flex-col min-w-[48rem] gap-5 justify-center dark:bg-gray-800 w-full dark:text-gray-400"
-                }
-            >
-                <table
-                    className={"relative table-auto w-full " + className}
-                    style={{borderSpacing: "0 1px"}}
-                >
+
+            <div className={"flex flex-col min-w-[48rem] gap-5 justify-center dark:bg-gray-800 w-full dark:text-gray-400"}>
+                <table className={"relative table-auto w-full " + className} style={{ borderSpacing: "0 1px" }}>
                     <thead>
                     <tr className="bg-weak-100 dark:bg-gray-800">
                         {isCheckInput && (
@@ -222,37 +207,27 @@ function Table({
                             </th>
                         )}
                         {headers?.map((header, index) => (
-                            header&&<th
+                            header && <th
                                 key={index}
                                 className="p-2 text-start text-sm font-normal dark:bg-gray-900 dark:text-gray-300 "
                                 style={{
                                     width: header.width || "auto",
-                                    borderTopRightRadius:
-                                        index === headers.length - 1 ? "8px" : "0px",
-                                    borderBottomRightRadius:
-                                        index === headers.length - 1 ? "8px" : "0px",
+                                    borderTopRightRadius: index === headers.length - 1 ? "8px" : "0px",
+                                    borderBottomRightRadius: index === headers.length - 1 ? "8px" : "0px",
                                 }}
                             >
-                                {typeof header.label === "string"
-                                    ? t(header.label)
-                                    : header.label}
+                                {typeof header.label === "string" ? t(header.label) : header.label}
                             </th>
                         ))}
                     </tr>
                     </thead>
                     <tbody>
                     {currentRows?.map((row, rowIndex) => {
-                        const actualRowIndex = rowIndex + startIndex; // Calculate the actual index of the row
+                        const actualRowIndex = rowIndex + startIndex;
                         return (
-                            <tr
-                                key={actualRowIndex}
-                                className="hover:bg-gray-100 w-full dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-700"
-                            >
+                            <tr key={actualRowIndex} className="hover:bg-gray-100 w-full dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
                                 {isCheckInput && (
-                                    <td
-                                        className="px- py-6 text-center"
-                                        style={{borderBottomLeftRadius: "8px"}}
-                                    >
+                                    <td className="px- py-6 text-center" style={{ borderBottomLeftRadius: "8px" }}>
                                         <input
                                             className={"checkbox-custom"}
                                             type="checkbox"
@@ -262,38 +237,15 @@ function Table({
                                     </td>
                                 )}
                                 {row.map((cell, cellIndex) => (
-                                    cell&&<td
+                                    cell && <td
                                         key={cellIndex}
-                                        className={
-                                            "text-sm text-start max-w-10 sm:max-w-24 text-nowrap dark:text-gray-300 " +
-                                            (classNameCell ? classNameCell : "px-2 py-6")
-                                        }
-                                        style={{
-                                            borderBottomRightRadius:
-                                                cellIndex === row.length - 1 ? "8px" : "",
-                                        }}
+                                        className={"text-sm text-start max-w-10 sm:max-w-24 text-nowrap dark:text-gray-300 " + (classNameCell ? classNameCell : "px-2 py-6")}
+                                        style={{ borderBottomRightRadius: cellIndex === row.length - 1 ? "8px" : "" }}
                                     >
                                         {cell}
                                     </td>
                                 ))}
-                                {isActions && (
-                                    <td className={"dropdown-container"}>
-                                        <PiDotsThreeVerticalBold
-                                            className="cursor-pointer"
-                                            onClick={() => handleDropdownToggle(actualRowIndex)}
-                                        />
-                                        {dropdownOpen === actualRowIndex && (
-                                            <ActionsBtns
-                                                handleEdit={() => handelEdit(actualRowIndex)}
-                                                handleDelete={() => handelDelete(actualRowIndex)}
-                                                className={`${
-                                                    i18n.language === "ar" ? "left-0" : "right-0"
-                                                }`}
-                                            />
-                                        )}
-                                    </td>
-                                )}
-                                {(!isActions && customActions) && (
+                                {(isActions || customActions) && (
                                     <td className={"dropdown-container"}>
                                         <PiDotsThreeVerticalBold
                                             className="cursor-pointer"
@@ -301,9 +253,15 @@ function Table({
                                         />
                                         {dropdownOpen === actualRowIndex && (
                                             <>
-                                                {typeof customActions === "function"
-                                                    ? customActions(actualRowIndex)
-                                                    : customActions}
+                                                {isActions ? (
+                                                    <ActionsBtns
+                                                        handleEdit={() => handelEdit(actualRowIndex)}
+                                                        handleDelete={() => handelDelete(actualRowIndex)}
+                                                        className={`${i18n.language === "ar" ? "left-0" : "right-0"}`}
+                                                    />
+                                                ) : (
+                                                    typeof customActions === "function" ? customActions(actualRowIndex) : customActions
+                                                )}
                                             </>
                                         )}
                                     </td>
@@ -313,59 +271,32 @@ function Table({
                     })}
                     </tbody>
                 </table>
+
                 <div className={"pagination flex items-center justify-between"}>
                     <p className={"dark:text-gray-400 text-sm"}>
                         {t("Page")} {currentPage} {t("of")} {totalPages}
                     </p>
                     <div className={"flex gap-5 items-center"}>
-                        <MdOutlineKeyboardDoubleArrowLeft
-                            onClick={() => handlePageChange(1)}
-                            className="cursor-pointer dark:text-gray-400"
-                        />
-                        <MdOutlineKeyboardArrowLeft
-                            onClick={() => handlePageChange(currentPage - 1)}
-                            className="cursor-pointer dark:text-gray-400"
-                        />
+                        <MdOutlineKeyboardDoubleArrowLeft onClick={() => handlePageChange(1)} className="cursor-pointer dark:text-gray-400" />
+                        <MdOutlineKeyboardArrowLeft onClick={() => handlePageChange(currentPage - 1)} className="cursor-pointer dark:text-gray-400" />
                         <div className={"flex pages-numbers gap-1 text-sm"}>
-                            {Array.from({length: totalPages}).map((_, index) => (
+                            {Array.from({ length: totalPages }).map((_, index) => (
                                 <button
                                     key={index}
                                     onClick={() => handlePageChange(index + 1)}
-                                    className={`px-3 py-1 border rounded-lg dark:border-gray-700 dark:text-gray-400 ${
-                                        currentPage === index + 1
-                                            ? "bg-primary-100 dark:text-gray-800"
-                                            : ""
-                                    }`}
+                                    className={`px-3 py-1 border rounded-lg dark:border-gray-700 dark:text-gray-400 ${currentPage === index + 1 ? "bg-primary-100 dark:text-gray-800" : ""}`}
                                 >
                                     {index + 1}
                                 </button>
                             ))}
                         </div>
-                        <MdOutlineKeyboardArrowRight
-                            onClick={() => handlePageChange(currentPage + 1)}
-                            className="cursor-pointer dark:text-gray-400"
-                        />
-                        <MdOutlineKeyboardDoubleArrowRight
-                            onClick={() => handlePageChange(totalPages)}
-                            className="cursor-pointer dark:text-gray-400"
-                        />
+                        <MdOutlineKeyboardArrowRight onClick={() => handlePageChange(currentPage + 1)} className="cursor-pointer dark:text-gray-400" />
+                        <MdOutlineKeyboardDoubleArrowRight onClick={() => handlePageChange(totalPages)} className="cursor-pointer dark:text-gray-400" />
                     </div>
-                    <div
-                        className={
-                            "flex rounded-lg border border-gray-300 dark:border-gray-700 dark:text-gray-400 px-2 py-1 items-center"
-                        }
-                    >
-                        <select
-                            value={rowsPerPage}
-                            onChange={handleRowsPerPageChange}
-                            className="bg-transparent outline-none cursor-pointer"
-                        >
+                    <div className={"flex rounded-lg border border-gray-300 dark:border-gray-700 dark:text-gray-400 px-2 py-1 items-center"}>
+                        <select value={rowsPerPage} onChange={handleRowsPerPageChange} className="bg-transparent outline-none cursor-pointer">
                             {[5, 10, 15, 20].map((value) => (
-                                <option
-                                    className={"dark:bg-gray-800 dark:text-gray-400 text-sm"}
-                                    key={value}
-                                    value={value}
-                                >
+                                <option className={"dark:bg-gray-800 dark:text-gray-400 text-sm"} key={value} value={value}>
                                     {value}/{t("page")}
                                 </option>
                             ))}
@@ -385,18 +316,13 @@ Table.propTypes = {
     isActions: PropTypes.bool,
     handelEdit: PropTypes.func,
     handelDelete: PropTypes.func,
-    headers: PropTypes.arrayOf(
-        PropTypes.shape({
-            label: PropTypes.node.isRequired,
-            width: PropTypes.string,
-        })
-    ).isRequired,
+    headers: PropTypes.arrayOf(PropTypes.shape({ label: PropTypes.node.isRequired, width: PropTypes.string })).isRequired,
     rows: PropTypes.arrayOf(PropTypes.array).isRequired,
     isFilter: PropTypes.bool,
     isCheckInput: PropTypes.bool,
     isTitle: PropTypes.bool,
     showControlBar: PropTypes.bool,
-    viewMode: PropTypes.oneOf(["week", "month"]),
+    viewMode: PropTypes.oneOf(["week", "month", "id"]),
     onViewModeChange: PropTypes.func,
     selectedDepartment: PropTypes.string,
     onDepartmentChange: PropTypes.func,
@@ -415,9 +341,10 @@ Table.propTypes = {
     industryOptions: PropTypes.array,
     selectedIndustry: PropTypes.string,
     onIndustryChange: PropTypes.func,
-    customActions:PropTypes.func,
+    customActions: PropTypes.func,
     hideSearchInput: PropTypes.bool,
-    toolbarCustomContent: PropTypes.node
+    toolbarCustomContent: PropTypes.node,
+    headerActions: PropTypes.node
 };
 
 export default Table;

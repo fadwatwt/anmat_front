@@ -115,7 +115,7 @@ function History() {
             }
         />
             <CheckAlert
-                isOpen={true}
+                isOpen={false}
                 onClose={() => {}}
                 type="warning"
                 title="Confirm Re-Order"

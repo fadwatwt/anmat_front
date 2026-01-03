@@ -111,7 +111,7 @@ function Pricing() {
             ])}
 
             <CheckAlert
-                isOpen={true}
+                isOpen={false} // OR true s
                 onClose={() => {}}
                 type="success"
                 title="Success"
@@ -125,7 +125,7 @@ function Pricing() {
                 onSubmit={() => console.log("Success modal closed")}
             />
             <CheckAlert
-                isOpen={false}
+                isOpen={false} // OR true
                 onClose={() => {}}
                 type="cancel"
                 title="Cancel Renewal Confirmation"

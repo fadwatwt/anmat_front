@@ -1,8 +1,8 @@
-import { useState, useRef, useEffect } from "react";
+import {useState, useRef, useEffect} from "react";
 import PropTypes from "prop-types";
-import { createPortal } from "react-dom";
+import {createPortal} from "react-dom";
 
-const TagInput = ({ suggestions, placeholder, title, isRequired }) => {
+const TagInput = ({suggestions, apparent, placeholder, title, isRequired}) => {
     const [tags, setTags] = useState([]);
     const [inputValue, setInputValue] = useState("");
     const [isFocused, setIsFocused] = useState(false);
@@ -87,7 +87,13 @@ const TagInput = ({ suggestions, placeholder, title, isRequired }) => {
                         alt={person.name}
                         className="w-6 h-6 rounded-full mr-2"
                     />}
-                    <span className="text-sm text-gray-700 dark:text-gray-400">{person.name}</span>
+                    <div className="flex flex-col">
+                        <span className="text-sm text-gray-700 dark:text-gray-400">{person.name}</span>
+                        {
+                            person.email &&
+                            <span className="text-xs text-gray-500 dark:text-gray-400">{person.email}</span>
+                        }
+                    </div>
                 </div>
             ))}
         </div>
@@ -114,7 +120,14 @@ const TagInput = ({ suggestions, placeholder, title, isRequired }) => {
                                 alt={tag.name}
                                 className="w-6 h-6 rounded-full"
                             />}
-                            <span className="text-sm text-primary-700 dark:text-primary-400">{tag.name}</span>
+                            {
+                                apparent ?
+                                    <span className="text-sm text-primary-700 dark:text-primary-400">
+                                        {tag[apparent]}
+                                    </span>
+                                    : <span className="text-sm text-primary-700 dark:text-primary-400">{tag.name}</span>
+                            }
+
                             <button
                                 onClick={() => removeTag(tag.id)}
                                 className="text-primary-500 hover:text-red-500"
@@ -151,6 +164,7 @@ const TagInput = ({ suggestions, placeholder, title, isRequired }) => {
 TagInput.propTypes = {
     suggestions: PropTypes.array.isRequired,
     placeholder: PropTypes.string,
+    apparent: PropTypes.string,
     title: PropTypes.string,
     isRequired: PropTypes.bool
 };

@@ -38,7 +38,16 @@ export const dashboardSideMenuItems = [
         allowed_to: ['Company-Manager'],
         title: 'HR Management',
         path: '/hr',
-        icon: <Profile2User />
+        icon: <Profile2User />,
+        children: [
+            { title: 'Employees', path: '/hr/employees' },
+            { title: 'Departments', path: '/hr/departments' },
+            { title: 'Teams', path: '/hr/teams' },
+            { title: 'Positions', path: '/hr/positions' },
+            { title: 'Meetings', path: '/hr/meetings' },
+            { title: 'Chats', path: '/hr/chats' },
+            { title: 'Holidays', path: '/hr/holidays' },
+        ]
     },
     {
         allowed_to: ['Company-Manager'],

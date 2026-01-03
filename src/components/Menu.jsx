@@ -59,7 +59,7 @@ const Menu = React.memo(({ isSlidebarOpen, toggleSlidebarOpen }) => {
                 </div>
                 <div className={"flex  flex-col gap-2"}>
                     <div className={"py-5 menu-list sm:py-0 flex flex-col gap-2 text-gray-500"}>
-                        <MenuItem path={"/dashboard"} icon={<Category/>} title={"Dashboard"} />
+                        {/*<MenuItem path={"/dashboard"} icon={<Category/>} title={"Dashboard"} />*/}
                         <MenuItem path={"/dashboard/projects"} icon={<NoteText />} title={"Projects"} />
                         <MenuItem path={"/dashboard/tasks"} icon={<TaskSquare />} title={"Tasks"} />
                         <MenuItem path={"/dashboard/analytics"} icon={<Chart2/>} title={"Analytics"} />

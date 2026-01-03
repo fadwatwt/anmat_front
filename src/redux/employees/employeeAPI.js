@@ -1,17 +1,20 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import {ExternalServer, RootRoute} from "../../Root.Route";
+import {employeesFactory} from "@/functions/FactoryData";
 
 // Fetch all employees
 export const fetchEmployees = createAsyncThunk(
   "employees/fetchAll",
   async (_, { rejectWithValue }) => {
-    try {
-      const response = await axios.get(`${RootRoute}/employees`);
-      return response.data.data;
-    } catch (error) {
-      return rejectWithValue(error.response.data);
-    }
+      console.log("employeesFactory") // For Factory Testing
+      return employeesFactory
+    // try {
+    //   const response = await axios.get(`${RootRoute}/employees`);
+    //   return response.data.data;
+    // } catch (error) {
+    //   return rejectWithValue(error.response.data);
+    // }
   }
 );
 

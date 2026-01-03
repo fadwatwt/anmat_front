@@ -7,7 +7,7 @@ import {
 import Table from "@/components/Tables/Table";
 import Page from "@/components/Page";
 import { useState } from "react";
-import CreatePlanModal from "./_components/CreatePlanModal";
+import CreatePlanModal from "./_components/CreatePlan.modal";
 import CheckAlert from "@/components/Alerts/CheckِِAlert";
 import {useTranslation} from "react-i18next";
 import StatusActions from "@/components/Dropdowns/StatusActions";

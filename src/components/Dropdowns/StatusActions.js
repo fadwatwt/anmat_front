@@ -13,7 +13,7 @@ function StatusActions({states,className}) {
                     <button
                         key={index}
                         onClick={status.onClick}
-                        className="p-3 text-sm border-b dark:border-gray-700 dark:text-gray-200 flex gap-2 items-basline text-left text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900"
+                        className="p-3 text-sm border-b dark:border-gray-700 dark:text-gray-200 flex items-basline text-left text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900"
                     >
                         {
                             status?.icon && React.cloneElement(status.icon, {

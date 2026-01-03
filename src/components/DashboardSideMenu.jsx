@@ -52,9 +52,19 @@ const Menu = React.memo(({ isSlidebarOpen, toggleSlidebarOpen }) => {
                 <div className={"flex  flex-col gap-2"}>
                     <div className={"py-5 menu-list sm:py-0 flex flex-col gap-2 text-gray-500"}>
                         {
-                            dashboardSideMenuItems.filter(item => item.allowed_to.includes(authUserType)).map((item,index) => {
-                                return (<MenuItem key={index} path={item.path} icon={item.icon} title={item.title} ></MenuItem>);
-                            })
+                            dashboardSideMenuItems
+                                .filter(item => item.allowed_to.includes(authUserType))
+                                .map((item, index) => {
+                                    return (
+                                        <MenuItem
+                                            key={index}
+                                            path={item.path}
+                                            icon={item.icon}
+                                            title={item.title}
+                                            children={item.children}
+                                        />
+                                    );
+                                })
                         }
                     </div>
                 </div>

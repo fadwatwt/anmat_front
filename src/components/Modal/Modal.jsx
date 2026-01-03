@@ -3,7 +3,7 @@ import {IoClose} from "react-icons/io5";
 import {useTranslation} from "react-i18next";
 import DefaultButton from "../Form/DefaultButton.jsx";
 
-const Modal = ({ isOpen, onClose, children,title,className,isBtns,customBtns,classNameOpacity,btnApplyTitle,onClick,classNameBtns }) => {
+const Modal = ({ isOpen, onClose, children,title,className,isHideCancel,isBtns,customBtns,classNameOpacity,btnApplyTitle,onClick,classNameBtns }) => {
     const {t} = useTranslation()
     if (!isOpen) return null;
     return (
@@ -27,14 +27,18 @@ const Modal = ({ isOpen, onClose, children,title,className,isBtns,customBtns,cla
                 </div>
                 }
                 <div className={" relative flex flex-col"}>
-                    <div className={"max-h-[70vh] overflow-hidden tab-content overflow-y-auto"}>
+                    <div className={"max-h-[70vh] overflow-visible tab-content overflow-y-auto"}>
                         {children}
                     </div>
                     {
                         isBtns && (
                             <div className={"flex gap-2 py-3 w-full p-4 " + classNameBtns}>
-                                <DefaultButton type={'button'} title={("Cancel")}
-                                               className={"font-medium dark:text-gray-200"}/>
+                                {
+                                    !isHideCancel &&
+                                        <DefaultButton type={'button'} title={("Cancel")}
+                                                       className={"font-medium dark:text-gray-200"}/>
+                                }
+
                                 <DefaultButton onClick={onClick} type={'button'} title={btnApplyTitle ? btnApplyTitle:"Apply"}
                                                className={"bg-primary-500 font-medium dark:bg-primary-200 dark:text-black text-white"}/>
                             </div>
@@ -59,6 +63,7 @@ Modal.propTypes = {
     className: PropTypes.string,
     classNameOpacity: PropTypes.string,
     customBtns:PropTypes.element,
-    classNameBtns:PropTypes.string
+    classNameBtns:PropTypes.string,
+    isHideCancel:PropTypes.bool
 }
 export default Modal;
