@@ -43,7 +43,7 @@ function SendNotificationModal({isOpen, onClose}) {
 
     return (
         <Modal
-            title={"Invite New Employee"}
+            title={"Send Notification"}
             isOpen={isOpen}
             onClose={onClose}
             isBtns={true}

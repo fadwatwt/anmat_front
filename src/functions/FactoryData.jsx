@@ -638,9 +638,81 @@ export const companyList = [
     }
 ]
 
+const departmentsFactory = [
+    {
+        "id": "1",
+        "name": "Publishing Solutions Department",
+        "stats": {
+            "projects_count": 3,
+            "tasks_count": 5,
+            "employees_count": 35
+        }
+    },
+    {
+        "id": "2",
+        "name": "Content Management Team",
+        "icon": "https://api.dicebear.com/7.x/identicon/svg?seed=cont",
+        "stats": {
+            "projects_count": 4,
+            "tasks_count": 10,
+            "employees_count": 30
+        }
+    },
+    {
+        "id": "3",
+        "name": "Digital Publishing Division",
+        "icon": "https://api.dicebear.com/7.x/identicon/svg?seed=digi",
+        "stats": {
+            "projects_count": 7,
+            "tasks_count": 30,
+            "employees_count": 40
+        }
+    },
+    {
+        "id": "4",
+        "name": "Editorial Software Group",
+        "icon": "https://api.dicebear.com/7.x/identicon/svg?seed=edit",
+        "stats": {
+            "projects_count": 8,
+            "tasks_count": 15,
+            "employees_count": 20
+        }
+    },
+    {
+        "id": "5",
+        "name": "Publishing",
+        "icon": "https://api.dicebear.com/7.x/identicon/svg?seed=p",
+        "stats": {
+            "projects_count": 9,
+            "tasks_count": 20,
+            "employees_count": 50
+        }
+    },
+    {
+        "id": "6",
+        "name": "Media Production Team",
+        "icon": "https://api.dicebear.com/7.x/identicon/svg?seed=media",
+        "stats": {
+            "projects_count": 11,
+            "tasks_count": 25,
+            "employees_count": 24
+        }
+    },
+    {
+        "id": "7",
+        "name": "Creative Publishing Unit",
+        "icon": "https://api.dicebear.com/7.x/identicon/svg?seed=create",
+        "stats": {
+            "projects_count": 13,
+            "tasks_count": 30,
+            "employees_count": 10
+        }
+    }
+]
+
 
 
 export {tasks,date1,date2,
     members,
     activityLogs,comments,attachments,
-    filterOptions,employeesFactory,projects,tasksRows}
+    filterOptions,employeesFactory,projects,tasksRows,departmentsFactory}
