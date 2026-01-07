@@ -1,9 +1,9 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
-import {useTranslation} from "react-i18next";
+import { useTranslation } from "react-i18next";
 
-function Tabs({ tabs,setActiveTitleTab  }) {
-    const {t} = useTranslation()
+function Tabs({ tabs, setActiveTitleTab }) {
+    const { t } = useTranslation()
     const [activeTab, setActiveTab] = useState(tabs[0]?.title || ""); // Default to the first tab
 
     return (
@@ -13,16 +13,15 @@ function Tabs({ tabs,setActiveTitleTab  }) {
                 {tabs.map(({ title, icon: Icon }) => (
                     <div
                         key={title}
-                        className={`flex py-2 md:gap-2 gap-1 w-auto  items-center cursor-pointer ${
-                            activeTab === title ? "border-b-4 border-primary-500 dark:border-primary-200" : ""
-                        }`}
+                        className={`flex py-2 md:gap-2 gap-1 w-auto  items-center cursor-pointer ${activeTab === title ? "border-b-4 border-primary-500 dark:border-primary-200" : ""
+                            }`}
                         onClick={() => {
                             setActiveTitleTab && setActiveTitleTab(title)
                             setActiveTab(title)
                         }}
                     >
                         {Icon && <Icon size={20} className={activeTab === title ? "text-primary-500 dark:text-primary-200" : "text-gray-600 dark:dark:text-gray-400"} />}
-                        <p className={` text-sm whitespace-nowrap ${activeTab === title ? "text-black dark:text-gray-200" :"text-gray-700 dark:text-gray-400"}`}>{t(title)}</p>
+                        <p className={` text-sm whitespace-nowrap ${activeTab === title ? "text-black dark:text-gray-200" : "text-gray-700 dark:text-gray-400"}`}>{t(title)}</p>
                     </div>
                 ))}
             </div>

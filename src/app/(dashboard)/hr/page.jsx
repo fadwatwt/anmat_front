@@ -6,7 +6,7 @@ import { useState } from "react";
 import AddingAnEmployeeModal from "@/app/(dashboard)/hr/_modals/AddingAnEmployeeModal.jsx";
 import DepartmentsTab from "@/app/(dashboard)/hr/_Tabs/DepartmentsTab.jsx";
 import RotationTap from "@/app/(dashboard)/hr/_Tabs/RotationTap.jsx";
-import AttendanceTab from "@/app/(dashboard)/hr/_Tabs/AttendanceTab.jsx";
+import AttendanceTab from "@/app/(dashboard)/hr/employees/tabs/AttendanceTab.jsx";
 import FinancialsTab from "@/app/(dashboard)/hr/_Tabs/financialData.jsx";
 import CreateADepartmentModal from "@/app/(dashboard)/hr/_modals/CreateADepartmentModal.jsx";
 import InviteEmployeeModal from "./_modals/InviteEmployeeModal";

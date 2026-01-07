@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -7,6 +8,10 @@ import Modal from "@/components/Modal/Modal.jsx";
 import { updateAttendance } from "@/redux/attendance/attendanceAPI";
 import { fetchAllAttendance } from "@/redux/attendance/attendanceAPI";
 import DateInput from "@/components/Form/DateInput";
+import ElementsSelect from "@/components/Form/ElementsSelect";
+import TimeInput from "@/components/Form/TimeInput";
+import InputWithIcon from "@/components/Form/InputWithIcon";
+import TextAreaWithLabel from "@/components/Form/TextAreaWithLabel";
 import {
   format,
   parseISO,
@@ -21,6 +26,7 @@ function EditAttendanceModal({ isOpen, onClose, attendance }) {
   const dispatch = useDispatch();
   const { loading } = useSelector((state) => state.attendance);
   const [submissionError, setSubmissionError] = useState(null);
+  const { employees } = useSelector((state) => state.employees);
 
   // Improved timezone handling
   const adjustForTimezone = (dateString, timeString) => {
@@ -41,6 +47,13 @@ function EditAttendanceModal({ isOpen, onClose, attendance }) {
       return null;
     }
   };
+
+  const employeeOptions = [
+    { id: "1", element: "Palestine" },
+    { id: "2", element: "َQater" },
+    { id: "3", element: "Oman" },
+    { id: "4", element: "Egpt" },
+  ];
 
   const validationSchema = Yup.object().shape({
     checkinDate: Yup.string().required("Check-in date is required"),
@@ -164,82 +177,71 @@ function EditAttendanceModal({ isOpen, onClose, attendance }) {
       isOpen={isOpen}
       onClose={onClose}
       isBtns={true}
-      btnApplyTitle={"Update Attendance"}
+      btnApplyTitle="Save"
+      btnCancelTitle="Cancel"
       onClick={() => formik.handleSubmit()}
-      className={"lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12"}
-      title={"Edit Attendance Record"}
-      isLoading={loading}
+      className="lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12 px-3"
+      title="Add an employee attendance"
     >
-      <div className="px-1">
+      <div className="px-1 overflow-visible">
         <div className="flex flex-col gap-4">
           {submissionError && (
             <div className="text-red-500 text-sm mb-2">{submissionError}</div>
           )}
 
-          <div className="grid grid-cols-2 gap-4">
-            <DateInput
-              title="Check-in Date"
-              name="checkinDate"
-              value={formik.values.checkinDate}
-              onChange={(e) =>
-                formik.setFieldValue("checkinDate", e.target.value)
-              }
-              onBlur={formik.handleBlur}
-              max={format(new Date(), "yyyy-MM-dd")} // Prevent future dates for check-in
-            />
-            <div className="flex flex-col">
-              <label className="text-sm dark:text-white mb-1">
-                Check-in Time
-              </label>
-              <input
-                type="time"
-                name="checkinTime"
-                value={formik.values.checkinTime}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className="dark:bg-white-0 dark:border-gray-700 border-2 rounded-xl p-2"
-              />
-              {formik.touched.checkinTime && formik.errors.checkinTime && (
-                <div className="text-red-500 text-sm">
-                  {formik.errors.checkinTime}
-                </div>
-              )}
-            </div>
-          </div>
+          <ElementsSelect
+            title="Employee"
+            options={employeeOptions}
+            onChange={(selected) => formik.setFieldValue("employeeId", selected[0]?.id || "")}
+            placeholder="Select Employee"
+            defaultValue={employeeOptions.filter(opt => opt.id === formik.values.employeeId)}
+            isMultiple={false}
+          />
+          {formik.touched.employeeId && formik.errors.employeeId && (
+            <p className="text-red-500 text-xs mt-[-10px]">{formik.errors.employeeId}</p>
+          )}
 
-          <div className="grid grid-cols-2 gap-4">
-            <DateInput
-              title="Check-out Date"
-              name="checkoutDate"
-              value={formik.values.checkoutDate}
-              onChange={(e) =>
-                formik.setFieldValue("checkoutDate", e.target.value || null)
-              }
-              onBlur={formik.handleBlur}
-              min={formik.values.checkinDate}
-              max={getMaxCheckoutDate()}
-              disabled={!formik.values.checkinDate}
-            />
-            <div className="flex flex-col">
-              <label className="text-sm dark:text-white mb-1">
-                Check-out Time
-              </label>
-              <input
-                type="time"
-                name="checkoutTime"
-                value={formik.values.checkoutTime}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className="dark:bg-white-0 dark:border-gray-700 border-2 rounded-xl p-2"
-                disabled={!formik.values.checkoutDate}
-              />
-              {formik.touched.checkoutTime && formik.errors.checkoutTime && (
-                <div className="text-red-500 text-sm">
-                  {formik.errors.checkoutTime}
-                </div>
-              )}
-            </div>
-          </div>
+          <DateInput
+            title="Date"
+            placeholder="Select Date"
+            name="date"
+            value={formik.values.date}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+          />
+          {formik.touched.date && formik.errors.date && (
+            <p className="text-red-500 text-xs mt-[-10px]">{formik.errors.date}</p>
+          )}
+
+          <TimeInput
+            title="Attendance Time"
+            name="attendanceTime"
+            value={formik.values.attendanceTime}
+            onChange={formik.handleChange}
+            isRequired={true}
+            error={formik.touched.attendanceTime && formik.errors.attendanceTime}
+          />
+
+          <InputWithIcon
+            title="Late Minutes"
+            name="lateMinutes"
+            type="number"
+            value={formik.values.lateMinutes}
+            onChange={formik.handleChange}
+            error={formik.touched.lateMinutes && formik.errors.lateMinutes}
+          />
+
+          <TextAreaWithLabel
+            title="Comment"
+            name="comment"
+            value={formik.values.comment}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            placeholder="Comment"
+            rows={4}
+            isOptional={true}
+            error={formik.touched.comment && formik.errors.comment}
+          />
         </div>
       </div>
     </Modal>

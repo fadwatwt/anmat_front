@@ -13,7 +13,7 @@ function SelectWithoutLabel({
   error,
   placeholder,
 }) {
-  const { t,i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   return (
     <div className={`relative flex flex-col gap-1 ${className}`}>
@@ -22,29 +22,29 @@ function SelectWithoutLabel({
           name={name}
           value={value} // Controlled component
           onChange={(e) => {
-             options.find(
-              (opt) => opt._id === e.target.value
+            const selectedValue = e.target.value;
+            options.find(
+              (opt) => (opt._id || opt.id || opt.value) === selectedValue
             );
-            onChange(e.target.value); // Send _id to backend
+            onChange(selectedValue);
           }}
           onBlur={onBlur}
           className={`w-full p-2 text-sub-500 dark:text-gray-400 text-sm bg-transparent border rounded-lg appearance-none transition-all
-            ${
-              error
-                ? "border-red-500 focus:ring-red-500"
-                : "border-soft-200 dark:border-gray-600 focus:ring-primary"
+            ${error
+              ? "border-red-500 focus:ring-red-500"
+              : "border-soft-200 dark:border-gray-600 focus:ring-primary"
             }`}
         >
           <option value="" disabled>
             {placeholder ? t(placeholder) : t(title)}
           </option>
           {options?.map((option) => (
-            <option key={option._id} value={option._id}>
+            <option key={option._id || option.id || option.value} value={option._id || option.id || option.value}>
               {option.name}
             </option>
           ))}
         </select>
-        <div className={`absolute inset-y-0 ${i18n.language === 'ar' ? "left-1 " :"right-3"}  flex items-center pointer-events-none`}>
+        <div className={`absolute inset-y-0 ${i18n.language === 'ar' ? "left-1 " : "right-3"}  flex items-center pointer-events-none`}>
           <IoIosArrowDown />
         </div>
       </div>

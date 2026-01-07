@@ -20,41 +20,42 @@ import {
 import DateInput from "@/components/Form/DateInput.jsx";
 
 function Table({
-                   customTitle = null,
-                   title,
-                   classContainer,
-                   className,
-                   headers,
-                   rows,
-                   isTitle = true,
-                   isActions,
-                   isCheckInput = true,
-                   customActions,
-                   handelEdit,
-                   handelDelete,
-                   showControlBar = false,
-                   viewMode,
-                   onViewModeChange,
-                   selectedDepartment,
-                   onDepartmentChange,
-                   currentDate,
-                   showListOfDepartments = false,
-                   showStatusFilter = false,
-                   statusOptions = [],
-                   selectedStatus,
-                   onStatusChange,
-                   showDatePicker = false,
-                   selectedDate,
-                   classNameCell,
-                   viewModalList,
-                   showIndustryFilter = false,
-                   industryOptions = [],
-                   selectedIndustry,
-                   onIndustryChange,
-                   hideSearchInput = false,
-                   toolbarCustomContent = null,
-                   headerActions = null
-               }) {
+    customTitle = null,
+    title,
+    classContainer,
+    className,
+    headers,
+    rows,
+    isTitle = true,
+    isActions,
+    isCheckInput = true,
+    customActions,
+    handelEdit,
+    handelDelete,
+    showControlBar = false,
+    viewMode,
+    onViewModeChange,
+    selectedDepartment,
+    onDepartmentChange,
+    currentDate,
+    showListOfDepartments = false,
+    showStatusFilter = false,
+    statusOptions = [],
+    selectedStatus,
+    onStatusChange,
+    showDatePicker = false,
+    selectedDate,
+    onDateChange,
+    classNameCell,
+    viewModalList,
+    showIndustryFilter = false,
+    industryOptions = [],
+    selectedIndustry,
+    onIndustryChange,
+    hideSearchInput = false,
+    toolbarCustomContent = null,
+    headerActions = null
+}) {
     const { t, i18n } = useTranslation();
     const [isAllSelected, setIsAllSelected] = useState(false);
     const [selectedRows, setSelectedRows] = useState([]);
@@ -120,11 +121,10 @@ function Table({
                                     {viewModalList?.map((viewModal, index) => (
                                         <button
                                             key={index}
-                                            className={`px-6 rounded-md text-sm dark:text-gray-200 text-gray-900 ${
-                                                viewMode === viewModal.id
-                                                    ? "bg-white text-gray-200 dark:bg-gray-800 shadow-sm"
-                                                    : "bg-transparent"
-                                            } w-[100px] h-[28px]`}
+                                            className={`px-6 rounded-md text-sm dark:text-gray-200 text-gray-900 ${viewMode === viewModal.id
+                                                ? "bg-white text-gray-200 dark:bg-gray-800 shadow-sm"
+                                                : "bg-transparent"
+                                                } w-[100px] h-[28px]`}
                                             onClick={() => onViewModeChange(viewModal.id)}
                                         >
                                             {t(viewModal.title)}
@@ -153,6 +153,7 @@ function Table({
                                     id="date-picker"
                                     name="selectedDate"
                                     value={selectedDate}
+                                    onChange={onDateChange}
                                 />
                             </div>
                         )}
@@ -161,7 +162,7 @@ function Table({
                                 options={industryOptions.length ? industryOptions : defaultStatusOptions}
                                 value={selectedIndustry}
                                 onChange={onIndustryChange}
-                                placeholder={t("Select Industry")}
+                                placeholder={t("Industry")}
                                 className="w-fit"
                             />
                         )}
@@ -170,8 +171,8 @@ function Table({
                                 options={statusOptions.length ? statusOptions : defaultStatusOptions}
                                 value={selectedStatus}
                                 onChange={onStatusChange}
-                                placeholder={t("Select Status")}
-                                className="w-fit"
+                                placeholder={t("Status")}
+                                className="w-28"
                             />
                         )}
                         {showListOfDepartments && (
@@ -180,7 +181,7 @@ function Table({
                                 options={departments}
                                 value={selectedDepartment}
                                 onChange={onDepartmentChange}
-                                placeholder={t("Select Department")}
+                                placeholder={t("Department")}
                             />
                         )}
                         <button className="flex dark:text-gray-400 text-sm items-baseline p-2 gap-2 rounded-lg border border-gray-200 dark:border-gray-600">
@@ -195,80 +196,80 @@ function Table({
             <div className={"flex flex-col min-w-[48rem] gap-5 justify-center dark:bg-gray-800 w-full dark:text-gray-400"}>
                 <table className={"relative table-auto w-full " + className} style={{ borderSpacing: "0 1px" }}>
                     <thead>
-                    <tr className="bg-weak-100 dark:bg-gray-800">
-                        {isCheckInput && (
-                            <th className="px-1 pt-1 w-5 rounded-tl-lg rounded-bl-lg dark:bg-gray-900">
-                                <input
-                                    className="checkbox-custom"
-                                    type="checkbox"
-                                    checked={isAllSelected}
-                                    onChange={handleHeaderCheckboxChange}
-                                />
-                            </th>
-                        )}
-                        {headers?.map((header, index) => (
-                            header && <th
-                                key={index}
-                                className="p-2 text-start text-sm font-normal dark:bg-gray-900 dark:text-gray-300 "
-                                style={{
-                                    width: header.width || "auto",
-                                    borderTopRightRadius: index === headers.length - 1 ? "8px" : "0px",
-                                    borderBottomRightRadius: index === headers.length - 1 ? "8px" : "0px",
-                                }}
-                            >
-                                {typeof header.label === "string" ? t(header.label) : header.label}
-                            </th>
-                        ))}
-                    </tr>
+                        <tr className="bg-weak-100 dark:bg-gray-800">
+                            {isCheckInput && (
+                                <th className="px-1 pt-1 w-5 rounded-tl-lg rounded-bl-lg dark:bg-gray-900">
+                                    <input
+                                        className="checkbox-custom"
+                                        type="checkbox"
+                                        checked={isAllSelected}
+                                        onChange={handleHeaderCheckboxChange}
+                                    />
+                                </th>
+                            )}
+                            {headers?.map((header, index) => (
+                                header && <th
+                                    key={index}
+                                    className="p-2 text-start text-sm font-normal dark:bg-gray-900 dark:text-gray-300 "
+                                    style={{
+                                        width: header.width || "auto",
+                                        borderTopRightRadius: index === headers.length - 1 ? "8px" : "0px",
+                                        borderBottomRightRadius: index === headers.length - 1 ? "8px" : "0px",
+                                    }}
+                                >
+                                    {typeof header.label === "string" ? t(header.label) : header.label}
+                                </th>
+                            ))}
+                        </tr>
                     </thead>
                     <tbody>
-                    {currentRows?.map((row, rowIndex) => {
-                        const actualRowIndex = rowIndex + startIndex;
-                        return (
-                            <tr key={actualRowIndex} className="hover:bg-gray-100 w-full dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
-                                {isCheckInput && (
-                                    <td className="px- py-6 text-center" style={{ borderBottomLeftRadius: "8px" }}>
-                                        <input
-                                            className={"checkbox-custom"}
-                                            type="checkbox"
-                                            checked={selectedRows.includes(actualRowIndex)}
-                                            onChange={() => handleRowCheckboxChange(actualRowIndex)}
-                                        />
-                                    </td>
-                                )}
-                                {row.map((cell, cellIndex) => (
-                                    cell && <td
-                                        key={cellIndex}
-                                        className={"text-sm text-start max-w-10 sm:max-w-24 text-nowrap dark:text-gray-300 " + (classNameCell ? classNameCell : "px-2 py-6")}
-                                        style={{ borderBottomRightRadius: cellIndex === row.length - 1 ? "8px" : "" }}
-                                    >
-                                        {cell}
-                                    </td>
-                                ))}
-                                {(isActions || customActions) && (
-                                    <td className={"dropdown-container"}>
-                                        <PiDotsThreeVerticalBold
-                                            className="cursor-pointer"
-                                            onClick={() => handleDropdownToggle(actualRowIndex)}
-                                        />
-                                        {dropdownOpen === actualRowIndex && (
-                                            <>
-                                                {isActions ? (
-                                                    <ActionsBtns
-                                                        handleEdit={() => handelEdit(actualRowIndex)}
-                                                        handleDelete={() => handelDelete(actualRowIndex)}
-                                                        className={`${i18n.language === "ar" ? "left-0" : "right-0"}`}
-                                                    />
-                                                ) : (
-                                                    typeof customActions === "function" ? customActions(actualRowIndex) : customActions
-                                                )}
-                                            </>
-                                        )}
-                                    </td>
-                                )}
-                            </tr>
-                        );
-                    })}
+                        {currentRows?.map((row, rowIndex) => {
+                            const actualRowIndex = rowIndex + startIndex;
+                            return (
+                                <tr key={actualRowIndex} className="hover:bg-gray-100 w-full dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+                                    {isCheckInput && (
+                                        <td className="px- py-6 text-center" style={{ borderBottomLeftRadius: "8px" }}>
+                                            <input
+                                                className={"checkbox-custom"}
+                                                type="checkbox"
+                                                checked={selectedRows.includes(actualRowIndex)}
+                                                onChange={() => handleRowCheckboxChange(actualRowIndex)}
+                                            />
+                                        </td>
+                                    )}
+                                    {row.map((cell, cellIndex) => (
+                                        cell && <td
+                                            key={cellIndex}
+                                            className={"text-sm text-start max-w-10 sm:max-w-24 text-nowrap dark:text-gray-300 " + (classNameCell ? classNameCell : "px-2 py-6")}
+                                            style={{ borderBottomRightRadius: cellIndex === row.length - 1 ? "8px" : "" }}
+                                        >
+                                            {cell}
+                                        </td>
+                                    ))}
+                                    {(isActions || customActions) && (
+                                        <td className={"dropdown-container"}>
+                                            <PiDotsThreeVerticalBold
+                                                className="cursor-pointer"
+                                                onClick={() => handleDropdownToggle(actualRowIndex)}
+                                            />
+                                            {dropdownOpen === actualRowIndex && (
+                                                <>
+                                                    {isActions ? (
+                                                        <ActionsBtns
+                                                            handleEdit={() => handelEdit(actualRowIndex)}
+                                                            handleDelete={() => handelDelete(actualRowIndex)}
+                                                            className={`${i18n.language === "ar" ? "left-0" : "right-0"}`}
+                                                        />
+                                                    ) : (
+                                                        typeof customActions === "function" ? customActions(actualRowIndex) : customActions
+                                                    )}
+                                                </>
+                                            )}
+                                        </td>
+                                    )}
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
 

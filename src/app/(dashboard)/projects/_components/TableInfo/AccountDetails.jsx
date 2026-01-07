@@ -18,7 +18,7 @@ function AccountDetails({ account, path }) {
           alt={""}
         />
         <div>
-          <p className={"text-sm text-sub-500 dark:text-sub-300"}>
+          <p className={"text-sm text-sub-500 truncate w-full dark:text-sub-300"}>
             {account.name}
           </p>
           {/* <p className="text-xs text-sub-500 dark:text-sub-300">

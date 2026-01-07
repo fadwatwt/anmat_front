@@ -7,19 +7,19 @@ import { useTranslation } from "react-i18next";
 import { createPortal } from "react-dom";
 
 function ElementsSelect({
-                            title,
-                            options,
-                            onChange,
-                            isOption = false,
-                            placeholder,
-                            classNameContainer,
-                            isMultiple = false,
-                            defaultValue = [],
-                            classNameItemSelected,
-                            isRemoveBtn = true,
-                            dropDownClassName,
-                            renderOption,
-                        }) {
+    title,
+    options,
+    onChange,
+    isOption = false,
+    placeholder,
+    classNameContainer,
+    isMultiple = false,
+    defaultValue = [],
+    classNameItemSelected,
+    isRemoveBtn = true,
+    dropDownClassName,
+    renderOption,
+}) {
     const [selectedOptions, setSelectedOptions] = useState(
         Array.isArray(defaultValue) ? defaultValue : []
     );
@@ -28,8 +28,22 @@ function ElementsSelect({
     const dropdownRef = useRef(null);
     const selectTriggerRef = useRef(null);
     const [dropdownStyle, setDropdownStyle] = useState({});
+    const prevDefaultValueIdsRef = useRef('');
 
-    // الدالة المسؤولة عن منطق الاختيار
+    // مزامنة selectedOptions مع defaultValue عند تغييره من الخارج
+    useEffect(() => {
+        if (!Array.isArray(defaultValue)) return;
+
+        // Create a string representation of the IDs for comparison
+        const currentIds = defaultValue.map(opt => opt.id).sort().join(',');
+        const prevIds = prevDefaultValueIdsRef.current;
+
+        // Only update if the IDs actually changed
+        if (currentIds !== prevIds) {
+            prevDefaultValueIdsRef.current = currentIds;
+            setSelectedOptions(defaultValue);
+        }
+    }, [defaultValue]);
     const toggleOptions = (option) => {
         let updatedSelection = [];
 
@@ -119,8 +133,8 @@ function ElementsSelect({
                 <span>{t(title)}</span>
                 {isOption && (
                     <span className="text-xs text-gray-500 flex items-center gap-1">
-            ({t("Option")}) <FaCircleInfo className="text-gray-400" size={14} />
-          </span>
+                        ({t("Option")}) <FaCircleInfo className="text-gray-400" size={14} />
+                    </span>
                 )}
             </label>
 
@@ -143,8 +157,7 @@ function ElementsSelect({
                                         key={option.id}
                                         className={
                                             isMultiple
-                                                ? `text-gray-800 bg-gray-100 rounded-md py-1 px-2 flex gap-1 items-center ${
-                                                    classNameItemSelected || "border border-gray-200"
+                                                ? `text-gray-800 bg-gray-100 rounded-md py-1 px-2 flex gap-1 items-center ${classNameItemSelected || "border border-gray-200"
                                                 }`
                                                 : "text-gray-800 dark:text-gray-200"
                                         }
@@ -163,8 +176,8 @@ function ElementsSelect({
                                 ))
                         ) : (
                             <span className="text-gray-400 dark:text-gray-500">
-                {t(placeholder)}...
-              </span>
+                                {t(placeholder)}...
+                            </span>
                         )}
                         {selectedOptions.some(opt => opt.isSelectAll) && selectedOptions.length > 1 && (
                             <span className="text-blue-600 ml-1 flex items-center">+{selectedOptions.length - 1}</span>
@@ -200,8 +213,8 @@ function ElementsSelect({
                                             renderOption(option)
                                         ) : (
                                             <span className={`text-sm ${option.isSelectAll ? 'font-bold text-blue-600' : 'text-gray-700 dark:text-gray-200'}`}>
-                        {option.element}
-                      </span>
+                                                {option.element}
+                                            </span>
                                         )}
                                     </div>
                                 </div>

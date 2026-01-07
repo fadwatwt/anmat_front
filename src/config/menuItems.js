@@ -47,6 +47,7 @@ export const dashboardSideMenuItems = [
             { title: 'Meetings', path: '/hr/meetings' },
             { title: 'Chats', path: '/hr/chats' },
             { title: 'Holidays', path: '/hr/holidays' },
+            { title: 'Financials', path: '/hr/financials' },
         ]
     },
     {

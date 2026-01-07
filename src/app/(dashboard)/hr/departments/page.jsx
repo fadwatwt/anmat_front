@@ -1,25 +1,27 @@
 "use client";
-import { useState} from "react";
-import {useTranslation} from "react-i18next";
-import {useDispatch} from "react-redux";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
 // استيراد المودالات الخاصة بالأقسام
 import CreateDepartmentModal from "@/app/(dashboard)/hr/departments/modals/CreateDepartment.modal";
+import CreateChatGroupModal from "@/app/(dashboard)/hr/departments/modals/CreateChatGroup.modal";
 import EditAnEmployeeModal from "@/app/(dashboard)/hr/_modals/EditAnEmployeeModal.jsx"; // تأكد من استبداله لاحقاً بمودال تعديل قسم
 import AccountDetails from "@/app/(dashboard)/projects/_components/TableInfo/AccountDetails.jsx";
-import {RiEditLine, RiGroupLine, RiNotification4Line, RiChat1Line, RiDeleteBin7Line} from "@remixicon/react";
+import { RiEditLine, RiGroupLine, RiNotification4Line, RiChat1Line, RiDeleteBin7Line } from "@remixicon/react";
 import StatusActions from "@/components/Dropdowns/StatusActions";
 import SendNotificationModal from "@/app/(dashboard)/hr/employees/modals/SendNotification.modal";
 import Alert from "@/components/Alerts/Alert";
 import Table from "@/components/Tables/Table"
 import Page from "@/components/Page";
-import {departmentsFactory} from "@/functions/FactoryData";
+import { departmentsFactory } from "@/functions/FactoryData";
 
 function DepartmentsPage() {
     const dispatch = useDispatch();
-    const {t} = useTranslation();
+    const { t } = useTranslation();
 
     const [isOpenEditModal, setIsOpenEditModal] = useState(false);
     const [isOpenCreateModal, setIsOpenCreateModal] = useState(false);
+    const [isOpenCreateChatGroupModal, setIsOpenCreateChatGroupModal] = useState(false);
     const [isOpenSendNotifyModal, setIsOpenSendNotifyModal] = useState(false);
 
     const [selectedDepartment, setSelectedDepartment] = useState(null);
@@ -28,20 +30,20 @@ function DepartmentsPage() {
     const [isOpenSuccessDeleteAlert, setIsOpenSuccessDeleteAlert] = useState(false);
 
     const headers = [
-        {label: t("Departments"), width: "250px"},
-        {label: t("No. of Active Tasks / Projects"), width: "200px"},
-        {label: t("No. of Employees"), width: "150px"},
-        {label: "", width: "50px"},
+        { label: t("Departments"), width: "250px" },
+        { label: t("No. of Active Tasks / Projects"), width: "200px" },
+        { label: t("No. of Employees"), width: "150px" },
+        { label: "", width: "50px" },
     ];
 
-    const DepartmentActions = ({actualRowIndex}) => {
-        const {t, i18n} = useTranslation();
+    const DepartmentActions = ({ actualRowIndex }) => {
+        const { t, i18n } = useTranslation();
         const department = departmentsFactory[actualRowIndex];
 
         const statesActions = [
             {
                 text: t("Edit"),
-                icon: <RiEditLine size={20} className="text-primary-400"/>,
+                icon: <RiEditLine size={20} className="text-primary-400" />,
                 onClick: () => {
                     setSelectedDepartment(department);
                     setIsOpenEditModal(true);
@@ -49,7 +51,7 @@ function DepartmentsPage() {
             },
             {
                 text: t("Send Notification"),
-                icon: <RiNotification4Line size={20} className="text-primary-400"/>,
+                icon: <RiNotification4Line size={20} className="text-primary-400" />,
                 onClick: () => {
                     setSelectedDepartment(department);
                     setIsOpenSendNotifyModal(true);
@@ -57,28 +59,28 @@ function DepartmentsPage() {
             },
             {
                 text: t("Create Team"),
-                icon: <RiGroupLine size={20} className="text-primary-400"/>,
+                icon: <RiGroupLine size={20} className="text-primary-400" />,
                 onClick: () => {
                     console.log("Create Team for:", department.name);
                 }
             },
             {
                 text: t("Create Chat Group"),
-                icon: <RiChat1Line size={20} className="text-primary-400"/>,
+                icon: <RiChat1Line size={20} className="text-primary-400" />,
                 onClick: () => {
-                    console.log("Create Chat for:", department.name);
+                    setSelectedDepartment(department);
+                    setIsOpenCreateChatGroupModal(true);
                 }
             },
             {
                 text: t("Delete"),
-                icon: <RiDeleteBin7Line size={20} className="text-red-500"/>,
+                icon: <RiDeleteBin7Line size={20} className="text-red-500" />,
                 onClick: () => handleDeleteDepartment(department),
             }
         ]
         return (
-            <StatusActions states={statesActions} className={`${
-                i18n.language === "ar" ? "left-0" : "right-0"
-            }`}/>
+            <StatusActions states={statesActions} className={`${i18n.language === "ar" ? "left-0" : "right-0"
+                }`} />
         );
     }
 
@@ -129,7 +131,7 @@ function DepartmentsPage() {
                         headers={headers}
                         isActions={false}
                         customActions={(actualRowIndex) => (
-                            <DepartmentActions actualRowIndex={actualRowIndex}/>
+                            <DepartmentActions actualRowIndex={actualRowIndex} />
                         )}
                         rows={DepartmentRowTable(departmentsFactory)}
                         headerActions={
@@ -153,6 +155,15 @@ function DepartmentsPage() {
             <CreateDepartmentModal
                 isOpen={isOpenCreateModal}
                 onClose={() => setIsOpenCreateModal(false)}
+            />
+
+            <CreateChatGroupModal
+                isOpen={isOpenCreateChatGroupModal}
+                onClose={() => {
+                    setIsOpenCreateChatGroupModal(false);
+                    setSelectedDepartment(null);
+                }}
+                departmentData={selectedDepartment}
             />
 
             <SendNotificationModal

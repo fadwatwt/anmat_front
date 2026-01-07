@@ -5,8 +5,8 @@ import EmployeesTap from "@/app/(dashboard)/hr/employees/tabs/Employees.tap.jsx"
 import { useState } from "react";
 import DepartmentsTab from "@/app/(dashboard)/hr/_Tabs/DepartmentsTab.jsx";
 import RotationTap from "@/app/(dashboard)/hr/_Tabs/RotationTap.jsx";
-import AttendanceTab from "@/app/(dashboard)/hr/_Tabs/AttendanceTab.jsx";
-import FinancialsTab from "@/app/(dashboard)/hr/_Tabs/financialData.jsx";
+import AttendanceTab from "@/app/(dashboard)/hr/employees/tabs/AttendanceTab.jsx";
+import SalaryTab from "@/app/(dashboard)/hr/employees/tabs/SalaryTab.jsx";
 import CreateADepartmentModal from "@/app/(dashboard)/hr/_modals/CreateADepartmentModal.jsx";
 import EditAnEmployeeModal from "@/app/(dashboard)/hr/_modals/AddingAnEmployeeModal.jsx";
 import InviteEmployeeModal from "@/app/(dashboard)/hr/_modals/InviteEmployeeModal";
@@ -35,8 +35,8 @@ function HRPage() {
             content: <AttendanceTab />,
         },
         {
-            title: "Financials",
-            content: <FinancialsTab />,
+            title: "Salary",
+            content: <SalaryTab />,
         },
     ];
 

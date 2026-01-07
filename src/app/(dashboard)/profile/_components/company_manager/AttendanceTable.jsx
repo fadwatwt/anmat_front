@@ -12,7 +12,7 @@ import { BsClockFill, BsSlashCircleFill } from "react-icons/bs";
 import { GoCheckCircleFill } from "react-icons/go";
 
 import Alert from "@/components/Alerts/Alert.jsx";
-import EditAttendanceModal from "@/app/(dashboard)/hr/_modals/EditAttendanceModal";
+import EditAttendanceModal from "@/app/(dashboard)/hr/employees/modals/EditAttendanceModal";
 import PropTypes from "prop-types";
 
 export const StatusBadge = ({ status }) => {

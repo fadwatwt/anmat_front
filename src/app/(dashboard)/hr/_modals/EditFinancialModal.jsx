@@ -7,6 +7,9 @@ import Modal from "@/components/Modal/Modal.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import { updateFinancialRecord } from "@/redux/financial/financialAPI";
 import { fetchEmployees } from "@/redux/employees/employeeAPI";
+import { useTranslation } from "react-i18next";
+import ElementsSelect from "@/components/Form/ElementsSelect";
+import InputWithIcon from "@/components/Form/InputWithIcon";
 
 const validationSchema = Yup.object().shape({
   salary: Yup.number()
@@ -18,6 +21,7 @@ const validationSchema = Yup.object().shape({
 });
 
 function EditFinancialModal({ isOpen, onClose, financialId, employeeId }) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { employees } = useSelector((state) => state.employees);
   const { loading } = useSelector(
@@ -83,12 +87,10 @@ function EditFinancialModal({ isOpen, onClose, financialId, employeeId }) {
     },
   });
 
-  // For debugging purposes - check if values are properly set
-  useEffect(() => {
-    if (isOpen) {
-      console.log("Modal is open, form values:", formik.values);
-    }
-  }, [isOpen, formik.values]);
+  const workTypeOptions = [
+    { id: "Full-time", element: t("Full-time") },
+    { id: "Part-time", element: t("Part-time") },
+  ];
 
   return (
     <Modal
@@ -101,79 +103,60 @@ function EditFinancialModal({ isOpen, onClose, financialId, employeeId }) {
       title="Edit Financial Record"
       isLoading={loading}
     >
-      <div className="px-1">
+      <div className="px-1 overflow-visible">
         <div className="flex flex-col gap-4">
           {submissionError && (
             <div className="text-red-500 text-sm mb-2">{submissionError}</div>
           )}
 
-          <div className="flex flex-col">
-            <label className="text-sm dark:text-white mb-1">Salary</label>
-            <input
-              type="number"
-              name="salary"
-              value={formik.values.salary}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              className="dark:bg-white-0 dark:border-gray-700 border-2 rounded-xl p-2"
-            />
-            {formik.touched.salary && formik.errors.salary && (
-              <div className="text-red-500 text-sm">{formik.errors.salary}</div>
-            )}
-          </div>
+          <InputWithIcon
+            title="Salary"
+            name="salary"
+            type="number"
+            value={formik.values.salary}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            icon={<span className="text-gray-500">$</span>}
+            placeholder="0"
+            isRequired={true}
+            error={formik.touched.salary && formik.errors.salary}
+          />
 
-          <div className="flex flex-col">
-            <label className="text-sm dark:text-white mb-1">Bonuses</label>
-            <input
-              type="number"
-              name="bonuses"
-              value={formik.values.bonuses}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              className="dark:bg-white-0 dark:border-gray-700 border-2 rounded-xl p-2"
-            />
-            {formik.touched.bonuses && formik.errors.bonuses && (
-              <div className="text-red-500 text-sm">
-                {formik.errors.bonuses}
-              </div>
-            )}
-          </div>
+          <InputWithIcon
+            title="Bonuses"
+            name="bonuses"
+            type="number"
+            value={formik.values.bonuses}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            icon={<span className="text-gray-500">$</span>}
+            placeholder="0"
+            error={formik.touched.bonuses && formik.errors.bonuses}
+          />
 
-          <div className="flex flex-col">
-            <label className="text-sm dark:text-white mb-1">Deductions</label>
-            <input
-              type="number"
-              name="deductions"
-              value={formik.values.deductions}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              className="dark:bg-white-0 dark:border-gray-700 border-2 rounded-xl p-2"
-            />
-            {formik.touched.deductions && formik.errors.deductions && (
-              <div className="text-red-500 text-sm">
-                {formik.errors.deductions}
-              </div>
-            )}
-          </div>
+          <InputWithIcon
+            title="Deductions"
+            name="deductions"
+            type="number"
+            value={formik.values.deductions}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            icon={<span className="text-gray-500">$</span>}
+            placeholder="0"
+            error={formik.touched.deductions && formik.errors.deductions}
+          />
 
-          <div className="flex flex-col">
-            <label className="text-sm dark:text-white mb-1">Work Type</label>
-            <select
-              name="workType"
-              value={formik.values.workType}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              className="dark:bg-white-0 dark:border-gray-700 border-2 rounded-xl p-2"
-            >
-              <option value="Full-time">Full-time</option>
-              <option value="Part-time">Part-time</option>
-            </select>
-            {formik.touched.workType && formik.errors.workType && (
-              <div className="text-red-500 text-sm">
-                {formik.errors.workType}
-              </div>
-            )}
-          </div>
+          <ElementsSelect
+            title="Work Type"
+            options={workTypeOptions}
+            onChange={(selected) => formik.setFieldValue("workType", selected[0]?.id || "")}
+            placeholder="Select Work Type"
+            defaultValue={workTypeOptions.filter(opt => opt.id === formik.values.workType)}
+            isMultiple={false}
+          />
+          {formik.touched.workType && formik.errors.workType && (
+            <p className="text-red-500 text-xs mt-[-10px]">{formik.errors.workType}</p>
+          )}
         </div>
       </div>
     </Modal>

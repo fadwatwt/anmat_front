@@ -1,4 +1,4 @@
-import {getTimeDifference} from "./Days.js";
+import { getTimeDifference } from "./Days.js";
 const members = [
     {
         name: "Bob Brown",
@@ -260,9 +260,9 @@ const activityLogs = [
 ];
 
 const filterOptions = [
-    {id:"deadLine",name:"dead line"},
-    {id:"startDate",name:"start date"},
-    {id:"department",name:"department"}
+    { id: "deadLine", name: "dead line" },
+    { id: "startDate", name: "start date" },
+    { id: "department", name: "department" }
 ]
 
 
@@ -330,9 +330,9 @@ const projects = [
 ];
 
 
- const employeesFactory = [
+const employeesFactory = [
     {
-        id:"1",
+        id: "1",
         name: "Fatma Ahmed Moh",
         email: "fatma@gmail.com",
         role: "Product Manager",
@@ -343,7 +343,7 @@ const projects = [
         imageProfile: "https://images.squarespace-cdn.com/content/v1/58865912a5790a87a29447e5/1501777422700-0WW6HYF16XLP8ZTJ0PMU/Image+Profile+Photography2.jpg"
     },
     {
-        id:"2",
+        id: "2",
         name: "Ali Hassan",
         email: "alihassan@gmail.com",
         role: "Software Engineer",
@@ -354,7 +354,7 @@ const projects = [
         imageProfile: "https://randomuser.me/api/portraits/men/1.jpg"
     },
     {
-        id:"3",
+        id: "3",
         name: "Sara Khaled",
         email: "sarakha@gmail.com",
         role: "UX Designer",
@@ -365,7 +365,7 @@ const projects = [
         imageProfile: "https://randomuser.me/api/portraits/women/2.jpg"
     },
     {
-        id:"5",
+        id: "5",
         name: "Fatma Ahmed Moh",
         email: "fatmaahmed@gmail.com",
         role: "Product Manager",
@@ -376,7 +376,7 @@ const projects = [
         imageProfile: "https://images.squarespace-cdn.com/content/v1/58865912a5790a87a29447e5/1501777422700-0WW6HYF16XLP8ZTJ0PMU/Image+Profile+Photography2.jpg"
     },
     {
-        id:"6",
+        id: "6",
         name: "Ali Hassan",
         role: "Software Engineer",
         email: "ali@gmail.com",
@@ -387,7 +387,7 @@ const projects = [
         imageProfile: "https://randomuser.me/api/portraits/men/1.jpg"
     },
     {
-        id:"7",
+        id: "7",
         name: "Sara Khaled",
         email: "saraa@gmail.com",
         role: "UX Designer",
@@ -400,16 +400,16 @@ const projects = [
 ];
 
 export const departments = [
-  { value: "all", name: "Departments" },
-  { value: "Development", name: "Development" },
-  { value: "Design", name: "Design" },
-  { value: "Publishing", name: "Publishing" },
+    { value: "all", name: "Departments" },
+    { value: "Development", name: "Development" },
+    { value: "Design", name: "Design" },
+    { value: "Publishing", name: "Publishing" },
 ];
 export const defaultStatusOptions = [
-  { value: "all", name: "Status" },
-  { value: "ontime", name: "On Time" },
-  { value: "late", name: "Late" },
-  { value: "absent", name: "Absent" },
+    { value: "all", name: "Status" },
+    { value: "ontime", name: "On Time" },
+    { value: "late", name: "Late" },
+    { value: "absent", name: "Absent" },
 ];
 
 export const MoanyReceivingMethods = [
@@ -712,7 +712,115 @@ const departmentsFactory = [
 
 
 
-export {tasks,date1,date2,
+const teamsFactory = [
+    {
+        id: "1",
+        name: "Software Team",
+        icon: "https://api.dicebear.com/7.x/identicon/svg?seed=soft",
+        relatedModel: {
+            name: "Publishing Solutions Department",
+            type: "Department", // Optional: to distinguish type if needed
+            image: "https://api.dicebear.com/7.x/identicon/svg?seed=pub"
+        },
+        department: "Publishing Solutions Department", // Keep for backward compatibility if needed, or remove
+        leader: {
+            name: "Fatma Ahmed",
+            imageProfile: "https://images.squarespace-cdn.com/content/v1/58865912a5790a87a29447e5/1501777422700-0WW6HYF16XLP8ZTJ0PMU/Image+Profile+Photography2.jpg"
+        },
+        members: [
+            { imageProfile: "https://randomuser.me/api/portraits/men/1.jpg" },
+            { imageProfile: "https://randomuser.me/api/portraits/women/2.jpg" },
+            { imageProfile: "https://randomuser.me/api/portraits/men/3.jpg" },
+            { imageProfile: "https://randomuser.me/api/portraits/women/4.jpg" }
+        ],
+        members_count: 9, // Additional members count
+        projects_count: 35,
+        tasks_count: 35,
+        employees_count: 35,
+        score: 4.5
+    },
+    {
+        id: "2",
+        name: "Software Team",
+        icon: "https://api.dicebear.com/7.x/identicon/svg?seed=soft2",
+        relatedModel: {
+            name: "Pulse Dashboard",
+            type: "Project",
+            typeSubtitle: "Developing a dashboard for...",
+            image: "https://api.dicebear.com/7.x/identicon/svg?seed=pulse"
+        },
+        department: "Development",
+        leader: {
+            name: "Fatma Ahmed",
+            imageProfile: "https://images.squarespace-cdn.com/content/v1/58865912a5790a87a29447e5/1501777422700-0WW6HYF16XLP8ZTJ0PMU/Image+Profile+Photography2.jpg"
+        },
+        members: [
+            { imageProfile: "https://randomuser.me/api/portraits/men/5.jpg" },
+            { imageProfile: "https://randomuser.me/api/portraits/women/6.jpg" },
+            { imageProfile: "https://randomuser.me/api/portraits/men/7.jpg" }
+        ],
+        members_count: 9,
+        projects_count: 35,
+        tasks_count: 35,
+        employees_count: 35,
+        score: 4.8
+    },
+    {
+        id: "3",
+        name: "Software Team",
+        icon: "https://api.dicebear.com/7.x/identicon/svg?seed=soft3",
+        relatedModel: {
+            name: "Publishing Solutions Dept...",
+            type: "Department",
+            image: "https://api.dicebear.com/7.x/identicon/svg?seed=pub2"
+        },
+        department: "Design",
+        leader: {
+            name: "Fatma Ahmed",
+            imageProfile: "https://images.squarespace-cdn.com/content/v1/58865912a5790a87a29447e5/1501777422700-0WW6HYF16XLP8ZTJ0PMU/Image+Profile+Photography2.jpg"
+        },
+        members: [
+            { imageProfile: "https://randomuser.me/api/portraits/women/8.jpg" },
+            { imageProfile: "https://randomuser.me/api/portraits/men/9.jpg" },
+            { imageProfile: "https://randomuser.me/api/portraits/women/10.jpg" },
+            { imageProfile: "https://randomuser.me/api/portraits/men/11.jpg" }
+        ],
+        members_count: 9,
+        projects_count: 35,
+        tasks_count: 35,
+        employees_count: 35,
+        score: 4.2
+    },
+    {
+        id: "4",
+        name: "Software Team",
+        icon: "https://api.dicebear.com/7.x/identicon/svg?seed=soft4",
+        relatedModel: {
+            name: "Publishing Solutions Dept...",
+            type: "Department",
+            image: "https://api.dicebear.com/7.x/identicon/svg?seed=pub3"
+        },
+        department: "Publishing",
+        leader: {
+            name: "Fatma Ahmed",
+            imageProfile: "https://images.squarespace-cdn.com/content/v1/58865912a5790a87a29447e5/1501777422700-0WW6HYF16XLP8ZTJ0PMU/Image+Profile+Photography2.jpg"
+        },
+        members: [
+            { imageProfile: "https://randomuser.me/api/portraits/men/12.jpg" },
+            { imageProfile: "https://randomuser.me/api/portraits/women/13.jpg" },
+            { imageProfile: "https://randomuser.me/api/portraits/men/14.jpg" }
+        ],
+        members_count: 9,
+        projects_count: 35,
+        tasks_count: 35,
+        employees_count: 35,
+        score: 4.9
+    }
+];
+
+export {
+    tasks, date1, date2,
     members,
-    activityLogs,comments,attachments,
-    filterOptions,employeesFactory,projects,tasksRows,departmentsFactory}
+    activityLogs, comments, attachments,
+    filterOptions, employeesFactory, projects, tasksRows, departmentsFactory, teamsFactory
+}

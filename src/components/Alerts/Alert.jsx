@@ -6,19 +6,19 @@ import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 
 function Alert({
-                   type = "success",
-                   title = "",
-                   message,
-                   isOpen,
-                   onClose,
-                   isBtns = false,
-                   titleSubmitBtn,
-                   titleCancelBtn,
-                   onSubmit,
-                   cancelColor = "gray",
-                   hideCancelBtn = false,
-                   hideConfirmBtn = false
-               }) {
+    type = "success",
+    title = "",
+    message,
+    isOpen,
+    onClose,
+    isBtns = false,
+    titleSubmitBtn,
+    titleCancelBtn,
+    onSubmit,
+    cancelColor = "gray",
+    hideCancelBtn = false,
+    hideConfirmBtn = false
+}) {
     const { t } = useTranslation();
 
     const handleSubmit = () => {
@@ -80,7 +80,7 @@ function Alert({
                 </div>
 
                 <div className="flex flex-col justify-center items-center gap-2">
-                    <div className="text-center text-wrap text-md dark:text-sub-300 text-gray-600 leading-relaxed px-4">
+                    <div className="text-center text-wrap text-md dark:text-sub-300 text-gray-900 leading-relaxed px-4">
                         {typeof message === "string" ? t(message) : message}
                     </div>
                 </div>
