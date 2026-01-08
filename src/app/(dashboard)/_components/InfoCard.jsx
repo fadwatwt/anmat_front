@@ -13,17 +13,17 @@ import { translateDate } from "@/functions/Days.js";
 import ActionsBtns from "@/components/ActionsBtns.jsx";
 import useDropdown from "@/Hooks/useDropdown.js";
 
-function InfoCard({ type,handelEditAction }) {
+function InfoCard({ type, data, handelEditAction }) {
     const { t } = useTranslation();
     const [dropdownOpen, setDropdownOpen] = useDropdown();
 
-    const name = type === "project" ? "Project Omega" : "Taking a good look at the current website design.";
+    const name = data?.name || data?.title || (type === "project" ? "Project Omega" : "Taking a good look at the current website design.");
 
-    const description = type === "project" ?
+    const description = data?.description || (type === "project" ?
         "The website could really use a makeover to make it more user-friendly and visually appealing. We want to go for a fresh, modern look that keeps up with the latest design trends. The new design should make it super easy to navigate and read" :
-        "Revamp the website to enhance user-friendliness and visual appeal. Aim for a sleek, contemporary design that aligns with current trends. The updated layout should prioritize easy navigation and readability.";
+        "Revamp the website to enhance user-friendliness and visual appeal. Aim for a sleek, contemporary design that aligns with current trends. The updated layout should prioritize easy navigation and readability.");
 
-    const stages = type === "project" ? [
+    const stages = data?.stages || (type === "project" ? [
         "Taking a good look at the current website design.",
         "Working with the UI/UX team to sketch out some wireframes and mockups.",
         "Tweaking the design based on what everyone thinks.",
@@ -35,7 +35,9 @@ function InfoCard({ type,handelEditAction }) {
         "Refine the design based on team feedback.",
         "Implement the final design changes using HTML, CSS, and JavaScript.",
         "Conduct testing across multiple devices and browsers."
-    ];
+    ]);
+
+    const status = data?.status || "Active";
 
     const stagesTitle = type === "project" ? "Key Tasks" : "Task Steps";
 
@@ -48,7 +50,7 @@ function InfoCard({ type,handelEditAction }) {
             <div className={"title-header re w-full flex justify-between items-center"}>
                 <div className={"flex gap-2"}>
                     <p className={"text-xl dark:text-gray-200"}>{name}</p>
-                    <Status type={"Active"} title={"Active"} />
+                    <Status type={status} title={status} />
                 </div>
                 <div className="relative cursor-pointer flex-1 flex justify-end dropdown-container" onClick={handleDropdownToggle}>
                     <PiDotsThreeVerticalBold />
@@ -71,17 +73,17 @@ function InfoCard({ type,handelEditAction }) {
             </div>
 
             {type === "project" && (
-                <ProjectProgress lastUpdate={"2025-01-12T08:00:00"} progress={"28"} />
+                <ProjectProgress lastUpdate={data?.lastUpdate || "2025-01-12T08:00:00"} progress={data?.progress || "28"} />
             )}
 
             <div className={"flex p-4 h-full rounded-xl bg-veryWeak-50 dark:bg-veryWeak-500 justify-between"}>
-                <IconWithTitleAndNumber title={"All Tasks"} icon={<FaTasks className={"text-primary-400 dark:text-primary-base"} />} text={"15"} />
+                <IconWithTitleAndNumber title={"All Tasks"} icon={<FaTasks className={"text-primary-400 dark:text-primary-base"} />} text={data?.totalTasks || "15"} />
                 <div className="line w-[1px] bg-gray-300"></div>
-                <IconWithTitleAndNumber title={"Completed Tasks"} icon={<FaCircleCheck className={"text-green-600 dark:text-green-400"} />} text={"4"} />
+                <IconWithTitleAndNumber title={"Completed Tasks"} icon={<FaCircleCheck className={"text-green-600 dark:text-green-400"} />} text={data?.completedTasks || "4"} />
                 <div className="line w-[1px] bg-gray-300"></div>
-                <IconWithTitleAndNumber title={"Assigned Date"} icon={<HiOutlineCalendarDateRange className={"text-cyan-600"} />} date={"2025-03-16T14:30:00"} />
+                <IconWithTitleAndNumber title={"Assigned Date"} icon={<HiOutlineCalendarDateRange className={"text-cyan-600"} />} date={data?.assignedDate || "2025-03-16T14:30:00"} />
                 <div className="line w-[1px] bg-gray-300"></div>
-                <IconWithTitleAndNumber title={"Due Date"} icon={<HiOutlineCalendarDateRange />} date={"2025-01-15T14:30:00"} />
+                <IconWithTitleAndNumber title={"Due Date"} icon={<HiOutlineCalendarDateRange />} date={data?.dueDate || "2025-01-15T14:30:00"} />
             </div>
         </div>
     );
@@ -117,7 +119,8 @@ TaskOrStage.propTypes = {
 
 InfoCard.propTypes = {
     type: PropTypes.oneOf(["project", "task"]).isRequired,
-    handelEditAction:PropTypes.func
+    data: PropTypes.object,
+    handelEditAction: PropTypes.func
 };
 
 IconWithTitleAndNumber.propTypes = {

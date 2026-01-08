@@ -147,7 +147,7 @@ function ElementsSelect({
                     ref={selectTriggerRef}
                     className="flex items-center gap-2 min-h-[40px] dark:bg-white-0 border border-gray-300 dark:border-gray-500 rounded-[10px] p-[10px] box-border text-xs cursor-pointer focus-within:ring-2 focus-within:ring-blue-500"
                 >
-                    <div className="flex-1 flex flex-wrap gap-1 overflow-hidden">
+                    <div className="flex-1 flex gap-1 overflow-x-auto whitespace-nowrap overflow-y-hidden custom-scrollbar">
                         {selectedOptions.length > 0 ? (
                             // عرض العناصر المختارة (تجنب عرض "الكل" كـ Tag إذا كنت تفضل ذلك)
                             selectedOptions

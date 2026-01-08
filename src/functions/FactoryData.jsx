@@ -21,72 +21,117 @@ const members = [
 const tasksRows = [
     {
         id: "1",
-        title: "Pulse Dashboard",
-        description: "Developing a dashboard for real-time performance.",
-        path: "/tasks/pulse_dashboard",
-        members: members,
+        title: "Pulse Dashboard: User Engagement Metrics",
+        description: "Developing a dashboard for real-time performance tracking and user metrics.",
+        path: "/tasks/1-pulse-dashboard",
+        assignedTo: [
+            { name: "Zainab Al-Hakim", imageProfile: "https://ui-avatars.com/api/?name=Zainab+Al-Hakim" }
+        ],
+        members: [
+            { name: "Zainab Al-Hakim", imageProfile: "https://ui-avatars.com/api/?name=Zainab+Al-Hakim" }
+        ],
         maxVisibleMembers: 3,
         account: {
-            name: "Fatma Ahmed Moh",
+            name: "Zainab Al-Hakim",
             rule: "Product Manager",
-            imageProfile: "https://images.squarespace-cdn.com/content/v1/58865912a5790a87a29447e5/1501777422700-0WW6HYF16XLP8ZTJ0PMU/Image+Profile+Photography2.jpg"
+            imageProfile: "https://ui-avatars.com/api/?name=Zainab+Al-Hakim"
         },
-        dateStart: "2025-01-16T10:00:00",
+        dateStart: "2024-11-15T10:00:00",
         dateEnd: "2025-01-16T10:00:00",
-        priority: { type: "Medium", title: "Medium" },
-        status: { type: "Scheduled", title: "Scheduled" },
+        startDate: "2024-11-15T10:00:00",
+        endDate: "2025-01-16T10:00:00",
+        assignedDate: "2024-11-15T10:00:00",
+        dueDate: "2025-01-16T10:00:00",
+        priority: "Urgent",
+        status: "In Review",
+        stages: [
+            "Assess the current website design thoroughly.",
+            "Collaborate with the UI/UX team to create detailed wireframes and mockups.",
+            "Refine the design based on team feedback.",
+            "Implement the final design changes using HTML, CSS, and JavaScript.",
+            "Conduct testing across multiple devices and browsers."
+        ],
+        totalTasks: "15",
+        completedTasks: "4"
     },
     {
         id: "2",
-        title: "Pulse Dashboard",
-        description: "Developing a dashboard for real-time performance.",
-        path: "/tasks/pulse_dashboard",
-        members: members,
+        title: "Pulse Dashboard: User Engagement Metrics",
+        description: "Developing a dashboard for real-time performance tracking and user metrics.",
+        path: "/tasks/2-pulse-dashboard",
+        assignedTo: [
+            { name: "Zainab Al-Hakim", imageProfile: "https://ui-avatars.com/api/?name=Zainab+Al-Hakim" }
+        ],
+        members: [
+            { name: "Zainab Al-Hakim", imageProfile: "https://ui-avatars.com/api/?name=Zainab+Al-Hakim" }
+        ],
         maxVisibleMembers: 3,
         account: {
-            name: "Fatma Ahmed Moh",
+            name: "Zainab Al-Hakim",
             rule: "Product Manager",
-            imageProfile: "https://images.squarespace-cdn.com/content/v1/58865912a5790a87a29447e5/1501777422700-0WW6HYF16XLP8ZTJ0PMU/Image+Profile+Photography2.jpg"
+            imageProfile: "https://ui-avatars.com/api/?name=Zainab+Al-Hakim"
         },
-        dateStart: "2025-01-16T10:00:00",
+        dateStart: "2024-11-15T10:00:00",
         dateEnd: "2025-01-16T10:00:00",
-        priority: { type: "Low", title: "Low" },
-        status: { type: "Delayed", title: "Delayed" },
+        startDate: "2024-11-15T10:00:00",
+        endDate: "2025-01-16T10:00:00",
+        assignedDate: "2024-11-15T10:00:00",
+        dueDate: "2025-01-16T10:00:00",
+        priority: "High",
+        status: "In Review",
     },
     {
         id: "3",
-        title: "Pulse Dashboard",
-        description: "Developing a dashboard for real-time performance.",
-        path: "/tasks/pulse_dashboard",
-        members: members,
+        title: "Pulse Dashboard: User Engagement Metrics",
+        description: "Developing a dashboard for real-time performance tracking and user metrics.",
+        path: "/tasks/3-pulse-dashboard",
+        assignedTo: [
+            { name: "Zainab Al-Hakim", imageProfile: "https://ui-avatars.com/api/?name=Zainab+Al-Hakim" }
+        ],
+        members: [
+            { name: "Zainab Al-Hakim", imageProfile: "https://ui-avatars.com/api/?name=Zainab+Al-Hakim" }
+        ],
         maxVisibleMembers: 3,
         account: {
-            name: "Fatma Ahmed Moh",
+            name: "Zainab Al-Hakim",
             rule: "Product Manager",
-            imageProfile: "https://images.squarespace-cdn.com/content/v1/58865912a5790a87a29447e5/1501777422700-0WW6HYF16XLP8ZTJ0PMU/Image+Profile+Photography2.jpg"
+            imageProfile: "https://ui-avatars.com/api/?name=Zainab+Al-Hakim"
         },
-        dateStart: "2025-01-16T10:00:00",
+        dateStart: "2024-11-15T10:00:00",
         dateEnd: "2025-01-16T10:00:00",
-        priority: { type: "High", title: "High" },
-        status: { type: "Inactive", title: "Inactive" },
+        startDate: "2024-11-15T10:00:00",
+        endDate: "2025-01-16T10:00:00",
+        assignedDate: "2024-11-15T10:00:00",
+        dueDate: "2025-01-16T10:00:00",
+        priority: "Low",
+        status: "Active",
     },
     {
         id: "4",
-        title: "Pulse Dashboard",
-        description: "Developing a dashboard for real-time performance.",
-        path: "/tasks/pulse_dashboard",
-        members: members,
+        title: "Pulse Dashboard: User Engagement Metrics",
+        description: "Developing a dashboard for real-time performance tracking and user metrics.",
+        path: "/tasks/4-pulse-dashboard",
+        assignedTo: [
+            { name: "Zainab Al-Hakim", imageProfile: "https://ui-avatars.com/api/?name=Zainab+Al-Hakim" }
+        ],
+        members: [
+            { name: "Zainab Al-Hakim", imageProfile: "https://ui-avatars.com/api/?name=Zainab+Al-Hakim" }
+        ],
         maxVisibleMembers: 3,
         account: {
-            name: "Fatma Ahmed Moh",
+            name: "Zainab Al-Hakim",
             rule: "Product Manager",
-            imageProfile: "https://images.squarespace-cdn.com/content/v1/58865912a5790a87a29447e5/1501777422700-0WW6HYF16XLP8ZTJ0PMU/Image+Profile+Photography2.jpg"
+            imageProfile: "https://ui-avatars.com/api/?name=Zainab+Al-Hakim"
         },
-        dateStart: "2025-01-16T10:00:00",
+        dateStart: "2024-11-15T10:00:00",
         dateEnd: "2025-01-16T10:00:00",
-        priority: { type: "Urgent", title: "Urgent" },
-        status: { type: "Active", title: "Active" },
-    }
+        startDate: null,
+        endDate: null,
+        assignedDate: "2024-11-15T10:00:00",
+        dueDate: "2025-01-16T10:00:00",
+        priority: "Medium",
+        status: "In Progress",
+    },
 ];
 const date1 = "2025-01-15T14:30:00";
 const date2 = "2025-01-13T13:40:00";

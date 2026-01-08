@@ -1,5 +1,5 @@
 "use client";
-import {useState, useEffect, useRef, useMemo} from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import {
   Paperclip,
   Smile,
@@ -12,6 +12,7 @@ import Page from "@/components/Page.jsx";
 import { RiArrowLeftSLine, RiArrowRightSLine } from "@remixicon/react";
 import SchedulingMeeting from "@/app/(dashboard)/conversations/_modal/SchedulingMeeting.jsx";
 import { IoAdd } from "react-icons/io5";
+import CreateChatGroupModal from "@/app/(dashboard)/hr/chats/modals/CreateChatGroupModal";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -60,19 +61,20 @@ const ConversationPage = () => {
   const [showRightSidebar, setShowRightSidebar] = useState(false);
   const [showLeftSidebar, setShowLeftSidebar] = useState(false);
   const [isOpenSchedulingMeeting, setIsOpenSchedulingMeeting] = useState(false);
+  const [isCreateChatOpen, setIsCreateChatOpen] = useState(false);
   const [socket, setSocket] = useState(null);
 
   // Get current user ID from localStorage or auth state
-  const currentUserId =  typeof window !== "undefined" ? localStorage.getItem("userId") : null;
-  const userName =  typeof window !== "undefined" ? localStorage.getItem("userName") : null;
+  const currentUserId = typeof window !== "undefined" ? localStorage.getItem("userId") : null;
+  const userName = typeof window !== "undefined" ? localStorage.getItem("userName") : null;
 
   // Merged messages (API + temp)
   const messages = messagesData?.messages || [];
   const allMessages = useMemo(() => [...messages, ...tempMessages], [messages, tempMessages]);
 
-// Initialize socket connection
+  // Initialize socket connection
   useEffect(() => {
-    const token =  typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
     if (token) {
       const socketInstance = initSocket(token);
       setSocket(socketInstance);
@@ -108,10 +110,10 @@ const ConversationPage = () => {
             };
 
             dispatch(
-                addTempMessage({
-                  chatId: data.chatId,
-                  message: formattedMessage,
-                })
+              addTempMessage({
+                chatId: data.chatId,
+                message: formattedMessage,
+              })
             );
 
             if (socketInstance) {
@@ -129,11 +131,11 @@ const ConversationPage = () => {
         }
 
         dispatch(
-            updateChatLastMessage({
-              chatId: data.chatId,
-              message: data.message.content,
-              timestamp: data.message.timestamp,
-            })
+          updateChatLastMessage({
+            chatId: data.chatId,
+            message: data.message.content,
+            timestamp: data.message.timestamp,
+          })
         );
 
         refetchChats();
@@ -157,7 +159,7 @@ const ConversationPage = () => {
     }
   }, [dispatch, currentUserId, activeChat, refetchMessages, refetchChats]);
 
-// Auto-scroll to bottom when messages change
+  // Auto-scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [allMessages]);
@@ -284,7 +286,7 @@ const ConversationPage = () => {
         avatar: isCurrentUser
           ? null
           : msg.sender?.avatar ||
-            "https://randomuser.me/api/portraits/men/32.jpg",
+          "https://randomuser.me/api/portraits/men/32.jpg",
         reaction: msg.reaction || null,
         status: msg.status || "delivered",
       };
@@ -421,9 +423,8 @@ const ConversationPage = () => {
         {/* Left Sidebar */}
         <div
           className={`w-60 border-r border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-700 
-          ${
-            showLeftSidebar ? "block" : "hidden"
-          } md:block fixed md:relative top-0 left-0 h-full z-40`}
+          ${showLeftSidebar ? "block" : "hidden"
+            } md:block fixed md:relative top-0 left-0 h-full z-40`}
         >
           {showLeftSidebar && (
             <button
@@ -436,21 +437,19 @@ const ConversationPage = () => {
           {/* Tabs form here till end need to be modified*/}
           <div className="flex border-b border-gray-200 dark:border-veryWeak-500">
             <button
-              className={`flex-1 py-4 text-center dark:text-gray-200 ${
-                activeTab === "Chats"
-                  ? "border-b-2 border-blue-500 text-blue-600"
-                  : "text-gray-700"
-              }`}
+              className={`flex-1 py-4 text-center dark:text-gray-200 ${activeTab === "Chats"
+                ? "border-b-2 border-blue-500 text-blue-600"
+                : "text-gray-700"
+                }`}
               onClick={() => setActiveTab("Chats")}
             >
               {t("Chats")}
             </button>
             <button
-              className={`flex-1 py-4 text-center dark:text-gray-200 ${
-                activeTab === "Meetings"
-                  ? "border-b-2 border-blue-500 text-blue-600 "
-                  : "text-gray-700"
-              }`}
+              className={`flex-1 py-4 text-center dark:text-gray-200 ${activeTab === "Meetings"
+                ? "border-b-2 border-blue-500 text-blue-600 "
+                : "text-gray-700"
+                }`}
               onClick={() => setActiveTab("Meetings")}
             >
               {t("Meetings")}
@@ -465,6 +464,13 @@ const ConversationPage = () => {
             >
               <span className="text-lg">+</span>
               <span>{t("Schedule a Meeting")}</span>
+            </button>
+            <button
+              onClick={() => setIsCreateChatOpen(true)}
+              className="flex items-center text-blue-600 gap-2 dark:text-primary-200 mt-2"
+            >
+              <span className="text-lg">+</span>
+              <span>{t("Create Chat Group")}</span>
             </button>
           </div>
 
@@ -505,9 +511,8 @@ const ConversationPage = () => {
                   onClick={() => handleChatSelect(chat._id)}
                 >
                   <div
-                    className={`px-3 py-3 flex items-start gap-3 hover:bg-gray-100 hover:dark:bg-gray-900 cursor-pointer ${
-                      chat.isActive ? "bg-gray-100 dark:bg-gray-900" : ""
-                    }`}
+                    className={`px-3 py-3 flex items-start gap-3 hover:bg-gray-100 hover:dark:bg-gray-900 cursor-pointer ${chat.isActive ? "bg-gray-100 dark:bg-gray-900" : ""
+                      }`}
                   >
                     <Avatar avatar={chat.avatar} color={chat.avatarColor} />
                     <div className="flex-1 min-w-0">
@@ -695,9 +700,8 @@ const ConversationPage = () => {
         {/* Right Sidebar */}
         <div
           className={`w-60 border-l border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-700 
-          ${
-            showRightSidebar ? "block" : "hidden"
-          } md:block fixed md:relative top-0 right-0 h-full z-40 max-h-[100vh-72px] overflow-y-auto`}
+          ${showRightSidebar ? "block" : "hidden"
+            } md:block fixed md:relative top-0 right-0 h-full z-40 max-h-[100vh-72px] overflow-y-auto`}
         >
           {showRightSidebar && (
             <button
@@ -725,21 +729,19 @@ const ConversationPage = () => {
           {/* Tabs */}
           <div className="flex border-b border-gray-200 dark:border-veryWeak-500">
             <button
-              className={`flex-1 py-3 text-center ${
-                activeRightTab === "Attachments"
-                  ? "border-b-2 border-blue-500 text-blue-600 dark:text-primary-200 "
-                  : "text-gray-700 dark:text-gray-400"
-              }`}
+              className={`flex-1 py-3 text-center ${activeRightTab === "Attachments"
+                ? "border-b-2 border-blue-500 text-blue-600 dark:text-primary-200 "
+                : "text-gray-700 dark:text-gray-400"
+                }`}
               onClick={() => setActiveRightTab("Attachments")}
             >
               {t("Attachments")}
             </button>
             <button
-              className={`flex-1 py-3 text-center ${
-                activeRightTab === "Main points"
-                  ? "border-b-2 border-blue-500 text-blue-600 dark:text-primary-200"
-                  : "text-gray-700 dark:text-gray-400"
-              }`}
+              className={`flex-1 py-3 text-center ${activeRightTab === "Main points"
+                ? "border-b-2 border-blue-500 text-blue-600 dark:text-primary-200"
+                : "text-gray-700 dark:text-gray-400"
+                }`}
               onClick={() => setActiveRightTab("Main points")}
             >
               {t("Main points")}
@@ -863,6 +865,11 @@ const ConversationPage = () => {
       <SchedulingMeeting
         isOpen={isOpenSchedulingMeeting}
         onClose={handelSchedulingMeeting}
+      />
+
+      <CreateChatGroupModal
+        isOpen={isCreateChatOpen}
+        onClose={() => setIsCreateChatOpen(false)}
       />
     </Page>
   );

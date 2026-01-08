@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import {
     MdOutlineKeyboardArrowLeft,
     MdOutlineKeyboardArrowRight,
@@ -62,6 +63,7 @@ function Table({
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [dropdownOpen, setDropdownOpen] = useDropdown();
+    const [dropdownPosition, setDropdownPosition] = useState({});
 
     const totalPages = Math.ceil(rows.length / rowsPerPage);
 
@@ -76,8 +78,19 @@ function Table({
         setSelectedRows(newSelectedRows);
     };
 
-    const handleDropdownToggle = (index) => {
-        setDropdownOpen(dropdownOpen === index ? null : index);
+    const handleDropdownToggle = (index, event) => {
+        if (dropdownOpen === index) {
+            setDropdownOpen(null);
+        } else {
+            const rect = event.currentTarget.getBoundingClientRect();
+            setDropdownPosition({
+                top: rect.bottom + window.scrollY,
+                left: rect.left + window.scrollX,
+                right: rect.right + window.scrollX,
+                width: rect.width
+            });
+            setDropdownOpen(index);
+        }
     };
 
     const handleRowCheckboxChange = (rowIndex) => {
@@ -250,20 +263,34 @@ function Table({
                                         <td className={"dropdown-container"}>
                                             <PiDotsThreeVerticalBold
                                                 className="cursor-pointer"
-                                                onClick={() => handleDropdownToggle(actualRowIndex)}
+                                                onClick={(e) => handleDropdownToggle(actualRowIndex, e)}
                                             />
-                                            {dropdownOpen === actualRowIndex && (
-                                                <>
+                                            {dropdownOpen === actualRowIndex && createPortal(
+                                                <div
+                                                    className="dropdown-container w-fit text-nowrap"
+                                                    style={{
+                                                        position: "absolute",
+                                                        top: dropdownPosition.top,
+                                                        // LTR: Align right edge of menu with right edge of button
+                                                        // RTL: Align left edge of menu with left edge of button
+                                                        left: i18n?.language === "ar" ? dropdownPosition.left : dropdownPosition.right,
+                                                        transform: i18n?.language === "ar" ? "" : "translateX(-100%)",
+                                                        zIndex: 9999,
+                                                    }}
+                                                >
                                                     {isActions ? (
                                                         <ActionsBtns
                                                             handleEdit={() => handelEdit(actualRowIndex)}
                                                             handleDelete={() => handelDelete(actualRowIndex)}
-                                                            className={`${i18n.language === "ar" ? "left-0" : "right-0"}`}
+                                                            className="!static !mt-0"
                                                         />
                                                     ) : (
-                                                        typeof customActions === "function" ? customActions(actualRowIndex) : customActions
+                                                        <div className="!static !mt-0 w-fit [&>div]:!static [&>div]:!mt-0">
+                                                            {typeof customActions === "function" ? customActions(actualRowIndex) : customActions}
+                                                        </div>
                                                     )}
-                                                </>
+                                                </div>,
+                                                document.body
                                             )}
                                         </td>
                                     )}
@@ -305,7 +332,7 @@ function Table({
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
 

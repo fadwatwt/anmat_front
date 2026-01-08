@@ -3,8 +3,8 @@ import { TbForbidFilled } from "react-icons/tb"; // Inactive
 import { IoTime } from "react-icons/io5"; // Delayed
 import { FaCircleCheck } from "react-icons/fa6"; // Active & Scheduled
 import { useTranslation } from "react-i18next";
-import {capitalize} from "@/functions/AnotherFunctions";
-import {RiCloseCircleFill, RiCloseCircleLine} from "@remixicon/react";
+import { capitalize } from "@/functions/AnotherFunctions";
+import { RiCloseCircleFill, RiCloseCircleLine } from "@remixicon/react";
 
 function Status({ type }) {
   const { t } = useTranslation();
@@ -14,29 +14,22 @@ function Status({ type }) {
       icon: <FaCircleCheck className="text-green-500" />,
       border: "border-green-300 dark:border-green-500",
     },
-    Inactive: {
-      icon: <TbForbidFilled className="text-gray-500" />,
-      border: "border-gray-300 dark:border-gray-500",
-    },
-    delayed: {
-      icon: <IoTime className="text-red-500" />,
-      border: "border-red-300 dark:border-red-500",
-    },
-    scheduled: {
-      icon: <FaCircleCheck className="text-blue-500" />,
-      border: "border-blue-300 dark:border-blue-500",
-    },
-    Verified: {
-      icon: <FaCircleCheck className="text-green-500" />,
-      border: "border-gray-300 dark:border-gray-500",
-    },
-    Unverified: {
+    unverified: {
       icon: <RiCloseCircleFill size={15} className="text-red-500" />,
       border: "border-gray-300 dark:border-gray-500",
     },
+    "in review": {
+      icon: <IoTime className="text-yellow-500" />,
+      border: "border-yellow-300 dark:border-yellow-500",
+    },
+    "in progress": {
+      icon: <IoTime className="text-blue-500" />,
+      border: "border-blue-300 dark:border-blue-500",
+    },
   };
 
-  const status = statusStyles[type] || statusStyles.Inactive; // Default to "Inactive"
+  const normalizedType = type?.toLowerCase() || "inactive";
+  const status = statusStyles[normalizedType] || statusStyles.inactive; // Default to "Inactive"
 
   return (
     <div

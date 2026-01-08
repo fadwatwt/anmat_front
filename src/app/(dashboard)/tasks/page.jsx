@@ -10,6 +10,11 @@ import Page from "@/components/Page.jsx";
 import Table from "@/components/Tables/Table.jsx";
 import EmployeeProjectStates from "@/app/(dashboard)/_components/EmployeeStates";
 import useAuthStore from '@/store/authStore.js';
+import { convertToSlug } from "@/functions/AnotherFunctions";
+import { translateDate } from "@/functions/Days";
+
+import { RiEyeLine, RiDeleteBinLine } from "react-icons/ri";
+import StatusActions from "@/components/Dropdowns/StatusActions";
 
 // ✅ Lazy-loaded components
 const NameAndDescription = dynamic(() => import("@/app/(dashboard)/projects/_components/TableInfo/NameAndDescription"), { ssr: false });
@@ -20,52 +25,20 @@ const MembersListXLine = dynamic(() => import("@/app/(dashboard)/projects/[slug]
 const TimeLine = dynamic(() => import("@/components/TimeLine/TimeLine"), { ssr: false });
 const EditTaskModal = dynamic(() => import("@/app/(dashboard)/tasks/_modal/EditTaskModal"), { ssr: false });
 const Alert = dynamic(() => import("@/components/Alerts/Alert"), { ssr: false });
+const StatusCell = dynamic(() => import("@/components/StatusCell"), { ssr: false });
 
-// Hardcoded sample tasks data
-const sampleTasks = [
-  {
-    _id: "1",
-    title: "Design Homepage",
-    description: "Create a new homepage layout",
-    manager: { name: "Jane Doe", imageProfile: "https://ui-avatars.com/api/?name=Jane+Doe" },
-    assignedTo: [{ name: "John Smith", imageProfile: "https://ui-avatars.com/api/?name=John+Smith" }],
-    assignedDate: "2025-07-10",
-    dueDate: "2025-07-25",
-    priority: "high",
-    status: "in-progress",
-  },
-  {
-    _id: "2",
-    title: "Bug Fixing",
-    description: "Fix critical bugs in the app",
-    manager: { name: "Alice Brown", imageProfile: "https://ui-avatars.com/api/?name=Alice+Brown" },
-    assignedTo: [{ name: "Mike Wilson", imageProfile: "https://ui-avatars.com/api/?name=Mike+Wilson" }],
-    assignedDate: "2025-07-15",
-    dueDate: "2025-07-30",
-    priority: "medium",
-    status: "pending",
-  },
-  {
-    _id: "3",
-    title: "API Integration",
-    description: "Integrate new payment API",
-    manager: { name: "Bob Johnson", imageProfile: "https://ui-avatars.com/api/?name=Bob+Johnson" },
-    assignedTo: [
-      { name: "Sarah Davis", imageProfile: "https://ui-avatars.com/api/?name=Sarah+Davis" },
-      { name: "Tom Lee", imageProfile: "https://ui-avatars.com/api/?name=Tom+Lee" },
-    ],
-    assignedDate: "2025-07-20",
-    dueDate: "2025-08-05",
-    priority: "low",
-    status: "completed",
-  },
-];
+import { tasksRows } from "@/functions/FactoryData.jsx";
 
 function TasksPage() {
   const { t } = useTranslation();
   const router = useRouter();
   const dispatch = useDispatch();
-  const { tasks, loading, error } = useSelector((state) => state.tasks) || { tasks: sampleTasks, loading: false, error: null }; // Fallback to sample data
+  const reduxTasks = useSelector((state) => state.tasks);
+  const tasks = (reduxTasks?.tasks && reduxTasks.tasks.length > 0)
+    ? reduxTasks.tasks
+    : tasksRows.map(t => ({ ...t, _id: t.id }));
+  const loading = reduxTasks?.loading || false;
+  const error = reduxTasks?.error || null;
   const [isOpenEditModal, setIsOpenEditModal] = useState(false);
   const [taskEdit, setTaskEdit] = useState(null);
   const [isOpenDeleteAlert, setIsOpenDeleteAlert] = useState(false);
@@ -81,27 +54,16 @@ function TasksPage() {
     }
   }, [dispatch, tasks]);
 
-  // Define headers based on user type
-  const headersConfig = {
-    Employee: [
-      { label: t("Tasks"), width: "200px" },
-      { label: t("Manager"), width: "200px" },
-      { label: t("Assignees"), width: "150px" },
-      { label: t("Assigned - Due Date"), width: "300px" },
-      { label: t("Priority"), width: "100px" },
-      { label: t("Status"), width: "100px" },
-      { label: "", width: "50px" },
-    ],
-    "Company-Manager": [
-      { label: t("Tasks"), width: "200px" },
-      { label: t("Assigned to"), width: "150px" },
-      { label: t("Manager"), width: "200px" },
-      { label: t("Assigned - Due Date"), width: "300px" },
-      { label: t("Priority"), width: "100px" },
-      { label: t("Status"), width: "100px" },
-      { label: "", width: "50px" },
-    ],
-  };
+  // Headers matching the design
+  const headers = [
+    { label: t("Tasks"), width: "250px" },
+    { label: t("Assignee"), width: "200px" },
+    { label: t("Assigned - Due Date"), width: "300px" },
+    { label: t("Started - Ended at Date"), width: "300px" },
+    { label: t("Priority"), width: "120px" },
+    { label: t("Status"), width: "120px" },
+    { label: "", width: "50px" },
+  ];
 
   const handleCreateTask = () => router.push("/tasks/create");
   const handleEditModal = (task) => {
@@ -124,45 +86,51 @@ function TasksPage() {
     }
   };
 
+  const customActions = (index) => {
+    const task = tasks[index];
+    const actions = [
+      {
+        text: t("View"),
+        icon: <RiEyeLine size={16} className="text-blue-500" />,
+        onClick: () => router.push(`/tasks/${task._id}-${convertToSlug(task.title)}/details`),
+      },
+      {
+        text: t("Delete"),
+        icon: <RiDeleteBinLine size={16} className="text-red-500" />,
+        onClick: () => handleDeleteConfirmation(task),
+      },
+    ];
+
+    return (
+      <StatusActions states={actions} />
+    );
+  };
+
   const taskRowTable = useMemo(() => {
     return tasks.map((task) => [
       <NameAndDescription
         key={`name-${task._id}`}
-        path={`/tasks/${task._id}-${convertToSlug(task.title)}`}
+        path={`/tasks/${task._id}-${convertToSlug(task.title)}/details`}
         name={task.title}
         description={task.description}
       />,
-      ...(authUserType === "Employee" ? [
-        <AccountDetails
-          key={`manager-${task._id}`}
-          account={{
-            name: task.manager?.name || "N/A",
-            imageProfile: task.manager?.imageProfile || `https://ui-avatars.com/api/?name=${encodeURIComponent(task.manager?.name || "John Doe")}`,
-          }}
-        />,
-      ] : [
-        <MembersListXLine
-          key={`members-${task._id}`}
-          members={task.assignedTo || []}
-          maxVisible={3}
-        />,
-      ]),
-      ...(authUserType === "Company-Manager" ? [
-        <AccountDetails
-          key={`manager-${task._id}`}
-          account={{
-            name: task.manager?.name || "N/A",
-            imageProfile: task.manager?.imageProfile || `https://ui-avatars.com/api/?name=${encodeURIComponent(task.manager?.name || "John Doe")}`,
-          }}
-        />,
-      ] : []),
+      <AccountDetails
+        key={`assignee-${task._id}`}
+        account={{
+          name: task.assignedTo?.[0]?.name || "Unassigned",
+          imageProfile: task.assignedTo?.[0]?.imageProfile || `https://ui-avatars.com/api/?name=${encodeURIComponent(task.assignedTo?.[0]?.name || "Unassigned")}`,
+        }}
+      />,
       <p key={`dates-${task._id}`} className="text-sm dark:text-sub-300">
         {translateDate(task.assignedDate)} - {translateDate(task.dueDate)}
+      </p>,
+      <p key={`start-end-${task._id}`} className="text-sm dark:text-sub-300">
+        {task.startDate ? `${translateDate(task.startDate)} - ${translateDate(task.endDate || task.dueDate)}` : "-"}
       </p>,
       <Priority key={`priority-${task._id}`} type={task.priority} title={task.priority} />,
       <Status key={`status-${task._id}`} type={task.status} title={task.status} />,
     ]);
-  }, [tasks, authUserType]);
+  }, [tasks]);
 
   if (error) {
     return (
@@ -188,18 +156,16 @@ function TasksPage() {
               <Table
                 className="custom-class"
                 title={t("All Tasks")}
-                headers={headersConfig[authUserType]}
+                headers={headers}
                 rows={taskRowTable}
-                {...(authUserType === "Employee" ? { customActions: (actualRowIndex) => <EmployeeProjectStates actualRowIndex={actualRowIndex} /> } : {})}
-                {...(authUserType === "Company-Manager" ? { isActions: true, isFilter: true, handelDelete: (index) => handleDeleteConfirmation(tasks[index]), handelEdit: (index) => handleEditModal(tasks[index]) } : {})}
+                isCheckInput={true}
+                customActions={customActions}
+                showStatusFilter={true}
+                isActions={false} // We use customActions
               />
             )}
           </div>
-          {authUserType === "Company-Manager" && (
-            <div className="flex md:w-[37.5%] w-full">
-              <TimeLine />
-            </div>
-          )}
+          {/* Timeline removed from design requirement */}
         </div>
       </Page>
 

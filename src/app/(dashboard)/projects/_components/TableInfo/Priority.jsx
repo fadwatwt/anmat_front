@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { FaCircle } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
-import {capitalize} from "@/functions/AnotherFunctions";
+import { capitalize } from "@/functions/AnotherFunctions";
 
 function Priority({ type }) {
   const { t } = useTranslation();
@@ -25,7 +25,8 @@ function Priority({ type }) {
     },
   };
 
-  const priority = priorityStyles[type] || priorityStyles.Low; // Default to "Low"
+  const normalizedType = type?.toLowerCase() || "low";
+  const priority = priorityStyles[normalizedType] || priorityStyles.low;
 
   return (
     <div
