@@ -19,19 +19,17 @@ const authSlice = createSlice({
     },
     loginSuccess: (state, action) => {
       state.isLoading = false;
-      state.user = action.payload.data.employee;
-      state.token = action.payload.token;
+      const { access_token, user } = action.payload.data;
+      state.user = user;
+      state.token = access_token;
       state.isAuthenticated = true;
       state.error = null;
 
       // Store auth data in localStorage
       if (typeof window !== "undefined") {
-        localStorage.setItem("token", action.payload.token);
-        localStorage.setItem("userId", action.payload.data.employee._id);
-        localStorage.setItem(
-          "userData",
-          JSON.stringify(action.payload.data.employee)
-        );
+        localStorage.setItem("token", access_token);
+        localStorage.setItem("userId", user._id);
+        localStorage.setItem("userData", JSON.stringify(user));
       }
     },
     loginFailure: (state, action) => {

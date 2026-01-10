@@ -1,28 +1,24 @@
-// redux/auth/authAPI.js
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { RootRoute } from "@/Root.Route";
+import { apiSlice } from "../api/apiSlice";
 
-export const authApi = createApi({
-  reducerPath: "authApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${RootRoute}/auth/`,
-    prepareHeaders: (headers, { getState }) => {
-      const token = getState().auth.token;
-      if (token) {
-        headers.set("authorization", `Bearer ${token}`);
-      }
-      return headers;
-    },
-  }),
+export const authApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     login: builder.mutation({
       query: (credentials) => ({
-        url: "login",
+        url: "api/admin/auth/login",
         method: "POST",
         body: credentials,
+      }),
+    }),
+    getUser: builder.query({
+      query: (token) => ({
+        url: "api/user/auth",
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }),
     }),
   }),
 });
 
-export const { useLoginMutation } = authApi;
+export const { useLoginMutation, useLazyGetUserQuery } = authApi;
