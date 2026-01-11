@@ -28,8 +28,6 @@ const authSlice = createSlice({
       // Store auth data in localStorage
       if (typeof window !== "undefined") {
         localStorage.setItem("token", access_token);
-        localStorage.setItem("userId", user._id);
-        localStorage.setItem("userData", JSON.stringify(user));
       }
     },
     loginFailure: (state, action) => {
@@ -53,12 +51,10 @@ const authSlice = createSlice({
     loadAuthState: (state) => {
       if (typeof window !== "undefined") {
         const token = localStorage.getItem("token");
-        const userId = localStorage.getItem("userId");
-        const userData = localStorage.getItem("userData");
 
-        if (token && userId) {
+        if (token) {
           state.token = token;
-          state.user = userData ? JSON.parse(userData) : { _id: userId };
+          // We don't restore user from local storage anymore
           state.isAuthenticated = true;
         }
       }
