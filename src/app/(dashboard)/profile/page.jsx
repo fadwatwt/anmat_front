@@ -2,10 +2,11 @@
 
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
-import useAuthStore from '@/store/authStore.js';
+import { useSelector } from 'react-redux';
+import { selectUserType } from '@/redux/auth/authSlice';
 
 const ProfilePage = () => {
-  const { authUserType } = useAuthStore();
+  const authUserType = useSelector(selectUserType);
 
   const DynamicComponent = dynamic(() => {
     switch (authUserType) {

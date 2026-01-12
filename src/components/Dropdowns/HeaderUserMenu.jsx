@@ -9,7 +9,9 @@ import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import { useLazyLogoutQuery } from "@/redux/auth/authAPI";
-import { logout } from "@/redux/auth/authSlice";
+import { logout, selectUser } from "@/redux/auth/authSlice";
+import { useSelector } from "react-redux";
+
 
 const HeaderUserMenu = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -19,9 +21,11 @@ const HeaderUserMenu = () => {
     const dispatch = useDispatch();
     const router = useRouter();
     const [triggerLogout] = useLazyLogoutQuery();
+    const user = useSelector(selectUser);
 
     const handleLogout = async () => {
         const token = localStorage.getItem("token");
+        const userType = user?.type;
         if (token) {
             try {
                 await triggerLogout(token);
@@ -30,7 +34,11 @@ const HeaderUserMenu = () => {
             }
         }
         dispatch(logout());
-        router.push("/sign-in");
+        if (userType === "Admin") {
+            router.push("/admin/sign-in");
+        } else {
+            router.push("/sign-in");
+        }
     };
 
     useEffect(() => {
@@ -79,14 +87,14 @@ const HeaderUserMenu = () => {
                 <div className={"p-1"}>
                     <img
                         src={
-                            "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
+                            user?.avatar || "/images/userProfile.dark.png"
                         }
                         className={"w-8 h-8 rounded-full"}
                         alt={"image-profile"}
                     />
                 </div>
                 <p className={"dark:text-gray-400 text-sm sm:block hidden"}>
-                    Rawan Ahmed
+                    {user?.name || "N/A"}
                 </p>
                 <MdOutlineKeyboardArrowDown />
             </div>
