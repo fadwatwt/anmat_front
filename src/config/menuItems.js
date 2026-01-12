@@ -1,11 +1,11 @@
 // dashboardSideMenuItems.js
 import { Setting, Edit, Share, Messages1, Category, Profile2User, TaskSquare, NoteText, Chart2, Cpu, PercentageCircle, Buildings, Stickynote, Setting4, Setting5, ReceiptText } from 'iconsax-react';
 
-// ['Admin', 'Company-Manager', 'Employee']
+// ['Admin', 'Subscriber', 'Employee']
 
 export const dashboardSideMenuItems = [
     {
-        allowed_to: ['Admin', 'Company-Manager', 'Employee'],
+        allowed_to: ['Admin', 'Subscriber', 'Employee'],
         title: 'Dashboard',
         path: '/dashboard',
         icon: <Category />
@@ -23,7 +23,7 @@ export const dashboardSideMenuItems = [
         icon: <PercentageCircle />
     },
     {
-        allowed_to: ['Admin', 'Company-Manager'],
+        allowed_to: ['Admin', 'Subscriber'],
         title: 'Subscriptions',
         path: '/subscriptions',
         icon: <ReceiptText />
@@ -35,7 +35,7 @@ export const dashboardSideMenuItems = [
         icon: <Stickynote />
     },
     {
-        allowed_to: ['Company-Manager'],
+        allowed_to: ['Subscriber'],
         title: 'HR Management',
         path: '/hr',
         icon: <Profile2User />,
@@ -51,61 +51,61 @@ export const dashboardSideMenuItems = [
         ]
     },
     {
-        allowed_to: ['Company-Manager'],
+        allowed_to: ['Subscriber'],
         title: 'Roles',
         path: '/roles',
         icon: <Setting4 />
     },
     {
-        allowed_to: ['Company-Manager'],
+        allowed_to: ['Subscriber'],
         title: 'Permissions',
         path: '/permissions',
         icon: <Setting5 />
     },
     {
-        allowed_to: ['Admin', 'Company-Manager', 'Employee'],
+        allowed_to: ['Admin', 'Subscriber', 'Employee'],
         title: 'Analytics',
         path: '/analytics',
         icon: <Chart2 />
     },
     {
-        allowed_to: ['Company-Manager', 'Employee'],
+        allowed_to: ['Subscriber', 'Employee'],
         title: 'Tasks',
         path: '/tasks',
         icon: <TaskSquare />
     },
     {
-        allowed_to: ['Company-Manager', 'Employee'],
+        allowed_to: ['Subscriber', 'Employee'],
         title: 'Projects',
         path: '/projects',
         icon: <NoteText />
     },
     {
-        allowed_to: ['Company-Manager', 'Employee'],
+        allowed_to: ['Subscriber', 'Employee'],
         title: 'Conversations',
         path: '/conversations',
         icon: <Messages1 />
     },
     {
-        allowed_to: ['Company-Manager'],
+        allowed_to: ['Subscriber'],
         title: 'Social Media',
         path: '/social-media',
         icon: <Share />
     },
     {
-        allowed_to: ['Company-Manager', 'Employee'],
+        allowed_to: ['Subscriber', 'Employee'],
         title: 'Timeline',
         path: '/time-line',
         icon: <Edit />
     },
     {
-        allowed_to: ['Admin', 'Company-Manager', 'Employee'],
+        allowed_to: ['Admin', 'Subscriber', 'Employee'],
         title: 'Settings',
         path: '/setting',
         icon: <Setting />
     },
     {
-        allowed_to: ['Company-Manager'],
+        allowed_to: ['Subscriber'],
         title: 'AI Assistant',
         path: '/ai',
         icon: <Cpu />

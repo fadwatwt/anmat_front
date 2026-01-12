@@ -11,7 +11,7 @@ const SubscriptionsPage = () => {
     switch (authUserType) {
       case "Admin":
         return import("@/app/(dashboard)/subscriptions/_components/AdminCompaniesSubscriptions");
-      case "Company-Manager":
+      case "Subscriber":
         return import("@/app/(dashboard)/subscriptions/_components/CompanySubscriptions");
       default:
         return Promise.resolve({ default: () => <div>Unknown User Type</div> });

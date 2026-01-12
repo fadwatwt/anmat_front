@@ -11,7 +11,7 @@ const ProfilePage = () => {
     switch (authUserType) {
       case "Admin":
         return import("@/app/(dashboard)/profile/_components/AdminProfile");
-      case "Company-Manager":
+      case "Subscriber":
         return import("@/app/(dashboard)/profile/_components/CompanyManagerProfile");
       case "Employee":
         return import("@/app/(dashboard)/profile/_components/EmployeeProfile");

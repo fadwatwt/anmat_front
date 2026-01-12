@@ -12,7 +12,7 @@ const DashboardPage = () => {
     switch (authUserType) {
       case "Admin":
         return import("@/app/(dashboard)/dashboard/_components/AdminDashboard");
-      case "Company-Manager":
+      case "Subscriber":
         return import("@/app/(dashboard)/dashboard/_components/CompanyManagerDashboard");
       case "Employee":
         return import("@/app/(dashboard)/dashboard/_components/EmployeeDashboard");

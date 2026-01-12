@@ -118,7 +118,7 @@ function ProjectPage() {
       { label: t("Status"), width: "100px" },
       { label: "", width: "50px" },
     ],
-    "Company-Manager": [
+    "Subscriber": [
       { label: t("Projects"), width: "200px" },
       { label: t("Manager"), width: "150px" },
       { label: t("Due Date"), width: "150px" },
@@ -168,7 +168,7 @@ function ProjectPage() {
     Employee: {
       customActions: (actualRowIndex) => <EmployeeProjectStates actualRowIndex={actualRowIndex} />,
     },
-    "Company-Manager": {
+    "Subscriber": {
       isActions: true,
       isCheckInput: false,
       handelEdit: handleEditProject,
@@ -177,7 +177,7 @@ function ProjectPage() {
   };
 
   const pageProps = {
-    "Company-Manager": {
+    "Subscriber": {
       isBtn: true,
       btnOnClick: handleCreateProjectBtn,
       btnTitle: t("Create Project"),
