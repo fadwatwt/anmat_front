@@ -14,6 +14,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 
 function SignIn() {
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [rememberMe, setRememberMe] = useState(false);
@@ -85,6 +86,7 @@ function SignIn() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setIsSubmitting(true);
         try {
             const response = await adminLogin({ email, password }).unwrap();
             const userData = response.data?.user;
@@ -96,6 +98,7 @@ function SignIn() {
                 // Logout immediately using the new token
                 await performLogout(response.data?.access_token);
                 dispatch(loginFailure("Access Denied: You do not have administrator privileges."));
+                setIsSubmitting(false);
             }
         } catch (err) {
             // Check for "Already logged in" case in error response
@@ -118,16 +121,19 @@ function SignIn() {
                     } else {
                         await performLogout(token);
                         dispatch(loginFailure("Access Denied: You do not have administrator privileges."));
+                        setIsSubmitting(false);
                         return;
                     }
                 } catch (userErr) {
                     console.error("Failed to recover session:", userErr);
                     dispatch(loginFailure("Session recovery failed. Please try again."));
+                    setIsSubmitting(false);
                     return;
                 }
             }
             // Standard error handling
             dispatch(loginFailure(err.data?.message || "Login failed"));
+            setIsSubmitting(false);
         }
     };
 
@@ -151,7 +157,7 @@ function SignIn() {
 
                 <div className="w-full">
                     <div className="flex flex-col gap-2 w-full">
-                        <label className="flex bg-white pl-2 px-2 w-full items-center border-2 rounded-xl">
+                        <label className={`flex bg-white pl-2 px-2 w-full items-center border-2 rounded-xl ${(isLoading || isSubmitting) ? 'opacity-70' : ''}`}>
                             <GoMail className="text-gray-500 w-10" size={18} />
                             <input
                                 type="email"
@@ -160,10 +166,11 @@ function SignIn() {
                                 placeholder="Enter your email"
                                 className="w-full py-3 px-2 outline-none"
                                 required
+                                disabled={isLoading || isSubmitting}
                             />
                         </label>
 
-                        <label className="flex bg-white pl-2 px-2 w-full items-center border-2 rounded-xl">
+                        <label className={`flex bg-white pl-2 px-2 w-full items-center border-2 rounded-xl ${(isLoading || isSubmitting) ? 'opacity-70' : ''}`}>
                             <IoIosLock className="text-gray-500 w-10" size={18} />
                             <input
                                 type="password"
@@ -172,6 +179,7 @@ function SignIn() {
                                 placeholder="*"
                                 className="w-full py-3 px-2 outline-none"
                                 required
+                                disabled={isLoading || isSubmitting}
                             />
                         </label>
 
@@ -181,11 +189,12 @@ function SignIn() {
                                     type="checkbox"
                                     checked={rememberMe}
                                     onChange={(e) => setRememberMe(e.target.checked)}
+                                    disabled={isLoading || isSubmitting}
                                 />
                                 <p className="text-sm text-black">Remember Me</p>
                             </div>
                             <Link href="/forget-password"
-                                className="text-sm text-primary-base hover:text-primary-600 underline cursor-pointer">
+                                className={`text-sm text-primary-base hover:text-primary-600 underline cursor-pointer ${(isLoading || isSubmitting) ? 'pointer-events-none text-gray-400' : ''}`}>
                                 Forgot Password?
                             </Link>
                         </div>
@@ -194,10 +203,10 @@ function SignIn() {
 
                         <button
                             type="submit"
-                            disabled={isLoading}
-                            className="w-full rounded-lg bg-primary-base text-white py-1.5"
+                            disabled={isLoading || isSubmitting}
+                            className="w-full rounded-lg bg-primary-base text-white py-1.5 disabled:opacity-70 disabled:cursor-not-allowed"
                         >
-                            {isLoading ? "Loading..." : "Login"}
+                            {(isLoading || isSubmitting) ? "Loading..." : "Login"}
                         </button>
 
                         {/*Google Login Button*/}
@@ -214,7 +223,7 @@ function SignIn() {
                             <span className="text-md text-gray-700 dark:text-gray-300">
                                 Not have an account?
                             </span>
-                            <Link href="/register/subscriber/email" className="text-primary-500 hover:text-primary-600">
+                            <Link href="/register/subscriber/email" className={`text-primary-500 hover:text-primary-600 ${(isLoading || isSubmitting) ? 'pointer-events-none text-gray-400' : ''}`}>
                                 Register
                             </Link>
                         </div>
