@@ -76,5 +76,6 @@ export const {
 
 // Add this selector to easily access userId
 export const selectUserId = (state) => state.auth.user?._id;
+export const selectUserType = (state) => state.auth.user?.type;
 
 export default authSlice.reducer;
