@@ -114,7 +114,7 @@ function EditAnEmployeeModal({ isOpen, onClose, employee }) {
       isBtns={true}
       btnApplyTitle={formik.isSubmitting ? "Saving..." : "Edit Employee"}
       onClick={formik.handleSubmit}
-      className={"lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12"}
+      className={"lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12 p-3"}
       title={"Editing an Employee"}
       disableSubmit={formik.isSubmitting || !formik.isValid}
     >

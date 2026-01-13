@@ -3,10 +3,12 @@ import Page from "@/components/Page.jsx";
 import Tabs from "@/components/Tabs.jsx";
 import EmployeesTap from "@/app/(dashboard)/hr/employees/tabs/Employees.tap.jsx";
 import { useState } from "react";
-import DepartmentsTab from "@/app/(dashboard)/hr/_Tabs/DepartmentsTab.jsx";
+// import DepartmentsTab from "@/app/(dashboard)/hr/_Tabs/DepartmentsTab.jsx"; // Moved to sidebar
 import RotationTap from "@/app/(dashboard)/hr/_Tabs/RotationTap.jsx";
 import AttendanceTab from "@/app/(dashboard)/hr/employees/tabs/AttendanceTab.jsx";
 import SalaryTab from "@/app/(dashboard)/hr/employees/tabs/SalaryTab.jsx";
+import RequestsTab from "@/app/(dashboard)/hr/employees/tabs/RequestsTab.jsx";
+import LeavesTab from "@/app/(dashboard)/hr/employees/tabs/LeavesTab.jsx";
 import CreateADepartmentModal from "@/app/(dashboard)/hr/_modals/CreateADepartmentModal.jsx";
 import EditAnEmployeeModal from "@/app/(dashboard)/hr/_modals/AddingAnEmployeeModal.jsx";
 import InviteEmployeeModal from "@/app/(dashboard)/hr/_modals/InviteEmployeeModal";
@@ -23,20 +25,24 @@ function HRPage() {
             content: <EmployeesTap />,
         },
         {
-            title: "Departments",
-            content: <DepartmentsTab />,
-        },
-        {
-            title: "Rotation",
-            content: <RotationTap />,
-        },
-        {
-            title: "Attendance",
+            title: "Attendances",
             content: <AttendanceTab />,
+        },
+        {
+            title: "Leave",
+            content: <LeavesTab />,
+        },
+        {
+            title: "Requests",
+            content: <RequestsTab />,
         },
         {
             title: "Salary",
             content: <SalaryTab />,
+        },
+        {
+            title: "Rotations",
+            content: <RotationTap />,
         },
     ];
 

@@ -5,6 +5,8 @@ import { useDispatch, useSelector } from "react-redux";
 // import { format, parseISO } from "date-fns";
 import Table from "@/components/Tables/Table.jsx";
 import { fetchAllRotations } from "@/redux/rotation/rotationAPI";
+import { HiPlus } from "react-icons/hi";
+import AddRotationModal from "@/app/(dashboard)/hr/_modals/AddRotationModal.jsx";
 
 const OffBadge = () => (
   <div className="w-full flex justify-center">
@@ -22,6 +24,7 @@ function RotationTap() {
   const [viewMode, setViewMode] = useState("week");
   const [selectedDepartment, setSelectedDepartment] = useState("all");
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [isAddRotationModalOpen, setIsAddRotationModalOpen] = useState(false);
 
   const generateWeekDates = (date) => {
     const start = new Date(date);
@@ -153,6 +156,16 @@ function RotationTap() {
   if (loading) return <div>Loading...</div>;
   if (error) return <div className="text-red-500 p-4">Error: {error}</div>;
 
+  const headerActions = (
+    <button
+      onClick={() => setIsAddRotationModalOpen(true)}
+      className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700"
+    >
+      <HiPlus size={16} />
+      {t("Add a Rotation")}
+    </button>
+  );
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2 h-full">
@@ -164,7 +177,6 @@ function RotationTap() {
           isTitle={true}
           classContainer="w-full"
           viewModalList={viewModalList}
-          // New props for control bar
           showControlBar={true}
           viewMode={viewMode}
           onViewModeChange={setViewMode}
@@ -172,8 +184,14 @@ function RotationTap() {
           onDepartmentChange={(e) => setSelectedDepartment(e.target.value)}
           currentDate={currentDate}
           showListOfDepartments={true}
+          headerActions={headerActions}
         />
       </div>
+
+      <AddRotationModal
+        isOpen={isAddRotationModalOpen}
+        onClose={() => setIsAddRotationModalOpen(false)}
+      />
     </div>
   );
 }
