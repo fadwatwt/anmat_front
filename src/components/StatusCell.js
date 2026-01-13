@@ -77,6 +77,21 @@ const statusConfig = {
         icon: <RiErrorWarningFill size={15} className="text-orange-700" />,
         textColor: "text-orange-700",
     },
+    "pending": {
+        bgColor: "bg-yellow-50",
+        icon: <RiQuestionLine size={15} className="text-yellow-700" />,
+        textColor: "text-yellow-700",
+    },
+    "approved": {
+        bgColor: "bg-green-50",
+        icon: <RiCheckboxCircleFill size={15} className="text-green-700" />,
+        textColor: "text-green-700",
+    },
+    "rejected": {
+        bgColor: "bg-red-50",
+        icon: <RiCloseCircleFill size={15} className="text-red-700" />,
+        textColor: "text-red-700",
+    },
 };
 
 const statusCell = (status, _id) => {

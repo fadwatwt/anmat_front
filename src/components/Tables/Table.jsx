@@ -267,6 +267,7 @@ function Table({
                                             />
                                             {dropdownOpen === actualRowIndex && createPortal(
                                                 <div
+                                                    onClick={() => setDropdownOpen(null)}
                                                     className="dropdown-container w-fit text-nowrap"
                                                     style={{
                                                         position: "absolute",
