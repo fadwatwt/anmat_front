@@ -25,11 +25,6 @@ const TABLE_HEADERS = [
 const IndustryActions = ({ actualRowIndex, i18n }) => {
     const actions = [
         {
-            text: "View",
-            icon: <RiEyeLine className="text-primary-400" />,
-            onClick: () => console.log("View:", actualRowIndex)
-        },
-        {
             text: "Edit",
             icon: <RiEditLine className="text-primary-400" />,
             onClick: () => console.log("Edit:", actualRowIndex)

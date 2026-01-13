@@ -10,8 +10,8 @@ const SubscriptionsPage = () => {
 
   const DynamicComponent = dynamic(() => {
     switch (authUserType) {
-      case "Admin":
-        return import("@/app/(dashboard)/subscriptions/_components/AdminCompaniesSubscriptions");
+      // case "Admin":
+      //   return import("@/app/(dashboard)/subscriptions/_components/AdminCompaniesSubscriptions");
       case "Subscriber":
         return import("@/app/(dashboard)/subscriptions/_components/CompanySubscriptions");
       default:

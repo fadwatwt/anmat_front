@@ -71,7 +71,7 @@ export const dashboardSideMenuItems = [
     {
         allowed_to: ['Admin'],
         title: 'Subscribers',
-        path: '/subscriptions',
+        path: '/subscribers',
         icon: <Tag />
     },
     {
