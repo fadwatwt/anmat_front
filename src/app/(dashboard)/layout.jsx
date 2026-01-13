@@ -9,7 +9,8 @@ import "../globals.css";
 import PropTypes from "prop-types";
 import DashboardSideMenu from "@/components/DashboardSideMenu";
 import { useSelector, useDispatch } from "react-redux";
-import { selectAuth, loadAuthState } from "@/redux/auth/authSlice";
+import { selectAuth, loadAuthState, logout, setUser } from "@/redux/auth/authSlice";
+import { useLazyGetUserQuery } from "@/redux/auth/authAPI";
 
 const MainLayout = ({ children }) => {
     const [isSlidebarOpen, setSlidebarOpen] = useState(false);
@@ -17,7 +18,8 @@ const MainLayout = ({ children }) => {
     const pathname = usePathname();
     const dispatch = useDispatch();
 
-    const { isAuthenticated, token } = useSelector(selectAuth);
+    const { isAuthenticated, token, user } = useSelector(selectAuth);
+    const [getUser, { isLoading: isFetchingUser }] = useLazyGetUserQuery();
 
     // التحقق مما إذا كنا في صفحة الإعدادات أو الاشتراكات
     const isSettingsPage = pathname === "/setting";
@@ -25,12 +27,39 @@ const MainLayout = ({ children }) => {
 
     const toggleSlidebarOpen = () => setSlidebarOpen(!isSlidebarOpen);
 
-    // Load auth state on mount if not already loaded
+    // Load auth state from localStorage on mount
     useEffect(() => {
-        if (!isAuthenticated && typeof window !== "undefined") {
+        if (!token && typeof window !== "undefined") {
             dispatch(loadAuthState());
         }
-    }, [dispatch, isAuthenticated]);
+    }, [dispatch, token]);
+
+    // Fetch user if token exists but user data is missing
+    useEffect(() => {
+        const fetchUser = async () => {
+            const storedToken = token || (typeof window !== "undefined" && localStorage.getItem("token"));
+            if (storedToken && !user) {
+                try {
+                    const result = await getUser(storedToken).unwrap();
+                    if (result?.data) {
+                        dispatch(setUser(result.data));
+                    } else {
+                        // If result doesn't have data, consider it invalid
+                        dispatch(logout());
+                        router.push("/sign-in");
+                    }
+                } catch (error) {
+                    console.error("Failed to fetch user:", error);
+                    dispatch(logout());
+                    router.push("/sign-in");
+                }
+            } else if (!storedToken) {
+                router.push("/sign-in");
+            }
+        };
+
+        fetchUser();
+    }, [token, user, getUser, dispatch, router]);
 
     useEffect(() => {
         const updateDirectionAndFont = () => {
@@ -55,22 +84,20 @@ const MainLayout = ({ children }) => {
         setLanguage(i18n.language);
     }, [i18n.language]);
 
-    useEffect(() => {
-        // Only redirect if we are SURE the user is not authenticated
-        // This is simplified; you might want a more complex check
-        if (!isAuthenticated && !localStorage.getItem("token")) {
-            router.push("/sign-in");
-        }
-    }, [isAuthenticated, router]);
-
-    // If we have a token but aren't authenticated in Redux yet, show a loader
-    // If we're not authenticated and have no token, the useEffect will redirect
-    if (!isAuthenticated && (typeof window !== "undefined" && localStorage.getItem("token"))) {
-        return <div className="h-screen w-screen flex items-center justify-center">Loading session...</div>;
+    // Show loading while fetching user or if state is being initialized
+    if ((isFetchingUser || !user) && (token || (typeof window !== "undefined" && localStorage.getItem("token")))) {
+        return (
+            <div className="h-screen w-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+                    <p className="text-gray-600 dark:text-gray-400 font-medium">Loading session...</p>
+                </div>
+            </div>
+        );
     }
 
-    if (!isAuthenticated) {
-        return null; // or redirecting...
+    if (!user) {
+        return null;
     }
 
     return (

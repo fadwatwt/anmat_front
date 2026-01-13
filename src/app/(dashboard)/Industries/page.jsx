@@ -8,8 +8,8 @@ import { RiDeleteBin7Line } from "react-icons/ri";
 import Table from "@/components/Tables/Table";
 import Page from "@/components/Page";
 import StatusActions from "@/components/Dropdowns/StatusActions";
-import {statusCell} from "@/components/StatusCell";
-import CreateIndustryModal from "@/app/(dashboard)/Industries/modals/CreateIndustry.modal.";
+import { statusCell } from "@/components/StatusCell";
+import CreateIndustryModal from "@/app/(dashboard)/industries/modals/CreateIndustry.modal.";
 
 // 1. تعريف العناوين الثابتة خارج المكون
 const TABLE_HEADERS = [
@@ -104,7 +104,7 @@ function IndustriesPage() {
                     />
                 )}
             />
-            <CreateIndustryModal isOpen={isCreateModalOpen} onClose={toggleCreateModal} onClick={() => {}} />
+            <CreateIndustryModal isOpen={isCreateModalOpen} onClose={toggleCreateModal} onClick={() => { }} />
         </Page>
     );
 }

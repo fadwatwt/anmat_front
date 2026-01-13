@@ -1,5 +1,5 @@
 // dashboardSideMenuItems.js
-import { Setting, Edit, Share, Messages1, Category, Profile2User, TaskSquare, NoteText, Chart2, Cpu, PercentageCircle, Buildings, Stickynote, Setting4, Setting5, ReceiptText } from 'iconsax-react';
+import { Setting, Edit, Share, Messages1, Category, Profile2User, TaskSquare, NoteText, Chart2, Cpu, PercentageCircle, Buildings, Stickynote, Setting4, Setting5, ReceiptText, Category2, Tag, EmptyWallet } from 'iconsax-react';
 
 // ['Admin', 'Subscriber', 'Employee']
 
@@ -12,27 +12,27 @@ export const dashboardSideMenuItems = [
     },
     {
         allowed_to: ['Admin'],
-        title: 'Companies',
-        path: '/companies',
-        icon: <Buildings />
+        title: 'System Admins',
+        path: '/system-admins',
+        icon: <Profile2User />
     },
     {
         allowed_to: ['Admin'],
-        title: 'Plans',
-        path: '/plans',
-        icon: <PercentageCircle />
+        title: 'Roles',
+        path: '/roles',
+        icon: <Setting4 />
     },
     {
-        allowed_to: ['Admin', 'Subscriber'],
+        allowed_to: ['Admin'],
+        title: 'Industries',
+        path: '/industries',
+        icon: <Category2 />
+    },
+    {
+        allowed_to: ['Subscriber'],
         title: 'Subscriptions',
         path: '/subscriptions',
         icon: <ReceiptText />
-    },
-    {
-        allowed_to: ['Admin'],
-        title: 'Orders',
-        path: '/orders',
-        icon: <Stickynote />
     },
     {
         allowed_to: ['Subscriber'],
@@ -67,6 +67,24 @@ export const dashboardSideMenuItems = [
         title: 'Analytics',
         path: '/analytics',
         icon: <Chart2 />
+    },
+    {
+        allowed_to: ['Admin'],
+        title: 'Subscribers',
+        path: '/subscriptions',
+        icon: <Tag />
+    },
+    {
+        allowed_to: ['Admin'],
+        title: 'Plans',
+        path: '/plans',
+        icon: <PercentageCircle />
+    },
+    {
+        allowed_to: ['Admin'],
+        title: 'Money Receiving Methods',
+        path: '/money-receiving',
+        icon: <EmptyWallet />
     },
     {
         allowed_to: ['Subscriber', 'Employee'],
