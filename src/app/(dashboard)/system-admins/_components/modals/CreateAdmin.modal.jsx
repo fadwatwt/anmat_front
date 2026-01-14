@@ -6,7 +6,7 @@ import PasswordInput from "@/components/Form/PasswordInput";
 import TagInput from "@/components/Form/TagInput";
 import Switch2 from "@/components/Form/Switch2";
 import { useState } from "react";
-import { useCreateAdminMutation } from "@/redux/system-admins/systemAdminsAPI";
+import { useCreateAdminMutation, useGetAdminRolesQuery } from "@/redux/system-admins/systemAdminsAPI";
 
 function CreateAdminModal({ isOpen, onClose, onShowSuccess }) {
     const [createAdmin, { isLoading }] = useCreateAdminMutation();
@@ -20,12 +20,11 @@ function CreateAdminModal({ isOpen, onClose, onShowSuccess }) {
         is_active: true
     });
 
-    const suggestions = [
-        { id: 'add', name: 'add' },
-        { id: 'edit', name: 'edit' },
-        { id: 'view', name: 'view' },
-        { id: 'delete', name: 'delete' },
-    ];
+    const { data: rolesResponse } = useGetAdminRolesQuery();
+    const suggestions = rolesResponse?.data?.map(role => ({
+        id: role._id,
+        name: role.name
+    })) || [];
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -47,7 +46,7 @@ function CreateAdminModal({ isOpen, onClose, onShowSuccess }) {
                 email: formData.email,
                 phone: formData.phone,
                 password: formData.password,
-                rules: formData.rules.map(tag => tag.name),
+                admin_system_roles: formData.rules.map(tag => tag.id),
                 is_active: formData.is_active
             }).unwrap();
             onShowSuccess();
