@@ -19,7 +19,7 @@ export const dashboardSideMenuItems = [
     {
         allowed_to: ['Admin'],
         title: 'Roles',
-        path: '/roles',
+        path: '/roles/admins',
         icon: <Setting4 />
     },
     {
