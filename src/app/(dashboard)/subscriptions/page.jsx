@@ -2,16 +2,17 @@
 
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
-import useAuthStore from '@/store/authStore.js';
+import { useSelector } from "react-redux";
+import { selectUserType } from "@/redux/auth/authSlice";
 
 const SubscriptionsPage = () => {
-  const { authUserType } = useAuthStore();
+  const authUserType = useSelector(selectUserType);
 
   const DynamicComponent = dynamic(() => {
     switch (authUserType) {
-      case "Admin":
-        return import("@/app/(dashboard)/subscriptions/_components/AdminCompaniesSubscriptions");
-      case "Company-Manager":
+      // case "Admin":
+      //   return import("@/app/(dashboard)/subscriptions/_components/AdminCompaniesSubscriptions");
+      case "Subscriber":
         return import("@/app/(dashboard)/subscriptions/_components/CompanySubscriptions");
       default:
         return Promise.resolve({ default: () => <div>Unknown User Type</div> });

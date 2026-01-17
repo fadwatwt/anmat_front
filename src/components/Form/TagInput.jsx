@@ -1,9 +1,12 @@
-import {useState, useRef, useEffect} from "react";
+import { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
-import {createPortal} from "react-dom";
+import { createPortal } from "react-dom";
 
-const TagInput = ({suggestions, apparent, placeholder, title, isRequired}) => {
-    const [tags, setTags] = useState([]);
+const TagInput = ({ suggestions, apparent, placeholder, title, isRequired, value, onChange }) => {
+    const [internalTags, setInternalTags] = useState([]);
+    const tags = value || internalTags;
+    const setTags = onChange || setInternalTags;
+
     const [inputValue, setInputValue] = useState("");
     const [isFocused, setIsFocused] = useState(false);
 
@@ -166,7 +169,9 @@ TagInput.propTypes = {
     placeholder: PropTypes.string,
     apparent: PropTypes.string,
     title: PropTypes.string,
-    isRequired: PropTypes.bool
+    isRequired: PropTypes.bool,
+    value: PropTypes.array,
+    onChange: PropTypes.func
 };
 
 export default TagInput;

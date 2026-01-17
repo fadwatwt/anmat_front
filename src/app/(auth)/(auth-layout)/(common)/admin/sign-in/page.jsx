@@ -6,7 +6,7 @@ import { GoMail } from "react-icons/go";
 import { IoIosLock } from "react-icons/io";
 import { FcGoogle } from "react-icons/fc";
 import { useRouter } from "next/navigation";
-import { useLoginMutation, useLazyGetUserQuery, useLazyLogoutQuery } from "@/redux/auth/authAPI";
+import { useAdminLoginMutation, useLazyGetUserQuery, useLazyLogoutQuery } from "@/redux/auth/authAPI";
 import { useDispatch, useSelector } from "react-redux";
 import { loginSuccess, loginFailure, logout } from "@/redux/auth/authSlice";
 import Link from "next/link";
@@ -18,7 +18,7 @@ function SignIn() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [rememberMe, setRememberMe] = useState(false);
-    const [login, { isLoading }] = useLoginMutation();
+    const [adminLogin, { isLoading }] = useAdminLoginMutation();
     const { error, isAuthenticated } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
     const router = useRouter();
@@ -42,19 +42,15 @@ function SignIn() {
     };
 
     useEffect(() => {
-        // Check Redux state or localStorage
         const checkAuth = async () => {
             const token = localStorage.getItem('token');
+
             if (token) {
                 try {
                     const userResponse = await triggerGetUser(token).unwrap();
                     const userData = userResponse.data || userResponse;
 
                     if (userData?.type === 'Admin') {
-                        console.warn("Admin user trying to access non-admin login. Logging out.");
-                        await performLogout(token);
-                        dispatch(loginFailure("Access Denied: Use Admin Sign In."));
-                    } else if (['Subscriber', 'Employee'].includes(userData?.type)) {
                         const loginPayload = {
                             data: {
                                 access_token: token,
@@ -64,8 +60,9 @@ function SignIn() {
                         dispatch(loginSuccess(loginPayload));
                         router.push("/dashboard");
                     } else {
-                        // Default fallback or other types
-                        setIsCheckingAuth(false);
+                        console.warn("User is not admin, logging out.");
+                        await performLogout(token);
+                        dispatch(loginFailure("Access Denied: You do not have administrator privileges."));
                     }
                 } catch (err) {
                     console.error("Token validation failed:", err);
@@ -77,12 +74,10 @@ function SignIn() {
             }
         };
 
-        if (isAuthenticated) {
-            router.push("/dashboard");
-        } else {
-            checkAuth();
-        }
-    }, [isAuthenticated, router, triggerGetUser, triggerLogout]);
+        checkAuth();
+    }, [router, dispatch, triggerGetUser, triggerLogout]);
+
+
 
     // Prevent rendering the login form while we check for an existing session
     if (isCheckingAuth) {
@@ -93,20 +88,16 @@ function SignIn() {
         e.preventDefault();
         setIsSubmitting(true);
         try {
-            const response = await login({ email, password }).unwrap();
+            const response = await adminLogin({ email, password }).unwrap();
             const userData = response.data?.user;
 
             if (userData?.type === 'Admin') {
-                await performLogout(response.data?.access_token);
-                dispatch(loginFailure("Access Denied: Use Admin Sign In."));
-                setIsSubmitting(false);
-            } else if (['Subscriber', 'Employee'].includes(userData?.type)) {
                 dispatch(loginSuccess(response));
                 router.push("/dashboard");
             } else {
-                // If unknown role, logout just in case or show error
+                // Logout immediately using the new token
                 await performLogout(response.data?.access_token);
-                dispatch(loginFailure("Access Denied: Unknown user role."));
+                dispatch(loginFailure("Access Denied: You do not have administrator privileges."));
                 setIsSubmitting(false);
             }
         } catch (err) {
@@ -118,11 +109,6 @@ function SignIn() {
                     const userData = userResponse.data || userResponse;
 
                     if (userData?.type === 'Admin') {
-                        await performLogout(token);
-                        dispatch(loginFailure("Access Denied: Use Admin Sign In."));
-                        setIsSubmitting(false);
-                        return;
-                    } else if (['Subscriber', 'Employee'].includes(userData?.type)) {
                         const loginPayload = {
                             data: {
                                 access_token: token,
@@ -134,7 +120,7 @@ function SignIn() {
                         return;
                     } else {
                         await performLogout(token);
-                        dispatch(loginFailure("Access Denied: Unknown user role."));
+                        dispatch(loginFailure("Access Denied: You do not have administrator privileges."));
                         setIsSubmitting(false);
                         return;
                     }

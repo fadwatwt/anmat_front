@@ -19,19 +19,15 @@ const authSlice = createSlice({
     },
     loginSuccess: (state, action) => {
       state.isLoading = false;
-      state.user = action.payload.data.employee;
-      state.token = action.payload.token;
+      const { access_token, user } = action.payload.data;
+      state.user = user;
+      state.token = access_token;
       state.isAuthenticated = true;
       state.error = null;
 
       // Store auth data in localStorage
       if (typeof window !== "undefined") {
-        localStorage.setItem("token", action.payload.token);
-        localStorage.setItem("userId", action.payload.data.employee._id);
-        localStorage.setItem(
-          "userData",
-          JSON.stringify(action.payload.data.employee)
-        );
+        localStorage.setItem("token", access_token);
       }
     },
     loginFailure: (state, action) => {
@@ -55,15 +51,17 @@ const authSlice = createSlice({
     loadAuthState: (state) => {
       if (typeof window !== "undefined") {
         const token = localStorage.getItem("token");
-        const userId = localStorage.getItem("userId");
-        const userData = localStorage.getItem("userData");
 
-        if (token && userId) {
+        if (token) {
           state.token = token;
-          state.user = userData ? JSON.parse(userData) : { _id: userId };
+          // We don't restore user from local storage anymore
           state.isAuthenticated = true;
         }
       }
+    },
+    setUser: (state, action) => {
+      state.user = action.payload;
+      state.isAuthenticated = !!action.payload;
     },
     clearError: (state) => {
       state.error = null;
@@ -77,10 +75,15 @@ export const {
   loginFailure,
   logout,
   loadAuthState,
+  setUser,
   clearError,
 } = authSlice.actions;
 
 // Add this selector to easily access userId
 export const selectUserId = (state) => state.auth.user?._id;
+export const selectUserType = (state) => state.auth.user?.type;
+export const selectUser = (state) => state.auth.user;
+export const selectIsAuthenticated = (state) => state.auth.isAuthenticated;
+export const selectAuth = (state) => state.auth;
 
 export default authSlice.reducer;

@@ -145,7 +145,7 @@ function TasksPage() {
     <>
       <Page
         title={t("Tasks")}
-        {...(authUserType === "Company-Manager" ? { isBtn: true, btnOnClick: handleCreateTask, btnTitle: t("Create a Task") } : {})}
+        {...(authUserType === "Subscriber" ? { isBtn: true, btnOnClick: handleCreateTask, btnTitle: t("Create a Task") } : {})}
       >
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-2 h-full">
