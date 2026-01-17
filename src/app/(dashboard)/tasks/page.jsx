@@ -13,7 +13,7 @@ import useAuthStore from '@/store/authStore.js';
 import { convertToSlug } from "@/functions/AnotherFunctions";
 import { translateDate } from "@/functions/Days";
 
-import { RiEyeLine, RiDeleteBinLine } from "react-icons/ri";
+import { RiEyeLine, RiDeleteBinLine, RiEditLine } from "react-icons/ri";
 import StatusActions from "@/components/Dropdowns/StatusActions";
 
 // ✅ Lazy-loaded components
@@ -23,7 +23,6 @@ const Priority = dynamic(() => import("@/app/(dashboard)/projects/_components/Ta
 const Status = dynamic(() => import("@/app/(dashboard)/projects/_components/TableInfo/Status"), { ssr: false });
 const MembersListXLine = dynamic(() => import("@/app/(dashboard)/projects/[slug]/_components/MembersListXLine"), { ssr: false });
 const TimeLine = dynamic(() => import("@/components/TimeLine/TimeLine"), { ssr: false });
-const EditTaskModal = dynamic(() => import("@/app/(dashboard)/tasks/_modal/EditTaskModal"), { ssr: false });
 const Alert = dynamic(() => import("@/components/Alerts/Alert"), { ssr: false });
 const StatusCell = dynamic(() => import("@/components/StatusCell"), { ssr: false });
 
@@ -39,8 +38,6 @@ function TasksPage() {
     : tasksRows.map(t => ({ ...t, _id: t.id }));
   const loading = reduxTasks?.loading || false;
   const error = reduxTasks?.error || null;
-  const [isOpenEditModal, setIsOpenEditModal] = useState(false);
-  const [taskEdit, setTaskEdit] = useState(null);
   const [isOpenDeleteAlert, setIsOpenDeleteAlert] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState(null);
 
@@ -66,10 +63,7 @@ function TasksPage() {
   ];
 
   const handleCreateTask = () => router.push("/tasks/create");
-  const handleEditModal = (task) => {
-    setTaskEdit(task);
-    setIsOpenEditModal(true);
-  };
+
   const handleDeleteConfirmation = (task) => {
     setTaskToDelete(task);
     setIsOpenDeleteAlert(true);
@@ -93,6 +87,11 @@ function TasksPage() {
         text: t("View"),
         icon: <RiEyeLine size={16} className="text-blue-500" />,
         onClick: () => router.push(`/tasks/${task._id}-${convertToSlug(task.title)}/details`),
+      },
+      {
+        text: t("Edit"),
+        icon: <RiEditLine size={16} className="text-primary-500" />,
+        onClick: () => router.push(`/tasks/${task._id}-${convertToSlug(task.title)}/edit`),
       },
       {
         text: t("Delete"),
@@ -169,11 +168,7 @@ function TasksPage() {
         </div>
       </Page>
 
-      <EditTaskModal
-        task={taskEdit}
-        isOpen={isOpenEditModal}
-        onClose={() => setIsOpenEditModal(false)}
-      />
+
 
       <Alert
         type="warning"

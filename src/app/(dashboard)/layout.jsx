@@ -58,7 +58,7 @@ const MainLayout = ({ children }) => {
                 isSlidebarOpen={isSlidebarOpen}
                 toggleSlidebarOpen={toggleSlidebarOpen}
             />
-            <div className="h-full w-screen flex-col">
+            <div className="h-full w-full flex-col">
                 {/* الشرط الجديد:
                     إظهار الهيدر فقط إذا لم نكن في صفحة الاشتراكات
                 */}
@@ -73,7 +73,7 @@ const MainLayout = ({ children }) => {
                     )
                 )}
 
-                <main className="h-[calc(100vh-72px)] overflow-auto tab-content dark:bg-gray-900">
+                <main className="h-[calc(100vh-72px)] overflow-auto max-w-[100vw] tab-content dark:bg-gray-900">
                     {children}
                 </main>
             </div>

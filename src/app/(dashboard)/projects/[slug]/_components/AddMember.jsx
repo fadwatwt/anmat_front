@@ -3,7 +3,7 @@ import UserSelect from "@/components/Form/UserSelect.jsx";
 import PropTypes from "prop-types";
 import WordTheMiddleAndLine from "@/components/Subcomponents/WordTheMiddleAndLine.jsx";
 
-function AddMember({isOpen, onClose}) {
+function AddMember({ isOpen, onClose, teamName }) {
     const users = [
         {
             id: 1,
@@ -31,16 +31,26 @@ function AddMember({isOpen, onClose}) {
         },
     ];
     return (
-        <Modal isOpen={isOpen} onClose={onClose} isBtns={true} title={"Adding a Member"} btnApplyTitle={"Add"} >
-            <UserSelect users={users} title={"Member Name"} onChange={() => {}}  isMultiSelect={false} classNameContainer={" h-16"} isViewIcon={true} />
+        <Modal isOpen={isOpen} onClose={onClose} isBtns={true} title={`Adding a Member${teamName ? ` to ${teamName}` : ''}`} btnApplyTitle={"Add"} >
+
+            <ElementsSelect
+                title={t("Member Name")}
+                placeholder={t("Select Member...")}
+                options={users}
+                onChange={(val) => { console.log(val) }}
+                isMultiple={false}
+                classNameContainer="w-full"
+            />
+
             <WordTheMiddleAndLine />
         </Modal>
     );
 }
 
 AddMember.propTypes = {
-    isOpen:PropTypes.bool,
-    onClose:PropTypes.func,
+    isOpen: PropTypes.bool,
+    onClose: PropTypes.func,
+    teamName: PropTypes.string,
 }
 
 export default AddMember;

@@ -13,6 +13,7 @@ import InfoCard from "@/app/(dashboard)/_components/InfoCard.jsx";
 import { useState } from "react";
 import { filterAndSortTasks } from "@/functions/functionsForTasks.js";
 import EditTaskModal from "@/app/(dashboard)/tasks/_modal/EditTaskModal.jsx";
+import { useRouter } from "next/navigation";
 import { filterOptions, tasks, comments, members as defaultMembers, attachments, activityLogs, tasksRows } from "@/functions/FactoryData.jsx";
 
 function TaskDetailsPage({ params }) {
@@ -21,14 +22,14 @@ function TaskDetailsPage({ params }) {
     const taskData = tasksRows.find(t => t.id === taskId) || tasksRows[0];
 
     const { t } = useTranslation()
-    const [isOpenEditModal, setIsOpenEditModal] = useState(false)
     const breadcrumbItems = [
         { title: t('Tasks'), path: '/tasks' },
         { title: t('Task Details'), path: '' }
     ];
 
-    const handelEditModal = () => {
-        setIsOpenEditModal(!isOpenEditModal)
+    const router = useRouter();
+    const handleEditPageNavigation = () => {
+        router.push(`/tasks/${slug}/edit`);
     }
 
     const [filterTasks, setFilterTasks] = useState(tasks);
@@ -53,7 +54,7 @@ function TaskDetailsPage({ params }) {
             <Page title={t("Task Details")} isBreadcrumbs={true} breadcrumbs={breadcrumbItems}>
                 <div className={"w-full flex items-start  gap-8 flex-col md:flex-row h-full"}>
                     <div className={"flex flex-col gap-6 md:w-[60%] w-full "}>
-                        <InfoCard type={"task"} data={taskData} handelEditAction={handelEditModal} />
+                        <InfoCard type={"task"} data={taskData} handelEditAction={handleEditPageNavigation} />
                         <div className={"p-4 bg-white dark:bg-white-0 rounded-2xl w-full flex flex-col gap-3 h-96"}>
                             <div className={"title-header pb-3 w-full flex items-center justify-between "}>
                                 <p className={"text-lg dark:text-gray-200"}>{t("Task Stages")} </p>
@@ -81,7 +82,6 @@ function TaskDetailsPage({ params }) {
                 </div>
             </Page>
 
-            <EditTaskModal task={taskData} isOpen={isOpenEditModal} onClose={handelEditModal} />
         </>
     );
 }
