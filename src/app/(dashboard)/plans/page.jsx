@@ -14,6 +14,8 @@ import StatusActions from "@/components/Dropdowns/StatusActions";
 import { RiDeleteBin7Line } from "react-icons/ri";
 import { statusCell } from "@/components/StatusCell";
 import { useRouter } from "next/navigation";
+import { useGetSubscriptionPlansQuery } from "@/redux/plans/subscriptionPlansApi";
+import { format } from "date-fns";
 
 const headers = [
     { label: "Plan", width: "300px" },
@@ -24,82 +26,34 @@ const headers = [
     { label: "", width: "50px" }
 ];
 
-// Sample data - replace with your actual data
-const plansData = [
-    {
-        _id: "p1",
-        name: "Basic Plan",
-        created_at: "May 24, 2025",
-        price: "$3/mth",
-        status: "Active",
-        features: [
-            'Access to core dashboard features',
-            'Up to 5 team members',
-            'Access to core dashboard features',
-        ]
-    },
-    {
-        _id: "p2",
-        name: "Premium Plan",
-        created_at: "May 24, 2025",
-        price: "$10/mth",
-        status: "Active",
-        features: [
-            'Access to core dashboard features',
-            'Up to 5 team members'
-        ]
-    },
-    {
-        _id: "p3",
-        name: "Basic Plan",
-        created_at: "May 24, 2025",
-        price: "$25/mth",
-        status: "Not-active",
-        features: [
-            'Access to core dashboard features',
-            'Up to 5 team members',
-            'Access to core dashboard features',
-        ]
-    },
-    {
-        _id: "p4",
-        name: "Premium Plan",
-        created_at: "May 24, 2025",
-        price: "$12/mth",
-        status: "Not-active",
-        features: [
-            'Access to core dashboard features',
-            'Up to 5 team members'
-        ]
-    }
-];
+// Sample data removed - using subscriptionPlansApi instead
 
 function PlansPage() {
-
-
     const router = useRouter();
-    const PlanActions = ({ actualRowIndex }) => {
+    const { data: plans, isLoading, error } = useGetSubscriptionPlansQuery();
+
+    const PlanActions = ({ actualRowIndex, planId }) => {
         const { t, i18n } = useTranslation();
         const statesActions = [
             {
                 text: "View", icon: <RiEyeLine className="text-primary-400" />, onClick: () => {
-                    router.push(`/plans/${1}/details`);
+                    router.push(`/plans/${planId}/details`);
                 }
             },
             {
                 text: "Edit", icon: <RiEditLine className="text-primary-400" />, onClick: () => {
-                    console.log(actualRowIndex)
+                    console.log("Edit", planId)
                 },
             },
             {
                 text: "Stop Free Trial", icon: <RiCloseCircleLine className="text-red-500" />, onClick: () => {
-                    console.log(actualRowIndex)
+                    console.log("Stop trial", planId)
                 },
             },
             {
                 text: "Delete", icon: <RiDeleteBin7Line className="text-red-500" />, onClick: () => {
-                    handelDeleteAction()
-                    console.log(actualRowIndex)
+                    toggleCheckAlertDeletePlanModal()
+                    console.log("Delete", planId)
                 },
             }
         ]
@@ -120,33 +74,49 @@ function PlansPage() {
 
 
     // Transform data into the format expected by the Table component
-    const rows = plansData.map(plan => [
+    const rows = plans?.map(plan => [
 
         // Plan Cell
         <div key={`${plan._id}_plan`} className="flex items-center justify-start gap-2">
             <div className="rounded-full p-2 bg-primary-100">
                 <div className="rounded-full p-2 bg-primary-200">
-                    <RiFlashlightLine size={25} className="rounded-full text-primary-500 stroke-[5px]" />
+                    <RiFlashlightLine size={18} className="rounded-full text-primary-500 stroke-[5px]" />
                 </div>
             </div>
-            <span className="text-md text-gray-900 dark:text-gray-50">
+            <span className="text-sm font-medium text-gray-900 dark:text-gray-50 max-w-[150px] truncate" title={plan.name}>
                 {plan.name}
             </span>
         </div>,
 
         // Price cell
-        <div key={`${plan._id}_price`}>{plan.price}</div>,
+        <div key={`${plan._id}_price`} className="text-sm">
+            {plan.pricing?.[0] ? `${plan.pricing[0].price} / ${plan.pricing[0].interval}` : "N/A"}
+        </div>,
 
         // Created at cell
-        <div key={`${plan._id}_created_at`}>{plan.created_at}</div>,
+        <div key={`${plan._id}_created_at`} className="text-sm">
+            {plan.createdAt ? format(new Date(plan.createdAt), "MMM dd, yyyy") : "N/A"}
+        </div>,
 
         // Features cell
-        <div key={`${plan._id}_features`} className="flex flex-row flex-nowrap items-center justify-start gap-2 overflow-x-auto">
+        <div key={`${plan._id}_features`} className="flex flex-col gap-1 max-w-[300px] overflow-hidden">
             {
-                plan.features.map(feature => {
+                plan.features?.map((feature, idx) => {
                     return (
-                        <div key="features" className="px-2 py-1 text-primary-600 text-sm bg-primary-50 text-center rounded-[25px]">
-                            {feature}
+                        <div key={idx} className="flex flex-col border-b border-gray-100 last:border-0 pb-1 mb-1">
+                            <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                                {feature.plan_feature?.title || "Feature"}
+                            </span>
+                            <span className="text-[10px] text-gray-500 line-clamp-1" title={feature.plan_feature?.details}>
+                                {feature.plan_feature?.details}
+                            </span>
+                            <div className="flex flex-wrap gap-1 mt-0.5">
+                                {feature.properties?.map((prop, pIdx) => (
+                                    <span key={pIdx} className="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded text-[9px] text-gray-600 dark:text-gray-400">
+                                        {prop.key}: {prop.value}
+                                    </span>
+                                ))}
+                            </div>
                         </div>
                     )
                 })
@@ -154,8 +124,11 @@ function PlansPage() {
         </div>,
 
         // Status cell
-        statusCell(plan.status, plan._id)
-    ]);
+        statusCell(plan.is_active ? "active" : "in-active", plan._id)
+    ]) || [];
+
+    if (isLoading) return <div className="flex justify-center items-center h-full p-10">Loading plans...</div>;
+    if (error) return <div className="flex justify-center items-center h-full p-10 text-red-500">Error loading plans.</div>;
 
     return (
         <Page title="Plans" isBtn={true} btnTitle="Add Plan" btnOnClick={toggleCreatePlanModalOpen}>
@@ -167,7 +140,7 @@ function PlansPage() {
                 handelDelete={toggleCheckAlertDeletePlanModal}
                 rows={rows}
                 customActions={(actualRowIndex) => (
-                    <PlanActions handelDeleteAction={toggleCheckAlertDeletePlanModal}
+                    <PlanActions planId={plans?.[actualRowIndex]?._id}
                         actualRowIndex={actualRowIndex} />)
                 }
                 isFilter={true}
