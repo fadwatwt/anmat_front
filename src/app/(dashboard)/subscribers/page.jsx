@@ -8,14 +8,16 @@ import {
 import { useTranslation } from "react-i18next";
 import Table from "@/components/Tables/Table";
 import Page from "@/components/Page";
-import { companyList } from "@/functions/FactoryData";
 import { statusCell } from "@/components/StatusCell";
 import { RiDeleteBin7Line } from "react-icons/ri";
 import StatusActions from "@/components/Dropdowns/StatusActions";
 import CheckAlert from "@/components/Alerts/CheckِِAlert";
+import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
+import { useGetSubscribersQuery, useToggleSubscriberActivationMutation } from "@/redux/subscribers/subscribersApi";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FiEye } from "react-icons/fi";
+import { format } from "date-fns";
 
 const headers = [
   { label: "Subscriber", width: "300px" },
@@ -31,70 +33,110 @@ const headers = [
 
 function Subscribers() {
   const router = useRouter();
+  const { data: subscribers, isLoading, error } = useGetSubscribersQuery();
+  const [toggleActivation] = useToggleSubscriberActivationMutation();
 
   const [isDeleteSubAert, setIsDeleteSubAert] = useState(false);
+  const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
   const handleDeleteSubAert = () => {
     setIsDeleteSubAert(!isDeleteSubAert);
   }
 
+  const handleToggleActivation = async (id) => {
+    try {
+      const result = await toggleActivation(id).unwrap();
+      setApiResponse({
+        isOpen: true,
+        status: result.status || "success",
+        message: result.message || "Subscriber status updated successfully",
+      });
+    } catch (err) {
+      setApiResponse({
+        isOpen: true,
+        status: "error",
+        message: err?.data?.message || err?.message || "Failed to update subscriber status",
+      });
+      console.error("Failed to toggle activation:", err);
+    }
+  };
+
   // Transform data into the format expected by the Table component
-  const rows = companyList.map(company => [
-    <div key="company" className="flex items-center justify-start gap-2">
+  const rows = subscribers?.map(subscriber => [
+    <div key={`${subscriber._id}_subscriber`} className="flex items-center justify-start gap-2">
       <div className={"flex justify-between items-start"}>
         <div className={" h-[50px] w-[50px]"}>
           <img className={"rounded-full h-[50px] w-[50px] max-w-full"}
             src={"https://randomuser.me/api/portraits/men/1.jpg"} alt={"image-user"} />
         </div>
       </div>
-      <div className="flex flex-col items-start justify-start gap-0">
-        <span className="text-lg text-gray-900 dark:text-gray-50">
-          {company.subscriber_details?.name}
+      <div className="flex flex-col items-start justify-start gap-0 overflow-hidden">
+        <span
+          className="text-sm font-medium text-gray-900 dark:text-gray-50 truncate w-full block max-w-[200px]"
+          title={subscriber.name}
+        >
+          {subscriber.name}
+        </span>
+        <span
+          className="text-xs text-gray-500 truncate w-full block max-w-[200px]"
+          title={subscriber.email}
+        >
+          {subscriber.email}
         </span>
       </div>
     </div>,
     // Company Name cell
-    <div key="company" className="flex items-center justify-start gap-2">
+    <div key={`${subscriber._id}_company`} className="flex items-center justify-start gap-2">
       <div className={"flex justify-between items-start"}>
         <div className={" h-[50px] w-[50px]"}>
           <img className={"rounded-full h-[50px] w-[50px] max-w-full"}
             src={"/images/company.default.logo.png"} alt={"image-user"} />
         </div>
       </div>
-      <div className="flex flex-col items-start justify-start gap-0">
-        <span className="text-lg text-gray-900 dark:text-gray-50">
-          {company.company_name}
+      <div className="flex flex-col items-start justify-start gap-0 overflow-hidden">
+        <span
+          className="text-sm font-medium text-gray-900 dark:text-gray-50 truncate w-full block max-w-[200px]"
+          title={subscriber.organization?.name || "N/A"}
+        >
+          {subscriber.organization?.name || "N/A"}
         </span>
-        <span className="text-sm text-gray-500">
-          {company.company_website}
+        <span
+          className="text-xs text-gray-500 truncate w-full block max-w-[200px]"
+          title={subscriber.organization?.website || "N/A"}
+        >
+          {subscriber.organization?.website || "N/A"}
         </span>
       </div>
     </div>,
 
     // Plan Cell
-    <div key="plan" className="flex items-center justify-start gap-2">
+    <div key={`${subscriber._id}_plan`} className="flex items-center justify-start gap-2">
       <div className="rounded-full p-2 bg-primary-100">
         <div className="rounded-full p-2 bg-primary-200">
-          <RiFlashlightLine size={25} className="rounded-full text-primary-500 stroke-[5px]" />
+          <RiFlashlightLine size={18} className="rounded-full text-primary-500 stroke-[5px]" />
         </div>
       </div>
-      <span className="text-lg text-gray-900 dark:text-gray-50">
-        {company.subscriber_details?.plan}
+      <span className="text-sm font-medium text-gray-900 dark:text-gray-50">
+        {"Standard"}
       </span>
     </div>,
 
-    // Date cell
-    <div key="industry">{company.industry}</div>,
-    <div key="date">{company.subscriber_details?.subscribed_at}</div>,
+    // Industry and Date cell
+    <div key={`${subscriber._id}_industry`} className="text-sm truncate max-w-[120px]" title={subscriber.organization?.industry?.name || "N/A"}>
+      {subscriber.organization?.industry?.name || "N/A"}
+    </div>,
+    <div key={`${subscriber._id}_date`} className="text-sm">
+      {subscriber.createdAt ? format(new Date(subscriber.createdAt), "MMM dd, yyyy") : "N/A"}
+    </div>,
 
     // Users Subscribed cell
-    <div key="amount" className="px-2 py-1 text-gray-900 text-md bg-gray-50 text-center rounded-[25px]">
-      {company.users}
+    <div key={`${subscriber._id}_amount`} className="px-2 py-0.5 text-gray-900 text-xs bg-gray-50 text-center rounded-[25px] w-fit mx-auto">
+      {"0"}
     </div>,
 
     // Status cell
-    statusCell(company.status)
-  ]);
+    statusCell(subscriber.is_active ? "active" : "in-active")
+  ]) || [];
 
 
   const industryOptions = [
@@ -103,33 +145,30 @@ function Subscribers() {
     { name: "Product Management", value: "product management" }
   ];
 
-  const SubscriptionActions = ({ actualRowIndex }) => {
+  const SubscriptionActions = ({ subscriber }) => {
     const { t, i18n } = useTranslation();
     const statesActions = [
       {
         text: "View", icon: <FiEye className="text-primary-400" />, onClick: () => {
-          router.push(`/subscribers/${1}/profile`);
+          router.push(`/subscribers/${subscriber._id}/profile`);
         },
       },
       {
         text: "Edit", icon: <RiEditLine className="text-primary-400" />, onClick: () => {
-          console.log(actualRowIndex)
+          console.log("Edit", subscriber._id)
         },
       },
       {
-        text: "Active", icon: <RiCheckboxCircleLine className="text-green-500" />, onClick: () => {
-          console.log(actualRowIndex)
-        },
-      },
-      {
-        text: "Deactivate", icon: <RiCloseCircleLine className="text-red-500" />, onClick: () => {
-          console.log(actualRowIndex)
+        text: subscriber.is_active ? "Deactivate" : "Activate",
+        icon: subscriber.is_active ? <RiCloseCircleLine className="text-red-500" /> : <RiCheckboxCircleLine className="text-green-500" />,
+        onClick: () => {
+          handleToggleActivation(subscriber._id)
         },
       },
       {
         text: "Delete", icon: <RiDeleteBin7Line className="text-red-500" />, onClick: () => {
-          handleCloseCheckAert()
-          console.log(actualRowIndex)
+          handleDeleteSubAert()
+          console.log("Delete", subscriber._id)
         },
       }
     ]
@@ -138,6 +177,9 @@ function Subscribers() {
         }`} />
     );
   }
+
+  if (isLoading) return <div className="flex justify-center items-center h-full p-10">Loading subscribers...</div>;
+  if (error) return <div className="flex justify-center items-center h-full p-10 text-red-500">Error loading subscribers. Please try again later.</div>;
 
   return (
     <Page title="Subscribers" isBtn={false}>
@@ -151,7 +193,7 @@ function Subscribers() {
         showStatusFilter={true}
         showIndustryFilter={true}
         customActions={(actualRowIndex) => (
-          <SubscriptionActions actualRowIndex={actualRowIndex} />)
+          <SubscriptionActions subscriber={subscribers?.[actualRowIndex]} />)
         }
         industryOptions={industryOptions}
       />
@@ -168,6 +210,12 @@ function Subscribers() {
           </p>
         }
         onSubmit={() => { }}
+      />
+      <ApiResponseAlert
+        isOpen={apiResponse.isOpen}
+        status={apiResponse.status}
+        message={apiResponse.message}
+        onClose={() => setApiResponse({ ...apiResponse, isOpen: false })}
       />
     </Page>
   );

@@ -27,14 +27,16 @@ import ChangePasswordModal from "@/app/(dashboard)/profile/_components/modals/Ch
 import Table from "@/components/Tables/Table";
 import { statusCell } from "@/components/StatusCell";
 import CheckAlert from "@/components/Alerts/CheckِِAlert";
+import { useGetSubscriberQuery } from "@/redux/subscribers/subscribersApi";
+import { format } from "date-fns";
 
 function AdminProfile() {
     const { t, i18n } = useTranslation()
     const [isEditAdminProfileModal, setIsEditAdminProfileModal] = useState(false);
     const [isChangePasswordModal, setIsChangePasswordModal] = useState(false);
     const { slug } = useParams();
+    const { data: subscriber, isLoading, error } = useGetSubscriberQuery(slug);
     const [isDeleteCatalogAert, setIsDeleteCatalogAert] = useState(false);
-    console.log({ slug });
 
     const handelEditAdminProfileModal = () => {
         setIsEditAdminProfileModal(!isEditAdminProfileModal)
@@ -126,6 +128,9 @@ function AdminProfile() {
         statusCell(plan.status, plan._id)
     ]);
     // const employeeId = slug ? slug.split('-')[0] : null;
+    if (isLoading) return <div className="flex justify-center items-center h-full p-10">Loading profile...</div>;
+    if (error) return <div className="flex justify-center items-center h-full p-10 text-red-500">Error loading profile.</div>;
+
     return (
         <Page isTitle={false} className={"w-full"}>
             <div className={"w-full flex flex-col items-center md:gap-6 xl:gap-4 gap-8 h-full"}>
@@ -142,8 +147,10 @@ function AdminProfile() {
                                     <div className={"relative h-[72px] w-[72px]"}>
                                         <img className={"rounded-full h-[72px] w-[72px] max-w-full"}
                                             src={"https://randomuser.me/api/portraits/men/1.jpg"} alt={"image-user"} />
-                                        <RiCheckboxCircleFill size="23"
-                                            className="absolute top-0 right-0 bg-white dark:bg-gray-800 rounded-full text-cyan-500" />
+                                        {subscriber?.is_active && (
+                                            <RiCheckboxCircleFill size="23"
+                                                className="absolute top-0 right-0 bg-white dark:bg-gray-800 rounded-full text-cyan-500" />
+                                        )}
                                     </div>
                                     <button
                                         className={"p-1.5 rounded-lg md:hidden text-nowrap bg-none border text-sm dark:border-gray-700 dark:text-gray-200 self-start"}>{t("Edit profile")}
@@ -154,31 +161,33 @@ function AdminProfile() {
                                         <div className={"name-profile flex items-center gap-1"}>
                                             <RiUserLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
                                             <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Name")}:</span>
-                                            <p className={"text-black text-sm dark:text-gray-100 font-medium "}>Rawan Ahmed</p>
+                                            <p className={"text-black text-sm dark:text-gray-100 font-medium "}>{subscriber?.name || "N/A"}</p>
                                         </div>
                                         <div className={"name-profile flex items-center gap-1"}>
                                             <RiCake2Line size={18} className={"text-soft-400 dark:text-gray-300"} />
-                                            <p className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Age")}:</p>
-                                            <p className={"text-black text-sm dark:text-gray-100 font-medium"}>21</p>
+                                            <p className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Joined")}:</p>
+                                            <p className={"text-black text-sm dark:text-gray-100 font-medium"}>
+                                                {subscriber?.createdAt ? format(new Date(subscriber.createdAt), "MMM dd, yyyy") : "N/A"}
+                                            </p>
                                         </div>
                                         <div className={"name-profile flex items-center gap-1"}>
                                             <RiBriefcaseLine size="18" className="text-soft-400 dark:text-gray-300" />
-                                            <p className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Role")}:</p>
-                                            <p className={"text-black text-sm dark:text-gray-100 font-medium"}>{t("Content Editor")}</p>
+                                            <p className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Type")}:</p>
+                                            <p className={"text-black text-sm dark:text-gray-100 font-medium"}>{t(subscriber?.type || "Subscriber")}</p>
                                         </div>
                                     </div>
                                     <div className={"flex flex-col gap-4 flex-1"}>
                                         <div className={"name-profile flex items-center gap-1"}>
                                             <RiMailLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
                                             <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Email")}:</span>
-                                            <p className={"text-black text-sm dark:text-gray-100 font-medium"}>Rawan@email.com</p>
+                                            <p className={"text-black text-sm dark:text-gray-100 font-medium"}>{subscriber?.email || "N/A"}</p>
                                         </div>
                                         <div className={"name-profile flex items-center gap-1"}>
                                             <RiPhoneLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
                                             <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Phone Number")}:</span>
-                                            <p className={"text-black text-sm dark:text-gray-100 font-medium"}>56789087</p>
+                                            <p className={"text-black text-sm dark:text-gray-100 font-medium"}>{subscriber?.phone || "N/A"}</p>
                                             {/* Unverified & Verified */}
-                                            <Status type={"Unverified"} />
+                                            <Status type={subscriber?.is_active ? "Verified" : "Unverified"} />
                                         </div>
                                     </div>
                                 </div>
@@ -222,39 +231,39 @@ function AdminProfile() {
                                     <div className={"name-profile flex items-center gap-1"}>
                                         <RiUserLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
                                         <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Company")}:</span>
-                                        <p className={"text-black text-sm dark:text-gray-100 font-medium "}>Rawan Ahmed</p>
+                                        <p className={"text-black text-sm dark:text-gray-100 font-medium "}>{subscriber?.organization?.name || "N/A"}</p>
                                     </div>
                                     <div className={"name-profile flex items-center gap-1"}>
                                         <RiGlobalLine size={18} className={"text-soft-400 dark:text-gray-300"} />
                                         <p className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Website")}:</p>
-                                        <p className={"text-black text-sm dark:text-gray-100 font-medium"}>21</p>
+                                        <p className={"text-black text-sm dark:text-gray-100 font-medium"}>{subscriber?.organization?.website || "N/A"}</p>
                                     </div>
                                     <div className={"name-profile flex items-center gap-1"}>
                                         <RiGraduationCapLine size="18" className="text-soft-400 dark:text-gray-300" />
                                         <p className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Industry")}:</p>
-                                        <p className={"text-black text-sm dark:text-gray-100 font-medium"}>{t("Content Editor")}</p>
+                                        <p className={"text-black text-sm dark:text-gray-100 font-medium"}>{subscriber?.organization?.industry?.name || "N/A"}</p>
                                     </div>
                                     <div className={"name-profile flex items-center gap-1 "}>
                                         <RiGroupLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
                                         <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Country")}:</span>
-                                        <p className={"text-black text-sm dark:text-gray-100 font-medium"}>Rawan@email.com</p>
+                                        <p className={"text-black text-sm dark:text-gray-100 font-medium"}>{subscriber?.organization?.country || "N/A"}</p>
                                     </div>
                                 </div>
                                 <div className={"flex flex-col gap-4 flex-1"}>
                                     <div className={"name-profile flex items-center gap-1 "}>
                                         <RiMapPinLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
                                         <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Country")}:</span>
-                                        <p className={"text-black text-sm dark:text-gray-100 font-medium"}>Rawan@email.com</p>
+                                        <p className={"text-black text-sm dark:text-gray-100 font-medium"}>{subscriber?.organization?.country || "N/A"}</p>
                                     </div>
                                     <div className={"name-profile flex items-center gap-1"}>
                                         <RiMapPinLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
                                         <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("City")}:</span>
-                                        <p className={"text-black text-sm dark:text-gray-100 font-medium"}>56789087</p>
+                                        <p className={"text-black text-sm dark:text-gray-100 font-medium"}>{subscriber?.organization?.city || "N/A"}</p>
                                     </div>
                                     <div className={"name-profile flex items-center gap-1"}>
-                                        <RiMapPinLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
-                                        <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Address")}:</span>
-                                        <p className={"text-black text-sm dark:text-gray-100 font-medium"}>56789087</p>
+                                        <RiMailLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
+                                        <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Org Email")}:</span>
+                                        <p className={"text-black text-sm dark:text-gray-100 font-medium"}>{subscriber?.organization?.email || "N/A"}</p>
                                     </div>
                                 </div>
                             </div>
@@ -287,7 +296,9 @@ function AdminProfile() {
                                     <div className={"name-profile flex items-center gap-1"}>
                                         <RiCalendarLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
                                         <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Subscription Date")}:</span>
-                                        <p className={"text-black text-sm dark:text-gray-100 font-medium"}>56789087</p>
+                                        <p className={"text-black text-sm dark:text-gray-100 font-medium"}>
+                                            {subscriber?.createdAt ? format(new Date(subscriber.createdAt), "MMM dd, yyyy") : "N/A"}
+                                        </p>
                                     </div>
                                     <div className={"name-profile flex items-center gap-1"}>
                                         <RiCalendarLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
