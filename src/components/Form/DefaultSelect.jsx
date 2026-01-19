@@ -1,21 +1,21 @@
 import PropTypes from "prop-types";
 import { IoIosArrowDown } from "react-icons/io";
 import { useTranslation } from "react-i18next";
-import { FaCircleInfo, FaTimes } from "react-icons/fa6";
+import { FaCircleInfo, FaXmark as FaTimes } from "react-icons/fa6";
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 
 function CustomSelect({
-                          title,
-                          options,
-                          onChange,
-                          classNameContainer = "",
-                          classNameSelect = "",
-                          isOption = false,
-                          value = [],
-                          placeholder = "Select",
-                          error,
-                      }) {
+    title,
+    options,
+    onChange,
+    classNameContainer = "",
+    classNameSelect = "",
+    isOption = false,
+    value = [],
+    placeholder = "Select",
+    error,
+}) {
     const { t, i18n } = useTranslation();
 
     const [selectedOptions, setSelectedOptions] = useState(Array.isArray(value) ? value : []);
@@ -129,9 +129,8 @@ function CustomSelect({
         <div
             ref={dropdownContentRef} // لقياس الارتفاع الفعلي
             style={dropdownStyle}
-            className={`fixed z-[9999] bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 p-2 rounded-2xl shadow-lg mt-0 max-h-60 overflow-y-auto ${
-                i18n.language === "ar" ? "text-right" : "text-left"
-            }`}
+            className={`fixed z-[9999] bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 p-2 rounded-2xl shadow-lg mt-0 max-h-60 overflow-y-auto ${i18n.language === "ar" ? "text-right" : "text-left"
+                }`}
         >
             {filteredSuggestions().map((option) => (
                 <div
@@ -158,8 +157,8 @@ function CustomSelect({
                     <span>{t(title)}</span>
                     {isOption && (
                         <span className="text-sm text-gray-500 flex items-center gap-1">
-              ({t("Option")}) <FaCircleInfo className="text-gray-400" size={15} />
-            </span>
+                            ({t("Option")}) <FaCircleInfo className="text-gray-400" size={15} />
+                        </span>
                     )}
                 </label>
             )}
@@ -169,9 +168,8 @@ function CustomSelect({
                 <div
                     ref={inputContainerRef} // الـ Ref لحساب موضع الـ Portal
                     onClick={() => setIsDropdownOpen(true)}
-                    className={`flex flex-wrap items-center gap-2 h-auto dark:bg-gray-800 dark:text-gray-100 w-full border border-gray-300 dark:border-gray-500 rounded-lg bg-white ${
-                        classNameSelect ? classNameSelect : "py-2 px-3 text-sm"
-                    } shadow-sm cursor-text focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500`}
+                    className={`flex flex-wrap items-center gap-2 h-auto dark:bg-gray-800 dark:text-gray-100 w-full border border-gray-300 dark:border-gray-500 rounded-lg bg-white ${classNameSelect ? classNameSelect : "py-2 px-3 text-sm"
+                        } shadow-sm cursor-text focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500`}
                 >
                     {/* Tags (Selected Options) */}
                     <div className="flex flex-wrap gap-1">
