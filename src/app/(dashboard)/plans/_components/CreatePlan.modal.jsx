@@ -17,6 +17,16 @@ function CreatePlanModal({ isOpen, onClose }) {
   const [createSubscriptionPlan, { isLoading: isCreating }] = useCreateSubscriptionPlanMutation();
   const { data: featureTypes } = useGetSubscriptionFeatureTypesQuery("active");
 
+  const calculateDays = (interval, count) => {
+    const counts = {
+      day: 1,
+      week: 7,
+      month: 30,
+      year: 365
+    };
+    return (counts[interval] || 30) * (parseInt(count) || 1);
+  };
+
   const [showApproval, setShowApproval] = useState(false);
   const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
@@ -251,7 +261,11 @@ function CreatePlanModal({ isOpen, onClose }) {
                 name={`pricing.${index}.interval_count`}
                 type="number"
                 value={formik.values.pricing[index].interval_count}
-                onChange={formik.handleChange}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  formik.setFieldValue(`pricing.${index}.interval_count`, val);
+                  formik.setFieldValue(`pricing.${index}.days_number`, calculateDays(formik.values.pricing[index].interval, val));
+                }}
                 onBlur={formik.handleBlur}
                 isRequired={true}
               />
@@ -265,7 +279,10 @@ function CreatePlanModal({ isOpen, onClose }) {
                   { _id: "month", name: "Month" },
                   { _id: "year", name: "Year" }
                 ]}
-                onChange={(val) => formik.setFieldValue(`pricing.${index}.interval`, val)}
+                onChange={(val) => {
+                  formik.setFieldValue(`pricing.${index}.interval`, val);
+                  formik.setFieldValue(`pricing.${index}.days_number`, calculateDays(val, formik.values.pricing[index].interval_count));
+                }}
                 onBlur={formik.handleBlur}
                 isRequired={true}
               />
@@ -277,6 +294,7 @@ function CreatePlanModal({ isOpen, onClose }) {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 isRequired={true}
+                disabled={true}
               />
             </div>
           </div>
