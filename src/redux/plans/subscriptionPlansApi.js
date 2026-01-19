@@ -18,10 +18,19 @@ export const subscriptionPlansApi = apiSlice.injectEndpoints({
             transformResponse: (response) => response.data,
             providesTags: (result, error, id) => [{ type: "SubscriptionPlans", id }],
         }),
+        createSubscriptionPlan: builder.mutation({
+            query: (newPlan) => ({
+                url: "api/admin/subscription-plans",
+                method: "POST",
+                body: newPlan,
+            }),
+            invalidatesTags: ["SubscriptionPlans"],
+        }),
     }),
 });
 
 export const {
     useGetSubscriptionPlansQuery,
     useGetSubscriptionPlanQuery,
+    useCreateSubscriptionPlanMutation,
 } = subscriptionPlansApi;
