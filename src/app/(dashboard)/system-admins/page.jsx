@@ -9,7 +9,12 @@ import { useState } from "react";
 import StatusActions from "@/components/Dropdowns/StatusActions";
 import { useGetAdminsQuery } from "@/redux/system-admins/systemAdminsAPI";
 import CreateAdminModal from "./_components/modals/CreateAdmin.modal";
+import AssignRoleModal from "./_components/modals/AssignRole.modal";
 import Alert from "@/components/Alerts/Alert";
+import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
+import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
+import { useUnassignRoleMutation } from "@/redux/roles/adminRolesAPI";
+import { RiAddCircleLine, RiCloseLine } from "@remixicon/react";
 
 function SystemAdminsPage() {
     const { data: adminsResponse, isLoading } = useGetAdminsQuery();
@@ -17,11 +22,18 @@ function SystemAdminsPage() {
 
     const [isSuccessCreated, setIsSuccessCreated] = useState(false)
     const [isCreateAdminModalOpen, setIsCreateAdminModalOpen] = useState(false);
+    const [isAssignRoleModalOpen, setIsAssignRoleModalOpen] = useState(false);
+    const [isApprovalOpen, setIsApprovalOpen] = useState(false);
+    const [isResponseOpen, setIsResponseOpen] = useState(false);
+    const [apiResponse, setApiResponse] = useState({ status: "", message: "" });
+    const [selectedAdmin, setSelectedAdmin] = useState(null);
+    const [selectedRole, setSelectedRole] = useState(null);
+    const [unassignRole] = useUnassignRoleMutation();
 
     const headers = [
         { label: "Name", width: "200px" },
         { label: "Email", width: "150px" },
-        { label: "Rule", width: "150px" },
+        { label: "Roles", width: "150px" },
         { label: "Status", width: "80px" },
         { label: "", width: "50px" }
     ];
@@ -44,7 +56,15 @@ function SystemAdminsPage() {
         // Created at cell
         <div key={`${adminUser._id}_rules`} className={"flex justify-start items-center gap-1 flex-wrap"}>
             {adminUser?.admin_system_roles?.map((element, index) => (
-                <span key={index} className={"py-1 px-2 rounded-lg bg-blue-100 text-blue-500 "}>{element?.name}</span>
+                <span key={index} className={"py-1 px-2 rounded-lg bg-blue-100 text-blue-500 flex items-center gap-1"}>
+                    {element?.name}
+                    <button
+                        onClick={() => handleUnassignClick(adminUser, element)}
+                        className="hover:text-red-500 transition-colors"
+                    >
+                        <RiCloseLine size={14} />
+                    </button>
+                </span>
             ))}</div>,
 
         // Status cell
@@ -65,9 +85,43 @@ function SystemAdminsPage() {
         setIsSuccessCreated(!isSuccessCreated)
     }
 
+    const handleUnassignClick = (admin, role) => {
+        setSelectedAdmin(admin);
+        setSelectedRole(role);
+        setIsApprovalOpen(true);
+    }
+
+    const confirmUnassign = async () => {
+        if (!selectedAdmin || !selectedRole) return;
+        try {
+            const result = await unassignRole({
+                admin_id: selectedAdmin._id,
+                role_id: selectedRole._id
+            }).unwrap();
+            setApiResponse({ status: "success", message: result.message || t("Role unassigned successfully") });
+        } catch (err) {
+            setApiResponse({ status: "error", message: err.data?.message || t("Failed to unassign role") });
+        } finally {
+            setIsResponseOpen(true);
+            setSelectedAdmin(null);
+            setSelectedRole(null);
+        }
+    }
+
+    const handleShowResult = (response) => {
+        setApiResponse(response);
+        setIsResponseOpen(true);
+    }
+
     const AdminUserActions = ({ actualRowIndex, handelDeactivateAction }) => {
         const { t, i18n } = useTranslation();
         const statesActions = [
+            {
+                text: "Assign Role", icon: <RiAddCircleLine className="text-primary-400" />, onClick: () => {
+                    setSelectedAdmin(adminsData[actualRowIndex]);
+                    setIsAssignRoleModalOpen(true);
+                },
+            },
             {
                 text: "View", icon: <RiEyeLine className="text-primary-400" />, onClick: () => {
                     console.log(actualRowIndex)
@@ -114,7 +168,30 @@ function SystemAdminsPage() {
             )}
 
             <CreateAdminModal isOpen={isCreateAdminModalOpen} onClose={handelCreateAdminModalOpen} onShowSuccess={handelSuccessCreated} />
+            <AssignRoleModal
+                isOpen={isAssignRoleModalOpen}
+                onClose={() => setIsAssignRoleModalOpen(false)}
+                admin={selectedAdmin}
+                onShowResult={handleShowResult}
+            />
             <Alert type={"success"} title={"User created successfully!"} message={"User has been added"} isOpen={isSuccessCreated} onClose={handelSuccessCreated} />
+
+            <ApprovalAlert
+                isOpen={isApprovalOpen}
+                onClose={() => setIsApprovalOpen(false)}
+                onConfirm={confirmUnassign}
+                title="Unassign Role"
+                message={`Are you sure you want to unassign the role "${selectedRole?.name}" from ${selectedAdmin?.name}?`}
+                confirmBtnText="Unassign"
+                type="danger"
+            />
+
+            <ApiResponseAlert
+                isOpen={isResponseOpen}
+                onClose={() => setIsResponseOpen(false)}
+                status={apiResponse.status}
+                message={apiResponse.message}
+            />
         </Page>
     );
 }

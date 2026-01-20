@@ -1,14 +1,14 @@
 import PropTypes from "prop-types";
-import {IoClose} from "react-icons/io5";
-import {useTranslation} from "react-i18next";
+import { IoClose } from "react-icons/io5";
+import { useTranslation } from "react-i18next";
 import DefaultButton from "../Form/DefaultButton.jsx";
 
-const Modal = ({ isOpen, onClose, children,title,className,isHideCancel,isBtns,customBtns,classNameOpacity,btnApplyTitle,onClick,classNameBtns }) => {
-    const {t} = useTranslation()
+const Modal = ({ isOpen, onClose, children, title, className, isHideCancel, isBtns, customBtns, classNameOpacity, btnApplyTitle, onClick, classNameBtns, disabled }) => {
+    const { t } = useTranslation()
     if (!isOpen) return null;
     return (
         <div
-            className={`fixed inset-0 bg-gray-900  flex items-center overflow-hidden justify-center z-50 ${classNameOpacity ? classNameOpacity:"bg-opacity-50"}`}
+            className={`fixed inset-0 bg-gray-900  flex items-center overflow-hidden justify-center z-50 ${classNameOpacity ? classNameOpacity : "bg-opacity-50"}`}
             onClick={onClose}
         >
             <div
@@ -16,15 +16,15 @@ const Modal = ({ isOpen, onClose, children,title,className,isHideCancel,isBtns,c
                 onClick={(e) => e.stopPropagation()} // منع إغلاق عند النقر داخل المودال
             >
                 {title &&
-                <div className={`flex justify-between items-center mb-4 ${title && "border-b-2"}  dark:border-gray-700 p-3`}>
-                    <h2 className="dark:text-gray-200 text-base text-black">{t(title)}</h2>
-                    <button
-                        onClick={onClose}
-                        className="text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 "
-                    >
-                        <IoClose size={18} />
-                    </button>
-                </div>
+                    <div className={`flex justify-between items-center mb-4 ${title && "border-b-2"}  dark:border-gray-700 p-3`}>
+                        <h2 className="dark:text-gray-200 text-base text-black">{t(title)}</h2>
+                        <button
+                            onClick={onClose}
+                            className="text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 "
+                        >
+                            <IoClose size={18} />
+                        </button>
+                    </div>
                 }
                 <div className={" relative flex flex-col"}>
                     <div className={"max-h-[70vh] overflow-visible tab-content overflow-y-auto"}>
@@ -35,12 +35,13 @@ const Modal = ({ isOpen, onClose, children,title,className,isHideCancel,isBtns,c
                             <div className={"flex gap-2 py-3 w-full p-4 " + classNameBtns}>
                                 {
                                     !isHideCancel &&
-                                        <DefaultButton type={'button'} title={("Cancel")}
-                                                       className={"font-medium dark:text-gray-200"}/>
+                                    <DefaultButton type={'button'} title={("Cancel")}
+                                        className={"font-medium dark:text-gray-200"} />
                                 }
 
-                                <DefaultButton onClick={onClick} type={'button'} title={btnApplyTitle ? btnApplyTitle:"Apply"}
-                                               className={"bg-primary-500 font-medium dark:bg-primary-200 dark:text-black text-white"}/>
+                                <DefaultButton onClick={onClick} type={'button'} title={btnApplyTitle ? btnApplyTitle : "Apply"}
+                                    disabled={disabled}
+                                    className={"bg-primary-500 font-medium dark:bg-primary-200 dark:text-black text-white"} />
                             </div>
                         )
                     }
@@ -62,8 +63,9 @@ Modal.propTypes = {
     btnApplyTitle: PropTypes.string,
     className: PropTypes.string,
     classNameOpacity: PropTypes.string,
-    customBtns:PropTypes.element,
-    classNameBtns:PropTypes.string,
-    isHideCancel:PropTypes.bool
+    customBtns: PropTypes.element,
+    classNameBtns: PropTypes.string,
+    isHideCancel: PropTypes.bool,
+    disabled: PropTypes.bool
 }
 export default Modal;
