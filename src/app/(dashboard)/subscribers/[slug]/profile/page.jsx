@@ -28,7 +28,12 @@ import Table from "@/components/Tables/Table";
 import { statusCell } from "@/components/StatusCell";
 import CheckAlert from "@/components/Alerts/CheckِِAlert";
 import { useGetSubscriberQuery } from "@/redux/subscribers/subscribersApi";
-import { format } from "date-fns";
+import { useGetSubscriptionsQuery, useUpdateSubscriptionStatusMutation } from "@/redux/subscriptions/subscriptionsApi";
+import { format, differenceInDays } from "date-fns";
+import Switch2 from "@/components/Form/Switch2";
+import SelectWithoutLabel from "@/components/Form/SelectWithoutLabel";
+import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
+import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 
 function AdminProfile() {
     const { t, i18n } = useTranslation()
@@ -36,7 +41,24 @@ function AdminProfile() {
     const [isChangePasswordModal, setIsChangePasswordModal] = useState(false);
     const { slug } = useParams();
     const { data: subscriber, isLoading, error } = useGetSubscriberQuery(slug);
+    const { data: subscriptions, isLoading: isSubsLoading } = useGetSubscriptionsQuery({ subscriber_id: slug });
+    const [updateSubscriptionStatus, { isLoading: isUpdatingStatus }] = useUpdateSubscriptionStatusMutation();
     const [isDeleteCatalogAert, setIsDeleteCatalogAert] = useState(false);
+
+    // Status update states
+    const [isApprovalOpen, setIsApprovalOpen] = useState(false);
+    const [isResponseOpen, setIsResponseOpen] = useState(false);
+    const [apiResponse, setApiResponse] = useState({ status: "", message: "" });
+    const [pendingSubscription, setPendingSubscription] = useState(null);
+    const [targetStatus, setTargetStatus] = useState("");
+
+    const statusOptions = [
+        { id: 'active', value: 'active', name: t('Active') },
+        { id: 'inactive', value: 'inactive', name: t('Inactive') },
+        { id: 'terminated', value: 'terminated', name: t('Terminated') },
+        { id: 'expired', value: 'expired', name: t('Expired') },
+        { id: 'cancelled', value: 'cancelled', name: t('Cancelled') },
+    ];
 
     const handelEditAdminProfileModal = () => {
         setIsEditAdminProfileModal(!isEditAdminProfileModal)
@@ -49,86 +71,68 @@ function AdminProfile() {
         setIsDeleteCatalogAert(!isDeleteCatalogAert);
     }
 
+    const handleStatusChange = (subscription, newStatus) => {
+        setPendingSubscription(subscription);
+        setTargetStatus(newStatus);
+        setIsApprovalOpen(true);
+    }
+
+    const confirmUpdateStatus = async () => {
+        if (!pendingSubscription || !targetStatus) return;
+
+        try {
+            const result = await updateSubscriptionStatus({ id: pendingSubscription._id, status: targetStatus }).unwrap();
+            setApiResponse({
+                status: "success",
+                message: result.message || t("Subscription status updated successfully")
+            });
+        } catch (err) {
+            setApiResponse({
+                status: "error",
+                message: err.data?.message || t("Failed to update subscription status")
+            });
+        } finally {
+            setIsResponseOpen(true);
+            setPendingSubscription(null);
+            setTargetStatus("");
+        }
+    }
+
     const headers = [
-        { label: "Catalog Company", width: "300px" },
-        { label: "Renewal Date", width: "150px" },
+        { label: "Plan Name", width: "300px" },
+        { label: "Subscription Date", width: "150px" },
         { label: "Status", width: "125px" },
         { label: "", width: "50px" }
     ];
 
-    const plansData = [
-        {
-            _id: "p1",
-            name: "Basic Plan",
-            created_at: "May 24, 2025",
-            price: "$3/mth",
-            status: "Active",
-            features: [
-                'Access to core dashboard features',
-                'Up to 5 team members',
-                'Access to core dashboard features',
-            ]
-        },
-        {
-            _id: "p2",
-            name: "Premium Plan",
-            created_at: "May 24, 2025",
-            price: "$10/mth",
-            status: "Active",
-            features: [
-                'Access to core dashboard features',
-                'Up to 5 team members'
-            ]
-        },
-        {
-            _id: "p3",
-            name: "Basic Plan",
-            created_at: "May 24, 2025",
-            price: "$25/mth",
-            status: "Not-active",
-            features: [
-                'Access to core dashboard features',
-                'Up to 5 team members',
-                'Access to core dashboard features',
-            ]
-        },
-        {
-            _id: "p4",
-            name: "Premium Plan",
-            created_at: "May 24, 2025",
-            price: "$12/mth",
-            status: "Not-active",
-            features: [
-                'Access to core dashboard features',
-                'Up to 5 team members'
-            ]
-        }
-    ];
+    const lastActiveSubscription = subscriptions?.find(sub => sub.status === 'active') || subscriptions?.[0];
 
-    const rows = plansData.map(plan => [
+    const rows = (subscriptions || []).map(subscription => [
 
         // Plan Cell
-        <div key={`${plan._id}_plan`} className="flex items-center justify-start gap-2">
+        <div key={`${subscription._id}_plan`} className="flex items-center justify-start gap-2">
             <div className="rounded-full p-2 bg-primary-100">
                 <div className="rounded-full p-2 bg-primary-200">
                     <RiFlashlightLine size={25} className="rounded-full text-primary-500 stroke-[5px]" />
                 </div>
             </div>
             <span className="text-md text-gray-900 dark:text-gray-50">
-                {plan.name}
+                {subscription.plan_id?.name || "N/A"}
             </span>
         </div>,
 
 
         // Created at cell
-        <div key={`${plan._id}_created_at`}>{plan.created_at}</div>,
+        <div key={`${subscription._id}_created_at`}>
+            {subscription.createdAt ? format(new Date(subscription.createdAt), "MMM dd, yyyy") : "N/A"}
+        </div>,
 
 
         // Status cell
-        statusCell(plan.status, plan._id)
+        statusCell(subscription.status, subscription._id)
     ]);
     // const employeeId = slug ? slug.split('-')[0] : null;
-    if (isLoading) return <div className="flex justify-center items-center h-full p-10">Loading profile...</div>;
+    if (isLoading || isSubsLoading) return <div className="flex justify-center items-center h-full p-10">Loading profile...</div>;
     if (error) return <div className="flex justify-center items-center h-full p-10 text-red-500">Error loading profile.</div>;
 
     return (
@@ -274,22 +278,45 @@ function AdminProfile() {
                     <div className={"md:w-full w-full flex flex-col gap-4 items-center h-full"}>
                         <div className={"bg-white rounded-2xl p-4 gap-6 md:flex-1 flex flex-col dark:bg-gray-800 items-center w-full p-5"}>
                             <div className={"w-full border border-gray-200 rounded-md flex flex-col gap-4 p-4"}>
-                                <h3 className={"text-lg font-s"}>Subscription Information </h3>
+                                <div className="flex justify-between items-center">
+                                    <h3 className={"text-lg font-s"}>{t("Subscription Information")}</h3>
+                                    {lastActiveSubscription && (
+                                        <div className="flex items-center gap-2">
+                                            <SelectWithoutLabel
+                                                className="w-40"
+                                                name="subscriptionStatus"
+                                                title="Status"
+                                                value={lastActiveSubscription.status}
+                                                options={statusOptions}
+                                                onChange={(newStatus) => handleStatusChange(lastActiveSubscription, newStatus)}
+                                                onBlur={() => { }}
+                                                disabled={isUpdatingStatus}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
                                 <div className={"w-full grid grid-flow-col grid-rows-2 gap-3 "}>
 
                                     <div className={"name-profile flex items-center gap-1"}>
                                         <RiBuilding2Line size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
                                         <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Last Plan Subscribed:")}:</span>
-                                        <p className={"text-black text-sm dark:text-gray-100 font-medium"}>{t("Publishing")}</p>
+                                        <p className={"text-black text-sm dark:text-gray-100 font-medium"}>{t(lastActiveSubscription?.plan_id?.name || "N/A")}</p>
                                     </div>
                                     <div className={"name-profile flex items-center gap-1"}>
                                         <RiCheckboxLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
                                         <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Features")}:</span>
-                                        <div className={"flex items-center gap-1"}>
+                                        <div className={"flex items-center gap-1 flex-wrap"}>
                                             {
-                                                ["Add employee", "Edit project", "Edit task", "Delete task"].map((item, index) => (
-                                                    <p key={index} className={"bg-blue-50 py-1 px-2 rounded-xl text-black text-sm dark:text-gray-100 font-medium"}>{item}</p>
-                                                ))
+                                                lastActiveSubscription?.plan_id?.features?.length > 0 ? (
+                                                    lastActiveSubscription.plan_id.features.map((feature, index) => (
+                                                        <p key={index} className={"bg-blue-50 py-1 px-2 rounded-xl text-black text-sm dark:text-gray-100 font-medium"}>
+                                                            {feature.feature_type_id?.title || feature.feature_type_id?.type || feature.feature_type_id}
+                                                            {feature.properties?.length > 0 && ` (${feature.properties.map(p => `${p.key}: ${p.value}`).join(', ')})`}
+                                                        </p>
+                                                    ))
+                                                ) : (
+                                                    <p className={"text-soft-400 text-sm"}>{t("No features")}</p>
+                                                )
                                             }
                                         </div>
                                     </div>
@@ -297,23 +324,31 @@ function AdminProfile() {
                                         <RiCalendarLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
                                         <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Subscription Date")}:</span>
                                         <p className={"text-black text-sm dark:text-gray-100 font-medium"}>
-                                            {subscriber?.createdAt ? format(new Date(subscriber.createdAt), "MMM dd, yyyy") : "N/A"}
+                                            {lastActiveSubscription?.starts_at ? format(new Date(lastActiveSubscription.starts_at), "MMM dd, yyyy") : "N/A"}
                                         </p>
                                     </div>
                                     <div className={"name-profile flex items-center gap-1"}>
                                         <RiCalendarLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
                                         <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Duration")}:</span>
-                                        <p className={"text-black text-sm dark:text-gray-100 font-medium"}>8 hours</p>
+                                        <p className={"text-black text-sm dark:text-gray-100 font-medium"}>
+                                            {lastActiveSubscription?.starts_at && lastActiveSubscription?.expires_at ?
+                                                `${differenceInDays(new Date(lastActiveSubscription.expires_at), new Date(lastActiveSubscription.starts_at))} ${t("days")}` :
+                                                "N/A"}
+                                        </p>
                                     </div>
                                     <div className={"name-profile flex items-center gap-1"}>
                                         <RiWalletLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
                                         <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Price")}:</span>
-                                        <p className={"text-black text-sm dark:text-gray-100 font-medium"}>8 hours</p>
+                                        <p className={"text-black text-sm dark:text-gray-100 font-medium"}>
+                                            {lastActiveSubscription?.plan_id?.pricing?.[0]?.price ? `$${lastActiveSubscription.plan_id.pricing[0].price}` : "N/A"}
+                                        </p>
                                     </div>
                                     <div className={"name-profile flex items-center gap-1"}>
                                         <RiDiscountPercentLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
                                         <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Discount")}:</span>
-                                        <p className={"text-black text-sm dark:text-gray-100 font-medium"}>8 hours</p>
+                                        <p className={"text-black text-sm dark:text-gray-100 font-medium"}>
+                                            {lastActiveSubscription?.plan_id?.pricing?.[0]?.discount ? `${lastActiveSubscription.plan_id.pricing[0].discount}%` : "0%"}
+                                        </p>
                                     </div>
 
                                 </div>
@@ -323,7 +358,7 @@ function AdminProfile() {
                             classContainer={"rounded-2xl px-8"}
                             title="Subscriptions"
                             headers={headers}
-                            isActions={true}
+                            isActions={false}
                             handelDelete={() => { }}
                             rows={rows}
                             isFilter={true}
@@ -347,6 +382,23 @@ function AdminProfile() {
                     </p>
                 }
                 onSubmit={() => { }}
+            />
+
+            <ApprovalAlert
+                isOpen={isApprovalOpen}
+                onClose={() => setIsApprovalOpen(false)}
+                onConfirm={confirmUpdateStatus}
+                title="Change Subscription Status"
+                message={`Are you sure you want to change the subscription status to ${t(targetStatus.charAt(0).toUpperCase() + targetStatus.slice(1))}?`}
+                confirmBtnText="Confirm"
+                type="warning"
+            />
+
+            <ApiResponseAlert
+                isOpen={isResponseOpen}
+                onClose={() => setIsResponseOpen(false)}
+                status={apiResponse.status}
+                message={apiResponse.message}
             />
         </Page>
     );

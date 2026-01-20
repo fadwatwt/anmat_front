@@ -32,6 +32,12 @@ const normalizeStatus = (status) => {
     if (["delayed"].includes(lowerStatus)) {
         return "delayed";
     }
+    if (lowerStatus === "terminated") {
+        return "terminated";
+    }
+    if (lowerStatus === "expired") {
+        return "expired";
+    }
 
     return lowerStatus;
 };
@@ -92,6 +98,21 @@ const statusConfig = {
         icon: <RiCloseCircleFill size={15} className="text-red-700" />,
         textColor: "text-red-700",
     },
+    "terminated": {
+        bgColor: "bg-gray-100",
+        icon: <RiCloseCircleFill size={15} className="text-gray-700" />,
+        textColor: "text-gray-700",
+    },
+    "expired": {
+        bgColor: "bg-orange-50",
+        icon: <RiErrorWarningFill size={15} className="text-orange-700" />,
+        textColor: "text-orange-700",
+    },
+    "inactive": {
+        bgColor: "bg-red-50",
+        icon: <RiCloseCircleFill size={15} className="text-red-700" />,
+        textColor: "text-red-700",
+    },
 };
 
 const statusCell = (status, _id) => {
@@ -109,8 +130,8 @@ const statusCell = (status, _id) => {
                 className={`flex items-center justify-center gap-1 ${config.bgColor} px-1 py-1 rounded-md`}
             >
                 {config.icon}
-                <span className={`text-xs ${config.textColor}`}>
-                    {status}
+                <span className={`text-xs font-medium capitalize ${config.textColor}`}>
+                    {status?.replace(/[-_]/g, ' ')}
                 </span>
             </div>
         </div>
