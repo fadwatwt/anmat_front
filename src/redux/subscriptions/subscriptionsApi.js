@@ -27,6 +27,14 @@ export const subscriptionsApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["Subscriptions"],
         }),
+        getSubscriptionsBasicDetails: builder.query({
+            query: () => ({
+                url: "api/admin/subscriptions/basic-details",
+                method: "GET",
+            }),
+            transformResponse: (response) => response.data,
+            providesTags: ["Subscriptions"],
+        }),
     }),
 });
 
@@ -34,4 +42,5 @@ export const {
     useGetSubscriptionsQuery,
     useGetSubscriptionQuery,
     useUpdateSubscriptionStatusMutation,
+    useGetSubscriptionsBasicDetailsQuery,
 } = subscriptionsApi;
