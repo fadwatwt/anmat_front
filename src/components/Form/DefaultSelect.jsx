@@ -14,6 +14,7 @@ function CustomSelect({
     isOption = false,
     value = [],
     placeholder = "Select",
+    multi = true,
     error,
 }) {
     const { t, i18n } = useTranslation();
@@ -33,10 +34,16 @@ function CustomSelect({
         const optionObject = options.find(opt => opt.id === option.id);
         if (!optionObject) return;
 
-        const alreadySelected = selectedOptions.some((u) => u.id === option.id);
-        const updatedSelection = alreadySelected
-            ? selectedOptions.filter((u) => u.id !== option.id)
-            : [...selectedOptions, optionObject];
+        let updatedSelection;
+        if (multi) {
+            const alreadySelected = selectedOptions.some((u) => u.id === option.id);
+            updatedSelection = alreadySelected
+                ? selectedOptions.filter((u) => u.id !== option.id)
+                : [...selectedOptions, optionObject];
+        } else {
+            updatedSelection = [optionObject];
+            setIsDropdownOpen(false);
+        }
 
         setInputValue("");
         setSelectedOptions(updatedSelection);
@@ -239,6 +246,7 @@ CustomSelect.propTypes = {
     })),
     placeholder: PropTypes.string,
     error: PropTypes.string,
+    multi: PropTypes.bool,
 };
 
 export default CustomSelect;
