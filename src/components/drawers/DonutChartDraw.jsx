@@ -12,7 +12,7 @@ const DonutChartDraw = ({ data, total }) => {
     };
 
 
-    const paths = data.map((segment) => {
+    const paths = total > 0 ? data.filter(s => s.value > 0).map((segment) => {
         const percent = segment.value / total;
         const [startX, startY] = createCoordinatesForPercent(cumulativePercent);
         cumulativePercent += percent;
@@ -31,7 +31,7 @@ const DonutChartDraw = ({ data, total }) => {
                 fill="none"
             />
         );
-    });
+    }) : [];
 
     return (
         <svg viewBox="-1.1 -1.1 2.2 2.2" style={{ transform: "rotate(-90deg)" }}>

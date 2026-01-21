@@ -24,6 +24,14 @@ export const industriesApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["Industries"],
         }),
+        getIndustriesOrganizationsCount: builder.query({
+            query: () => ({
+                url: "api/admin/industries/organizations-count",
+                method: "GET",
+            }),
+            transformResponse: (response) => response.data,
+            providesTags: ["Industries"],
+        }),
     }),
 });
 
@@ -31,4 +39,5 @@ export const {
     useGetIndustriesQuery,
     useCreateIndustryMutation,
     useDeleteIndustryMutation,
+    useGetIndustriesOrganizationsCountQuery,
 } = industriesApi;

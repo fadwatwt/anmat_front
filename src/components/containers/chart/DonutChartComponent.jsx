@@ -4,7 +4,7 @@ import ContentCard from "@/components/containers/ContentCard";
 import DonutChartDraw from "@/components/drawers/DonutChartDraw";
 import { RiCircleFill } from "@remixicon/react";
 
-const DonutChartComponent = ({title, toolbar, subtitle, data}) => {
+const DonutChartComponent = ({ title, toolbar, subtitle, data }) => {
 
     return (
         <ContentCard
@@ -32,7 +32,7 @@ const DonutChartComponent = ({title, toolbar, subtitle, data}) => {
                             return (
                                 <div className="flex flex-col items-center justify-center gap-2">
                                     <div className="flex gap-1 items-center">
-                                        <RiCircleFill size={10} className={`text-[${record.color}]`} />
+                                        <RiCircleFill size={10} style={{ color: record.color }} />
                                         <span className="text-sm text-gray-500">
                                             {record.title}
                                         </span>
