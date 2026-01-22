@@ -24,6 +24,12 @@ export const dashboardSideMenuItems = [
     },
     {
         allowed_to: ['Admin'],
+        title: 'Permissions',
+        path: '/permissions/admins',
+        icon: <Setting5 />
+    },
+    {
+        allowed_to: ['Admin'],
         title: 'Industries',
         path: '/industries',
         icon: <Category2 />

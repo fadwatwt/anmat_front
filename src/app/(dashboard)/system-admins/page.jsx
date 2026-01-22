@@ -122,22 +122,22 @@ function SystemAdminsPage() {
                     setIsAssignRoleModalOpen(true);
                 },
             },
-            {
-                text: "View", icon: <RiEyeLine className="text-primary-400" />, onClick: () => {
-                    console.log(actualRowIndex)
-                }
-            },
-            {
-                text: "Edit", icon: <RiEditLine className="text-primary-400" />, onClick: () => {
-                    console.log(actualRowIndex)
-                },
-            },
-            {
-                text: "Deactivate", icon: <RiCloseCircleLine className="text-red-500" />, onClick: () => {
-                    console.log(actualRowIndex)
-                    handelDeactivateAction()
-                },
-            },
+            // {
+            //     text: "View", icon: <RiEyeLine className="text-primary-400" />, onClick: () => {
+            //         console.log(actualRowIndex)
+            //     }
+            // },
+            // {
+            //     text: "Edit", icon: <RiEditLine className="text-primary-400" />, onClick: () => {
+            //         console.log(actualRowIndex)
+            //     },
+            // },
+            // {
+            //     text: "Deactivate", icon: <RiCloseCircleLine className="text-red-500" />, onClick: () => {
+            //         console.log(actualRowIndex)
+            //         handelDeactivateAction()
+            //     },
+            // },
         ]
         return (
             <StatusActions states={statesActions} className={`${i18n.language === "ar" ? "left-0" : "right-0"
