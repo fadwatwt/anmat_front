@@ -1,10 +1,88 @@
-"use server";
+"use client";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useLazyGetUserQuery, useLazyLogoutQuery } from "@/redux/auth/authAPI";
+import { loginSuccess, logout as logoutAction } from "@/redux/auth/authSlice";
+import { useTranslation } from "react-i18next";
 
-function AuthLayout({children}) {
+function AccountSetupLayout({ children }) {
+    const { t } = useTranslation();
+    const router = useRouter();
+    const dispatch = useDispatch();
+    const [triggerGetUser] = useLazyGetUserQuery();
+    const [triggerLogout] = useLazyLogoutQuery();
+    const [isLoading, setIsLoading] = useState(true);
+    const user = useSelector((state) => state.auth.user);
+
+    useEffect(() => {
+        const verifyAuth = async () => {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                router.push("/sign-in");
+                return;
+            }
+
+            try {
+                const result = await triggerGetUser(token).unwrap();
+                const userData = result.data || result;
+
+                // Security Check: Only Subscriber without registered organization
+                if (userData.type !== "Subscriber") {
+                    router.push("/dashboard");
+                    return;
+                }
+
+                if (userData.is_organization_registered) {
+                    router.push("/account-setup/subscriber/plans");
+                    return;
+                }
+
+                const payload = {
+                    data: {
+                        access_token: token,
+                        user: userData
+                    }
+                };
+                dispatch(loginSuccess(payload));
+                setIsLoading(false);
+            } catch (error) {
+                console.error("Auth check failed", error);
+                dispatch(logoutAction());
+                router.push("/sign-in");
+            }
+        };
+
+        verifyAuth();
+    }, [dispatch, router, triggerGetUser]);
+
+    const handleLogout = async () => {
+        const token = localStorage.getItem("token");
+        try {
+            if (token) {
+                await triggerLogout(token).unwrap();
+            }
+        } catch (error) {
+            console.error("Logout failed", error);
+        } finally {
+            dispatch(logoutAction());
+            router.push("/sign-in");
+        }
+    };
+
+    if (isLoading) {
+        return (
+            <div className="w-screen h-screen flex flex-col items-center justify-center bg-main-900">
+                <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-500 border-t-transparent mb-4"></div>
+                <span className="text-md text-gray-700 dark:text-gray-50">{t("Verifying access...")}</span>
+            </div>
+        );
+    }
+
     return (
-        <div className="flex flex-col h-screen bg-main-900">
-            <header className="flex items-center justify-between px-9 py-7">
+        <div className="flex flex-col h-screen bg-main-900 overflow-hidden">
+            <header className="flex items-center justify-between px-9 py-7 flex-shrink-0">
                 <div className="flex items-center gap-3">
                     <Image
                         className="w-12 h-12 rounded-full"
@@ -14,25 +92,31 @@ function AuthLayout({children}) {
                         height={48}
                     />
                     <div className="text-sm text-sub-500 text-start dark:text-sub-300">
-                        <h1 className="font-bold text-xl">ANMAT</h1>
-                        <h3 className="">Organizations Management</h3>
+                        <h1 className="font-bold text-xl uppercase tracking-wider">ANMAT</h1>
+                        <h3 className="text-xs">{t("Organizations Management")}</h3>
                     </div>
                 </div>
-                <div className="flex items-center gap-4">
-                    <span className="text-gray-500">Welcome, Current User</span>
+                <div className="flex items-center gap-6">
+                    <div className="flex flex-col items-end">
+                        <span className="text-sm text-gray-400">{t("Welcome back,")}</span>
+                        <span className="text-md font-bold text-gray-900 dark:text-white">{user?.name}</span>
+                    </div>
                     <button
-                        className="bg-red-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-red-700"
+                        onClick={handleLogout}
+                        className="bg-red-50 text-red-600 px-6 py-2 rounded-xl text-sm font-bold border border-red-100 hover:bg-red-600 hover:text-white transition-all duration-200"
                     >
-                        Logout
+                        {t("Logout")}
                     </button>
                 </div>
             </header>
             <main className="flex-1 overflow-y-auto px-9 py-7">
-                <div className="flex flex-col items-center justify-center w-full">{children}</div>
+                <div className="flex flex-col items-center justify-center w-full min-h-full">
+                    {children}
+                </div>
             </main>
-            <footer className="h-5 bg-main-900"/>
+            <footer className="h-4 bg-main-900 flex-shrink-0" />
         </div>
     );
 }
 
-export default AuthLayout;
+export default AccountSetupLayout;

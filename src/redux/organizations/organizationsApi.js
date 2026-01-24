@@ -11,9 +11,18 @@ export const organizationsApi = apiSlice.injectEndpoints({
             transformResponse: (response) => response.data,
             providesTags: ["Organizations"],
         }),
+        createOrganizationForSubscriber: builder.mutation({
+            query: (newOrg) => ({
+                url: "api/subscriber/organizations",
+                method: "POST",
+                body: newOrg,
+            }),
+            invalidatesTags: ["Organizations"],
+        }),
     }),
 });
 
 export const {
     useGetOrganizationsQuery,
+    useCreateOrganizationForSubscriberMutation,
 } = organizationsApi;

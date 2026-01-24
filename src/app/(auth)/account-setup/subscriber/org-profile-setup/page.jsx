@@ -1,14 +1,35 @@
 "use client";
-import {useFormik} from "formik";
+import { useFormik } from "formik";
 import InputAndLabel from "@/components/Form/InputAndLabel";
 import SelectAndLabel from "@/components/Form/SelectAndLabel";
 import * as Yup from 'yup';
 import FileUpload from "@/components/Form/FileUpload";
-import {t} from "i18next";
+import { useTranslation } from "react-i18next";
 import Link from "next/link";
-import TextAreaWithLabel from "@/components/Form/TextAreaWithLabel";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useSelector, useDispatch } from "react-redux";
+import { useCreateOrganizationForSubscriberMutation } from "@/redux/organizations/organizationsApi";
+import { selectSelectedIndustryId, clearSelectedIndustryId } from "@/redux/industries/industriesSlice";
+import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 
 const SetupCompanyProfile = () => {
+    const { t } = useTranslation();
+    const router = useRouter();
+    const dispatch = useDispatch();
+    const [createOrg, { isLoading }] = useCreateOrganizationForSubscriberMutation();
+    const [isRedirecting, setIsRedirecting] = useState(false);
+    const [apiAlert, setApiAlert] = useState({ isOpen: false, status: "", message: "" });
+    const industryId = useSelector(selectSelectedIndustryId);
+    const [isChecking, setIsChecking] = useState(true);
+
+    useEffect(() => {
+        if (!industryId) {
+            router.push("/account-setup/subscriber/business-selection");
+        } else {
+            setIsChecking(false);
+        }
+    }, [industryId, router]);
 
     const formik = useFormik({
         initialValues: {
@@ -18,41 +39,107 @@ const SetupCompanyProfile = () => {
             phone: "",
             country: "",
             city: "",
-            address: "",
+            logo: null,
         },
+        enableReinitialize: true,
         validationSchema: Yup.object({
-            name: Yup.string().required("Required"),
-            email: Yup.string().email("Invalid email").required("Required"),
-            website: Yup.string().url("Invalid URL"),
-            phone: Yup.string().required("Required"),
-            country: Yup.string().required("Required"),
-            city: Yup.string().required("Required"),
-            address: Yup.string().required("Required"),
+            name: Yup.string().required(t("Required")),
+            email: Yup.string().email(t("Invalid email")).required(t("Required")),
+            website: Yup.string().url(t("Invalid URL")),
+            phone: Yup.string().required(t("Required")),
+            country: Yup.string().required(t("Required")),
+            city: Yup.string().required(t("Required")),
         }),
-        onSubmit: () => {
+        onSubmit: async (values) => {
+            try {
+                const payload = {
+                    industry_id: industryId,
+                    name: values.name,
+                    email: values.email,
+                    phone: values.phone,
+                    website: values.website || "",
+                    country: values.country,
+                    city: values.city,
+                };
+
+                const response = await createOrg(payload).unwrap();
+                setIsRedirecting(true);
+                setApiAlert({
+                    isOpen: true,
+                    status: "success",
+                    message: response?.message || t("Organization profile created successfully!")
+                });
+
+                dispatch(clearSelectedIndustryId());
+            } catch (error) {
+                setApiAlert({
+                    isOpen: true,
+                    status: "error",
+                    message: error?.data?.message || t("Something went wrong")
+                });
+            }
         },
     });
 
-    const countries = ["Palestine", "Syria"];
-    const cities = ["Gaza"];
+    const isBusy = isLoading || isRedirecting;
+
+    const handleAlertClose = () => {
+        setApiAlert(prev => ({ ...prev, isOpen: false }));
+        if (apiAlert.status === "success") {
+            router.push("/account-setup/subscriber/plans");
+        }
+    };
+
+    const countries = [
+        { _id: "Palestine", name: t("Palestine") },
+        { _id: "Syria", name: t("Syria") },
+        { _id: "Jordan", name: t("Jordan") },
+        { _id: "Lebanon", name: t("Lebanon") },
+        { _id: "Egypt", name: t("Egypt") }
+    ];
+    const cities = [
+        { _id: "Gaza", name: t("Gaza") },
+        { _id: "Ramallah", name: t("Ramallah") },
+        { _id: "Damascus", name: t("Damascus") },
+        { _id: "Amman", name: t("Amman") },
+        { _id: "Beirut", name: t("Beirut") },
+        { _id: "Cairo", name: t("Cairo") }
+    ];
+
+    if (isChecking) {
+        return (
+            <div className="w-screen h-[50vh] flex flex-col items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-500 border-t-transparent mb-4"></div>
+                <span className="text-md text-gray-500">{t("Verifying selection...")}</span>
+            </div>
+        );
+    }
 
     return (
-        <>
-            <div
-                className="flex flex-col items-start justify-start gap-8 overflow-hidden overflow-y-auto p-8 rounded-lg bg-white w-1/3">
+        <div className="flex flex-col items-center justify-center w-full py-8">
+            <ApiResponseAlert
+                isOpen={apiAlert.isOpen}
+                status={apiAlert.status}
+                message={apiAlert.message}
+                onClose={handleAlertClose}
+            />
+
+            <div className="flex flex-col items-start justify-start gap-8 p-8 rounded-2xl shadow-xl bg-white w-full max-w-xl">
                 {/* Title */}
-                <div className={"flex flex-col items-center text-center justify-start gap-2 w-full"}>
-                    <span className={"text-primary-500"}>{`Organization Profile`}</span>
-                    <span className="text-2xl text-gray-900">
-                        {`Set up your company profile`}
+                <div className="flex flex-col items-center text-center justify-start gap-2 w-full">
+                    <span className="text-primary-500 font-bold uppercase tracking-wider text-xs">
+                        {t("Organization Profile")}
                     </span>
-                    <span className="text-sm text-gray-500 ">
-                        Let&#39;s get your company info set in two minutes.
-                    </span>
+                    <h1 className="text-3xl font-bold text-gray-900">
+                        {t("Set up your company profile")}
+                    </h1>
+                    <p className="text-sm text-gray-500">
+                        {t("Let's get your company info set in two minutes.")}
+                    </p>
                 </div>
 
                 {/* Form */}
-                <div className="flex flex-col w-full gap-4">
+                <form onSubmit={formik.handleSubmit} className="flex flex-col w-full gap-5">
                     <InputAndLabel
                         title="Company Name"
                         name="name"
@@ -60,27 +147,22 @@ const SetupCompanyProfile = () => {
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                         placeholder="Enter Company Name..."
-                        error={
-                            formik.touched.name && formik.errors.name
-                                ? formik.errors.name
-                                : ""
-                        }
+                        error={formik.touched.name && formik.errors.name ? formik.errors.name : ""}
                         isRequired={true}
+                        disabled={isBusy}
                     />
 
                     <InputAndLabel
                         title="Email Address"
                         name="email"
+                        type="email"
                         value={formik.values.email}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                         placeholder="Enter Email..."
-                        error={
-                            formik.touched.email && formik.errors.email
-                                ? formik.errors.email
-                                : ""
-                        }
+                        error={formik.touched.email && formik.errors.email ? formik.errors.email : ""}
                         isRequired={true}
+                        disabled={isBusy}
                     />
 
                     <InputAndLabel
@@ -90,12 +172,9 @@ const SetupCompanyProfile = () => {
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                         placeholder="Enter Phone Number..."
-                        error={
-                            formik.touched.phone && formik.errors.phone
-                                ? formik.errors.phone
-                                : ""
-                        }
+                        error={formik.touched.phone && formik.errors.phone ? formik.errors.phone : ""}
                         isRequired={true}
+                        disabled={isBusy}
                     />
 
                     <InputAndLabel
@@ -105,83 +184,76 @@ const SetupCompanyProfile = () => {
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                         placeholder="Enter Website URL..."
-                        error={
-                            formik.touched.website && formik.errors.website
-                                ? formik.errors.website
-                                : ""
-                        }
+                        error={formik.touched.website && formik.errors.website ? formik.errors.website : ""}
                         isRequired={false}
+                        disabled={isBusy}
                     />
 
-                    <SelectAndLabel
-                        title={"Country"}
-                        name="country"
-                        value={formik.values.country} // Ensure it’s controlled
-                        onChange={(val) => formik.setFieldValue("country", val)} // Send _id
-                        onBlur={formik.handleBlur}
-                        options={countries} // Ensure _id is used internally but name is displayed
-                        error={
-                            formik.touched.country && formik.errors.country
-                                ? formik.errors.country
-                                : ""
-                        }
-                        placeholder={"Select Country..."}
-                        isRequired={true}
-                    />
+                    <div className="flex flex-col sm:flex-row gap-4">
+                        <SelectAndLabel
+                            title="Country"
+                            name="country"
+                            value={formik.values.country}
+                            onChange={(val) => formik.setFieldValue("country", val)}
+                            onBlur={formik.handleBlur}
+                            options={countries}
+                            error={formik.touched.country && formik.errors.country ? formik.errors.country : ""}
+                            placeholder="Select Country..."
+                            isRequired={true}
+                            disabled={isBusy}
+                        />
 
-                    <SelectAndLabel
-                        title={"City"}
-                        name="city"
-                        value={formik.values.city} // Ensure it’s controlled
-                        onChange={(val) => formik.setFieldValue("city", val)} // Send _id
-                        onBlur={formik.handleBlur}
-                        options={cities} // Ensure _id is used internally but name is displayed
-                        error={
-                            formik.touched.city && formik.errors.city
-                                ? formik.errors.city
-                                : ""
-                        }
-                        placeholder={"Select City..."}
-                        isRequired={true}
-                    />
+                        <SelectAndLabel
+                            title="City"
+                            name="city"
+                            value={formik.values.city}
+                            onChange={(val) => formik.setFieldValue("city", val)}
+                            onBlur={formik.handleBlur}
+                            options={cities}
+                            error={formik.touched.city && formik.errors.city ? formik.errors.city : ""}
+                            placeholder="Select City..."
+                            isRequired={true}
+                            disabled={isBusy}
+                        />
+                    </div>
 
-                    <TextAreaWithLabel
-                        title="Address"
-                        name="address"
-                        value={formik.values.address}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        placeholder="Enter Address..."
-                        error={
-                            formik.touched.address && formik.errors.address
-                                ? formik.errors.address
-                                : ""
-                        }
-                        isRequired={true}
-                    />
-
-                    <div className={`relative flex flex-col gap-1 w-full items-start`}>
-                        <label className="text-gray-900 dark:text-gray-200 text-sm">
-                            {t('Logo')}
+                    <div className="relative flex flex-col gap-1 w-full items-start">
+                        <label className="text-gray-900 dark:text-gray-200 text-sm font-medium">
+                            {t('Logo (Optional)')}
                         </label>
-                        <FileUpload/>
+                        <FileUpload
+                            callBack={(file) => formik.setFieldValue("logo", file)}
+                            disabled={isBusy}
+                        />
+                        {formik.values.logo && (
+                            <div className="mt-2 text-xs text-primary-500 font-medium">
+                                {t("Selected file:")} {formik.values.logo.name}
+                            </div>
+                        )}
                     </div>
-                </div>
 
-                {/* Buttons */}
-                <div className="flex flex-col md:flex-row w-full items-center justify-center gap-8">
-                    <Link href={"/account-setup/subscriber/business-selection"} className="bg-white text-gray-700 text-sm w-32 py-2 border border-gray-200 rounded-xl cursor-pointer
-                        hover:bg-gray-100 text-center">
-                        Return
-                    </Link>
+                    {/* Buttons */}
+                    <div className="flex items-center justify-between gap-4 mt-4">
+                        <Link
+                            href="/account-setup/subscriber/business-selection"
+                            className={`flex-1 text-gray-700 text-sm py-3 border border-gray-200 rounded-xl text-center transition-all
+                            ${isBusy ? 'opacity-50 pointer-events-none' : 'hover:bg-gray-50'}`}
+                        >
+                            {t("Return")}
+                        </Link>
 
-                    <div className="bg-primary-500 text-primary-50 text-md w-48 py-2 rounded-xl cursor-pointer
-                        hover:bg-primary-600 text-center">
-                        Save Company Profile
+                        <button
+                            type="submit"
+                            disabled={isBusy}
+                            className={`flex-[2] bg-primary-500 text-primary-50 text-md py-3 rounded-xl font-bold shadow-lg shadow-primary-200 transition-all
+                            ${isBusy ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary-600 active:scale-95'}`}
+                        >
+                            {isBusy ? t("Saving...") : t("Save Company Profile")}
+                        </button>
                     </div>
-                </div>
+                </form>
             </div>
-        </>
+        </div>
     );
 }
 

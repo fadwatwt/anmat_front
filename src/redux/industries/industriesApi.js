@@ -32,6 +32,13 @@ export const industriesApi = apiSlice.injectEndpoints({
             transformResponse: (response) => response.data,
             providesTags: ["Industries"],
         }),
+        getIndustriesForSubscribers: builder.query({
+            query: () => ({
+                url: "api/subscriber/industries",
+                method: "GET",
+            }),
+            providesTags: ["Industries"],
+        }),
     }),
 });
 
@@ -40,4 +47,5 @@ export const {
     useCreateIndustryMutation,
     useDeleteIndustryMutation,
     useGetIndustriesOrganizationsCountQuery,
+    useGetIndustriesForSubscribersQuery,
 } = industriesApi;
