@@ -62,6 +62,12 @@ function Alert({
             bg: "bg-red-50",
             modalSize: "lg:w-[28%] md:w-6/12 sm:w-5/12",
             submitBtnClass: "bg-[#E92043] text-white hover:bg-red-700", // نفس لون زر "Yes, Delete" في الصورة
+        },
+        error: {
+            icon: <RiCloseCircleFill size={35} className="text-red-500" />,
+            bg: "bg-red-100",
+            modalSize: "lg:w-1/4 md:w-7/12 sm:w-6/12",
+            submitBtnClass: "bg-red-600 text-white hover:bg-red-700",
         }
     };
 
@@ -112,7 +118,7 @@ function Alert({
 }
 
 Alert.propTypes = {
-    type: PropTypes.oneOf(["success", "warning", "delete"]),
+    type: PropTypes.oneOf(["success", "warning", "delete", "error"]),
     title: PropTypes.string,
     message: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
     isBtns: PropTypes.bool,

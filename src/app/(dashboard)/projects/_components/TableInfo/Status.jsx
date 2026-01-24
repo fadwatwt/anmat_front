@@ -26,6 +26,18 @@ function Status({ type }) {
       icon: <IoTime className="text-blue-500" />,
       border: "border-blue-300 dark:border-blue-500",
     },
+    inactive: {
+      icon: <TbForbidFilled className="text-gray-500" />,
+      border: "border-gray-300 dark:border-gray-500",
+    },
+    delayed: {
+      icon: <IoTime className="text-orange-500" />,
+      border: "border-orange-300 dark:border-orange-500",
+    },
+    scheduled: {
+      icon: <FaCircleCheck className="text-purple-500" />,
+      border: "border-purple-300 dark:border-purple-500",
+    },
   };
 
   const normalizedType = type?.toLowerCase() || "inactive";

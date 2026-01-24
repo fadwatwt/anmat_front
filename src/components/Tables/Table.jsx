@@ -116,7 +116,7 @@ function Table({
     const currentRows = rows.slice(startIndex, startIndex + rowsPerPage);
 
     return (
-        <div className={"rounded-2xl md:w-full pb-10 overflow-x-auto tab-content dark:bg-gray-800 border border-gary-200 dark:border-gray-700 p-3 flex flex-col gap-4 bg-white " + (classContainer ? classContainer : "")}>
+        <div className={"rounded-2xl md:w-full pb-10 tab-content dark:bg-gray-800 border border-gary-200 dark:border-gray-700 p-3 flex flex-col gap-4 bg-white " + (classContainer ? classContainer : "")}>
             {isTitle && (
                 <div className={"flex flex-wrap justify-between items-center gap-4 mb-2"}>
                     <div className="flex flex-wrap items-center gap-4">
@@ -206,100 +206,102 @@ function Table({
                 </div>
             )}
 
-            <div className={"flex flex-col min-w-[48rem] gap-5 justify-center dark:bg-gray-800 w-full dark:text-gray-400"}>
-                <table className={"relative table-auto w-full " + className} style={{ borderSpacing: "0 1px" }}>
-                    <thead>
-                        <tr className="bg-weak-100 dark:bg-gray-800">
-                            {isCheckInput && (
-                                <th className="px-1 pt-1 w-5 rounded-tl-lg rounded-bl-lg dark:bg-gray-900">
-                                    <input
-                                        className="checkbox-custom"
-                                        type="checkbox"
-                                        checked={isAllSelected}
-                                        onChange={handleHeaderCheckboxChange}
-                                    />
-                                </th>
-                            )}
-                            {headers?.map((header, index) => (
-                                header && <th
-                                    key={index}
-                                    className="p-2 text-start text-sm font-normal dark:bg-gray-900 dark:text-gray-300 "
-                                    style={{
-                                        width: header.width || "auto",
-                                        borderTopRightRadius: index === headers.length - 1 ? "8px" : "0px",
-                                        borderBottomRightRadius: index === headers.length - 1 ? "8px" : "0px",
-                                    }}
-                                >
-                                    {typeof header.label === "string" ? t(header.label) : header.label}
-                                </th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {currentRows?.map((row, rowIndex) => {
-                            const actualRowIndex = rowIndex + startIndex;
-                            return (
-                                <tr key={actualRowIndex} className="hover:bg-gray-100 w-full dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
-                                    {isCheckInput && (
-                                        <td className="px- py-6 text-center" style={{ borderBottomLeftRadius: "8px" }}>
-                                            <input
-                                                className={"checkbox-custom"}
-                                                type="checkbox"
-                                                checked={selectedRows.includes(actualRowIndex)}
-                                                onChange={() => handleRowCheckboxChange(actualRowIndex)}
-                                            />
-                                        </td>
-                                    )}
-                                    {row.map((cell, cellIndex) => (
-                                        cell && <td
-                                            key={cellIndex}
-                                            className={"text-sm text-start max-w-10 sm:max-w-24 text-nowrap dark:text-gray-300 " + (classNameCell ? classNameCell : "px-2 py-6")}
-                                            style={{ borderBottomRightRadius: cellIndex === row.length - 1 ? "8px" : "" }}
-                                        >
-                                            {cell}
-                                        </td>
-                                    ))}
-                                    {(isActions || customActions) && (
-                                        <td className={"dropdown-container"}>
-                                            <PiDotsThreeVerticalBold
-                                                className="cursor-pointer"
-                                                onClick={(e) => handleDropdownToggle(actualRowIndex, e)}
-                                            />
-                                            {dropdownOpen === actualRowIndex && createPortal(
-                                                <div
-                                                    onClick={() => setDropdownOpen(null)}
-                                                    className="dropdown-container w-fit text-nowrap"
-                                                    style={{
-                                                        position: "absolute",
-                                                        top: dropdownPosition.top,
-                                                        // LTR: Align right edge of menu with right edge of button
-                                                        // RTL: Align left edge of menu with left edge of button
-                                                        left: i18n?.language === "ar" ? dropdownPosition.left : dropdownPosition.right,
-                                                        transform: i18n?.language === "ar" ? "" : "translateX(-100%)",
-                                                        zIndex: 9999,
-                                                    }}
-                                                >
-                                                    {isActions ? (
-                                                        <ActionsBtns
-                                                            handleEdit={() => handelEdit(actualRowIndex)}
-                                                            handleDelete={() => handelDelete(actualRowIndex)}
-                                                            className="!static !mt-0"
-                                                        />
-                                                    ) : (
-                                                        <div className="!static !mt-0 w-fit [&>div]:!static [&>div]:!mt-0">
-                                                            {typeof customActions === "function" ? customActions(actualRowIndex) : customActions}
-                                                        </div>
-                                                    )}
-                                                </div>,
-                                                document.body
-                                            )}
-                                        </td>
-                                    )}
-                                </tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
+            <div className={"flex flex-col gap-5 justify-center dark:bg-gray-800 w-full dark:text-gray-400"}>
+                <div className="w-full overflow-x-auto">
+                    <table className={"relative table-auto w-full " + className} style={{ borderSpacing: "0 1px" }}>
+                        <thead>
+                            <tr className="bg-weak-100 dark:bg-gray-800">
+                                {isCheckInput && (
+                                    <th className="px-1 pt-1 w-5 rounded-tl-lg rounded-bl-lg dark:bg-gray-900">
+                                        <input
+                                            className="checkbox-custom"
+                                            type="checkbox"
+                                            checked={isAllSelected}
+                                            onChange={handleHeaderCheckboxChange}
+                                        />
+                                    </th>
+                                )}
+                                {headers?.map((header, index) => (
+                                    header && <th
+                                        key={index}
+                                        className="p-2 text-start text-sm font-normal dark:bg-gray-900 dark:text-gray-300 "
+                                        style={{
+                                            width: header.width || "auto",
+                                            borderTopRightRadius: index === headers.length - 1 ? "8px" : "0px",
+                                            borderBottomRightRadius: index === headers.length - 1 ? "8px" : "0px",
+                                        }}
+                                    >
+                                        {typeof header.label === "string" ? t(header.label) : header.label}
+                                    </th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {currentRows?.map((row, rowIndex) => {
+                                const actualRowIndex = rowIndex + startIndex;
+                                return (
+                                    <tr key={actualRowIndex} className="hover:bg-gray-100 w-full dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+                                        {isCheckInput && (
+                                            <td className="px- py-6 text-center" style={{ borderBottomLeftRadius: "8px" }}>
+                                                <input
+                                                    className={"checkbox-custom"}
+                                                    type="checkbox"
+                                                    checked={selectedRows.includes(actualRowIndex)}
+                                                    onChange={() => handleRowCheckboxChange(actualRowIndex)}
+                                                />
+                                            </td>
+                                        )}
+                                        {row.map((cell, cellIndex) => (
+                                            cell && <td
+                                                key={cellIndex}
+                                                className={"text-sm text-start max-w-10 sm:max-w-24 text-nowrap dark:text-gray-300 " + (classNameCell ? classNameCell : "px-2 py-6")}
+                                                style={{ borderBottomRightRadius: cellIndex === row.length - 1 ? "8px" : "" }}
+                                            >
+                                                {cell}
+                                            </td>
+                                        ))}
+                                        {(isActions || customActions) && (
+                                            <td className={"dropdown-container"}>
+                                                <PiDotsThreeVerticalBold
+                                                    className="cursor-pointer"
+                                                    onClick={(e) => handleDropdownToggle(actualRowIndex, e)}
+                                                />
+                                                {dropdownOpen === actualRowIndex && createPortal(
+                                                    <div
+                                                        onClick={() => setDropdownOpen(null)}
+                                                        className="dropdown-container w-fit text-nowrap"
+                                                        style={{
+                                                            position: "absolute",
+                                                            top: dropdownPosition.top,
+                                                            // LTR: Align right edge of menu with right edge of button
+                                                            // RTL: Align left edge of menu with left edge of button
+                                                            left: i18n?.language === "ar" ? dropdownPosition.left : dropdownPosition.right,
+                                                            transform: i18n?.language === "ar" ? "" : "translateX(-100%)",
+                                                            zIndex: 9999,
+                                                        }}
+                                                    >
+                                                        {isActions ? (
+                                                            <ActionsBtns
+                                                                handleEdit={() => handelEdit(actualRowIndex)}
+                                                                handleDelete={() => handelDelete(actualRowIndex)}
+                                                                className="!static !mt-0"
+                                                            />
+                                                        ) : (
+                                                            <div className="!static !mt-0 w-fit [&>div]:!static [&>div]:!mt-0">
+                                                                {typeof customActions === "function" ? customActions(actualRowIndex) : customActions}
+                                                            </div>
+                                                        )}
+                                                    </div>,
+                                                    document.body
+                                                )}
+                                            </td>
+                                        )}
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                </div>
 
                 <div className={"pagination flex items-center justify-between"}>
                     <p className={"dark:text-gray-400 text-sm"}>

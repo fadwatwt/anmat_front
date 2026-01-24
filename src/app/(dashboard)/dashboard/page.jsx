@@ -2,17 +2,18 @@
 
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
-import useAuthStore from '@/store/authStore.js';
+import { useSelector } from "react-redux";
+import { selectUserType } from "@/redux/auth/authSlice";
 
 const DashboardPage = () => {
-  const { authUserType } = useAuthStore();
+  const authUserType = useSelector(selectUserType);
 
   // Dynamically import based on authUserType with loading fallback
   const DynamicComponent = dynamic(() => {
     switch (authUserType) {
       case "Admin":
         return import("@/app/(dashboard)/dashboard/_components/AdminDashboard");
-      case "Company-Manager":
+      case "Subscriber":
         return import("@/app/(dashboard)/dashboard/_components/CompanyManagerDashboard");
       case "Employee":
         return import("@/app/(dashboard)/dashboard/_components/EmployeeDashboard");

@@ -9,20 +9,20 @@ import CommentInput from "@/components/CommentInput.jsx";
 import AttachmentsList from "@/app/(dashboard)/projects/[slug]/_components/AttachmentsList.jsx";
 import ActivityLogs from "@/components/ActivityLogs.jsx";
 import TimeLine from "@/components/TimeLine/TimeLine.jsx";
-import {useTranslation} from "react-i18next";
-import {getTimeDifference} from "@/functions/Days.js";
+import { useTranslation } from "react-i18next";
+import { getTimeDifference } from "@/functions/Days.js";
 import InfoCard from "@/app/(dashboard)/_components/InfoCard.jsx";
-import {useState} from "react";
-import {filterAndSortTasks} from "@/functions/functionsForTasks.js";
+import { useState } from "react";
+import { filterAndSortTasks } from "@/functions/functionsForTasks.js";
 import EditProjectModal from "@/app/(dashboard)/projects/_modal/EditProjectModal.jsx";
 
-function ProjectDetailsPage({slug}) {
+function ProjectDetailsPage({ slug }) {
     console.log(slug)
-    const {t} = useTranslation()
-    const [isOpenEditModal,setIsOpenEditModal] = useState(false)
+    const { t } = useTranslation()
+    const [isOpenEditModal, setIsOpenEditModal] = useState(false)
     const breadcrumbItems = [
-        {title: 'Projects', path: '/projects'},
-        {title: 'Project Details', path: ''}
+        { title: 'Projects', path: '/projects' },
+        { title: 'Project Details', path: '' }
     ];
 
     const date1 = "2025-01-15T14:30:00";
@@ -52,6 +52,17 @@ function ProjectDetailsPage({slug}) {
             imageProfile: "https://assets.entrepreneur.com/content/3x2/2000/20150406145944-dos-donts-taking-perfect-linkedin-profile-picture-selfie-mobile-camera-2.jpeg?format=pjeg&auto=webp&crop=1:1",
             rule: "QA",
             work: "Testing for quality assurance"
+        }
+    ];
+
+    const teams = [
+        {
+            name: "Software Team",
+            members: [members[0], members[1]]
+        },
+        {
+            name: "Design Team",
+            members: [members[2]]
         }
     ];
 
@@ -224,9 +235,9 @@ function ProjectDetailsPage({slug}) {
         },
     ];
     const filterOptions = [
-        {id:"deadLine",name:"dead line"},
-        {id:"startDate",name:"start date"},
-        {id:"department",name:"department"}
+        { id: "deadLine", name: "dead line" },
+        { id: "startDate", name: "start date" },
+        { id: "department", name: "department" }
     ]
     const [filterTasks, setFilterTasks] = useState(tasks);
     const handelChangeFilterTask = (value) => {
@@ -253,33 +264,33 @@ function ProjectDetailsPage({slug}) {
         <Page title={"Project Details"} isBreadcrumbs={true} breadcrumbs={breadcrumbItems}>
             <div className={"w-full flex items-start  gap-8 flex-col md:flex-row"}>
                 <div className={"flex flex-col gap-6 md:w-[60%] w-full "}>
-                    <InfoCard type={"project"} handelEditAction={handelEditModal}/>
+                    <InfoCard type={"project"} handelEditAction={handelEditModal} />
                     <div className={"p-4 bg-white dark:bg-white-0 rounded-2xl w-full flex flex-col gap-3"}>
                         <div className={"title-header pb-3 w-full flex items-center justify-between "}>
                             <p className={"text-lg dark:text-gray-200"}>{t("Project Tasks")} </p>
-                            <SelectWithoutLabel onChange={handelChangeFilterTask} options={filterOptions} title={"Filter by"} className={"w-[120px] h-[36px]"}/>
+                            <SelectWithoutLabel onChange={handelChangeFilterTask} options={filterOptions} title={"Filter by"} className={"w-[120px] h-[36px]"} />
                         </div>
-                        <TasksList tasks={filterTasks}/>
+                        <TasksList tasks={filterTasks} />
                     </div>
                     <div className={"bg-white dark:bg-white-0 rounded-2xl w-full flex flex-col gap-3"}>
                         <div className={"p-4 flex flex-col gap-3"}>
                             <div className={"title-header w-full flex items-center justify-between"}>
                                 <p className={"text-lg dark:text-gray-200 "}>{t("Comments")}</p>
                             </div>
-                            <TaskComments comments={comments}/>
+                            <TaskComments comments={comments} />
                         </div>
-                        <CommentInput/>
+                        <CommentInput />
                     </div>
                 </div>
                 <div className={"flex-1 flex flex-col gap-6"}>
-                    <ProjectMembers members={members}/>
-                    <AttachmentsList attachments={attachments}/>
-                    <ActivityLogs activityLogs={activityLogs} className={"h-72"}/>
-                    <TimeLine/>
+                    <ProjectMembers teams={teams} />
+                    <AttachmentsList attachments={attachments} />
+                    <ActivityLogs activityLogs={activityLogs} className={"h-72"} />
+                    <TimeLine />
                 </div>
 
             </div>
-            <EditProjectModal project={{tasks:tasks}} isOpen={isOpenEditModal} onClose={handelEditModal} />
+            <EditProjectModal project={{ tasks: tasks }} isOpen={isOpenEditModal} onClose={handelEditModal} />
         </Page>
     );
 }

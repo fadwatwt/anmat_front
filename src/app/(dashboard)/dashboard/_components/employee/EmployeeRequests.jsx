@@ -11,12 +11,12 @@ export default function EmployeeRequests() {
   const { authUserType } = useAuthStore();
 
   const headers = [
-    (authUserType==='Company-Manager')&&{ label: 'Employee Name', width: '25%' },
+    (authUserType === 'Subscriber') && { label: 'Employee Name', width: '25%' },
     { label: 'Request Date', width: '20%' },
     { label: 'Days Requested', width: '10%' },
     { label: 'Days Left', width: '10%' },
     { label: 'Status', width: '10%' },
-    (authUserType==='Company-Manager')&&{ label: '', width: '15%' },
+    (authUserType === 'Subscriber') && { label: '', width: '15%' },
   ];
 
   const data = [
@@ -103,7 +103,7 @@ export default function EmployeeRequests() {
   );
 
   const rows = data.map((request, index) => ([
-    (authUserType==='Company-Manager')&&<div className="flex gap-1">
+    (authUserType === 'Subscriber') && <div className="flex gap-1">
       <img className='rounded-full w-8 h-8'
         src={request.user.avatar_url} />
       <div className="flex flex-col">
@@ -138,7 +138,7 @@ export default function EmployeeRequests() {
       } />,
     <span className="text-gray-500">{request.left}</span>,
     <EmployeeRequestStatus type={request.status} />,
-    (authUserType==='Company-Manager')&&(request.status === "Pending") && customActions(index)
+    (authUserType === 'Subscriber') && (request.status === "Pending") && customActions(index)
   ]))
 
   return (

@@ -10,13 +10,14 @@ import { fetchDepartments } from "@/redux/departments/departmentAPI";
 import { fetchEmployees } from "@/redux/employees/employeeAPI";
 import ElementsSelect from "@/components/Form/ElementsSelect.jsx";
 import UserSelect from "@/components/Form/UserSelect.jsx";
+import TaskMainInfo from "@/app/(dashboard)/projects/_components/CreateProjectForm/SubComponents/TaskMainInfo.jsx";
 
 const validationSchema = Yup.object({
-  title: Yup.string().required("Title is required"),
+  taskName: Yup.string().required("Title is required"),
   department: Yup.string().required("Department is required"),
-  assignedTo: Yup.array().min(1, "At least one assignee required"),
-  manager: Yup.string().required("Manager is required"),
+  assignedEmployee: Yup.string().required("Assigned Employee is required"),
   dueDate: Yup.date().required("Due date is required"),
+  assignedDate: Yup.date().required("Assigned date is required"),
   status: Yup.string().required("Status is required"),
   priority: Yup.string().required("Priority is required"),
   description: Yup.string(),
@@ -29,15 +30,21 @@ const EditTaskModal = ({ task, isOpen, onClose }) => {
   const { departments } = useSelector((state) => state.departments);
 
   const [initialValues, setInitialValues] = useState({
-    title: "",
+    taskName: "",
     description: "",
     department: "",
-    assignedTo: [],
-    manager: "",
+    assignedEmployee: "",
+    assignedDate: "",
     dueDate: "",
     status: "Active",
     priority: "Medium",
-    dependentDepartment: null,
+    dependentDepartment: "",
+    assignedProject: "",
+    projectTemplate: "",
+    startedAt: "",
+    endedAt: "",
+    rating: "",
+    comment: "",
   });
 
   useEffect(() => {
@@ -50,16 +57,22 @@ const EditTaskModal = ({ task, isOpen, onClose }) => {
   useEffect(() => {
     if (task && isOpen) {
       setInitialValues({
-        ...task,
-        title: task.title || "",
+        taskName: task.title || "",
         description: task.description || "",
         department: task.department?._id || "",
-        manager: task.manager?._id || "",
-        assignedTo: task.assignedTo?.map((e) => e._id) || [],
-        dueDate: task.dueDate ? task.dueDate.split("T")[0] : "",
+        assignedEmployee: task.assignedTo?.[0]?._id || task.manager?._id || "",
+        assignedDate: task.startDate ? new Date(task.startDate).toISOString().split("T")[0] : "",
+        dueDate: task.dueDate ? new Date(task.dueDate).toISOString().split("T")[0] : "",
         status: task.status || "Active",
         priority: task.priority || "Medium",
         dependentDepartment: task.dependentDepartment?._id || "",
+        // New fields - map if available in task, else empty
+        assignedProject: task?.assignedProject || "",
+        projectTemplate: task?.projectTemplate || "",
+        startedAt: task?.startedAt || "",
+        endedAt: task?.endedAt || "",
+        rating: task?.rating || "",
+        comment: task?.comment || "",
       });
     }
   }, [task, isOpen]);
@@ -71,8 +84,23 @@ const EditTaskModal = ({ task, isOpen, onClose }) => {
     onSubmit: async (values, { setSubmitting }) => {
       try {
         const taskData = {
-          ...values,
-          dependentDepartment: values.dependentDepartment || null, // Convert empty string to null
+          title: values.taskName,
+          description: values.description,
+          department: values.department,
+          assignedTo: [values.assignedEmployee], // Wrap in array
+          manager: values.assignedEmployee, // Assuming manager is same as assignee or handled by backend, explicitly sending for legacy
+          startDate: values.assignedDate,
+          dueDate: values.dueDate,
+          status: values.status,
+          priority: values.priority,
+          dependentDepartment: values.dependentDepartment || null,
+          // Send new fields
+          assignedProject: values.assignedProject,
+          projectTemplate: values.projectTemplate,
+          startedAt: values.startedAt,
+          endedAt: values.endedAt,
+          rating: values.rating,
+          comment: values.comment,
         };
 
         await dispatch(updateTask({ id: task._id, taskData })).unwrap();
@@ -86,6 +114,16 @@ const EditTaskModal = ({ task, isOpen, onClose }) => {
     },
   });
 
+  const optionsManager = employees.map((user) => ({
+    id: user._id,
+    value: user.name,
+  }));
+
+  const optionsDepartment = departments.map((dep) => ({
+    id: dep._id,
+    value: dep.name,
+  }));
+
   return (
     <Modal
       isOpen={isOpen}
@@ -97,162 +135,16 @@ const EditTaskModal = ({ task, isOpen, onClose }) => {
       className={"lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12"}
       title={"Edit Task"}
     >
-      <div className="px-1 flex flex-col gap-4">
-        <InputAndLabel
-            title="Title"
-            name="title"
-            value={formik.values.title}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            placeholder="Enter Task Title"
-            error={formik.touched.title && formik.errors.title}
-        />
-
-        <ElementsSelect
-            title="Department"
-            options={departments.map((dep) => ({
-              id: dep._id,
-              element: <span>{dep.name}</span>,
-            }))}
-            onChange={(selected) =>
-                formik.setFieldValue("department", selected[0]?.id || "")
-            }
-            isMultiple={false}
-            defaultValue={departments
-                .filter((dep) => dep._id === formik.values.department)
-                .map((dep) => ({
-                  id: dep._id,
-                  element: <span>{dep.name}</span>,
-                }))}
-            placeholder="Select Department"
-        />
-        {formik.touched.department && formik.errors.department && (
-            <p className="text-red-500 text-xs mt-1">
-              {formik.errors.department}
-            </p>
-        )}
-
-        <UserSelect
-            title="Assigned To"
-            users={employees}
-            onChange={(selectedUsers) => {
-              const assignedToIds = selectedUsers.map((user) => user._id);
-              formik.setFieldValue("assignedTo", assignedToIds);
-            }}
-            isMultiSelect={true}
-            defaultSelectedUsers={employees.filter((emp) =>
-                formik.values.assignedTo.includes(emp._id)
-            )}
-        />
-        {formik.touched.assignedTo && formik.errors.assignedTo && (
-            <p className="text-red-500 text-xs mt-1">
-              {formik.errors.assignedTo}
-            </p>
-        )}
-        <div className={"relative flex-1"}>
-          <ElementsSelect
-              title="Manager"
-              options={employees.map((emp) => ({
-                id: emp._id,
-                element: <span>{emp.name}</span>,
-              }))}
-              onChange={(selected) =>
-                  formik.setFieldValue("manager", selected[0]?.id || "")
-              }
-              isMultiple={false}
-              defaultValue={employees
-                  .filter((emp) => emp._id === formik.values.manager)
-                  .map((emp) => ({
-                    id: emp._id,
-                    element: <span>{emp.name}</span>,
-                  }))}
-              placeholder="Select Manager"
-          />
-          {formik.touched.manager && formik.errors.manager && (
-              <p className="text-red-500 text-xs mt-1">{formik.errors.manager}</p>
-          )}
-        </div>
-
-          {/* Standard Date Picker */}
-          <InputAndLabel
-              title="Due Date"
-              type="date"
-              name="dueDate"
-              value={formik.values.dueDate}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.dueDate && formik.errors.dueDate}
-          />
-          <div className={"relative flex-1"}>
-            <ElementsSelect
-                title="Status"
-                options={[
-                  {id: "Active", element: <span>Active</span>},
-                  {id: "Inactive", element: <span>Inactive</span>},
-                  {id: "Delayed", element: <span>Delayed</span>},
-                  {id: "Scheduled", element: <span>Scheduled</span>},
-                ]}
-                onChange={(selected) =>
-                    formik.setFieldValue("status", selected[0]?.id || "")
-                }
-                isMultiple={false}
-                defaultValue={[
-                  {
-                    id: formik.values.status,
-                    element: <span>{formik.values.status}</span>,
-                  },
-                ]}
-                placeholder="Select Status"
-            />
-          </div>
-
-          {formik.touched.status && formik.errors.status && (
-              <p className="text-red-500 text-xs mt-1">{formik.errors.status}</p>
-          )}
-
-          <div className={"relative flex-1"}>
-            <ElementsSelect
-                title="Priority"
-                options={[
-                  {id: "Urgent", element: <span>Urgent</span>},
-                  {id: "High", element: <span>High</span>},
-                  {id: "Medium", element: <span>Medium</span>},
-                  {id: "Low", element: <span>Low</span>},
-                ]}
-                onChange={(selected) =>
-                    formik.setFieldValue("priority", selected[0]?.id || "")
-                }
-                isMultiple={false}
-                defaultValue={
-                  formik.values.priority
-                      ? [
-                        {
-                          id: formik.values.priority,
-                          element: <span>{formik.values.priority}</span>,
-                        },
-                      ]
-                      : []
-                }
-                placeholder="Select Priority"
-            />
-          </div>
-
-          {formik.touched.priority && formik.errors.priority && (
-              <p className="text-red-500 text-xs mt-1">{formik.errors.priority}</p>
-          )}
-
-          <InputAndLabel
-              title="Description"
-              name="description"
-              value={formik.values.description}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              placeholder="Enter Task Description"
-              error={formik.touched.description && formik.errors.description}
-          />
-        </div>
+      <TaskMainInfo
+        task={task}
+        values={formik.values}
+        handleChange={formik.handleChange}
+        setFieldValue={formik.setFieldValue}
+        optionsManager={optionsManager}
+        optionsDepartment={optionsDepartment}
+      />
     </Modal>
-);
+  );
 };
 
 EditTaskModal.propTypes = {

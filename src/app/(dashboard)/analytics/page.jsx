@@ -12,7 +12,7 @@ const AnalyticsPage = () => {
     switch (authUserType) {
       case "Admin":
         return import("@/app/(dashboard)/analytics/_components/AdminAnalytics");
-      case "Company-Manager":
+      case "Subscriber":
         return import("@/app/(dashboard)/analytics/_components/CompanyManagerAnalytics");
       case "Employee":
         return import("@/app/(dashboard)/analytics/_components/EmployeeAnalytics");

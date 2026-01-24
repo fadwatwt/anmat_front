@@ -7,22 +7,16 @@ import { useTranslation } from "react-i18next";
 import { RiCloseCircleLine, RiEditLine, RiEyeLine } from "@remixicon/react";
 import { useState } from "react";
 import StatusActions from "@/components/Dropdowns/StatusActions";
+import { useGetAdminsQuery } from "@/redux/system-admins/systemAdminsAPI";
 import CreateAdminModal from "./_components/modals/CreateAdmin.modal";
 import Alert from "@/components/Alerts/Alert";
 
 function SystemAdminsPage() {
-    const [isSuccessCreated,setIsSuccessCreated]=useState(false)
+    const { data: adminsResponse, isLoading } = useGetAdminsQuery();
+    const adminsData = adminsResponse?.data || [];
+
+    const [isSuccessCreated, setIsSuccessCreated] = useState(false)
     const [isCreateAdminModalOpen, setIsCreateAdminModalOpen] = useState(false);
-    const adminsData = [
-        { _id: "1", name: "Fatma Ahmed Mohamed", email: "Fatma@company.com", rules: ["Manager", "Admin"], status: "Active" },
-        { _id: "1", name: "Fatma Ahmed Mohamed", email: "Fatma@company.com", rules: ["Manager", "Admin"], status: "Active" },
-        { _id: "1", name: "Fatma Ahmed Mohamed", email: "Fatma@company.com", rules: ["Manager", "Admin"], status: "Active" },
-        { _id: "1", name: "Fatma Ahmed Mohamed", email: "Fatma@company.com", rules: ["Manager", "Admin"], status: "Active" },
-        { _id: "1", name: "Fatma Ahmed Mohamed", email: "Fatma@company.com", rules: ["Manager", "Admin"], status: "Active" },
-        { _id: "1", name: "Fatma Ahmed Mohamed", email: "Fatma@company.com", rules: ["Manager", "Admin"], status: "Active" },
-        { _id: "1", name: "Fatma Ahmed Mohamed", email: "Fatma@company.com", rules: ["Manager", "Admin"], status: "Active" },
-        { _id: "1", name: "Fatma Ahmed Mohamed", email: "Fatma@company.com", rules: ["Manager", "Admin"], status: "Active" },
-    ]
 
     const headers = [
         { label: "Name", width: "200px" },
@@ -36,7 +30,7 @@ function SystemAdminsPage() {
         <div key={`${adminUser._id}_admin`} className="flex items-center justify-start gap-2">
             <div className={"p-1 rounded-full bg-white"}>
                 <div className="w-10 h-10">
-                    <img className={"max-w-full h-full rounded-full "} src={"https://www.svgrepo.com/show/404545/avatar-man-profile-user-3.svg"} alt={"img"} />
+                    <img className={"max-w-full h-full rounded-full "} src={adminUser.avatar || "https://www.svgrepo.com/show/404545/avatar-man-profile-user-3.svg"} alt={"img"} />
                 </div>
             </div>
             <span className="text-md text-gray-900 dark:text-gray-50">
@@ -49,18 +43,25 @@ function SystemAdminsPage() {
 
         // Created at cell
         <div key={`${adminUser._id}_rules`} className={"flex justify-start items-center gap-1 flex-wrap"}>
-            {adminUser?.rules?.map((element, index) => (
-                <span key={index} className={"py-1 px-2 rounded-lg bg-blue-100 text-blue-500 "}>{element}</span>
+            {adminUser?.admin_system_roles?.map((element, index) => (
+                <span key={index} className={"py-1 px-2 rounded-lg bg-blue-100 text-blue-500 "}>{element?.name}</span>
             ))}</div>,
 
         // Status cell
-        statusCell(adminUser.status, adminUser._id)
+        <div key={`${adminUser._id}_status`}>
+            {adminUser?.is_active ? (
+                <span className="py-1 px-2 rounded-lg bg-green-100 text-green-600 text-xs font-medium">Active</span>
+            ) : (
+                <span className="py-1 px-2 rounded-lg bg-red-100 text-red-600 text-xs font-medium">Inactive</span>
+            )}
+        </div>,
     ]);
+
 
     const handelCreateAdminModalOpen = () => {
         setIsCreateAdminModalOpen(!isCreateAdminModalOpen);
     }
-    const handelSuccessCreated = ()=>{
+    const handelSuccessCreated = () => {
         setIsSuccessCreated(!isSuccessCreated)
     }
 
@@ -92,21 +93,27 @@ function SystemAdminsPage() {
 
     return (
         <Page title="Admins" isBtn={true} btnTitle="Add User" btnOnClick={handelCreateAdminModalOpen}>
-            <Table
-                classContainer={"rounded-2xl px-8"}
-                title="All System Admins"
-                headers={headers}
-                isActions={false}
-                handelDelete={() => { }}
-                rows={rows}
-                isFilter={true}
-                customActions={(actualRowIndex) => (
-                    <AdminUserActions handelDeleteAction={() => { }}
-                        actualRowIndex={actualRowIndex} />)
-                }
-            />
+            {isLoading ? (
+                <div className="flex justify-center items-center h-64">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
+                </div>
+            ) : (
+                <Table
+                    classContainer={"rounded-2xl px-8"}
+                    title="All System Admins"
+                    headers={headers}
+                    isActions={false}
+                    handelDelete={() => { }}
+                    rows={rows}
+                    isFilter={true}
+                    customActions={(actualRowIndex) => (
+                        <AdminUserActions handelDeleteAction={() => { }}
+                            actualRowIndex={actualRowIndex} />)
+                    }
+                />
+            )}
 
-            <CreateAdminModal isOpen={isCreateAdminModalOpen} onClose={handelCreateAdminModalOpen} onClick={handelSuccessCreated} />
+            <CreateAdminModal isOpen={isCreateAdminModalOpen} onClose={handelCreateAdminModalOpen} onShowSuccess={handelSuccessCreated} />
             <Alert type={"success"} title={"User created successfully!"} message={"User has been added"} isOpen={isSuccessCreated} onClose={handelSuccessCreated} />
         </Page>
     );

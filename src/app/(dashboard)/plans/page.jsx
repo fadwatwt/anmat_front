@@ -1,7 +1,7 @@
 "use client"
 
 import {
-     RiCloseCircleLine, RiEditLine, RiEyeLine,
+    RiCloseCircleLine, RiEditLine, RiEyeLine,
     RiFlashlightLine
 } from "@remixicon/react";
 import Table from "@/components/Tables/Table";
@@ -9,10 +9,11 @@ import Page from "@/components/Page";
 import { useState } from "react";
 import CreatePlanModal from "./_components/CreatePlan.modal";
 import CheckAlert from "@/components/Alerts/CheckِِAlert";
-import {useTranslation} from "react-i18next";
+import { useTranslation } from "react-i18next";
 import StatusActions from "@/components/Dropdowns/StatusActions";
-import {RiDeleteBin7Line} from "react-icons/ri";
-import {statusCell} from "@/components/StatusCell";
+import { RiDeleteBin7Line } from "react-icons/ri";
+import { statusCell } from "@/components/StatusCell";
+import { useRouter } from "next/navigation";
 
 const headers = [
     { label: "Plan", width: "300px" },
@@ -73,40 +74,40 @@ const plansData = [
     }
 ];
 
-
-const  PlanActions = ({actualRowIndex}) => {
-    const {t, i18n} = useTranslation();
-    const statesActions = [
-        {
-            text: "View", icon: <RiEyeLine className="text-primary-400"/>, onClick: () => {
-                console.log(actualRowIndex)
-            }
-        },
-        {
-            text: "Edit", icon: <RiEditLine className="text-primary-400"/>, onClick: () => {
-                console.log(actualRowIndex)
-            },
-        },
-        {
-            text: "Stop Free Trial", icon: <RiCloseCircleLine className="text-red-500"/>, onClick: () => {
-                console.log(actualRowIndex)
-            },
-        },
-        {
-            text: "Delete", icon: <RiDeleteBin7Line className="text-red-500"/>, onClick: () => {
-                handelDeleteAction()
-                console.log(actualRowIndex)
-            },
-        }
-    ]
-    return (
-        <StatusActions states={statesActions}  className={`${
-            i18n.language === "ar" ? "left-0" : "right-0"
-        }`}/>
-    );
-}
-
 function PlansPage() {
+
+
+    const router = useRouter();
+    const PlanActions = ({ actualRowIndex }) => {
+        const { t, i18n } = useTranslation();
+        const statesActions = [
+            {
+                text: "View", icon: <RiEyeLine className="text-primary-400" />, onClick: () => {
+                    router.push(`/plans/${1}/details`);
+                }
+            },
+            {
+                text: "Edit", icon: <RiEditLine className="text-primary-400" />, onClick: () => {
+                    console.log(actualRowIndex)
+                },
+            },
+            {
+                text: "Stop Free Trial", icon: <RiCloseCircleLine className="text-red-500" />, onClick: () => {
+                    console.log(actualRowIndex)
+                },
+            },
+            {
+                text: "Delete", icon: <RiDeleteBin7Line className="text-red-500" />, onClick: () => {
+                    handelDeleteAction()
+                    console.log(actualRowIndex)
+                },
+            }
+        ]
+        return (
+            <StatusActions states={statesActions} className={`${i18n.language === "ar" ? "left-0" : "right-0"
+                }`} />
+        );
+    }
 
     const [createPlanModalOpen, setCreatePlanModal] = useState();
     const [checkAlertDeletePlanModal, setCheckAlertDeletePlanModal] = useState();
@@ -167,8 +168,8 @@ function PlansPage() {
                 rows={rows}
                 customActions={(actualRowIndex) => (
                     <PlanActions handelDeleteAction={toggleCheckAlertDeletePlanModal}
-                                 actualRowIndex={actualRowIndex} />)
-            }
+                        actualRowIndex={actualRowIndex} />)
+                }
                 isFilter={true}
             />
             <CheckAlert
@@ -183,7 +184,7 @@ function PlansPage() {
                         <span className="font-bold text-black"> Basic plan</span>?
                     </p>
                 }
-                onSubmit={() => {}}
+                onSubmit={() => { }}
             />
             <CreatePlanModal isOpen={createPlanModalOpen} onClose={toggleCreatePlanModalOpen} />
         </Page>

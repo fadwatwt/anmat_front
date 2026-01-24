@@ -12,6 +12,7 @@ const StepsComponent = ({
   initialValues,
   currentStep: externalCurrentStep = null,
   setCurrentStep: externalSetCurrentStep = null,
+  buttonText = "Create the Project",
 }) => {
   const { t } = useTranslation();
 
@@ -41,22 +42,20 @@ const StepsComponent = ({
           <React.Fragment key={index}>
             <div className="flex items-center">
               <div
-                className={`flex items-center cursor-pointer ${
-                  currentStep >= index + 1 ? "text-blue-500" : "text-gray-400"
-                }`}
+                className={`flex items-center cursor-pointer ${currentStep >= index + 1 ? "text-blue-500" : "text-gray-400"
+                  }`}
                 onClick={() =>
                   currentStep >= index + 1 && setCurrentStep(index + 1)
                 }
               >
                 <div className="flex items-center">
                   <span
-                    className={`rounded-full group w-5 h-5 text-xs flex items-center justify-center ${
-                      currentStep > index + 1
+                    className={`rounded-full group w-5 h-5 text-xs flex items-center justify-center ${currentStep > index + 1
                         ? "p-0"
                         : currentStep === index + 1
-                        ? "bg-primary-base dark:bg-primary-200 dark:text-black text-white"
-                        : "border border-gray-300 dark:border-gray-700 dark:text-white"
-                    }`}
+                          ? "bg-primary-base dark:bg-primary-200 dark:text-black text-white"
+                          : "border border-gray-300 dark:border-gray-700 dark:text-white"
+                      }`}
                   >
                     {currentStep > index + 1 ? (
                       <FaCheckCircle
@@ -68,13 +67,13 @@ const StepsComponent = ({
                     )}
                   </span>
                   <span className="ml-2 text-sm dark:text-primary-150 text-nowrap">
-                     {t(step.title)}
+                    {t(step.title)}
                   </span>
                 </div>
               </div>
             </div>
             {index < steps.length - 1 && (
-              <IoIosArrowForward  className={`text-lg text-gray-400`} />
+              <IoIosArrowForward className={`text-lg text-gray-400`} />
             )}
           </React.Fragment>
         ))}
@@ -118,7 +117,7 @@ const StepsComponent = ({
                                 type={"submit"}
                                 className=" bg-primary-base dark:bg-primary-200 dark:text-black w-40 text-white p-[10px] rounded-[10px] "
                               >
-                                {t("Create the Project")}
+                                {t(buttonText)}
                               </button>
                             )}
                             {index > 0 && (
@@ -170,6 +169,7 @@ StepsComponent.propTypes = {
   currentStep: PropTypes.number,
   initialValues: PropTypes.object,
   setCurrentStep: PropTypes.func,
+  buttonText: PropTypes.string,
 };
 
 export default StepsComponent;

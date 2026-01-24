@@ -18,22 +18,22 @@ import {
     RiWalletLine
 } from "@remixicon/react";
 import Page from "@/components/Page";
-import {useTranslation} from "react-i18next";
-import {useParams} from "next/navigation";
+import { useTranslation } from "react-i18next";
+import { useParams } from "next/navigation";
 import Status from "@/app/(dashboard)/projects/_components/TableInfo/Status";
 import EditAdminProfileModal from "@/app/(dashboard)/profile/_components/modals/admin/EditAdminProfile.modal";
-import {useState} from "react";
+import { useState } from "react";
 import ChangePasswordModal from "@/app/(dashboard)/profile/_components/modals/ChangePassword.modal";
 import Table from "@/components/Tables/Table";
-import {statusCell} from "@/components/StatusCell";
+import { statusCell } from "@/components/StatusCell";
 import CheckAlert from "@/components/Alerts/CheckِِAlert";
 
 function AdminProfile() {
-    const {t,i18n} = useTranslation()
-    const [isEditAdminProfileModal,setIsEditAdminProfileModal] = useState(false);
-    const [isChangePasswordModal,setIsChangePasswordModal] = useState(false);
+    const { t, i18n } = useTranslation()
+    const [isEditAdminProfileModal, setIsEditAdminProfileModal] = useState(false);
+    const [isChangePasswordModal, setIsChangePasswordModal] = useState(false);
     const { slug } = useParams();
-    const [isDeleteCatalogAert,setIsDeleteCatalogAert] = useState(false);
+    const [isDeleteCatalogAert, setIsDeleteCatalogAert] = useState(false);
     console.log({ slug });
 
     const handelEditAdminProfileModal = () => {
@@ -141,40 +141,40 @@ function AdminProfile() {
                                 <div className={"flex justify-between items-center"}>
                                     <div className={"relative h-[72px] w-[72px]"}>
                                         <img className={"rounded-full h-[72px] w-[72px] max-w-full"}
-                                             src={"https://randomuser.me/api/portraits/men/1.jpg"} alt={"image-user"}/>
+                                            src={"https://randomuser.me/api/portraits/men/1.jpg"} alt={"image-user"} />
                                         <RiCheckboxCircleFill size="23"
-                                                              className="absolute top-0 right-0 bg-white dark:bg-gray-800 rounded-full text-cyan-500"/>
+                                            className="absolute top-0 right-0 bg-white dark:bg-gray-800 rounded-full text-cyan-500" />
                                     </div>
                                     <button
                                         className={"p-1.5 rounded-lg md:hidden text-nowrap bg-none border text-sm dark:border-gray-700 dark:text-gray-200 self-start"}>{t("Edit profile")}
                                     </button>
                                 </div>
                                 <div className={"w-full flex md:flex-row flex-col gap-4 "}>
-                                    <div className={`flex flex-col gap-4 w-56  ${i18n.language === "ar" ? "md:border-l-2 " :"md:border-r-2 "}`}>
+                                    <div className={`flex flex-col gap-4 w-56  ${i18n.language === "ar" ? "md:border-l-2 " : "md:border-r-2 "}`}>
                                         <div className={"name-profile flex items-center gap-1"}>
-                                            <RiUserLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"}/>
+                                            <RiUserLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
                                             <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Name")}:</span>
                                             <p className={"text-black text-sm dark:text-gray-100 font-medium "}>Rawan Ahmed</p>
                                         </div>
                                         <div className={"name-profile flex items-center gap-1"}>
-                                            <RiCake2Line size={18} className={"text-soft-400 dark:text-gray-300"}/>
+                                            <RiCake2Line size={18} className={"text-soft-400 dark:text-gray-300"} />
                                             <p className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Age")}:</p>
                                             <p className={"text-black text-sm dark:text-gray-100 font-medium"}>21</p>
                                         </div>
                                         <div className={"name-profile flex items-center gap-1"}>
-                                            <RiBriefcaseLine size="18" className="text-soft-400 dark:text-gray-300"/>
+                                            <RiBriefcaseLine size="18" className="text-soft-400 dark:text-gray-300" />
                                             <p className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Role")}:</p>
                                             <p className={"text-black text-sm dark:text-gray-100 font-medium"}>{t("Content Editor")}</p>
                                         </div>
                                     </div>
                                     <div className={"flex flex-col gap-4 flex-1"}>
                                         <div className={"name-profile flex items-center gap-1"}>
-                                            <RiMailLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"}/>
+                                            <RiMailLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
                                             <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Email")}:</span>
                                             <p className={"text-black text-sm dark:text-gray-100 font-medium"}>Rawan@email.com</p>
                                         </div>
                                         <div className={"name-profile flex items-center gap-1"}>
-                                            <RiPhoneLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"}/>
+                                            <RiPhoneLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
                                             <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Phone Number")}:</span>
                                             <p className={"text-black text-sm dark:text-gray-100 font-medium"}>56789087</p>
                                             {/* Unverified & Verified */}
@@ -214,45 +214,45 @@ function AdminProfile() {
                             <div className={"flex justify-between items-start"}>
                                 <div className={" h-[72px] w-[72px]"}>
                                     <img className={"rounded-full h-[72px] w-[72px] max-w-full"}
-                                         src={"/images/company.default.logo.png"} alt={"image-user"}/>
+                                        src={"/images/company.default.logo.png"} alt={"image-user"} />
                                 </div>
                             </div>
                             <div className={"w-full flex md:flex-row flex-col gap-4 "}>
-                                <div className={`flex flex-col gap-4 w-56  ${i18n.language === "ar" ? "md:border-l-2 " :"md:border-r-2 "}`}>
+                                <div className={`flex flex-col gap-4 w-56  ${i18n.language === "ar" ? "md:border-l-2 " : "md:border-r-2 "}`}>
                                     <div className={"name-profile flex items-center gap-1"}>
-                                        <RiUserLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"}/>
+                                        <RiUserLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
                                         <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Company")}:</span>
                                         <p className={"text-black text-sm dark:text-gray-100 font-medium "}>Rawan Ahmed</p>
                                     </div>
                                     <div className={"name-profile flex items-center gap-1"}>
-                                        <RiGlobalLine size={18} className={"text-soft-400 dark:text-gray-300"}/>
+                                        <RiGlobalLine size={18} className={"text-soft-400 dark:text-gray-300"} />
                                         <p className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Website")}:</p>
                                         <p className={"text-black text-sm dark:text-gray-100 font-medium"}>21</p>
                                     </div>
                                     <div className={"name-profile flex items-center gap-1"}>
-                                        <RiGraduationCapLine size="18" className="text-soft-400 dark:text-gray-300"/>
+                                        <RiGraduationCapLine size="18" className="text-soft-400 dark:text-gray-300" />
                                         <p className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Industry")}:</p>
                                         <p className={"text-black text-sm dark:text-gray-100 font-medium"}>{t("Content Editor")}</p>
                                     </div>
                                     <div className={"name-profile flex items-center gap-1 "}>
-                                        <RiGroupLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"}/>
+                                        <RiGroupLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
                                         <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Country")}:</span>
                                         <p className={"text-black text-sm dark:text-gray-100 font-medium"}>Rawan@email.com</p>
                                     </div>
                                 </div>
                                 <div className={"flex flex-col gap-4 flex-1"}>
                                     <div className={"name-profile flex items-center gap-1 "}>
-                                        <RiMapPinLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"}/>
+                                        <RiMapPinLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
                                         <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Country")}:</span>
                                         <p className={"text-black text-sm dark:text-gray-100 font-medium"}>Rawan@email.com</p>
                                     </div>
                                     <div className={"name-profile flex items-center gap-1"}>
-                                        <RiMapPinLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"}/>
+                                        <RiMapPinLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
                                         <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("City")}:</span>
                                         <p className={"text-black text-sm dark:text-gray-100 font-medium"}>56789087</p>
                                     </div>
                                     <div className={"name-profile flex items-center gap-1"}>
-                                        <RiMapPinLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"}/>
+                                        <RiMapPinLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
                                         <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Address")}:</span>
                                         <p className={"text-black text-sm dark:text-gray-100 font-medium"}>56789087</p>
                                     </div>
@@ -269,38 +269,38 @@ function AdminProfile() {
                                 <div className={"w-full grid grid-flow-col grid-rows-2 gap-3 "}>
 
                                     <div className={"name-profile flex items-center gap-1"}>
-                                        <RiBuilding2Line size={18} className={"text-soft-400 text-sm dark:text-gray-300"}/>
+                                        <RiBuilding2Line size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
                                         <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Last Plan Subscribed:")}:</span>
                                         <p className={"text-black text-sm dark:text-gray-100 font-medium"}>{t("Publishing")}</p>
                                     </div>
                                     <div className={"name-profile flex items-center gap-1"}>
-                                        <RiCheckboxLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"}/>
+                                        <RiCheckboxLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
                                         <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Features")}:</span>
                                         <div className={"flex items-center gap-1"}>
                                             {
-                                                ["Add employee","Edit project","Edit task","Delete task"].map((item,index)=>(
+                                                ["Add employee", "Edit project", "Edit task", "Delete task"].map((item, index) => (
                                                     <p key={index} className={"bg-blue-50 py-1 px-2 rounded-xl text-black text-sm dark:text-gray-100 font-medium"}>{item}</p>
                                                 ))
                                             }
                                         </div>
                                     </div>
                                     <div className={"name-profile flex items-center gap-1"}>
-                                        <RiCalendarLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"}/>
+                                        <RiCalendarLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
                                         <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Subscription Date")}:</span>
                                         <p className={"text-black text-sm dark:text-gray-100 font-medium"}>56789087</p>
                                     </div>
                                     <div className={"name-profile flex items-center gap-1"}>
-                                        <RiCalendarLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"}/>
+                                        <RiCalendarLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
                                         <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Duration")}:</span>
                                         <p className={"text-black text-sm dark:text-gray-100 font-medium"}>8 hours</p>
                                     </div>
                                     <div className={"name-profile flex items-center gap-1"}>
-                                        <RiWalletLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"}/>
+                                        <RiWalletLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
                                         <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Price")}:</span>
                                         <p className={"text-black text-sm dark:text-gray-100 font-medium"}>8 hours</p>
                                     </div>
                                     <div className={"name-profile flex items-center gap-1"}>
-                                        <RiDiscountPercentLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"}/>
+                                        <RiDiscountPercentLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
                                         <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Discount")}:</span>
                                         <p className={"text-black text-sm dark:text-gray-100 font-medium"}>8 hours</p>
                                     </div>
@@ -313,7 +313,7 @@ function AdminProfile() {
                             title="Subscriptions"
                             headers={headers}
                             isActions={true}
-                            handelDelete={() => {}}
+                            handelDelete={() => { }}
                             rows={rows}
                             isFilter={true}
                         />
@@ -321,8 +321,8 @@ function AdminProfile() {
                 </div>
             </div>
 
-            <EditAdminProfileModal isOpen={isEditAdminProfileModal} onClose={handelEditAdminProfileModal} onClick={() => {}} />
-            <ChangePasswordModal isOpen={isChangePasswordModal} onClose={handelChangePasswordModal} onClick={() => {}} />
+            <EditAdminProfileModal isOpen={isEditAdminProfileModal} onClose={handelEditAdminProfileModal} onClick={() => { }} />
+            <ChangePasswordModal isOpen={isChangePasswordModal} onClose={handelChangePasswordModal} onClick={() => { }} />
             <CheckAlert
                 isOpen={isDeleteCatalogAert}
                 onClose={handleDeleteCatalogAert}
@@ -335,7 +335,7 @@ function AdminProfile() {
                         <span className="font-bold text-black"> Account subscription</span>?
                     </p>
                 }
-                onSubmit={() => {}}
+                onSubmit={() => { }}
             />
         </Page>
     );
