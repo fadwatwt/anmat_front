@@ -19,10 +19,19 @@ export const positionsApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["Positions"],
         }),
+        updatePosition: builder.mutation({
+            query: ({ id, ...updatedPosition }) => ({
+                url: `api/subscriber/organization/positions/${id}`,
+                method: "PATCH",
+                body: updatedPosition,
+            }),
+            invalidatesTags: ["Positions"],
+        }),
     }),
 });
 
 export const {
     useGetPositionsQuery,
     useCreatePositionMutation,
+    useUpdatePositionMutation,
 } = positionsApi;
