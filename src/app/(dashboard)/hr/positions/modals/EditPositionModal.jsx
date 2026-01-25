@@ -8,23 +8,21 @@ import PropTypes from "prop-types";
 import { useEffect } from "react";
 
 const validationSchema = Yup.object({
-    name: Yup.string().required("required"),
+    title: Yup.string().required("required"),
     description: Yup.string(),
 });
 
-function EditPositionModal({ isOpen, onClose, position, onSubmit }) {
+function EditPositionModal({ isOpen, onClose, position }) {
     const { t } = useTranslation();
 
     const formik = useFormik({
         initialValues: {
-            name: "",
+            title: "",
             description: "",
         },
         validationSchema,
         onSubmit: async (values) => {
-            if (onSubmit) {
-                await onSubmit({ ...position, ...values });
-            }
+            // TODO: Implement update API
             onClose();
         },
     });
@@ -32,7 +30,7 @@ function EditPositionModal({ isOpen, onClose, position, onSubmit }) {
     useEffect(() => {
         if (position && isOpen) {
             formik.setValues({
-                name: position.name || "",
+                title: position.title || "",
                 description: position.description || "",
             });
         }
@@ -53,15 +51,15 @@ function EditPositionModal({ isOpen, onClose, position, onSubmit }) {
                 <form className="flex flex-col gap-4" onSubmit={formik.handleSubmit}>
                     <InputAndLabel
                         title={t("Position Name")}
-                        name="name"
-                        value={formik.values.name}
+                        name="title"
+                        value={formik.values.title}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                         placeholder={t("Enter position name")}
                         isRequired={true}
                         error={
-                            formik.touched.name && formik.errors.name
-                                ? t(formik.errors.name)
+                            formik.touched.title && formik.errors.title
+                                ? t(formik.errors.title)
                                 : ""
                         }
                     />
