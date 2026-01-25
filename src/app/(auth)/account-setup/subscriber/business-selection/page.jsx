@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useGetIndustriesForSubscribersQuery } from "@/redux/industries/industriesApi";
 import { useTranslation } from "react-i18next";
 import { setSelectedIndustryId } from "@/redux/industries/industriesSlice";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 
@@ -14,8 +14,15 @@ const SelectYourBusiness = () => {
     const { data: industriesResponse, isLoading } = useGetIndustriesForSubscribersQuery();
     const [selectedId, setSelectedId] = useState(null);
     const [isNavigating, setIsNavigating] = useState(false);
-    const username = useSelector((state) => state.auth.user?.name) || 'Subscriber';
+    const user = useSelector((state) => state.auth.user);
+    const username = user?.name || 'Subscriber';
     const router = useRouter();
+
+    useEffect(() => {
+        if (user?.is_organization_registered) {
+            router.push("/account-setup/subscriber/plans");
+        }
+    }, [user, router]);
 
     const industries = industriesResponse?.data || industriesResponse || [];
 

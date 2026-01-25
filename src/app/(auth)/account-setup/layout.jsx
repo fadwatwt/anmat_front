@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLazyGetUserQuery, useLazyLogoutQuery } from "@/redux/auth/authAPI";
@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 function AccountSetupLayout({ children }) {
     const { t } = useTranslation();
     const router = useRouter();
+    const pathname = usePathname();
     const dispatch = useDispatch();
     const [triggerGetUser] = useLazyGetUserQuery();
     const [triggerLogout] = useLazyLogoutQuery();
@@ -28,15 +29,29 @@ function AccountSetupLayout({ children }) {
                 const result = await triggerGetUser(token).unwrap();
                 const userData = result.data || result;
 
-                // Security Check: Only Subscriber without registered organization
+                // Security Check: Only Subscriber allowed in account setup
                 if (userData.type !== "Subscriber") {
                     router.push("/dashboard");
                     return;
                 }
 
-                if (userData.is_organization_registered) {
-                    router.push("/account-setup/subscriber/plans");
+                // If already fully set up (Org + Subscription), go to dashboard
+                if (userData.is_organization_registered && userData.active_subscription_id) {
+                    router.push("/dashboard");
                     return;
+                }
+
+                // Internal setup redirects
+                if (userData.is_organization_registered) {
+                    if (!pathname.includes("/account-setup/subscriber/plans")) {
+                        router.push("/account-setup/subscriber/plans");
+                        return;
+                    }
+                } else {
+                    if (pathname.includes("/account-setup/subscriber/plans")) {
+                        router.push("/account-setup/subscriber/business-selection");
+                        return;
+                    }
                 }
 
                 const payload = {
@@ -55,7 +70,7 @@ function AccountSetupLayout({ children }) {
         };
 
         verifyAuth();
-    }, [dispatch, router, triggerGetUser]);
+    }, [dispatch, router, triggerGetUser, pathname]);
 
     const handleLogout = async () => {
         const token = localStorage.getItem("token");

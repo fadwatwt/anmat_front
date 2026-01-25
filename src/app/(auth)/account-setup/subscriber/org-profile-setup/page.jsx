@@ -21,15 +21,24 @@ const SetupCompanyProfile = () => {
     const [isRedirecting, setIsRedirecting] = useState(false);
     const [apiAlert, setApiAlert] = useState({ isOpen: false, status: "", message: "" });
     const industryId = useSelector(selectSelectedIndustryId);
+    const user = useSelector((state) => state.auth.user);
     const [isChecking, setIsChecking] = useState(true);
 
     useEffect(() => {
+        // If we just registered successfully, don't redirect yet so the user can see the alert
+        if (isRedirecting) return;
+
+        if (user?.is_organization_registered) {
+            router.push("/account-setup/subscriber/plans");
+            return;
+        }
+
         if (!industryId) {
             router.push("/account-setup/subscriber/business-selection");
         } else {
             setIsChecking(false);
         }
-    }, [industryId, router]);
+    }, [industryId, user, router, isRedirecting]);
 
     const formik = useFormik({
         initialValues: {

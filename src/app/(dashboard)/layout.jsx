@@ -41,8 +41,20 @@ const MainLayout = ({ children }) => {
             if (storedToken && !user) {
                 try {
                     const result = await getUser(storedToken).unwrap();
-                    if (result?.data) {
-                        dispatch(setUser(result.data));
+                    const userData = result?.data || result;
+                    if (userData) {
+                        dispatch(setUser(userData));
+                        // Subscriber specific redirects
+                        if (userData.type === "Subscriber") {
+                            if (!userData.is_organization_registered) {
+                                router.push("/account-setup/subscriber/business-selection");
+                                return;
+                            }
+                            if (!userData.active_subscription_id) {
+                                router.push("/account-setup/subscriber/plans");
+                                return;
+                            }
+                        }
                     } else {
                         // If result doesn't have data, consider it invalid
                         dispatch(logout());
@@ -52,6 +64,18 @@ const MainLayout = ({ children }) => {
                     console.error("Failed to fetch user:", error);
                     dispatch(logout());
                     router.push("/sign-in");
+                }
+            } else if (user) {
+                // Check subscriber status even if user is already in state
+                if (user.type === "Subscriber") {
+                    if (!user.is_organization_registered) {
+                        router.push("/account-setup/subscriber/business-selection");
+                        return;
+                    }
+                    if (!user.active_subscription_id) {
+                        router.push("/account-setup/subscriber/plans");
+                        return;
+                    }
                 }
             } else if (!storedToken) {
                 router.push("/sign-in");
@@ -84,16 +108,23 @@ const MainLayout = ({ children }) => {
         setLanguage(i18n.language);
     }, [i18n.language]);
 
-    // Show loading while fetching user or if state is being initialized
-    if ((isFetchingUser || !user) && (token || (typeof window !== "undefined" && localStorage.getItem("token")))) {
-        return (
-            <div className="h-screen w-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-                <div className="flex flex-col items-center gap-4">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-                    <p className="text-gray-600 dark:text-gray-400 font-medium">Loading session...</p>
+    // Check if redirection is needed for Subscribers
+    const shouldRedirect = user && user.type === "Subscriber" && (!user.is_organization_registered || !user.active_subscription_id);
+
+    // Show loading while fetching user or if state is being initialized or redirection is pending
+    if (isFetchingUser || !user || shouldRedirect) {
+        if (token || (typeof window !== "undefined" && localStorage.getItem("token"))) {
+            return (
+                <div className="h-screen w-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+                    <div className="flex flex-col items-center gap-4">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+                        <p className="text-gray-600 dark:text-gray-400 font-medium">
+                            {shouldRedirect ? "Redirecting to setup..." : "Loading session..."}
+                        </p>
+                    </div>
                 </div>
-            </div>
-        );
+            );
+        }
     }
 
     if (!user) {
