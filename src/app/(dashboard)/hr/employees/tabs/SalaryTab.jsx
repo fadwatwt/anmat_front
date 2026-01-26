@@ -1,9 +1,7 @@
-"use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { useDispatch, useSelector } from "react-redux";
 import Table from "@/components/Tables/Table";
-import { fetchEmployees } from "@/redux/employees/employeeAPI";
+import { useGetEmployeesQuery } from "@/redux/employees/employeesApi";
 import { deleteFinancialRecord, updateFinancialRecord } from "@/redux/financial/financialAPI";
 import Alert from "@/components/Alerts/Alert";
 import EditSalaryModal from "../modals/EditSalaryModal";
@@ -12,8 +10,7 @@ import { GoPlus } from "react-icons/go";
 
 export default function SalaryTab() {
   const { t } = useTranslation();
-  const dispatch = useDispatch();
-  const { employees, loading, error } = useSelector((state) => state.employees);
+  const { data: employees = [], isLoading, error } = useGetEmployeesQuery();
   const [selectedFinancial, setSelectedFinancial] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -25,10 +22,6 @@ export default function SalaryTab() {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
 
-  useEffect(() => {
-    dispatch(fetchEmployees());
-  }, [dispatch]);
-
   const headers = [
     { label: t("Employees"), width: "250px" },
     { label: t("Department"), width: "150px" },
@@ -39,31 +32,29 @@ export default function SalaryTab() {
     { label: "", width: "50px" }, // Actions column
   ];
 
-  const formatFinancialData = () => {
+  const formattedData = useMemo(() => {
     return employees.map((employee) => {
-      const financial = employee.financial || {};
-
+      const detail = employee.employee_detail || {};
       return {
-        id: financial._id,
+        id: employee._id,
         employeeId: employee._id,
         employee: {
-          imageProfile: employee.profilePicture || "https://i.pravatar.cc/150?u=" + employee._id, // Fallback image
+          imageProfile: "https://ui-avatars.com/api/?name=" + (employee.name || "User"),
           name: employee.name,
-          role: employee.role || "Employee", // Assuming role is available on employee object
-          department: employee.department?.name || "N/A",
+          role: detail.position_id?.title || "Employee",
+          department: detail.department_id?.name || "N/A",
         },
-        department: employee.department?.name || "N/A",
-        workHours: financial.workType ? `${financial.workType} - 8 hrs` : "N/A", // Mocking 8 hrs if not in data
-        salary: financial.salary || 0,
-        bonus: financial.bonuses || 0,
-        deduction: financial.deductions || 0,
+        department: detail.department_id?.name || "N/A",
+        workHours: detail.work_hours ? `${detail.work_hours} hrs` : "N/A",
+        salary: detail.salary || 0,
+        bonus: 0, // Mocking or from other source if needed
+        deduction: 0,
       };
     });
-  };
+  }, [employees]);
 
-  const rows = formatFinancialData().map((row, index) => [
+  const rows = formattedData.map((row, index) => [
     <div key={`employee-${row.id || index}`} className="flex items-center gap-3">
-
       <img
         src={row.employee.imageProfile}
         alt={row.employee.name}
@@ -92,51 +83,32 @@ export default function SalaryTab() {
   ]);
 
   const handleEdit = (index) => {
-    const financialData = formatFinancialData()[index];
+    const financialData = formattedData[index];
     setSelectedFinancial(financialData);
     setIsEditModalOpen(true);
   };
 
   const handleDelete = (index) => {
-    const financialData = formatFinancialData()[index];
+    const financialData = formattedData[index];
     setSelectedFinancial(financialData);
     setIsDeleteAlertOpen(true);
   };
 
   const confirmDelete = () => {
-    if (selectedFinancial?.id) {
-      dispatch(deleteFinancialRecord(selectedFinancial.id)).then(() => {
-        setIsDeleteAlertOpen(false);
-        setIsSuccessAlertOpen(true);
-        dispatch(fetchEmployees());
-      });
-    } else {
-      setIsDeleteAlertOpen(false);
-    }
+    // Need to implement delete for financial if needed
+    setIsDeleteAlertOpen(false);
   };
 
-  const handleUpdateSalary = async (values) => {
-    if (selectedFinancial?.id) {
-      await dispatch(
-        updateFinancialRecord({
-          id: selectedFinancial.id,
-          employeeId: selectedFinancial.employeeId,
-          financialData: values,
-        })
-      );
-      await dispatch(fetchEmployees());
-    }
+  const handleUpdateSalary = (values) => {
+    console.log("Update salary:", values);
   };
 
-  const handleAddSalary = async (values) => {
-    // Here you would dispatch an action to create salary record
-    // For now, just logging and refreshing
-    console.log("Adding salary:", values);
-    await dispatch(fetchEmployees());
+  const handleAddSalary = (values) => {
+    console.log("Add salary:", values);
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div className="text-red-500 p-4">Error: {error}</div>;
+  if (isLoading) return <div>{t("Loading...")}</div>;
+  if (error) return <div className="text-red-500 p-4">{t("Error loading employees")}</div>;
 
   return (
     <div className="flex flex-col gap-6">

@@ -1,80 +1,170 @@
 import Modal from "@/components/Modal/Modal.jsx";
 import PropTypes from "prop-types";
 import StepsComponent from "@/app/(dashboard)/projects/_components/CreateProjectForm/StepsComponent.jsx";
-import { useTranslation } from "react-i18next";
-import IntegrationSettingsForm from "@/app/(dashboard)/money-receiving/components/IntegrationSettingsForm";
-import {useState} from "react";
+import { useState } from "react";
 import EmployeeInfoForm from "@/app/(dashboard)/hr/employees/components/EmployeeInfoForm";
 import WorkAndRatingInfoForm from "@/app/(dashboard)/hr/employees/components/WorkAndRatingInfoForm";
-import QualificationsForm from "@/app/(dashboard)/hr/employees/components/QualificationsForm";
+import { useCreateEmployeeMutation } from "@/redux/employees/employeesApi";
+import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
+import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
+import { useTranslation } from "react-i18next";
 
 function CreateEmployeeModal({ isOpen, onClose }) {
-    const [currentStep, setCurrentStep] = useState(1);
     const { t } = useTranslation();
+    const [currentStep, setCurrentStep] = useState(1);
+    const [createEmployee, { isLoading: isCreating }] = useCreateEmployeeMutation();
 
+    // Alerts State
+    const [isApprovalOpen, setIsApprovalOpen] = useState(false);
+    const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
+
+    const [formData, setFormData] = useState({
+        email: "",
+        name: "",
+        phone: "",
+        employee_detail: {
+            department_id: null,
+            position_id: null,
+            country: "",
+            city: "",
+            work_hours: 0,
+            salary: 0,
+            yearly_day_offs: 0,
+            weekend_days: [],
+            date_of_birth: ""
+        }
+    });
+
+    const updateFormData = (field, value, isDetail = false) => {
+        if (isDetail) {
+            setFormData(prev => ({
+                ...prev,
+                employee_detail: {
+                    ...prev.employee_detail,
+                    [field]: value
+                }
+            }));
+        } else {
+            setFormData(prev => ({
+                ...prev,
+                [field]: value
+            }));
+        }
+    };
+
+    const handleSaveRequest = () => {
+        setIsApprovalOpen(true);
+    };
+
+    const onConfirmSave = async () => {
+        try {
+            // Clean payload: remove null or "none" values
+            const cleansedData = JSON.parse(JSON.stringify(formData));
+            if (!cleansedData.employee_detail.department_id || cleansedData.employee_detail.department_id === "none") {
+                delete cleansedData.employee_detail.department_id;
+            }
+            if (!cleansedData.employee_detail.position_id) {
+                delete cleansedData.employee_detail.position_id;
+            }
+
+            const response = await createEmployee(cleansedData).unwrap();
+            setApiResponse({
+                isOpen: true,
+                status: "success",
+                message: t("Employee created successfully")
+            });
+        } catch (error) {
+            setApiResponse({
+                isOpen: true,
+                status: "error",
+                message: error?.data?.message || t("Failed to create employee")
+            });
+        }
+    };
 
     const steps = [
         {
             title: t("Employee Info"),
             content: (
-                <EmployeeInfoForm />
+                <EmployeeInfoForm formData={formData} updateFormData={updateFormData} />
             ),
         },
         {
-            title: t("Work &Rating Info"),
+            title: t("Work Info"),
             content: (
-                <WorkAndRatingInfoForm />
-            ),
-        },
-        {
-            title: t("Qualifications"),
-            content: (
-                <QualificationsForm />
-            ),
+                <WorkAndRatingInfoForm formData={formData} updateFormData={updateFormData} />
+            )
         }
     ];
 
+    const handleCloseApiResponse = () => {
+        setApiResponse(prev => ({ ...prev, isOpen: false }));
+        if (apiResponse.status === "success") {
+            onClose();
+        }
+    };
+
     return (
-        <Modal
-            className="lg:w-[35%] md:w-9/12 sm:w-7/12 w-10/12 p-4 "
-            isOpen={isOpen}
-            onClose={onClose}
-            customBtns={
-                <CustomBtnModal
+        <>
+            <Modal
+                className="lg:w-[45%] md:w-10/12 sm:w-11/12 w-11/12 p-6 "
+                isOpen={isOpen}
+                onClose={onClose}
+                customBtns={
+                    <CustomBtnModal
+                        currentStep={currentStep}
+                        totalSteps={steps.length}
+                        isLoading={isCreating}
+                        handleNext={() =>
+                            setCurrentStep((prev) => Math.min(prev + 1, steps.length))
+                        }
+                        handleSave={handleSaveRequest}
+                    />
+                }
+                title={t("Add New Employee")}
+            >
+                <StepsComponent
+                    type="edit"
+                    steps={steps}
                     currentStep={currentStep}
-                    totalSteps={steps.length}
-                    handleNext={() =>
-                        setCurrentStep((prev) => Math.min(prev + 1, steps.length))
-                    }
-                    handleSave={() => {}} // Pass handleSave function
+                    setCurrentStep={setCurrentStep}
                 />
-            }
-            title={t("Add New Employee")}
-        >
-            <StepsComponent
-                type="edit"
-                steps={steps}
-                currentStep={currentStep}
-                setCurrentStep={setCurrentStep}
+            </Modal>
+
+            <ApprovalAlert
+                isOpen={isApprovalOpen}
+                onClose={() => setIsApprovalOpen(false)}
+                onConfirm={onConfirmSave}
+                title="Create Employee"
+                message="Are you sure you want to create this employee?"
             />
-        </Modal>
+
+            <ApiResponseAlert
+                isOpen={apiResponse.isOpen}
+                status={apiResponse.status}
+                message={apiResponse.message}
+                onClose={handleCloseApiResponse}
+            />
+        </>
     );
 }
 
 function CustomBtnModal({
-                            currentStep,
-                            totalSteps,
-                            handleNext,
-                            handleSave,
-                        }) {
+    currentStep,
+    totalSteps,
+    handleNext,
+    handleSave,
+    isLoading
+}) {
     const { t } = useTranslation();
     return (
         <div className="w-full flex items-center gap-2 justify-between pt-3">
             <button
                 onClick={handleSave}
-                className="bg-primary-base text-sm flex flex-1 justify-center items-center h-full text-center dark:bg-primary-200 dark:text-black w-40 text-white p-[10px] rounded-[10px]"
+                disabled={isLoading}
+                className="bg-primary-base text-sm flex flex-1 justify-center items-center h-full text-center dark:bg-primary-200 dark:text-black w-40 text-white p-[10px] rounded-[10px] disabled:opacity-50"
             >
-                {t("Update")}
+                {isLoading ? t("Saving...") : t("Save")}
             </button>
             {currentStep < totalSteps && (
                 <button
