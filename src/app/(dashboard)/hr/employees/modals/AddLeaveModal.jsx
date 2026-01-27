@@ -1,138 +1,201 @@
 "use client";
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import DateInput from "@/components/Form/DateInput";
 import TimeInput from "@/components/Form/TimeInput";
-import InputWithIcon from "@/components/Form/InputWithIcon";
 import Modal from "@/components/Modal/Modal.jsx";
 import ElementsSelect from "@/components/Form/ElementsSelect";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import TextAreaWithLabel from "@/components/Form/TextAreaWithLabel";
 import PropTypes from "prop-types";
+import { useCreateLeaveMutation } from "@/redux/leaves/leavesApi";
+import { useGetEmployeesQuery } from "@/redux/employees/employeesApi";
+import { isBefore, isAfter, startOfToday, format as formatDate } from "date-fns";
+import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
+import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 
 const validationSchema = Yup.object().shape({
-    employeeId: Yup.string().required("Employee is required"),
-    date: Yup.date().required("Date is required"),
-    leaveStartTime: Yup.string().required("Start time is required"),
-    leaveEndTime: Yup.string().required("End time is required"),
-    comment: Yup.string(),
+    employee_id: Yup.string().required("Employee is required"),
+    date: Yup.date()
+        .required("Date is required")
+        .max(new Date(), "Date cannot be in the future"),
+    start_time: Yup.string()
+        .required("Start time is required")
+        .test("not-future", "Start time cannot be in the future", function (value) {
+            const { date } = this.parent;
+            if (!date || !value) return true;
+            const selectedDate = new Date(date);
+            const today = startOfToday();
+            if (isAfter(selectedDate, today)) return false;
+            if (isBefore(selectedDate, today)) return true;
+
+            // If it's today, check time
+            const now = new Date();
+            const currentTime = formatDate(now, "HH:mm");
+            return value <= currentTime;
+        }),
+    end_time: Yup.string()
+        .required("End time is required")
+        .test("after-start", "End time must be after start time", function (value) {
+            const { start_time } = this.parent;
+            if (!start_time || !value) return true;
+            return value > start_time;
+        })
+        .test("not-future", "End time cannot be in the future", function (value) {
+            const { date } = this.parent;
+            if (!date || !value) return true;
+            const selectedDate = new Date(date);
+            const today = startOfToday();
+            if (isAfter(selectedDate, today)) return false;
+            if (isBefore(selectedDate, today)) return true;
+
+            const now = new Date();
+            const currentTime = formatDate(now, "HH:mm");
+            return value <= currentTime;
+        }),
 });
 
-function AddLeaveModal({ isOpen, onClose, onSubmit }) {
+function AddLeaveModal({ isOpen, onClose }) {
     const { t } = useTranslation();
-    const { employees } = useSelector((state) => state.employees) || { employees: [] }; // Fallback if slice not ready
-    const [submissionError, setSubmissionError] = useState(null);
+    const { data: employeesData } = useGetEmployeesQuery();
+    const [createLeave, { isLoading }] = useCreateLeaveMutation();
+
+    // Alerts State
+    const [isApprovalOpen, setIsApprovalOpen] = useState(false);
+    const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
     const formik = useFormik({
         initialValues: {
-            employeeId: "",
+            employee_id: "",
             date: "",
-            leaveStartTime: "",
-            leaveEndTime: "",
-            dailyWorkHours: "8:00", // Default or calculated
-            comment: "",
+            start_time: "",
+            end_time: "",
         },
         validationSchema,
-        onSubmit: async (values) => {
-            try {
-                setSubmissionError(null);
-                await onSubmit(values);
-                formik.resetForm();
-                onClose();
-            } catch (error) {
-                setSubmissionError(error.message || "An error occurred");
-            }
+        onSubmit: () => {
+            // Open approval alert instead of submitting directly
+            setIsApprovalOpen(true);
         },
     });
 
-    // Mock options if employees are empty
-    const employeeOptions = employees.length > 0 ? employees.map(e => ({ id: e._id, element: e.name })) : [
-        { id: "1", element: "Fatima Ahmed" },
-        { id: "2", element: "Sophia Williams" },
-    ];
+    const onConfirmSave = async () => {
+        try {
+            await createLeave(formik.values).unwrap();
+            setApiResponse({
+                isOpen: true,
+                status: "success",
+                message: t("Leave created successfully")
+            });
+            formik.resetForm();
+        } catch (error) {
+            setApiResponse({
+                isOpen: true,
+                status: "error",
+                message: error?.data?.message || error.message || t("Failed to create leave")
+            });
+        }
+    };
+
+    const handleCloseApiResponse = () => {
+        setApiResponse(prev => ({ ...prev, isOpen: false }));
+        if (apiResponse.status === "success") {
+            onClose();
+        }
+    };
+
+    const employeeOptions = employeesData?.map(emp => ({
+        id: emp.user_id,
+        element: emp.user?.name || emp.name || "Unknown"
+    })) || [];
 
     return (
-        <Modal
-            isOpen={isOpen}
-            onClose={onClose}
-            isBtns={true}
-            btnApplyTitle="Create"
-            btnCancelTitle="Cancel"
-            onClick={() => formik.handleSubmit()}
-            className="lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12 px-3"
-            title={t("Add an employee Leave")}
-        >
-            <div className="px-1 overflow-visible">
-                <div className="flex flex-col gap-4">
-                    {submissionError && (
-                        <div className="text-red-500 text-sm mb-2">{submissionError}</div>
-                    )}
+        <>
+            <Modal
+                isOpen={isOpen}
+                onClose={onClose}
+                isBtns={true}
+                btnApplyTitle={isLoading ? t("Saving...") : t("Save")}
+                btnCancelTitle={t("Cancel")}
+                onClick={() => formik.handleSubmit()}
+                className="lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12 px-3"
+                title={t("Add a Leave")}
+                isDisabled={isLoading}
+            >
+                <div className="px-1 overflow-visible">
+                    <div className="flex flex-col gap-4">
+                        <ElementsSelect
+                            title={t("Employee")}
+                            options={employeeOptions}
+                            onChange={(selected) => formik.setFieldValue("employee_id", selected[0]?.id || "")}
+                            placeholder={t("Select Employee")}
+                            defaultValue={employeeOptions.filter(opt => opt.id === formik.values.employee_id)}
+                            isMultiple={false}
+                        />
+                        {formik.touched.employee_id && formik.errors.employee_id && (
+                            <p className="text-red-500 text-xs mt-[-10px]">{formik.errors.employee_id}</p>
+                        )}
 
-                    <ElementsSelect
-                        title="Employee"
-                        options={employeeOptions}
-                        onChange={(selected) => formik.setFieldValue("employeeId", selected[0]?.id || "")}
-                        placeholder="Select Employee"
-                        defaultValue={employeeOptions.filter(opt => opt.id === formik.values.employeeId)}
-                        isMultiple={false}
-                    />
-                    {formik.touched.employeeId && formik.errors.employeeId && (
-                        <p className="text-red-500 text-xs mt-[-10px]">{formik.errors.employeeId}</p>
-                    )}
+                        <DateInput
+                            title={t("Date")}
+                            placeholder={t("Select Date")}
+                            name="date"
+                            value={formik.values.date}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                        />
+                        {formik.touched.date && formik.errors.date && (
+                            <p className="text-red-500 text-xs mt-[-10px]">{formik.errors.date}</p>
+                        )}
 
-                    <DateInput
-                        title="Date"
-                        placeholder="Select Date"
-                        name="date"
-                        value={formik.values.date}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                    />
-                    {formik.touched.date && formik.errors.date && (
-                        <p className="text-red-500 text-xs mt-[-10px]">{formik.errors.date}</p>
-                    )}
+                        <div className="grid grid-cols-2 gap-4">
+                            <TimeInput
+                                title={t("Start Time")}
+                                name="start_time"
+                                value={formik.values.start_time}
+                                onChange={formik.handleChange}
+                                isRequired={true}
+                                error={formik.touched.start_time && formik.errors.start_time}
+                            />
 
-                    <TimeInput
-                        title="Leave Time"
-                        name="leaveTime"
-                        value={formik.values.leaveTime}
-                        onChange={formik.handleChange}
-                        isRequired={true}
-                        error={formik.touched.leaveTime && formik.errors.leaveTime}
-                    />
-
-                    <InputWithIcon
-                        title="Late Minutes"
-                        name="lateMinutes"
-                        type="number"
-                        value={formik.values.lateMinutes}
-                        onChange={formik.handleChange}
-                        error={formik.touched.lateMinutes && formik.errors.lateMinutes}
-                    />
-
-                    <TextAreaWithLabel
-                        title="Comment"
-                        name="comment"
-                        value={formik.values.comment}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        placeholder="Comment"
-                        rows={4}
-                        isOptional={true}
-                        error={formik.touched.comment && formik.errors.comment}
-                    />
+                            <TimeInput
+                                title={t("End Time")}
+                                name="end_time"
+                                value={formik.values.end_time}
+                                onChange={formik.handleChange}
+                                isRequired={true}
+                                error={formik.touched.end_time && formik.errors.end_time}
+                            />
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </Modal>
+            </Modal>
+
+            <ApprovalAlert
+                isOpen={isApprovalOpen}
+                onClose={() => setIsApprovalOpen(false)}
+                onConfirm={onConfirmSave}
+                title={t("Create Leave")}
+                message={t("Are you sure you want to create this leave record?")}
+                confirmBtnText={t("Confirm")}
+                cancelBtnText={t("Cancel")}
+                type="info"
+            />
+
+            <ApiResponseAlert
+                isOpen={apiResponse.isOpen}
+                status={apiResponse.status}
+                message={apiResponse.message}
+                onClose={handleCloseApiResponse}
+                successTitle={t("Success")}
+                errorTitle={t("Error")}
+            />
+        </>
     );
 }
 
 AddLeaveModal.propTypes = {
     isOpen: PropTypes.bool,
     onClose: PropTypes.func,
-    onSubmit: PropTypes.func,
 };
 
 export default AddLeaveModal;
