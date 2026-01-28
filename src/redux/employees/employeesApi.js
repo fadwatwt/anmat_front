@@ -34,6 +34,13 @@ export const employeesApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["Employees"],
         }),
+        toggleEmployeeActivity: builder.mutation({
+            query: (id) => ({
+                url: `api/subscriber/organization/employees/${id}/toggle-activity`,
+                method: "PUT",
+            }),
+            invalidatesTags: ["Employees"],
+        }),
     }),
 });
 
@@ -42,4 +49,5 @@ export const {
     useCreateEmployeeMutation,
     useUpdateEmployeeMutation,
     useDeleteEmployeeMutation,
+    useToggleEmployeeActivityMutation,
 } = employeesApi;

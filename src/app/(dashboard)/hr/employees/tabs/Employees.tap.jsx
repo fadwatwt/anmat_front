@@ -10,9 +10,10 @@ import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import {
   useGetEmployeesQuery,
   useDeleteEmployeeMutation,
+  useToggleEmployeeActivityMutation,
 } from "@/redux/employees/employeesApi";
 import { useUnassignEmployeesFromDepartmentMutation } from "@/redux/departments/departmentsApi";
-import { RiEditLine, RiNotification4Line, RiBuilding2Line, RiLogoutBoxLine } from "@remixicon/react";
+import { RiEditLine, RiNotification4Line, RiBuilding2Line, RiLogoutBoxLine, RiToggleLine, RiToggleFill } from "@remixicon/react";
 import StatusActions from "@/components/Dropdowns/StatusActions";
 import CreateEmployeeModal from "@/app/(dashboard)/hr/employees/modals/CreateEmployee.modal";
 import InviteNewEmployeeModal from "@/app/(dashboard)/hr/employees/modals/InviteNewEmployee,modal";
@@ -24,6 +25,7 @@ function EmployeesTap() {
   const { t } = useTranslation();
   const { data: employees = [], error, isLoading } = useGetEmployeesQuery();
   const [deleteEmployee] = useDeleteEmployeeMutation();
+  const [toggleActivity] = useToggleEmployeeActivityMutation();
   const [unassignEmployees, { isLoading: isUnassigning }] = useUnassignEmployeesFromDepartmentMutation();
 
   const [isOpenEditModal, setIsOpenEditModal] = useState(false);
@@ -42,6 +44,11 @@ function EmployeesTap() {
   const [selectedUnassignEmployee, setSelectedUnassignEmployee] = useState(null);
   const [isUnassignApprovalOpen, setIsUnassignApprovalOpen] = useState(false);
   const [unassignApiResponse, setUnassignApiResponse] = useState({ isOpen: false, status: "", message: "" });
+
+  // Toggle activity states
+  const [selectedToggleEmployee, setSelectedToggleEmployee] = useState(null);
+  const [isToggleApprovalOpen, setIsToggleApprovalOpen] = useState(false);
+  const [toggleApiResponse, setToggleApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -99,6 +106,11 @@ function EmployeesTap() {
             setIsOpenAssignDeptModal(true);
           },
         },
+      {
+        text: employee.user?.is_active ? t("Deactivate") : t("Activate"),
+        icon: employee.user?.is_active ? <RiToggleFill className="text-orange-500" /> : <RiToggleLine className="text-green-500" />,
+        onClick: () => handleToggleActivity(employee),
+      },
       {
         text: t("Delete"),
         icon: <RiDeleteBin7Line className="text-red-500" />,
@@ -200,6 +212,34 @@ function EmployeesTap() {
   const handleCloseUnassignResponse = () => {
     setUnassignApiResponse(prev => ({ ...prev, isOpen: false }));
     setSelectedUnassignEmployee(null);
+  };
+
+  const handleToggleActivity = (employee) => {
+    setSelectedToggleEmployee(employee);
+    setIsToggleApprovalOpen(true);
+  };
+
+  const onConfirmToggle = async () => {
+    if (!selectedToggleEmployee) return;
+
+    try {
+      await toggleActivity(selectedToggleEmployee.user_id).unwrap();
+      setToggleApiResponse({
+        isOpen: true,
+        status: "success",
+        message: selectedToggleEmployee.user?.is_active
+          ? t("Employee deactivated successfully")
+          : t("Employee activated successfully")
+      });
+      setIsToggleApprovalOpen(false);
+    } catch (err) {
+      setToggleApiResponse({
+        isOpen: true,
+        status: "error",
+        message: err?.data?.message || t("Failed to toggle employee status")
+      });
+      setIsToggleApprovalOpen(false);
+    }
   };
 
   if (isLoading) return <div className="p-4">{t("Loading...")}</div>;
@@ -322,6 +362,26 @@ function EmployeesTap() {
         status={unassignApiResponse.status}
         message={unassignApiResponse.message}
         onClose={handleCloseUnassignResponse}
+      />
+
+      <ApiResponseAlert
+        isOpen={toggleApiResponse.isOpen}
+        status={toggleApiResponse.status}
+        message={toggleApiResponse.message}
+        onClose={() => setToggleApiResponse(prev => ({ ...prev, isOpen: false }))}
+      />
+
+      <ApprovalAlert
+        isOpen={isToggleApprovalOpen}
+        onClose={() => {
+          setIsToggleApprovalOpen(false);
+          setSelectedToggleEmployee(null);
+        }}
+        onConfirm={onConfirmToggle}
+        title={selectedToggleEmployee?.user?.is_active ? t("Deactivate Employee") : t("Activate Employee")}
+        message={selectedToggleEmployee?.user?.is_active
+          ? t("Are you sure you want to deactivate this employee?")
+          : t("Are you sure you want to activate this employee?")}
       />
     </>
   );
