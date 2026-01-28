@@ -27,6 +27,22 @@ export const departmentsApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["Departments"],
         }),
+        assignEmployeesToDepartment: builder.mutation({
+            query: ({ department_id, employeeIds }) => ({
+                url: `api/subscriber/organization/departments/${department_id}/employees`,
+                method: "PATCH",
+                body: { employeeIds },
+            }),
+            invalidatesTags: ["Departments", "Employees"],
+        }),
+        unassignEmployeesFromDepartment: builder.mutation({
+            query: ({ department_id, employeeIds }) => ({
+                url: `api/subscriber/organization/departments/${department_id}/employees/unassign`,
+                method: "PATCH",
+                body: { employeeIds },
+            }),
+            invalidatesTags: ["Departments", "Employees"],
+        }),
     }),
 });
 
@@ -34,4 +50,6 @@ export const {
     useGetDepartmentsQuery,
     useCreateDepartmentMutation,
     useUpdateDepartmentMutation,
+    useAssignEmployeesToDepartmentMutation,
+    useUnassignEmployeesFromDepartmentMutation,
 } = departmentsApi;

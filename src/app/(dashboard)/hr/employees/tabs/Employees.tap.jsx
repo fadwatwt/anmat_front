@@ -5,31 +5,43 @@ import EditAnEmployeeModal from "@/app/(dashboard)/hr/_modals/EditAnEmployeeModa
 import AccountDetails from "@/app/(dashboard)/projects/_components/TableInfo/AccountDetails.jsx";
 import Rating from "../../Rating.jsx";
 import Alert from "../../../../../components/Alerts/Alert.jsx";
+import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
+import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import {
   useGetEmployeesQuery,
   useDeleteEmployeeMutation,
 } from "@/redux/employees/employeesApi";
-import { RiEditLine, RiNotification4Line } from "@remixicon/react";
+import { useUnassignEmployeesFromDepartmentMutation } from "@/redux/departments/departmentsApi";
+import { RiEditLine, RiNotification4Line, RiBuilding2Line, RiLogoutBoxLine } from "@remixicon/react";
 import StatusActions from "@/components/Dropdowns/StatusActions";
 import CreateEmployeeModal from "@/app/(dashboard)/hr/employees/modals/CreateEmployee.modal";
 import InviteNewEmployeeModal from "@/app/(dashboard)/hr/employees/modals/InviteNewEmployee,modal";
 import SendNotificationModal from "@/app/(dashboard)/hr/employees/modals/SendNotification.modal";
+import AssignDepartmentModal from "@/app/(dashboard)/hr/employees/modals/AssignDepartmentModal";
 import { RiDeleteBin7Line } from "react-icons/ri";
 
 function EmployeesTap() {
   const { t } = useTranslation();
   const { data: employees = [], error, isLoading } = useGetEmployeesQuery();
   const [deleteEmployee] = useDeleteEmployeeMutation();
+  const [unassignEmployees, { isLoading: isUnassigning }] = useUnassignEmployeesFromDepartmentMutation();
 
   const [isOpenEditModal, setIsOpenEditModal] = useState(false);
   const [isOpenCreateModal, setIsOpenCreateModal] = useState(false);
   const [isOpenInviteModal, setIsOpenInviteModal] = useState(false);
   const [isOpenSendNotifyModal, setIsOpenSendNotifyModal] = useState(false);
+  const [isOpenAssignDeptModal, setIsOpenAssignDeptModal] = useState(false);
 
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [selectedAssignEmployee, setSelectedAssignEmployee] = useState(null);
   const [selectedDeleteEmployee, setSelectedDeleteEmployee] = useState(null);
   const [isOpenDeleteAlert, setIsOpenDeleteAlert] = useState(false);
   const [isOpenSuccessDeleteAlert, setIsOpenSuccessDeleteAlert] = useState(false);
+
+  // Unassign department states
+  const [selectedUnassignEmployee, setSelectedUnassignEmployee] = useState(null);
+  const [isUnassignApprovalOpen, setIsUnassignApprovalOpen] = useState(false);
+  const [unassignApiResponse, setUnassignApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -53,6 +65,7 @@ function EmployeesTap() {
   const EmployeeActions = ({ actualRowIndex }) => {
     const { t, i18n } = useTranslation();
     const employee = filteredEmployees[actualRowIndex];
+    const hasDepartment = !!(employee?.department || employee?.department_id);
 
     const statesActions = [
       {
@@ -71,12 +84,27 @@ function EmployeesTap() {
           setIsOpenSendNotifyModal(true);
         }
       },
+      // Conditional assign/unassign department action
+      hasDepartment
+        ? {
+          text: t("Unassign Department"),
+          icon: <RiLogoutBoxLine className="text-orange-500" />,
+          onClick: () => handleUnassignDepartment(employee),
+        }
+        : {
+          text: t("Assign Department"),
+          icon: <RiBuilding2Line className="text-green-500" />,
+          onClick: () => {
+            setSelectedAssignEmployee(employee);
+            setIsOpenAssignDeptModal(true);
+          },
+        },
       {
         text: t("Delete"),
         icon: <RiDeleteBin7Line className="text-red-500" />,
         onClick: () => handleDeleteEmployee(employee),
       }
-    ]
+    ];
     return (
       <StatusActions states={statesActions} className={`${i18n.language === "ar" ? "left-0" : "right-0"
         }`} />
@@ -101,7 +129,9 @@ function EmployeesTap() {
           <p className="text-xs text-gray-500 dark:text-gray-400">{userData.phone || "N/A"}</p>
         </div>,
         <div key={`department-${index}`} className="flex flex-col">
-          <p className="text-sm dark:text-sub-300 font-semibold">{employee.department_id?.name || t("N/A")}</p>
+          <p className="text-sm dark:text-sub-300 font-semibold">
+            {employee.department?.name || employee.department_id?.name || t("N/A")}
+          </p>
           <p className="text-xs text-gray-400 capitalize">{employee.country}, {employee.city}</p>
         </div>,
         <div key={`salary-${index}`} className="flex flex-col">
@@ -110,8 +140,8 @@ function EmployeesTap() {
         </div>,
         <div key={`status-${index}`}>
           <span className={`px-3 py-1 rounded-full text-xs font-medium ${userData.is_active
-              ? "bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400"
-              : "bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400"
+            ? "bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400"
+            : "bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400"
             }`}>
             {userData.is_active ? t("Active") : t("Inactive")}
           </span>
@@ -135,6 +165,41 @@ function EmployeesTap() {
         console.error("Delete employee failed:", err);
       }
     }
+  };
+
+  // Unassign department handlers
+  const handleUnassignDepartment = (employee) => {
+    setSelectedUnassignEmployee(employee);
+    setIsUnassignApprovalOpen(true);
+  };
+
+  const handleUnassignConfirmation = async () => {
+    if (!selectedUnassignEmployee) return;
+
+    try {
+      const deptId = selectedUnassignEmployee.department?._id || selectedUnassignEmployee.department_id?._id;
+      await unassignEmployees({
+        department_id: deptId,
+        employeeIds: [selectedUnassignEmployee._id]
+      }).unwrap();
+
+      setUnassignApiResponse({
+        isOpen: true,
+        status: "success",
+        message: t("Employee unassigned from department successfully")
+      });
+    } catch (error) {
+      setUnassignApiResponse({
+        isOpen: true,
+        status: "error",
+        message: error?.data?.message || t("Failed to unassign employee from department")
+      });
+    }
+  };
+
+  const handleCloseUnassignResponse = () => {
+    setUnassignApiResponse(prev => ({ ...prev, isOpen: false }));
+    setSelectedUnassignEmployee(null);
   };
 
   if (isLoading) return <div className="p-4">{t("Loading...")}</div>;
@@ -227,6 +292,36 @@ function EmployeesTap() {
         message={`The employee ${selectedDeleteEmployee?.name} and all associated data have been successfully deleted.`}
         isOpen={isOpenSuccessDeleteAlert}
         onClose={() => setIsOpenSuccessDeleteAlert(false)}
+      />
+
+      {/* Assign Department Modal */}
+      <AssignDepartmentModal
+        isOpen={isOpenAssignDeptModal}
+        onClose={() => {
+          setIsOpenAssignDeptModal(false);
+          setSelectedAssignEmployee(null);
+        }}
+        initialSelectedEmployee={selectedAssignEmployee}
+      />
+
+      {/* Unassign Department Approval Alert */}
+      <ApprovalAlert
+        isOpen={isUnassignApprovalOpen}
+        onClose={() => {
+          setIsUnassignApprovalOpen(false);
+          setSelectedUnassignEmployee(null);
+        }}
+        onConfirm={handleUnassignConfirmation}
+        title={t("Unassign Department")}
+        message={t("Are you sure you want to unassign this employee from their department?")}
+      />
+
+      {/* Unassign Department Response Alert */}
+      <ApiResponseAlert
+        isOpen={unassignApiResponse.isOpen}
+        status={unassignApiResponse.status}
+        message={unassignApiResponse.message}
+        onClose={handleCloseUnassignResponse}
       />
     </>
   );
