@@ -113,6 +113,21 @@ const statusConfig = {
         icon: <RiCloseCircleFill size={15} className="text-red-700" />,
         textColor: "text-red-700",
     },
+    "open": {
+        bgColor: "bg-yellow-50",
+        icon: <RiQuestionLine size={15} className="text-yellow-700" />,
+        textColor: "text-yellow-700",
+    },
+    "in-progress": {
+        bgColor: "bg-blue-50",
+        icon: <RiTimeLine size={15} className="text-blue-700" />,
+        textColor: "text-blue-700",
+    },
+    "accepted": {
+        bgColor: "bg-green-50",
+        icon: <RiCheckboxCircleFill size={15} className="text-green-700" />,
+        textColor: "text-green-700",
+    },
 };
 
 const statusCell = (status, _id) => {
