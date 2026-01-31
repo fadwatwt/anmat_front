@@ -16,6 +16,6 @@ export const apiSlice = createApi({
     }),
     // Initialize generic tag types here. 
     // Features can add their own tags later (e.g. 'Projects', 'Tasks')
-    tagTypes: ["User", "Auth", "SystemAdmins", "AdminRoles", "AdminPermissions", "Industries", "SubscriptionPlans", "SubscriptionFeatureTypes", "Subscriptions", "Organizations", "MoneyReceivingMethods", "Positions", "Departments", "Employees", "Attendances", "Leaves", "Salaries", "EmployeeRequests"],
+    tagTypes: ["User", "Auth", "SystemAdmins", "AdminRoles", "AdminPermissions", "Industries", "SubscriptionPlans", "SubscriptionFeatureTypes", "Subscriptions", "Organizations", "MoneyReceivingMethods", "Positions", "Departments", "Employees", "Attendances", "Leaves", "Salaries", "EmployeeRequests", "Permissions"],
     endpoints: () => ({}), // Start empty, inject endpoints in other files
 });
