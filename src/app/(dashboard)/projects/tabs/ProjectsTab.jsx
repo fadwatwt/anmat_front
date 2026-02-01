@@ -100,22 +100,22 @@ function ProjectsTab() {
         <AccountDetails
             key={`mgr-${project._id}`}
             account={{
-                name: project.manager_id?.name || project.manager_id || t("No Manager"),
+                name: project.manager?.name || project.manager_id?.name || project.manager_id || t("No Manager"),
                 rule: t("Manager"),
-                imageProfile: project.manager_id?.imageProfile || defaultPhoto,
+                imageProfile: project.manager?.imageProfile || project.manager_id?.imageProfile || defaultPhoto,
             }}
         />,
         <Department
             key={`dept-${project._id}`}
-            name={project.department_id?.name || project.department_id || t("No Department")}
+            name={project.department?.name || project.department_id?.name || project.department_id || t("No Department")}
             icon={RiLayoutGridFill}
         />,
         <Assignees
             key={`assign-${project._id}`}
-            users={project.assignees_ids?.map(user => ({
+            users={(project.assignees || project.assignees_ids || []).map(user => ({
                 name: user?.name || user,
-                avatar: user?.avatar || defaultPhoto
-            })) || []}
+                avatar: user?.imageProfile || user?.avatar || defaultPhoto
+            }))}
         />,
         <span key={`start-${project._id}`} className="text-sm text-gray-700 dark:text-gray-300">
             {project.start_date ? dayjs(project.start_date).format("DD MMM, YYYY") : t("N/A")}
