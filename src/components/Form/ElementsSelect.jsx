@@ -20,9 +20,11 @@ function ElementsSelect({
     dropDownClassName,
     renderOption,
 }) {
-    const [selectedOptions, setSelectedOptions] = useState(
-        Array.isArray(defaultValue) ? defaultValue : []
-    );
+    const [selectedOptions, setSelectedOptions] = useState(() => {
+        if (Array.isArray(defaultValue)) return defaultValue;
+        if (defaultValue && typeof defaultValue === 'object') return [defaultValue];
+        return [];
+    });
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const { t } = useTranslation();
     const dropdownRef = useRef(null);
@@ -32,16 +34,16 @@ function ElementsSelect({
 
     // مزامنة selectedOptions مع defaultValue عند تغييره من الخارج
     useEffect(() => {
-        if (!Array.isArray(defaultValue)) return;
+        const normalizedDefault = Array.isArray(defaultValue) ? defaultValue : (defaultValue ? [defaultValue] : []);
 
         // Create a string representation of the IDs for comparison
-        const currentIds = defaultValue.map(opt => opt.id).sort().join(',');
+        const currentIds = normalizedDefault.map(opt => opt.id).sort().join(',');
         const prevIds = prevDefaultValueIdsRef.current;
 
         // Only update if the IDs actually changed
         if (currentIds !== prevIds) {
             prevDefaultValueIdsRef.current = currentIds;
-            setSelectedOptions(defaultValue);
+            setSelectedOptions(normalizedDefault);
         }
     }, [defaultValue]);
     const toggleOptions = (option) => {
@@ -92,11 +94,26 @@ function ElementsSelect({
     const calculateDropdownPosition = () => {
         if (selectTriggerRef.current) {
             const rect = selectTriggerRef.current.getBoundingClientRect();
-            setDropdownStyle({
-                top: rect.bottom + window.scrollY + 4,
-                left: rect.left + window.scrollX,
-                width: rect.width,
-            });
+            const viewportHeight = window.innerHeight;
+            const dropdownMaxHeight = 256; // Matching max-h-64 (16rem = 256px)
+            const spaceBelow = viewportHeight - rect.bottom;
+            const spaceAbove = rect.top;
+
+            if (spaceBelow < dropdownMaxHeight && spaceAbove > spaceBelow) {
+                // Open Upwards
+                setDropdownStyle({
+                    bottom: viewportHeight - rect.top + 4,
+                    left: rect.left,
+                    width: rect.width,
+                });
+            } else {
+                // Open Downwards
+                setDropdownStyle({
+                    top: rect.bottom + 4,
+                    left: rect.left,
+                    width: rect.width,
+                });
+            }
         }
     };
 

@@ -1,77 +1,83 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { useDispatch, useSelector } from "react-redux";
 import Table from "../../../../../components/Tables/Table.jsx";
 import EditAnEmployeeModal from "@/app/(dashboard)/hr/_modals/EditAnEmployeeModal.jsx";
 import AccountDetails from "@/app/(dashboard)/projects/_components/TableInfo/AccountDetails.jsx";
 import Rating from "../../Rating.jsx";
 import Alert from "../../../../../components/Alerts/Alert.jsx";
+import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
+import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import {
-  fetchEmployees,
-  deleteEmployee,
-} from "@/redux/employees/employeeAPI";
-import {RiEditLine, RiNotification4Line} from "@remixicon/react";
+  useGetEmployeesQuery,
+  useDeleteEmployeeMutation,
+  useToggleEmployeeActivityMutation,
+} from "@/redux/employees/employeesApi";
+import { useUnassignEmployeesFromDepartmentMutation } from "@/redux/departments/departmentsApi";
+import { RiEditLine, RiNotification4Line, RiBuilding2Line, RiLogoutBoxLine, RiToggleLine, RiToggleFill } from "@remixicon/react";
 import StatusActions from "@/components/Dropdowns/StatusActions";
 import CreateEmployeeModal from "@/app/(dashboard)/hr/employees/modals/CreateEmployee.modal";
 import InviteNewEmployeeModal from "@/app/(dashboard)/hr/employees/modals/InviteNewEmployee,modal";
 import SendNotificationModal from "@/app/(dashboard)/hr/employees/modals/SendNotification.modal";
-import {RiDeleteBin7Line} from "react-icons/ri";
-
+import AssignDepartmentModal from "@/app/(dashboard)/hr/employees/modals/AssignDepartmentModal";
+import { RiDeleteBin7Line } from "react-icons/ri";
 
 function EmployeesTap() {
-  const dispatch = useDispatch();
-  const { employees, error } = useSelector((state) => state.employees);
   const { t } = useTranslation();
+  const { data: employees = [], error, isLoading } = useGetEmployeesQuery();
+  const [deleteEmployee] = useDeleteEmployeeMutation();
+  const [toggleActivity] = useToggleEmployeeActivityMutation();
+  const [unassignEmployees, { isLoading: isUnassigning }] = useUnassignEmployeesFromDepartmentMutation();
 
-  // 1. تعريف حالات المودالات (State for modals)
   const [isOpenEditModal, setIsOpenEditModal] = useState(false);
   const [isOpenCreateModal, setIsOpenCreateModal] = useState(false);
   const [isOpenInviteModal, setIsOpenInviteModal] = useState(false);
   const [isOpenSendNotifyModal, setIsOpenSendNotifyModal] = useState(false);
+  const [isOpenAssignDeptModal, setIsOpenAssignDeptModal] = useState(false);
 
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [selectedAssignEmployee, setSelectedAssignEmployee] = useState(null);
   const [selectedDeleteEmployee, setSelectedDeleteEmployee] = useState(null);
   const [isOpenDeleteAlert, setIsOpenDeleteAlert] = useState(false);
   const [isOpenSuccessDeleteAlert, setIsOpenSuccessDeleteAlert] = useState(false);
 
+  // Unassign department states
+  const [selectedUnassignEmployee, setSelectedUnassignEmployee] = useState(null);
+  const [isUnassignApprovalOpen, setIsUnassignApprovalOpen] = useState(false);
+  const [unassignApiResponse, setUnassignApiResponse] = useState({ isOpen: false, status: "", message: "" });
+
+  // Toggle activity states
+  const [selectedToggleEmployee, setSelectedToggleEmployee] = useState(null);
+  const [isToggleApprovalOpen, setIsToggleApprovalOpen] = useState(false);
+  const [toggleApiResponse, setToggleApiResponse] = useState({ isOpen: false, status: "", message: "" });
+
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredEmployees, setFilteredEmployees] = useState([]);
-  const [currentPage] = useState(1);
-  const [itemsPerPage] = useState(5);
 
   const headers = [
     { label: t("Employees"), width: "200px" },
+    { label: t("Contact"), width: "200px" },
     { label: t("Department"), width: "150px" },
-    { label: t("Work type"), width: "150px" },
     { label: t("Salary"), width: "100px" },
-    { label: t("Score"), width: "100px" },
+    { label: t("Status"), width: "100px" },
     { label: "", width: "50px" },
   ];
 
-  useEffect(() => {
-    dispatch(fetchEmployees());
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (searchTerm) {
-      const filtered = employees.filter((employee) =>
-          employee.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setFilteredEmployees(filtered);
-    } else {
-      setFilteredEmployees(employees);
-    }
+  const filteredEmployees = useMemo(() => {
+    if (!searchTerm) return employees;
+    return employees.filter((employee) =>
+      (employee.user?.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (employee.user?.email || "").toLowerCase().includes(searchTerm.toLowerCase())
+    );
   }, [employees, searchTerm]);
 
-  // دالة التعامل مع الأكشن داخل الجدول (Edit, Delete, Notify)
-  const EmployeeActions = ({actualRowIndex}) => {
-    const {t, i18n} = useTranslation();
-    const employee = employees[actualRowIndex]; // جلب بيانات الموظف بناءً على الاندكس
+  const EmployeeActions = ({ actualRowIndex }) => {
+    const { t, i18n } = useTranslation();
+    const employee = filteredEmployees[actualRowIndex];
+    const hasDepartment = !!(employee?.department || employee?.department_id);
 
     const statesActions = [
       {
         text: t("Edit"),
-        icon: <RiEditLine className="text-primary-400"/>,
+        icon: <RiEditLine className="text-primary-400" />,
         onClick: () => {
           setSelectedEmployee(employee);
           setIsOpenEditModal(true);
@@ -79,41 +85,81 @@ function EmployeesTap() {
       },
       {
         text: t("Send Notification"),
-        icon: <RiNotification4Line className="text-primary-400"/>,
+        icon: <RiNotification4Line className="text-primary-400" />,
         onClick: () => {
           setSelectedEmployee(employee);
           setIsOpenSendNotifyModal(true);
         }
       },
+      // Conditional assign/unassign department action
+      hasDepartment
+        ? {
+          text: t("Unassign Department"),
+          icon: <RiLogoutBoxLine className="text-orange-500" />,
+          onClick: () => handleUnassignDepartment(employee),
+        }
+        : {
+          text: t("Assign Department"),
+          icon: <RiBuilding2Line className="text-green-500" />,
+          onClick: () => {
+            setSelectedAssignEmployee(employee);
+            setIsOpenAssignDeptModal(true);
+          },
+        },
+      {
+        text: employee.user?.is_active ? t("Deactivate") : t("Activate"),
+        icon: employee.user?.is_active ? <RiToggleFill className="text-orange-500" /> : <RiToggleLine className="text-green-500" />,
+        onClick: () => handleToggleActivity(employee),
+      },
       {
         text: t("Delete"),
-        icon: <RiDeleteBin7Line className="text-red-500"/>,
+        icon: <RiDeleteBin7Line className="text-red-500" />,
         onClick: () => handleDeleteEmployee(employee),
       }
-    ]
+    ];
     return (
-        <StatusActions states={statesActions}  className={`${
-            i18n.language === "ar" ? "left-0" : "right-0"
-        }`}/>
+      <StatusActions states={statesActions} className={`${i18n.language === "ar" ? "left-0" : "right-0"
+        }`} />
     );
   }
 
   const EmployeeRowTable = (employeesToShow) => {
-    return employeesToShow?.map((employee, index) => [
-      <AccountDetails
+    return employeesToShow?.map((employee, index) => {
+      const userData = employee.user || {};
+      return [
+        <AccountDetails
           key={`account-details-${index}`}
-          path={`/employee-profile/${employee._id}-${encodeURIComponent(employee.name)}`}
+          path={`/employee-profile/${employee._id}-${encodeURIComponent(userData.name || "")}`}
           account={{
-            name: employee.name,
-            rule: employee.role?.name || "N/A",
-            imageProfile: employee?.profilePicture || "https://ui-avatars.com/api/?name=John+Doe",
+            name: userData.name || t("Unknown"),
+            rule: employee.position_id?.title || (userData.is_active ? t("Active") : t("Inactive")),
+            imageProfile: "https://ui-avatars.com/api/?name=" + (userData.name || "User") + "&background=random",
           }}
-      />,
-      <p key={`department-${index}`} className="text-sm dark:text-sub-300">{employee.department?.name || "N/A"}</p>,
-      <p key={`work-type-${index}`} className="text-sm dark:text-sub-300">{employee.jobType || employee.workType || "N/A"}</p>,
-      <p key={`salary-${index}`} className="text-sm dark:text-sub-300">${employee.salary?.toLocaleString() || 0}</p>,
-      <Rating key={`rating-${index}`} value={employee.rating / 20} />,
-    ]);
+        />,
+        <div key={`contact-${index}`} className="flex flex-col gap-1">
+          <p className="text-sm font-medium dark:text-gray-200">{userData.email || "N/A"}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">{userData.phone || "N/A"}</p>
+        </div>,
+        <div key={`department-${index}`} className="flex flex-col">
+          <p className="text-sm dark:text-sub-300 font-semibold">
+            {employee.department?.name || employee.department_id?.name || t("N/A")}
+          </p>
+          <p className="text-xs text-gray-400 capitalize">{employee.country}, {employee.city}</p>
+        </div>,
+        <div key={`salary-${index}`} className="flex flex-col">
+          <p className="text-sm font-bold text-primary-base dark:text-primary-300 ">${employee.salary?.toLocaleString()}</p>
+          <p className="text-[10px] text-gray-400">{employee.work_hours} {t("hrs/day")}</p>
+        </div>,
+        <div key={`status-${index}`}>
+          <span className={`px-3 py-1 rounded-full text-xs font-medium ${userData.is_active
+            ? "bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400"
+            : "bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400"
+            }`}>
+            {userData.is_active ? t("Active") : t("Inactive")}
+          </span>
+        </div>,
+      ];
+    });
   };
 
   const handleDeleteEmployee = (employee) => {
@@ -125,106 +171,219 @@ function EmployeesTap() {
     setIsOpenDeleteAlert(false);
     if (isConfirmed && selectedDeleteEmployee) {
       try {
-        await dispatch(deleteEmployee(selectedDeleteEmployee._id));
+        await deleteEmployee(selectedDeleteEmployee._id).unwrap();
         setIsOpenSuccessDeleteAlert(true);
-        dispatch(fetchEmployees());
-      } catch (error) {
-        console.error("Delete employee failed:", error);
+      } catch (err) {
+        console.error("Delete employee failed:", err);
       }
     }
   };
 
-  if (error) return <div className="text-red-500 p-4">Error: {error}</div>;
+  // Unassign department handlers
+  const handleUnassignDepartment = (employee) => {
+    setSelectedUnassignEmployee(employee);
+    setIsUnassignApprovalOpen(true);
+  };
+
+  const handleUnassignConfirmation = async () => {
+    if (!selectedUnassignEmployee) return;
+
+    try {
+      const deptId = selectedUnassignEmployee.department?._id || selectedUnassignEmployee.department_id?._id;
+      await unassignEmployees({
+        department_id: deptId,
+        employeeIds: [selectedUnassignEmployee._id]
+      }).unwrap();
+
+      setUnassignApiResponse({
+        isOpen: true,
+        status: "success",
+        message: t("Employee unassigned from department successfully")
+      });
+    } catch (error) {
+      setUnassignApiResponse({
+        isOpen: true,
+        status: "error",
+        message: error?.data?.message || t("Failed to unassign employee from department")
+      });
+    }
+  };
+
+  const handleCloseUnassignResponse = () => {
+    setUnassignApiResponse(prev => ({ ...prev, isOpen: false }));
+    setSelectedUnassignEmployee(null);
+  };
+
+  const handleToggleActivity = (employee) => {
+    setSelectedToggleEmployee(employee);
+    setIsToggleApprovalOpen(true);
+  };
+
+  const onConfirmToggle = async () => {
+    if (!selectedToggleEmployee) return;
+
+    try {
+      await toggleActivity(selectedToggleEmployee.user_id).unwrap();
+      setToggleApiResponse({
+        isOpen: true,
+        status: "success",
+        message: selectedToggleEmployee.user?.is_active
+          ? t("Employee deactivated successfully")
+          : t("Employee activated successfully")
+      });
+      setIsToggleApprovalOpen(false);
+    } catch (err) {
+      setToggleApiResponse({
+        isOpen: true,
+        status: "error",
+        message: err?.data?.message || t("Failed to toggle employee status")
+      });
+      setIsToggleApprovalOpen(false);
+    }
+  };
+
+  if (isLoading) return <div className="p-4">{t("Loading...")}</div>;
+  if (error) return <div className="text-red-500 p-4">{t("Error loading employees")}</div>;
 
   return (
-      <>
-        <div className="flex flex-col gap-6">
-          <div className="flex flex-col gap-2 h-full">
-            <Table
-                title="Employees"
-                headers={headers}
-                isActions={false}
-                customActions={(actualRowIndex) => (
-                    <EmployeeActions actualRowIndex={actualRowIndex} />
-                )}
-                rows={EmployeeRowTable(employees)}
-                headerActions={
-                  <div className="flex gap-2">
-                    {/* ربط أزرار الهيدر بالحالات */}
-                    <button
-                        onClick={() => setIsOpenSendNotifyModal(true)}
-                        className="bg-[#EEF2FF] text-[#375DFB] px-4 py-2 rounded-lg text-sm font-medium">
-                      {t("Send Notification")}
-                    </button>
-                    <button
-                        onClick={() => setIsOpenInviteModal(true)}
-                        className="border border-gray-200 px-4 py-2 rounded-lg text-sm font-medium">
-                      {t("Invite Employee")}
-                    </button>
-                    <button
-                        onClick={() => setIsOpenCreateModal(true)}
-                        className="bg-[#375DFB] text-white px-4 py-2 rounded-lg text-sm font-medium">
-                      {t("Add New Employee")}
-                    </button>
-                  </div>
-                }
-            />
-          </div>
+    <>
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-2 h-full">
+          <Table
+            title="Employees"
+            headers={headers}
+            isActions={false}
+            customActions={(actualRowIndex) => (
+              <EmployeeActions actualRowIndex={actualRowIndex} />
+            )}
+            rows={EmployeeRowTable(employees)}
+            headerActions={
+              <div className="flex gap-2">
+                {/* ربط أزرار الهيدر بالحالات */}
+                <button
+                  onClick={() => setIsOpenSendNotifyModal(true)}
+                  className="bg-[#EEF2FF] text-[#375DFB] px-4 py-2 rounded-lg text-sm font-medium">
+                  {t("Send Notification")}
+                </button>
+                <button
+                  onClick={() => setIsOpenInviteModal(true)}
+                  className="border border-gray-200 px-4 py-2 rounded-lg text-sm font-medium">
+                  {t("Invite Employee")}
+                </button>
+                <button
+                  onClick={() => setIsOpenCreateModal(true)}
+                  className="bg-[#375DFB] text-white px-4 py-2 rounded-lg text-sm font-medium">
+                  {t("Add New Employee")}
+                </button>
+              </div>
+            }
+          />
         </div>
+      </div>
 
-        {/* 2. استدعاء المودالات وتمرير الحالات والدوال */}
-        <CreateEmployeeModal
-            isOpen={isOpenCreateModal}
-            onClose={() => setIsOpenCreateModal(false)}
-        />
+      {/* 2. استدعاء المودالات وتمرير الحالات والدوال */}
+      <CreateEmployeeModal
+        isOpen={isOpenCreateModal}
+        onClose={() => setIsOpenCreateModal(false)}
+      />
 
-        <InviteNewEmployeeModal
-            isOpen={isOpenInviteModal}
-            onClose={() => setIsOpenInviteModal(false)}
-        />
+      <InviteNewEmployeeModal
+        isOpen={isOpenInviteModal}
+        onClose={() => setIsOpenInviteModal(false)}
+      />
 
-        <SendNotificationModal
-            isOpen={isOpenSendNotifyModal}
-            onClose={() => {
-              setIsOpenSendNotifyModal(false);
-              setSelectedEmployee(null); // مسح الموظف المحدد عند الإغلاق
-            }}
-            employeeData={selectedEmployee} // تمرير بيانات الموظف إذا أردت إرسال إشعار لموظف معين
-        />
+      <SendNotificationModal
+        isOpen={isOpenSendNotifyModal}
+        onClose={() => {
+          setIsOpenSendNotifyModal(false);
+          setSelectedEmployee(null); // مسح الموظف المحدد عند الإغلاق
+        }}
+        employeeData={selectedEmployee} // تمرير بيانات الموظف إذا أردت إرسال إشعار لموظف معين
+      />
 
-        <EditAnEmployeeModal
-            isOpen={isOpenEditModal}
-            onClose={() => {
-              setIsOpenEditModal(false);
-              setSelectedEmployee(null);
-            }}
-            employeeData={selectedEmployee}
-        />
+      <EditAnEmployeeModal
+        isOpen={isOpenEditModal}
+        onClose={() => {
+          setIsOpenEditModal(false);
+          setSelectedEmployee(null);
+        }}
+        employeeData={selectedEmployee}
+      />
 
 
-        {/* Delete Confirmation Alert */}
-        <Alert
-            type="warning"
-            title="Delete Employee?"
-            message="Are you sure you want to delete this employee?"
-            onSubmit={handleDeleteConfirmation}
-            titleCancelBtn="Cancel"
-            titleSubmitBtn="Delete"
-            isOpen={isOpenDeleteAlert}
-            onClose={() => setIsOpenDeleteAlert(false)}
-            isBtns={1}
-        />
+      {/* Delete Confirmation Alert */}
+      <Alert
+        type="warning"
+        title="Delete Employee?"
+        message="Are you sure you want to delete this employee?"
+        onSubmit={handleDeleteConfirmation}
+        titleCancelBtn="Cancel"
+        titleSubmitBtn="Delete"
+        isOpen={isOpenDeleteAlert}
+        onClose={() => setIsOpenDeleteAlert(false)}
+        isBtns={1}
+      />
 
-        {/* Success Delete Alert */}
-        <Alert
-            type="success"
-            title="Employee Deleted"
-            isBtns={false}
-            message={`The employee ${selectedDeleteEmployee?.name} and all associated data have been successfully deleted.`}
-            isOpen={isOpenSuccessDeleteAlert}
-            onClose={() => setIsOpenSuccessDeleteAlert(false)}
-        />
-      </>
+      {/* Success Delete Alert */}
+      <Alert
+        type="success"
+        title="Employee Deleted"
+        isBtns={false}
+        message={`The employee ${selectedDeleteEmployee?.name} and all associated data have been successfully deleted.`}
+        isOpen={isOpenSuccessDeleteAlert}
+        onClose={() => setIsOpenSuccessDeleteAlert(false)}
+      />
+
+      {/* Assign Department Modal */}
+      <AssignDepartmentModal
+        isOpen={isOpenAssignDeptModal}
+        onClose={() => {
+          setIsOpenAssignDeptModal(false);
+          setSelectedAssignEmployee(null);
+        }}
+        initialSelectedEmployee={selectedAssignEmployee}
+      />
+
+      {/* Unassign Department Approval Alert */}
+      <ApprovalAlert
+        isOpen={isUnassignApprovalOpen}
+        onClose={() => {
+          setIsUnassignApprovalOpen(false);
+          setSelectedUnassignEmployee(null);
+        }}
+        onConfirm={handleUnassignConfirmation}
+        title={t("Unassign Department")}
+        message={t("Are you sure you want to unassign this employee from their department?")}
+      />
+
+      {/* Unassign Department Response Alert */}
+      <ApiResponseAlert
+        isOpen={unassignApiResponse.isOpen}
+        status={unassignApiResponse.status}
+        message={unassignApiResponse.message}
+        onClose={handleCloseUnassignResponse}
+      />
+
+      <ApiResponseAlert
+        isOpen={toggleApiResponse.isOpen}
+        status={toggleApiResponse.status}
+        message={toggleApiResponse.message}
+        onClose={() => setToggleApiResponse(prev => ({ ...prev, isOpen: false }))}
+      />
+
+      <ApprovalAlert
+        isOpen={isToggleApprovalOpen}
+        onClose={() => {
+          setIsToggleApprovalOpen(false);
+          setSelectedToggleEmployee(null);
+        }}
+        onConfirm={onConfirmToggle}
+        title={selectedToggleEmployee?.user?.is_active ? t("Deactivate Employee") : t("Activate Employee")}
+        message={selectedToggleEmployee?.user?.is_active
+          ? t("Are you sure you want to deactivate this employee?")
+          : t("Are you sure you want to activate this employee?")}
+      />
+    </>
   );
 }
 

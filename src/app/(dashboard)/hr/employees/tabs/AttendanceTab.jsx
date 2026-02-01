@@ -1,18 +1,19 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { useTranslation } from "react-i18next";
-import { useDispatch, useSelector } from "react-redux";
-import { format, parseISO } from "date-fns";
+import { format, parse } from "date-fns";
 import Table from "@/components/Tables/Table";
 import {
-  fetchAllAttendance,
-  deleteAttendance,
-} from "@/redux/attendance/attendanceAPI";
+  useGetAttendancesQuery,
+  useDeleteAttendanceMutation,
+} from "@/redux/attendance/attendancesApi";
 import { BsClockFill, BsSlashCircleFill } from "react-icons/bs";
 import { GoCheckCircleFill, GoPlus } from "react-icons/go";
 
 import Alert from "@/components/Alerts/Alert.jsx";
+import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
+import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import EditAttendanceModal from "@/app/(dashboard)/hr/employees/modals/EditAttendanceModal";
 import PropTypes from "prop-types";
 import AddAttendanceModal from "../modals/AddAttendanceModal";
@@ -51,100 +52,38 @@ export const StatusBadge = ({ status }) => {
 
 function AttendanceTab() {
   const { t } = useTranslation();
-  const dispatch = useDispatch();
-  const { attendance: apiAttendance, loading, error } = useSelector(
-    (state) => state.attendance
-  );
+  const { data: attendancesData, isLoading } = useGetAttendancesQuery();
+  const [deleteAttendance] = useDeleteAttendanceMutation();
 
-  // Mock data for initial design preview matching the image
-  const mockAttendance = [
-    {
-      _id: "1",
-      employee: { name: "Fatma Ahmed Mohamed", department: { name: "Digital Publishing Division Dep Dep" }, profilePicture: "https://i.pravatar.cc/150?u=1" },
-      date: "2025-01-16T10:00:00Z",
-      officialStartTime: "2025-01-16T10:00:00Z",
-      officialEndTime: "2025-01-16T18:00:00Z",
-      checkin: "2025-01-16T10:00:00Z",
-      checkout: "2025-01-16T23:00:00Z",
-      lateMinutes: 0,
-      status: "Late"
-    },
-    {
-      _id: "2",
-      employee: { name: "Sophia Williams", department: { name: "Publishing Dep" }, profilePicture: "https://i.pravatar.cc/150?u=2" },
-      date: "2025-01-16T10:00:00Z",
-      officialStartTime: "2025-01-16T10:00:00Z",
-      officialEndTime: "2025-01-16T18:00:00Z",
-      checkin: "2025-01-16T10:30:00Z",
-      checkout: "2025-01-16T23:30:00Z",
-      lateMinutes: 30,
-      status: "Late"
-    },
-    {
-      _id: "3",
-      employee: { name: "Fatma Ahmed Mohamed", department: { name: "Content Management Dep" }, profilePicture: "https://i.pravatar.cc/150?u=3" },
-      date: "2025-01-16T10:00:00Z",
-      officialStartTime: "2025-01-16T10:00:00Z",
-      officialEndTime: "2025-01-16T18:00:00Z",
-      checkin: null,
-      checkout: null,
-      lateMinutes: 30,
-      status: "Absent"
-    },
-    {
-      _id: "4",
-      employee: { name: "Fatma Ahmed Mohamed", department: { name: "Content Management Dep" }, profilePicture: "https://i.pravatar.cc/150?u=4" },
-      date: "2025-01-16T10:00:00Z",
-      officialStartTime: "2025-01-16T10:00:00Z",
-      officialEndTime: "2025-01-16T18:00:00Z",
-      checkin: null,
-      checkout: null,
-      lateMinutes: 30,
-      status: "Absent"
-    },
-    {
-      _id: "5",
-      employee: { name: "James Brown", department: { name: "Editorial Software Dep" }, profilePicture: "https://i.pravatar.cc/150?u=5" },
-      date: "2025-01-16T10:00:00Z",
-      officialStartTime: "2025-01-16T10:00:00Z",
-      officialEndTime: "2025-01-16T18:00:00Z",
-      checkin: null,
-      checkout: null,
-      lateMinutes: 0,
-      status: "Absent"
-    }
-  ];
-
-  const attendance = apiAttendance.length > 0 ? apiAttendance : mockAttendance;
+  const attendance = attendancesData || [];
 
   // State for modals and alerts
   const [selectedAttendance, setSelectedAttendance] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
-  const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
+  const [isDeleteApprovalOpen, setIsDeleteApprovalOpen] = useState(false);
+  const [deleteApiResponse, setDeleteApiResponse] = useState({ isOpen: false, status: "", message: "" });
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  useEffect(() => {
-    dispatch(fetchAllAttendance());
-  }, [dispatch]);
-
   const headers = [
-    { label: t("Employees"), width: "250px" },
+    { label: t("Employee"), width: "250px" },
     { label: t("Date"), width: "120px" },
-    { label: t("Official Working Hours"), width: "180px" },
-    { label: t("Check In"), width: "180px" },
+    { label: t("Start Time"), width: "120px" },
+    { label: t("End Time"), width: "120px" },
     { label: t("Late Minutes"), width: "120px" },
     { label: t("Status"), width: "120px" },
     { label: "", width: "50px" },
   ];
-  const handleAddAttendance  = () => {
+  const handleAddAttendance = () => {
     setIsAddModalOpen(!isAddModalOpen)
   }
+
+  // Default avatar URL
+  const defaultAvatar = "https://ui-avatars.com/api/?name=User&background=random";
 
   const rows = attendance?.map((record) => [
     <div key={`emp-${record._id}`} className="flex items-center gap-3 py-1">
       <img
-        src={record.employee?.profilePicture || "https://i.pravatar.cc/150"}
+        src={defaultAvatar}
         alt={record.employee?.name}
         className="w-10 h-10 rounded-full object-cover"
       />
@@ -153,37 +92,23 @@ function AttendanceTab() {
           {record.employee?.name || "N/A"}
         </span>
         <span className="text-gray-500 text-[11px] whitespace-normal leading-tight mt-0.5">
-          {record.employee?.department?.name || "N/A"}
+          {record.employee?.email || "N/A"}
         </span>
       </div>
     </div>,
     <span key={`date-${record._id}`} className="text-sm text-gray-700 dark:text-sub-300">
-      {record.date ? format(parseISO(record.date), "dd MMM, yyyy") : "N/A"}
+      {record.date ? format(parse(record.date, "yyyy-MM-dd", new Date()), "dd MMM, yyyy") : "N/A"}
     </span>,
-    <span key={`hours-${record._id}`} className="text-sm text-gray-700 dark:text-sub-300">
-      {record.officialStartTime && record.officialEndTime
-        ? `${format(parseISO(record.officialStartTime), "hh.mm aa")} - ${format(
-          parseISO(record.officialEndTime),
-          "hh.mm aa"
-        )}`
-        : "10.00 AM - 6.00 PM"}
+    <span key={`start-${record._id}`} className="text-sm text-gray-700 dark:text-sub-300">
+      {record.start_time || "-"}
     </span>,
-    <div key={`checkin-${record._id}`} className="flex flex-col gap-1.5">
-      {record.checkin && record.checkout ? (
-        <>
-          <div className="bg-[#FFF4E5] text-[#C2540A] text-[11px] font-medium px-3 py-1 rounded-full border border-[#FFD9C2] w-fit">
-            {format(parseISO(record.checkin), "hh.mm aa")} - {format(parseISO(record.checkout), "hh.mm aa")}
-          </div>
-          <div className="bg-[#EEF2FF] text-[#4338CA] text-[11px] font-medium px-3 py-1 rounded-full border border-[#C7D2FE] w-fit">
-            {format(parseISO(record.checkin), "hh.mm aa")} - {format(parseISO(record.checkout), "hh.mm aa")}
-          </div>
-        </>
-      ) : "-"}
-    </div>,
+    <span key={`end-${record._id}`} className="text-sm text-gray-700 dark:text-sub-300">
+      {record.end_time || "-"}
+    </span>,
     <span key={`late-${record._id}`} className="text-sm text-gray-600 dark:text-sub-300">
-      {record.lateMinutes > 0 ? `${record.lateMinutes} min` : "-"}
+      {record.late_in_minutes > 0 ? `${record.late_in_minutes} min` : "-"}
     </span>,
-    <StatusBadge key={`status-${record._id}`} status={record.status || "Absent"} />,
+    <StatusBadge key={`status-${record._id}`} status={record.late_in_minutes > 0 ? "Late" : "On Time"} />,
   ]);
 
   const handleEdit = (index) => {
@@ -193,15 +118,28 @@ function AttendanceTab() {
 
   const handleDelete = (index) => {
     setSelectedAttendance(attendance[index]);
-    setIsDeleteAlertOpen(true);
+    setIsDeleteApprovalOpen(true);
   };
 
-  const confirmDelete = () => {
-    dispatch(deleteAttendance(selectedAttendance._id)).then(() => {
-      setIsDeleteAlertOpen(false);
-      setIsSuccessAlertOpen(true);
-      dispatch(fetchAllAttendance());
-    });
+  const confirmDelete = async () => {
+    try {
+      await deleteAttendance(selectedAttendance._id).unwrap();
+      setDeleteApiResponse({
+        isOpen: true,
+        status: "success",
+        message: t("Attendance record deleted successfully")
+      });
+    } catch (error) {
+      setDeleteApiResponse({
+        isOpen: true,
+        status: "error",
+        message: error?.data?.message || error.message || t("Failed to delete attendance record")
+      });
+    }
+  };
+
+  const handleCloseDeleteApiResponse = () => {
+    setDeleteApiResponse(prev => ({ ...prev, isOpen: false }));
   };
 
   const headerActions = (
@@ -225,7 +163,6 @@ function AttendanceTab() {
           showStatusFilter={true}
           showDatePicker={true}
           isActions={true}
-          handelEdit={handleEdit}
           handelDelete={handleDelete}
           headerActions={headerActions}
         />
@@ -234,7 +171,6 @@ function AttendanceTab() {
       <AddAttendanceModal
         isOpen={isAddModalOpen}
         onClose={handleAddAttendance}
-        onSubmit={handleAddAttendance}
       />
 
       <EditAttendanceModal
@@ -243,25 +179,24 @@ function AttendanceTab() {
         attendance={selectedAttendance}
       />
 
-      <Alert
-        type="delete"
-        title="Delete Attendance Record?"
-        message={(<div>Are you sure you want to delete this attendance record? <span className="block font-bold">This action cannot be undone.</span></div>)}
-        isOpen={isDeleteAlertOpen}
-        onClose={() => setIsDeleteAlertOpen(false)}
-        onSubmit={confirmDelete}
-        titleCancelBtn="Cancel"
-        titleSubmitBtn="Delete"
-        isBtns={true}
+      <ApprovalAlert
+        isOpen={isDeleteApprovalOpen}
+        onClose={() => setIsDeleteApprovalOpen(false)}
+        onConfirm={confirmDelete}
+        title={t("Delete Attendance Record")}
+        message={t("Are you sure you want to delete this attendance record? This action cannot be undone.")}
+        confirmBtnText={t("Delete")}
+        cancelBtnText={t("Cancel")}
+        type="danger"
       />
 
-      <Alert
-        type="success"
-        title="Attendance Record Deleted"
-        message="The attendance record has been successfully deleted."
-        isOpen={isSuccessAlertOpen}
-        onClose={() => setIsSuccessAlertOpen(false)}
-        isBtns={false}
+      <ApiResponseAlert
+        isOpen={deleteApiResponse.isOpen}
+        status={deleteApiResponse.status}
+        message={deleteApiResponse.message}
+        onClose={handleCloseDeleteApiResponse}
+        successTitle={t("Success")}
+        errorTitle={t("Error")}
       />
     </div>
   );

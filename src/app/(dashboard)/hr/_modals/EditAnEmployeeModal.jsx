@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import PropTypes from "prop-types";
@@ -7,21 +7,18 @@ import Modal from "@/components/Modal/Modal.jsx";
 import InputAndLabel from "@/components/Form/InputAndLabel.jsx";
 // import SelectWithoutLabel from "@/components/Form/SelectWithoutLabel.jsx";
 import {
-  updateEmployee,
-  fetchEmployees,
-} from "@/redux/employees/employeeAPI.js";
+  useUpdateEmployeeMutation,
+} from "@/redux/employees/employeesApi.js";
 import { fetchRoles } from "@/redux/roles/rolesSlice.js";
 import { fetchDepartments } from "@/redux/departments/departmentAPI.js";
 import SelectAndLabel from "@/components/Form/SelectAndLabel";
 
 function EditAnEmployeeModal({ isOpen, onClose, employee }) {
+  const [updateEmployee, { isLoading }] = useUpdateEmployeeMutation();
   const dispatch = useDispatch();
-  const { loading } = useSelector((state) => state.employees);
   const [apiError, setApiError] = useState("");
   const [roles, setRoles] = useState([]);
   const [departments, setDepartments] = useState([]);
-  console.log(roles, "roles");
-  console.log(loading, "loading");
 
   useEffect(() => {
     if (isOpen) {
@@ -72,14 +69,11 @@ function EditAnEmployeeModal({ isOpen, onClose, employee }) {
     onSubmit: async (values, { setSubmitting }) => {
       try {
         setApiError("");
-        await dispatch(
-          updateEmployee({ id: employee._id, employeeData: values })
-        )?.unwrap();
-        dispatch(fetchEmployees());
+        await updateEmployee({ id: employee._id, ...values }).unwrap();
         onClose();
       } catch (error) {
         setApiError(
-          error.message || "Failed to update employee. Please try again."
+          error?.data?.message || "Failed to update employee. Please try again."
         );
       } finally {
         setSubmitting(false);

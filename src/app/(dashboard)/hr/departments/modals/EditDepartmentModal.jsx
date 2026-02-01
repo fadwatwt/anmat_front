@@ -10,7 +10,7 @@ import PropTypes from "prop-types";
 import ApprovalAlert from "@/components/Alerts/ApprovalAlert.jsx";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert.jsx";
 
-import { useCreateDepartmentMutation } from "@/redux/departments/departmentsApi";
+import { useUpdateDepartmentMutation } from "@/redux/departments/departmentsApi";
 import { useGetPositionsQuery } from "@/redux/positions/positionsApi";
 
 const validationSchema = Yup.object({
@@ -20,9 +20,9 @@ const validationSchema = Yup.object({
     positions_ids: Yup.array().min(1, "At least one position is required"),
 });
 
-function CreateDepartmentModal({ isOpen, onClose }) {
+function EditDepartmentModal({ isOpen, onClose, department }) {
     const { t } = useTranslation();
-    const [createDepartment, { isLoading }] = useCreateDepartmentMutation();
+    const [updateDepartment, { isLoading }] = useUpdateDepartmentMutation();
     const { data: positions = [] } = useGetPositionsQuery();
 
     const [showConfirmAlert, setShowConfirmAlert] = useState(false);
@@ -45,26 +45,42 @@ function CreateDepartmentModal({ isOpen, onClose }) {
         },
     });
 
+    useEffect(() => {
+        if (department && isOpen) {
+            formik.setValues({
+                name: department.name || "",
+                description: department.description || "",
+                rate: department.rate || 0,
+                positions_ids: (department.positions_ids || []).map(pos => ({
+                    id: pos._id,
+                    element: pos.title
+                })),
+            });
+        }
+    }, [department, isOpen]);
+
     const handleConfirm = async () => {
         try {
-            // Transform positions_ids from array of objects to array of strings (ids)
             const payload = {
-                ...formik.values,
+                id: department._id,
+                name: formik.values.name,
+                description: formik.values.description,
+                rate: formik.values.rate,
                 positions_ids: formik.values.positions_ids.map(p => p.id)
             };
-            await createDepartment(payload).unwrap();
+            await updateDepartment(payload).unwrap();
             setResponseAlert({
                 isOpen: true,
                 status: "success",
-                message: t("Department created successfully!"),
+                message: t("Department updated successfully!"),
             });
         } catch (error) {
             setResponseAlert({
                 isOpen: true,
                 status: "error",
-                message: error?.data?.message || t("Failed to create department. Please try again."),
+                message: error?.data?.message || t("Failed to update department. Please try again."),
             });
-            console.error("Failed to create department:", error);
+            console.error("Failed to update department:", error);
         } finally {
             setShowConfirmAlert(false);
         }
@@ -74,7 +90,6 @@ function CreateDepartmentModal({ isOpen, onClose }) {
         const isSuccess = responseAlert.status === "success";
         setResponseAlert({ ...responseAlert, isOpen: false });
         if (isSuccess) {
-            formik.resetForm();
             onClose();
         }
     };
@@ -90,10 +105,10 @@ function CreateDepartmentModal({ isOpen, onClose }) {
                 isOpen={isOpen}
                 onClose={onClose}
                 isBtns={true}
-                btnApplyTitle={t("Save")}
+                btnApplyTitle={t("Update")}
                 btnCancelTitle={t("Cancel")}
                 className={"lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12 px-3"}
-                title={t("Create a Department")}
+                title={t("Edit Department")}
                 onClick={formik.handleSubmit}
             >
                 <div className="px-1">
@@ -106,6 +121,7 @@ function CreateDepartmentModal({ isOpen, onClose }) {
                             onBlur={formik.handleBlur}
                             placeholder={t("Enter department name")}
                             isRequired={true}
+                            disabled={isLoading}
                             error={formik.touched.name && formik.errors.name ? t(formik.errors.name) : ""}
                         />
 
@@ -130,6 +146,7 @@ function CreateDepartmentModal({ isOpen, onClose }) {
                             onBlur={formik.handleBlur}
                             placeholder={t("Enter rate (0 - 1)")}
                             isRequired={true}
+                            disabled={isLoading}
                             min={0}
                             max={1}
                             step={0.01}
@@ -144,6 +161,7 @@ function CreateDepartmentModal({ isOpen, onClose }) {
                             onBlur={formik.handleBlur}
                             placeholder={t("Enter Description")}
                             rows={4}
+                            disabled={isLoading}
                             error={formik.touched.description && formik.errors.description ? t(formik.errors.description) : ""}
                         />
                     </form>
@@ -154,9 +172,9 @@ function CreateDepartmentModal({ isOpen, onClose }) {
                 isOpen={showConfirmAlert}
                 onClose={() => setShowConfirmAlert(false)}
                 onConfirm={handleConfirm}
-                title={t("Confirm Creation")}
-                message={t("Are you sure you want to create the department \"{{name}}\"?", { name: formik.values.name })}
-                confirmBtnText={t("Yes, Create")}
+                title={t("Confirm Update")}
+                message={t("Are you sure you want to update the department \"{{name}}\"?", { name: department?.name })}
+                confirmBtnText={t("Yes, Update")}
                 cancelBtnText={t("Cancel")}
                 type="warning"
             />
@@ -171,9 +189,10 @@ function CreateDepartmentModal({ isOpen, onClose }) {
     );
 }
 
-CreateDepartmentModal.propTypes = {
+EditDepartmentModal.propTypes = {
     isOpen: PropTypes.bool,
     onClose: PropTypes.func,
+    department: PropTypes.object,
 };
 
-export default CreateDepartmentModal;
+export default EditDepartmentModal;

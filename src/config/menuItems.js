@@ -59,7 +59,7 @@ export const dashboardSideMenuItems = [
     {
         allowed_to: ['Subscriber'],
         title: 'Roles',
-        path: '/roles',
+        path: '/roles/employees',
         icon: <Setting4 />
     },
     {

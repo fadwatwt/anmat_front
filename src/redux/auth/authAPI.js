@@ -34,7 +34,21 @@ export const authApi = apiSlice.injectEndpoints({
         },
       }),
     }),
+    registerSubscriberEmail: builder.mutation({
+      query: (data) => ({
+        url: "api/user/auth/register/subscriber/email",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    completeSubscriberProfile: builder.mutation({
+      query: (data) => ({
+        url: "api/user/auth/register/subscriber/account",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
-export const { useLoginMutation, useLazyGetUserQuery, useLazyLogoutQuery, useAdminLoginMutation } = authApi;
+export const { useLoginMutation, useLazyGetUserQuery, useLazyLogoutQuery, useAdminLoginMutation, useRegisterSubscriberEmailMutation, useCompleteSubscriberProfileMutation } = authApi;

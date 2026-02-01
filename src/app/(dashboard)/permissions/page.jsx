@@ -7,86 +7,42 @@ import AddPermissionModal from "./_components/AddPermissionModal";
 import { useState } from "react";
 
 
+import { useGetPermissionsQuery } from "@/redux/permissions/subscriberPermissionsApi";
+import dayjs from "dayjs";
+
 function PermissionsPage() {
+    const { data: permissionsData, isLoading, error } = useGetPermissionsQuery();
+
     const headers = [
-        { label: t("Permission Category"), width: "200px" },
-        { label: t("View"), width: "50px" },
-        { label: t("Add"), width: "50px" },
-        { label: t("Edit"), width: "50px" },
-        { label: t("Delete"), width: "50px" },
-        { label: t("Status"), width: "100px" },
-        { label: "", width: "50px" },
+        { label: t("Name"), width: "200px" },
+        { label: t("Action"), width: "100px" },
+        { label: t("Model Type"), width: "150px" },
+        { label: t("Created At"), width: "200px" },
+        { label: t("Updated At"), width: "200px" },
     ];
 
-    const permissionsData = [
-        {
-            category: 'Projects',
-            view: false,
-            add: false,
-            edit: false,
-            delete: false,
-            status: 'Active'
-        }
-    ];
-
-    const statusConfig = {
-        Active: {
-            bgColor: "bg-white",
-            icon: <RiCheckboxCircleFill size={15} className="text-green-700" />,
-            textColor: "text-green-700",
-        },
-        'Not-active': {
-            bgColor: "bg-white",
-            icon: <RiCloseCircleFill size={15} className="text-red-700" />,
-            textColor: "text-red-700",
-        }
-    };
-
-    const statusCell = (status) => {
-        const config = statusConfig[status] || {
-            bgColor: "bg-white",
-            icon: <RiQuestionLine size={15} className="text-gray-700" />,
-            textColor: "text-gray-700",
-        };
-
-        return (
-            <div
-                key={`status-${status}`}
-                className={`flex items-center justify-center gap-1 ${config.bgColor} border px-1 py-1 rounded-md w-24`}
-            >
-                {config.icon}
-                <span className={`text-xs ${config.textColor}`}>
-                    {status}
-                </span>
-            </div>
-        );
-    };
-
-    const rows = permissionsData.map(permission => [
-        <div key="category" className="flex items-center justify-start gap-2">
-            <span className="text-lg text-gray-900">
-                {permission.category}
+    const rows = (permissionsData || []).map(permission => [
+        <div key="name" className="flex items-center justify-start gap-2">
+            <span className="text-lg text-gray-900 font-medium">
+                {permission.name}
             </span>
         </div>,
-
-        <div key="view" className="flex items-center justify-start">
-            <input type="checkbox" selected={permission.view} />
+        <div key="action" className="flex items-center justify-start">
+            <span className="px-2 py-1 bg-blue-50 text-blue-700 rounded-md text-sm border border-blue-100">
+                {permission.action}
+            </span>
         </div>,
-
-        <div key="add" className="flex items-center justify-start">
-            <input type="checkbox" selected={permission.add} />
+        <div key="model_type" className="flex items-center justify-start">
+            <span className="px-2 py-1 bg-purple-50 text-purple-700 rounded-md text-sm border border-purple-100">
+                {permission.model_type}
+            </span>
         </div>,
-
-        <div key="edit" className="flex items-center justify-start">
-            <input type="checkbox" selected={permission.edit} />
+        <div key="createdAt" className="flex items-center justify-start text-gray-600">
+            {dayjs(permission.createdAt).format("YYYY-MM-DD HH:mm")}
         </div>,
-
-        <div key="delete" className="flex items-center justify-start">
-            <input type="checkbox" selected={permission.delete} />
-        </div>,
-
-        // Status cell
-        statusCell(permission.status)
+        <div key="updatedAt" className="flex items-center justify-start text-gray-600">
+            {dayjs(permission.updatedAt).format("YYYY-MM-DD HH:mm")}
+        </div>
     ]);
 
     const [addPermissionModalOpen, setBillingInfoModalOpen] = useState(false);
@@ -95,12 +51,32 @@ function PermissionsPage() {
         setBillingInfoModalOpen(!addPermissionModalOpen);
     }
 
+    if (isLoading) {
+        return (
+            <Page title={"Permissions"}>
+                <div className="flex items-center justify-center h-64">
+                    <div className="text-primary-500 animate-pulse font-medium">{t("Loading permissions...")}</div>
+                </div>
+            </Page>
+        );
+    }
+
+    if (error) {
+        return (
+            <Page title={"Permissions"}>
+                <div className="flex items-center justify-center h-64 text-red-500 font-medium">
+                    {t("Error loading permissions. Please try again later.")}
+                </div>
+            </Page>
+        );
+    }
+
     return (
-        <Page title={"Permissions"} isBtn={true} btnTitle={"Add Permission"} btnOnClick={toggleAddPermissionsModal} >
+        <Page title={"Permissions"} >
             <div className={"flex flex-col gap-6"}>
                 <div className="flex flex-col gap-2 h-full">
-                    <Table className="custom-class" title={"All Manager Permissions"}
-                        headers={headers} isActions={true} rows={rows}
+                    <Table className="custom-class" title={"All Permissions"}
+                        headers={headers} isActions={false} rows={rows}
                         isFilter={true} />
                 </div>
                 <div className={"flex md:w-[37.5%] w-screen"}>
