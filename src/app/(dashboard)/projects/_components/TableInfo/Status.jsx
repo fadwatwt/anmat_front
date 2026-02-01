@@ -26,6 +26,10 @@ function Status({ type }) {
       icon: <IoTime className="text-blue-500" />,
       border: "border-blue-300 dark:border-blue-500",
     },
+    "in-progress": {
+      icon: <IoTime className="text-blue-500" />,
+      border: "border-blue-300 dark:border-blue-500",
+    },
     inactive: {
       icon: <TbForbidFilled className="text-gray-500" />,
       border: "border-gray-300 dark:border-gray-500",
@@ -37,6 +41,22 @@ function Status({ type }) {
     scheduled: {
       icon: <FaCircleCheck className="text-purple-500" />,
       border: "border-purple-300 dark:border-purple-500",
+    },
+    open: {
+      icon: <IoTime className="text-blue-500" />,
+      border: "border-blue-300 dark:border-blue-500",
+    },
+    completed: {
+      icon: <FaCircleCheck className="text-green-500" />,
+      border: "border-green-300 dark:border-green-500",
+    },
+    rejected: {
+      icon: <RiCloseCircleFill size={15} className="text-red-500" />,
+      border: "border-red-300 dark:border-red-500",
+    },
+    cancelled: {
+      icon: <RiCloseCircleLine size={15} className="text-gray-500" />,
+      border: "border-gray-300 dark:border-gray-500",
     },
   };
 
@@ -54,8 +74,18 @@ function Status({ type }) {
 }
 
 Status.propTypes = {
-  type: PropTypes.oneOf(["Active", "Inactive", "Delayed", "Scheduled"])
-    .isRequired,
+  type: PropTypes.oneOf([
+    "Active",
+    "Inactive",
+    "Delayed",
+    "Scheduled",
+    "Open",
+    "In Progress",
+    "In-Progress",
+    "Completed",
+    "Rejected",
+    "Cancelled",
+  ]).isRequired,
 };
 
 export default Status;

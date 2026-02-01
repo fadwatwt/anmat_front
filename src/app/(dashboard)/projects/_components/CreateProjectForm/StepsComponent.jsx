@@ -8,11 +8,13 @@ import { Form, Formik } from "formik";
 const StepsComponent = ({
   steps,
   handelAddTask = null,
+  handelCreateProject,
   type = "create",
   initialValues,
   currentStep: externalCurrentStep = null,
   setCurrentStep: externalSetCurrentStep = null,
   buttonText = "Create the Project",
+  disabled = false,
 }) => {
   const { t } = useTranslation();
 
@@ -51,10 +53,10 @@ const StepsComponent = ({
                 <div className="flex items-center">
                   <span
                     className={`rounded-full group w-5 h-5 text-xs flex items-center justify-center ${currentStep > index + 1
-                        ? "p-0"
-                        : currentStep === index + 1
-                          ? "bg-primary-base dark:bg-primary-200 dark:text-black text-white"
-                          : "border border-gray-300 dark:border-gray-700 dark:text-white"
+                      ? "p-0"
+                      : currentStep === index + 1
+                        ? "bg-primary-base dark:bg-primary-200 dark:text-black text-white"
+                        : "border border-gray-300 dark:border-gray-700 dark:text-white"
                       }`}
                   >
                     {currentStep > index + 1 ? (
@@ -84,9 +86,12 @@ const StepsComponent = ({
           initialValues={initialValues}
           onSubmit={(values) => {
             console.log("Form submitted", values);
+            if (handelCreateProject) {
+              handelCreateProject(values);
+            }
           }}
         >
-          {({ values, handleSubmit, handleChange }) => (
+          {({ values, handleSubmit, handleChange, setFieldValue }) => (
             <Form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -100,6 +105,7 @@ const StepsComponent = ({
                       {React.cloneElement(step.content, {
                         values,
                         handleChange,
+                        setFieldValue,
                       })}
                       {type === "create" && (
                         <div className={"w-full flex justify-between mt-4"}>
@@ -107,7 +113,8 @@ const StepsComponent = ({
                             {index < steps.length - 1 && (
                               <button
                                 onClick={nextStep}
-                                className="bg-primary-base dark:bg-primary-200 dark:text-black w-40 text-white p-[10px] rounded-[10px] "
+                                disabled={disabled}
+                                className="bg-primary-base dark:bg-primary-200 dark:text-black w-40 text-white p-[10px] rounded-[10px] disabled:opacity-50"
                               >
                                 {t("Next")}
                               </button>
@@ -115,7 +122,8 @@ const StepsComponent = ({
                             {index === steps.length - 1 && (
                               <button
                                 type={"submit"}
-                                className=" bg-primary-base dark:bg-primary-200 dark:text-black w-40 text-white p-[10px] rounded-[10px] "
+                                disabled={disabled}
+                                className=" bg-primary-base dark:bg-primary-200 dark:text-black w-40 text-white p-[10px] rounded-[10px] disabled:opacity-50"
                               >
                                 {t(buttonText)}
                               </button>
@@ -124,7 +132,8 @@ const StepsComponent = ({
                               <button
                                 type={"button"}
                                 onClick={backStep}
-                                className=" bg-white dark:bg-white-0 dark:border-gray-700 dark:text-gray-300 w-40 p-[10px] text-md rounded-[10px] border border-gray-400"
+                                disabled={disabled}
+                                className=" bg-white dark:bg-white-0 dark:border-gray-700 dark:text-gray-300 w-40 p-[10px] text-md rounded-[10px] border border-gray-400 disabled:opacity-50"
                               >
                                 {t("Back")}
                               </button>
@@ -136,7 +145,8 @@ const StepsComponent = ({
                               <button
                                 type={"button"}
                                 onClick={handelAddTask && handelAddTask}
-                                className=" bg-none w-40 p-[10px] text-md rounded-[10px] border border-primary-base dark:border-primary-200  text-primary-base flex gap-2 justify-center items-center"
+                                disabled={disabled}
+                                className=" bg-none w-40 p-[10px] text-md rounded-[10px] border border-primary-base dark:border-primary-200  text-primary-base flex gap-2 justify-center items-center disabled:opacity-50"
                               >
                                 <span
                                   className={
@@ -170,6 +180,7 @@ StepsComponent.propTypes = {
   initialValues: PropTypes.object,
   setCurrentStep: PropTypes.func,
   buttonText: PropTypes.string,
+  disabled: PropTypes.bool,
 };
 
 export default StepsComponent;

@@ -26,7 +26,12 @@ function CustomSelect({
     const inputContainerRef = useRef(null);
     const dropdownContentRef = useRef(null);
     const [dropdownStyle, setDropdownStyle] = useState({});
-    const [dropdownHeight, setDropdownHeight] = useState(250); // ارتفاع تقريبي مبدئي
+    const [dropdownHeight, setDropdownHeight] = useState(250);
+
+    // Sync internal state with prop value
+    useEffect(() => {
+        setSelectedOptions(Array.isArray(value) ? value : []);
+    }, [value]);
 
     // منطق إضافة/حذف الـ Tag
     const toggleOption = (option) => {

@@ -2,10 +2,16 @@
 import TaskMainInfo from "./SubComponents/TaskMainInfo.jsx";
 import PropTypes from "prop-types";
 
-function ProjectInfoForm({ project,values,handelChange }) {
+function ProjectInfoForm({ project, values, handleChange, setFieldValue }) {
   return (
     <div className={"w-full"}>
-      <TaskMainInfo values={values} handleChange={handelChange} type={"project"} task={project && project} />
+      <TaskMainInfo
+        values={values}
+        handleChange={handleChange}
+        setFieldValue={setFieldValue}
+        type={"project"}
+        task={project}
+      />
     </div>
   );
 }
