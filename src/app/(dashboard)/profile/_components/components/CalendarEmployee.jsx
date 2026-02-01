@@ -1,7 +1,7 @@
-import {useTranslation} from "react-i18next";
-import {useState} from "react";
+import { useTranslation } from "react-i18next";
+import { useState } from "react";
 import Table from "@/components/Tables/Table.jsx";
-import {employees} from "@/functions/FactoryData.jsx";
+import { employeesFactory as employees } from "@/functions/FactoryData.jsx";
 
 function CalendarEmployee() {
     const { t } = useTranslation();
@@ -9,16 +9,16 @@ function CalendarEmployee() {
     const [selectedDepartment, setSelectedDepartment] = useState("all");
     const [currentDate] = useState(new Date());
     const viewModalList = [
-        {id:"rotation",title:"Rotation"},
-        {id:"attendance",title:"Attendance"}
+        { id: "rotation", title: "Rotation" },
+        { id: "attendance", title: "Attendance" }
     ]
 
     // Generate day headers
     const daysOfWeek = [
-        { day: t("Sunday")},
+        { day: t("Sunday") },
         { day: t("Monday") },
-        { day: t("Tuesday")},
-        { day: t("Wednesday")},
+        { day: t("Tuesday") },
+        { day: t("Wednesday") },
         { day: t("Thursday") },
         { day: t("Friday") },
         { day: t("Saturday") },
@@ -30,7 +30,7 @@ function CalendarEmployee() {
                 <div className="flex flex-col items-center">
                     <span className="dark:text-gray-400">{day}</span>
                     <span className="text-start text-sm dark:bg-gray-900 text-gray-400">
-          </span>
+                    </span>
                 </div>
             ),
             width: "150px",
@@ -66,7 +66,7 @@ function CalendarEmployee() {
     const rows = filteredEmployees.map(() => [
         ...generateShifts().map((shift, index) => (
             <div key={index} className={"relative h-full"}>
-                <div  className="text-sm dark:text-sub-300 px-2 py-6 ">
+                <div className="text-sm dark:text-sub-300 px-2 py-6 ">
                     {shift}
                 </div>
                 <span className={"absolute top-0 right-1 dark:text-gray-200"}>{i++}</span>
