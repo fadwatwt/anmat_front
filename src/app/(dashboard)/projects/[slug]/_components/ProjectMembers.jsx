@@ -9,7 +9,7 @@ import AddMember from "./AddMember.jsx";
 import CreateTeamModal from "@/app/(dashboard)/projects/_modal/CreateTeamModal.jsx";
 
 
-function ProjectMembers({ teams = [], title = "Project Members" }) {
+function ProjectMembers({ teams = [], members = [], title = "Project Members" }) {
     const { t } = useTranslation()
     const [dropdownOpen, setDropdownOpen] = useDropdown();
     const [addMemberModal, setAddMemberModal] = useState({ isOpen: false, teamIndex: null });
@@ -37,6 +37,34 @@ function ProjectMembers({ teams = [], title = "Project Members" }) {
         setAddMemberModal({ isOpen: false, teamIndex: null });
     }
 
+    const renderMember = (member, index, keyPrefix) => {
+        const key = `${keyPrefix}-${index}`;
+        return (
+            <div key={index} className={"flex justify-between items-center"}>
+                <div className={"flex gap-3 items-center"}>
+                    <div className={"w-10 h-10"}>
+                        <img
+                            src={member.imageProfile || member.avatar || "/default-photo.png"}
+                            alt={"image member"}
+                            className={"max-w-full rounded-full w-10 h-10 object-cover"} />
+                    </div>
+                    <div className={"nameAndWork flex flex-col gap-1 items-start"}>
+                        <div className={"nameAndRule flex gap-1 items-center"}>
+                            <p className={"text-sm dark:text-gray-200"}>{member.name}</p>
+                            {getBadge(member.rule || member.role)}
+                        </div>
+                        <p className={"text-xs text-sub-500 dark:text-sub-300"}>{member.work || member.email}</p>
+                    </div>
+                </div>
+                <div className="relative cursor-pointer flex-1 flex justify-end dropdown-container"
+                    onClick={() => handleDropdownToggle(key)}>
+                    <PiDotsThreeVerticalBold />
+                    {dropdownOpen === key && <ActionsBtns className={"mt-5"} isEditBtn={false} handleDelete={() => { }} />}
+                </div>
+            </div>
+        );
+    };
+
     return (
         <>
             <div className={"flex flex-col w-full p-4 rounded-2xl items-start gap-4 bg-white dark:bg-white-0"}>
@@ -48,52 +76,29 @@ function ProjectMembers({ teams = [], title = "Project Members" }) {
                 </div>
 
                 <div className={"flex flex-col gap-6 w-full "}>
-                    {
+                    {members.length > 0 ? (
+                        <div className="flex flex-col gap-3 w-full pl-2">
+                            {members.map((member, index) => renderMember(member, index, "member"))}
+                            <BtnAddOutline onClick={() => handleAddMember(null)} title={"Add a member"} />
+                        </div>
+                    ) : (
                         teams.map((team, teamIndex) => (
                             <div key={teamIndex} className="flex flex-col gap-3 w-full">
                                 <p className="text-md font-medium text-gray-600 dark:text-gray-300">{team.name}</p>
                                 <div className="flex flex-col gap-3 w-full pl-2">
-                                    {team.members.map((member, memberIndex) => {
-                                        const key = `${teamIndex}-${memberIndex}`;
-                                        return (
-                                            <div key={memberIndex} className={"flex justify-between items-center"}>
-                                                <div className={"flex gap-3 items-center"}>
-                                                    <div className={"w-10 h-10"}>
-                                                        <img
-                                                            src={member.imageProfile}
-                                                            alt={"image member"}
-                                                            className={"max-w-full rounded-full w-10 h-10 object-cover"} />
-                                                    </div>
-                                                    <div className={"nameAndWork flex flex-col gap-1 items-start"}>
-                                                        <div className={"nameAndRule flex gap-1 items-center"}>
-                                                            <p className={"text-sm dark:text-gray-200"}>{member.name}</p>
-                                                            {
-                                                                getBadge(member.rule)
-                                                            }
-                                                        </div>
-                                                        <p className={"text-xs text-sub-500 dark:text-sub-300"}>{member.work}</p>
-                                                    </div>
-                                                </div>
-                                                <div className="relative cursor-pointer flex-1 flex justify-end dropdown-container"
-                                                    onClick={() => handleDropdownToggle(key)}>
-                                                    <PiDotsThreeVerticalBold />
-                                                    {dropdownOpen === key && <ActionsBtns className={"mt-5"} isEditBtn={false} handleDelete={() => { }} />}
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
+                                    {team.members.map((member, memberIndex) => renderMember(member, memberIndex, teamIndex))}
                                     <BtnAddOutline onClick={() => handleAddMember(teamIndex)} title={"Add a member"} />
                                 </div>
                             </div>
                         ))
-                    }
+                    )}
                 </div>
             </div>
 
             <AddMember
                 isOpen={addMemberModal.isOpen}
                 onClose={handleCloseAddMember}
-                teamName={addMemberModal.teamIndex !== null ? teams[addMemberModal.teamIndex].name : null}
+                teamName={addMemberModal.teamIndex !== null && teams[addMemberModal.teamIndex] ? teams[addMemberModal.teamIndex].name : null}
             />
             <CreateTeamModal isOpen={createTeamModal} onClose={() => setCreateTeamModal(false)} />
 
@@ -102,7 +107,8 @@ function ProjectMembers({ teams = [], title = "Project Members" }) {
 }
 
 ProjectMembers.propTypes = {
-    teams: PropTypes.array.isRequired,
+    teams: PropTypes.array,
+    members: PropTypes.array,
     title: PropTypes.string
 }
 

@@ -1,30 +1,22 @@
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
-import { useDispatch, useSelector } from "react-redux";
 import Table from "@/components/Tables/Table.jsx";
 import Alert from "@/components/Alerts/Alert.jsx";
 import NameAndDescription from "@/app/(dashboard)/projects/_components/TableInfo/NameAndDescription.jsx";
 import AccountDetails from "@/app/(dashboard)/projects/_components/TableInfo/AccountDetails.jsx";
 import Department from "@/app/(dashboard)/projects/_components/TableInfo/Department.jsx";
 import Assignees from "@/app/(dashboard)/projects/_components/TableInfo/Assignees.jsx";
-import Teams from "@/app/(dashboard)/projects/_components/TableInfo/Teams.jsx";
 import Status from "@/app/(dashboard)/projects/_components/TableInfo/Status.jsx";
 import Progress from "@/app/(dashboard)/projects/_components/TableInfo/Progress.jsx";
-import Rating from "@/app/(dashboard)/projects/_components/TableInfo/Rating.jsx";
 import EditProjectModal from "@/app/(dashboard)/projects/_modal/EditProjectModal";
 import { defaultPhoto } from "@/Root.Route.js";
-import { convertToSlug } from "@/functions/AnotherFunctions.js";
-import { deleteProject } from "@/redux/projects/projectSlice";
 import {
-    RiLayoutGridFill, RiGroupFill,
-    RiTimeFill, RiPencilLine,
+    RiLayoutGridFill,
+    RiPencilLine,
     RiEyeLine,
-    RiCheckboxCircleFill,
     RiDownload2Line,
-    RiCalendarFill
 } from "@remixicon/react";
-import StatusActions from "@/components/Dropdowns/StatusActions";
-
 
 import { useGetSubscriberProjectsQuery } from "@/redux/projects/subscriberProjectsApi";
 import dayjs from "dayjs";
@@ -40,12 +32,21 @@ function ProjectsTab() {
     const [isOpenDeleteAlert, setIsOpenDeleteAlert] = useState(false);
     const [selectedProject, setSelectedProject] = useState(null);
 
+    const router = useRouter();
+
     const handlePageChange = (newPage) => {
         setPagination(prev => ({ ...prev, currentPage: newPage }));
     };
 
     const handleRowsPerPageChange = (newRowsPerPage) => {
         setPagination(prev => ({ ...prev, rowsPerPage: newRowsPerPage, currentPage: 1 }));
+    };
+
+    const handleViewProject = (index) => {
+        const project = projects[index];
+        if (project?._id || project?.id) {
+            router.push(`/projects/${project._id || project.id}/details`);
+        }
     };
 
     const handleEditProject = (index) => {
@@ -78,7 +79,7 @@ function ProjectsTab() {
 
     const customActions = (index) => (
         <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 border border-gray-200 dark:border-gray-700 p-1 flex flex-col">
-            <button className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left rounded-md">
+            <button onClick={() => handleViewProject(index)} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left rounded-md">
                 <RiEyeLine size={16} className="text-blue-500" /> {t("View")}
             </button>
             <button onClick={() => handleEditProject(index)} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left rounded-md">
@@ -93,7 +94,7 @@ function ProjectsTab() {
     const rows = projects.map((project) => [
         <NameAndDescription
             key={`name-${project._id}`}
-            path={`/projects/${project._id}-${convertToSlug(project.name)}`}
+            path={`/projects/${project._id}/details`}
             name={project.name}
             description={project.description}
         />,

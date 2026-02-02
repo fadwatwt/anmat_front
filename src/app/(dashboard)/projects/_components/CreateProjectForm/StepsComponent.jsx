@@ -15,6 +15,7 @@ const StepsComponent = ({
   setCurrentStep: externalSetCurrentStep = null,
   buttonText = "Create the Project",
   disabled = false,
+  formikRef, // New prop
 }) => {
   const { t } = useTranslation();
 
@@ -84,6 +85,7 @@ const StepsComponent = ({
       <div className="w-full">
         <Formik
           initialValues={initialValues}
+          innerRef={formikRef} // Use innerRef
           onSubmit={(values) => {
             console.log("Form submitted", values);
             if (handelCreateProject) {
@@ -181,6 +183,7 @@ StepsComponent.propTypes = {
   setCurrentStep: PropTypes.func,
   buttonText: PropTypes.string,
   disabled: PropTypes.bool,
+  formikRef: PropTypes.any,
 };
 
 export default StepsComponent;

@@ -63,23 +63,19 @@ function InfoCard({ type, data, handelEditAction }) {
                 <p className={"text-xs text-soft-400 text-start dark:text-soft-200"}>{description}</p>
             </div>
 
-            <div className={"key-tasks flex flex-col gap-1 items-start"}>
-                <p className={"text-sm dark:text-gray-200"}>{t(stagesTitle)}:</p>
-                <ReadMore maxLength={10}>
-                    {stages.map((stage, index) => (
-                        <TaskOrStage key={index} stage={`${index + 1}- ${stage}`} />
-                    ))}
-                </ReadMore>
+            <div className={"department flex flex-col gap-1 items-start"}>
+                <p className={"text-sm dark:text-gray-200"}>{t("Department")}:</p>
+                <p className={"text-xs text-soft-400 text-start dark:text-soft-200"}>{data?.department || t("No Department")}</p>
             </div>
 
             {type === "project" && (
-                <ProjectProgress lastUpdate={data?.lastUpdate || "2025-01-12T08:00:00"} progress={data?.progress || "28"} />
+                <ProjectProgress lastUpdate={data?.lastUpdate || "2025-01-12T08:00:00"} progress={data?.progress ?? 0} />
             )}
 
             <div className={"flex p-4 h-full rounded-xl bg-veryWeak-50 dark:bg-veryWeak-500 justify-between"}>
-                <IconWithTitleAndNumber title={"All Tasks"} icon={<FaTasks className={"text-primary-400 dark:text-primary-base"} />} text={data?.totalTasks || "15"} />
+                <IconWithTitleAndNumber title={"All Tasks"} icon={<FaTasks className={"text-primary-400 dark:text-primary-base"} />} text={String(data?.totalTasks ?? 0)} />
                 <div className="line w-[1px] bg-gray-300"></div>
-                <IconWithTitleAndNumber title={"Completed Tasks"} icon={<FaCircleCheck className={"text-green-600 dark:text-green-400"} />} text={data?.completedTasks || "4"} />
+                <IconWithTitleAndNumber title={"Completed Tasks"} icon={<FaCircleCheck className={"text-green-600 dark:text-green-400"} />} text={String(data?.completedTasks ?? 0)} />
                 <div className="line w-[1px] bg-gray-300"></div>
                 <IconWithTitleAndNumber title={"Assigned Date"} icon={<HiOutlineCalendarDateRange className={"text-cyan-600"} />} date={data?.assignedDate || "2025-03-16T14:30:00"} />
                 <div className="line w-[1px] bg-gray-300"></div>
