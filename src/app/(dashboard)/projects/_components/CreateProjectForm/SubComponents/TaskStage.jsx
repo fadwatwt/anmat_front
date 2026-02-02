@@ -8,45 +8,94 @@ import ElementsSelect from "@/components/Form/ElementsSelect.jsx";
 import DefaultSelect from "@/components/Form/DefaultSelect.jsx";
 import { useTranslation } from "react-i18next";
 
-function TaskStage({ stageNumber, handelDelete }) {
+function TaskStage({ stageNumber, index, values, handleChange, setFieldValue, handelDelete }) {
     const { t } = useTranslation()
     const optionsStatus = [
-        { id: "1", element: <Status type={"Active"} title={"Active"} /> },
-        { id: "2", element: <Status type={"Inactive"} title={"Inactive"} /> },
-        { id: "3", element: <Status type={"Delayed"} title={"Delayed"} /> },
-        { id: "4", element: <Status type={"Scheduled"} title={"Scheduled"} /> },
+        { id: "open", element: <Status type={"Open"} /> },
+        { id: "pending", element: <Status type={"Pending"} /> },
+        { id: "in-progress", element: <Status type={"In-Progress"} /> },
+        { id: "completed", element: <Status type={"Completed"} /> },
+        { id: "rejected", element: <Status type={"Rejected"} /> },
+        { id: "cancelled", element: <Status type={"Cancelled"} /> },
     ]
-    const optionsRating = [
-        { id: "1", value: "1" },
-        { id: "2", value: "2" },
-        { id: "3", value: "3" },
-        { id: "4", value: "4" },
-        { id: "5", value: "5" },
-    ]
+
+    const baseKey = `stages[${index}]`;
+
+    const handleSelectChange = (name, val) => {
+        if (setFieldValue) {
+            const valueToSet = Array.isArray(val) ? (val[0]?.id || "") : val;
+            setFieldValue(name, valueToSet);
+        }
+    };
+
+    const getSingleValue = (val, options) => {
+        if (!val) return [];
+        const found = options.find(o => o.id === val);
+        return found ? [found] : [];
+    };
+
     return (
         <div className={"flex flex-col gap-4 max-h-full"}>
             <div className={"flex bg-weak-100 dark:bg-gray-900 justify-between items-center w-full"}>
                 <p className={"w-full py-[6px] text-start text-xs dark:text-gray-200"}>{`${t("Task Stage")} (${stageNumber})`}</p>
-                <RiDeleteBin7Line className={"cursor-pointer text-red-500 mr-2"} onClick={() => handelDelete(stageNumber)}
-                    size={18} />
+                {handelDelete && (
+                    <RiDeleteBin7Line className={"cursor-pointer text-red-500 mr-2"} onClick={() => handelDelete(index)}
+                        size={18} />
+                )}
             </div>
-            <InputAndLabel type={"text"} title={"Stage Name"} placeholder={"Stage Name..."} />
-            <TextAreaWithLabel title={"Description"} placeholder={"Placeholder text..."} />
+            <InputAndLabel
+                name={`${baseKey}.name`}
+                value={values?.stages?.[index]?.name || ""}
+                onChange={handleChange}
+                type={"text"}
+                title={t("Stage Name")}
+                placeholder={t("Stage Name...")}
+            />
+            <TextAreaWithLabel
+                name={`${baseKey}.description`}
+                value={values?.stages?.[index]?.description || ""}
+                onChange={handleChange}
+                title={t("Description")}
+                placeholder={t("Placeholder text...")}
+            />
             <div className={"flex items-center justify-center gap-2"}>
-                <ElementsSelect title={"Status"} placeholder={"Select Status..."} options={optionsStatus} classNameContainer={"flex-1"} />
-                <DefaultSelect title={"Rating"} placeholder={"Select rate.."} options={optionsRating} classNameContainer={"flex-1"} />
+                <ElementsSelect
+                    title={t("Status")}
+                    placeholder={t("Select Status...")}
+                    options={optionsStatus}
+                    classNameContainer={"flex-1"}
+                    defaultValue={getSingleValue(values?.stages?.[index]?.status, optionsStatus)}
+                    onChange={(val) => handleSelectChange(`${baseKey}.status`, val)}
+                />
             </div>
             <div className={"flex items-center justify-center gap-2"}>
-                <DateInput name={"assignedDate"} title={"Assigned Date"} className={"flex-1"} placeholder="DD / MM / YYYY" />
-                <DateInput name={"dueDate"} title={"Due Date"} className={"flex-1"} placeholder="DD / MM / YYYY" />
+                <DateInput
+                    name={`${baseKey}.start_date`}
+                    value={values?.stages?.[index]?.start_date || ""}
+                    onChange={handleChange}
+                    title={t("Start Date")}
+                    className={"flex-1"}
+                    placeholder="DD / MM / YYYY"
+                />
+                <DateInput
+                    name={`${baseKey}.due_date`}
+                    value={values?.stages?.[index]?.due_date || ""}
+                    onChange={handleChange}
+                    title={t("Due Date")}
+                    className={"flex-1"}
+                    placeholder="DD / MM / YYYY"
+                />
             </div>
         </div>
     );
-
 }
 
 TaskStage.propTypes = {
-    stageNumber: PropTypes.string,
+    stageNumber: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    index: PropTypes.number,
+    values: PropTypes.object,
+    handleChange: PropTypes.func,
+    setFieldValue: PropTypes.func,
     handelDelete: PropTypes.func,
 }
 

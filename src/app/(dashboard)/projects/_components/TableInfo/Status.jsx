@@ -58,6 +58,10 @@ function Status({ type }) {
       icon: <RiCloseCircleLine size={15} className="text-gray-500" />,
       border: "border-gray-300 dark:border-gray-500",
     },
+    pending: {
+      icon: <IoTime className="text-yellow-500" />,
+      border: "border-yellow-300 dark:border-yellow-500",
+    },
   };
 
   const normalizedType = type?.toLowerCase() || "inactive";
@@ -80,6 +84,7 @@ Status.propTypes = {
     "Delayed",
     "Scheduled",
     "Open",
+    "Pending",
     "In Progress",
     "In-Progress",
     "Completed",
