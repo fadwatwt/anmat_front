@@ -10,7 +10,7 @@ import { useGetSubscriberProjectsQuery } from "@/redux/projects/subscriberProjec
 import TagInput from "@/components/Form/TagInput";
 import { defaultPhoto } from "@/Root.Route";
 
-function TaskMainInfo({ task, type = "project", values, handleChange, setFieldValue }) {
+function TaskMainInfo({ task, type = "project", values, handleChange, setFieldValue, lockedProjectId, lockedProjectName }) {
   const { t } = useTranslation();
 
   // Fetch real employees
@@ -50,8 +50,17 @@ function TaskMainInfo({ task, type = "project", values, handleChange, setFieldVa
     value: dept.name
   }));
 
-  // Status options
-  const optionsStatus = [
+  // Status options for projects
+  const projectStatusOptions = [
+    { id: "open", value: t("Open") },
+    { id: "in-progress", value: t("In Progress") },
+    { id: "completed", value: t("Completed") },
+    { id: "rejected", value: t("Rejected") },
+    { id: "cancelled", value: t("Cancelled") },
+  ];
+
+  // Status options for tasks
+  const taskStatusOptions = [
     { id: "open", value: t("Open") },
     { id: "pending", value: t("Pending") },
     { id: "in-progress", value: t("In Progress") },
@@ -59,6 +68,8 @@ function TaskMainInfo({ task, type = "project", values, handleChange, setFieldVa
     { id: "rejected", value: t("Rejected") },
     { id: "cancelled", value: t("Cancelled") },
   ];
+
+  const optionsStatus = type === "project" ? projectStatusOptions : taskStatusOptions;
 
   // Priority options
   const optionsPriority = [
@@ -89,16 +100,27 @@ function TaskMainInfo({ task, type = "project", values, handleChange, setFieldVa
 
       {/* Project Selection (only for Task) */}
       {type === "task" && (
-        <DefaultSelect
-          title={t("Project")}
-          options={optionsProjects}
-          multi={false}
-          value={getSingleValue(values?.project_id, optionsProjects)}
-          onChange={(val) => handleSelectChange("project_id", val)}
-          name="project_id"
-          placeholder={isLoadingProjects ? t("Loading...") : t("Select Project...")}
-          isRequired
-        />
+        lockedProjectId ? (
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              {t("Project")} <span className="text-red-500">*</span>
+            </label>
+            <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+              <span className="text-gray-700 dark:text-gray-300">{lockedProjectName || t("Selected Project")}</span>
+            </div>
+          </div>
+        ) : (
+          <DefaultSelect
+            title={t("Project")}
+            options={optionsProjects}
+            multi={false}
+            value={getSingleValue(values?.project_id, optionsProjects)}
+            onChange={(val) => handleSelectChange("project_id", val)}
+            name="project_id"
+            placeholder={isLoadingProjects ? t("Loading...") : t("Select Project...")}
+            isRequired
+          />
+        )
       )}
 
       {/* Name / Title */}
@@ -279,6 +301,8 @@ TaskMainInfo.propTypes = {
   values: PropTypes.object,
   handleChange: PropTypes.func,
   setFieldValue: PropTypes.func,
+  lockedProjectId: PropTypes.string,
+  lockedProjectName: PropTypes.string,
 };
 
 export default TaskMainInfo;
