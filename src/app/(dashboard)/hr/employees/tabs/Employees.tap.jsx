@@ -16,7 +16,7 @@ import { useUnassignEmployeesFromDepartmentMutation } from "@/redux/departments/
 import { RiEditLine, RiNotification4Line, RiBuilding2Line, RiLogoutBoxLine, RiToggleLine, RiToggleFill } from "@remixicon/react";
 import StatusActions from "@/components/Dropdowns/StatusActions";
 import CreateEmployeeModal from "@/app/(dashboard)/hr/employees/modals/CreateEmployee.modal";
-import InviteNewEmployeeModal from "@/app/(dashboard)/hr/employees/modals/InviteNewEmployee,modal";
+import InviteEmployeeModal from "@/app/(dashboard)/hr/_modals/InviteEmployeeModal";
 import SendNotificationModal from "@/app/(dashboard)/hr/employees/modals/SendNotification.modal";
 import AssignDepartmentModal from "@/app/(dashboard)/hr/employees/modals/AssignDepartmentModal";
 import { RiDeleteBin7Line } from "react-icons/ri";
@@ -287,7 +287,7 @@ function EmployeesTap() {
         onClose={() => setIsOpenCreateModal(false)}
       />
 
-      <InviteNewEmployeeModal
+      <InviteEmployeeModal
         isOpen={isOpenInviteModal}
         onClose={() => setIsOpenInviteModal(false)}
       />

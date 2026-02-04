@@ -41,6 +41,13 @@ export const employeesApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["Employees"],
         }),
+        inviteEmployee: builder.mutation({
+            query: (data) => ({
+                url: "api/subscriber/employee-invitations",
+                method: "POST",
+                body: data,
+            }),
+        }),
     }),
 });
 
@@ -50,4 +57,5 @@ export const {
     useUpdateEmployeeMutation,
     useDeleteEmployeeMutation,
     useToggleEmployeeActivityMutation,
+    useInviteEmployeeMutation,
 } = employeesApi;
