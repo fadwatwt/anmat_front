@@ -1,154 +1,211 @@
 "use client";
-import {useFormik} from "formik";
+import { useFormik } from "formik";
 import InputAndLabel from "@/components/Form/InputAndLabel";
-import SelectAndLabel from "@/components/Form/SelectAndLabel";
 import * as Yup from 'yup';
-import FileUpload from "@/components/Form/FileUpload";
-import {t} from "i18next";
-import {LiaUser} from "react-icons/lia";
-import {IoIosLock} from "react-icons/io";
-import {useState} from "react";
-import {useSelector} from "react-redux";
+import { useTranslation } from "react-i18next";
+import { LiaUser } from "react-icons/lia";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useRegisterEmployeeAccountMutation } from "@/redux/auth/authAPI";
+import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 
-const SetupCompanyProfile = () => {
+const EmployeeRegistration = () => {
+    const { t } = useTranslation();
+    const router = useRouter();
+    const [registerEmployee, { isLoading }] = useRegisterEmployeeAccountMutation();
+    const [error, setError] = useState("");
+    const [invitationToken, setInvitationToken] = useState("");
+    const [isCheckingToken, setIsCheckingToken] = useState(true);
+
+    const [alertConfig, setAlertConfig] = useState({
+        isOpen: false,
+        status: "",
+        message: ""
+    });
+
+    useEffect(() => {
+        // Extract token from hash: #reg_emp_t=token...
+        const hash = window.location.hash;
+        if (hash.startsWith('#reg_emp_t=')) {
+            const token = hash.substring('#reg_emp_t='.length);
+            if (token) {
+                setInvitationToken(token);
+                setIsCheckingToken(false);
+            } else {
+                router.push('/sign-in');
+            }
+        } else {
+            router.push('/sign-in');
+        }
+    }, [router]);
 
     const formik = useFormik({
         initialValues: {
-            full_name: "", phone: "", country: "", city: ""
-        }, validationSchema: Yup.object({
-            phone: Yup.string().required("Required"),
-            country: Yup.string().required("Required"),
-            city: Yup.string().required("Required")
-        }), onSubmit: () => {
+            email: "",
+            name: "",
+            phone: "",
+            password: "",
+            password_confirmation: ""
+        },
+        validationSchema: Yup.object({
+            email: Yup.string().email(t("Invalid email address")).required(t("Required")),
+            name: Yup.string().required(t("Required")),
+            phone: Yup.string().required(t("Required")),
+            password: Yup.string().min(8, t("Password must be at least 8 characters")).required(t("Required")),
+            password_confirmation: Yup.string()
+                .oneOf([Yup.ref('password'), null], t("Passwords must match"))
+                .required(t("Required"))
+        }),
+        onSubmit: async (values) => {
+            setError("");
+            try {
+                const payload = {
+                    ...values,
+                    invitation_token: invitationToken
+                };
+
+                const response = await registerEmployee(payload).unwrap();
+                setAlertConfig({
+                    isOpen: true,
+                    status: "success",
+                    message: response?.message || t("Account registered successfully!")
+                });
+            } catch (err) {
+                setError(err.data?.message || err.message || t("Registration failed"));
+            }
         },
     });
 
-    const countries = ["Palestine", "Syria"];
-    const cities = ["Gaza"];
-    const [password, setPassword] = useState("");
-    const [passwordConf, setPasswordConf] = useState("");
-    const { error } = useSelector((state) => state.auth);
+    const handleAlertClose = () => {
+        setAlertConfig(prev => ({ ...prev, isOpen: false }));
+        if (alertConfig.status === "success") {
+            router.push("/sign-in");
+        }
+    };
 
-    return (<>
-            <div className="w-full flex flex-col items-center justify-start gap-8 overflow-hidden overflow-y-auto px-2">
+    if (isCheckingToken) {
+        return (
+            <div className="w-full h-screen flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+            </div>
+        );
+    }
+
+    return (
+        <>
+            <div className="w-full flex flex-col items-center justify-start gap-8 overflow-hidden overflow-y-auto px-2 py-6">
+                <ApiResponseAlert
+                    isOpen={alertConfig.isOpen}
+                    status={alertConfig.status}
+                    message={alertConfig.message}
+                    onClose={handleAlertClose}
+                />
+
                 {/* Title */}
                 <div className="flex flex-col items-center gap-3">
                     <div className="flex w-20 h-20 justify-center items-center rounded-full bg-[#F3F3F4]">
                         <div className="flex w-12 h-12 justify-center items-center rounded-full bg-white shadow-md">
-                            <LiaUser size={30}/>
+                            <LiaUser size={30} className="text-primary-500" />
                         </div>
                     </div>
 
                     <div className="flex flex-col items-center justify-center gap-2 text-center">
-                        <sapn className="text-2xl text-gray-900">
-                            {`Set up your account`}
-                        </sapn>
+                        <span className="text-2xl font-semibold text-gray-900">
+                            {t("Set up your account")}
+                        </span>
                         <span className="text-sm text-gray-500">
-                        {'Enter your details to sign up'}
-                    </span>
+                            {t("Enter your details to sign up as an employee")}
+                        </span>
                     </div>
                 </div>
 
                 {/* Form */}
-                <div className="flex flex-col w-full gap-4">
+                <form id="employee-registration-form" onSubmit={formik.handleSubmit} className="flex flex-col w-full gap-5 max-w-md">
+                    {error && (
+                        <div className="w-full p-3 text-sm text-red-500 bg-red-50 border border-red-200 rounded-lg">
+                            {error}
+                        </div>
+                    )}
+
                     <InputAndLabel
-                        title="Full Name"
-                        name="full_name"
-                        value={formik.values.full_name}
+                        title={t("Full Name")}
+                        name="name"
+                        value={formik.values.name}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
-                        placeholder="Enter Full Name..."
-                        error={formik.touched.full_name && formik.errors.full_name ? formik.errors.full_name : ""}
+                        placeholder={t("Enter Full Name...")}
+                        error={formik.touched.name && formik.errors.name}
                         isRequired={true}
                     />
 
                     <InputAndLabel
-                        title="Phone Number"
+                        title={t("Email Address")}
+                        name="email"
+                        type="email"
+                        value={formik.values.email}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        placeholder={t("Enter Email Address...")}
+                        error={formik.touched.email && formik.errors.email}
+                        isRequired={true}
+                    />
+
+                    <InputAndLabel
+                        title={t("Phone Number")}
                         name="phone"
                         value={formik.values.phone}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
-                        placeholder="Enter Phone Number..."
-                        error={formik.touched.phone && formik.errors.phone ? formik.errors.phone : ""}
+                        placeholder={t("Enter Phone Number...")}
+                        error={formik.touched.phone && formik.errors.phone}
                         isRequired={true}
                         type={"text"}
                     />
 
-                    <div className={"flex flex-col gap-2 w-full"}>
-                        <label>Password</label>
-                        <div className="flex bg-white pl-2 px-2 w-full items-center border-2 rounded-xl">
-                            <IoIosLock className="text-gray-500 w-10" size={18}/>
-                            <input
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="*"
-                                className="w-full py-3 px-2 outline-none"
-                                required
-                            />
-                        </div>
-                    </div>
-                    <div className={"flex flex-col gap-2 w-full"}>
-                        <label>Confirm Password</label>
-                        <div className="flex bg-white pl-2 px-2 w-full items-center border-2 rounded-xl">
-                            <IoIosLock className="text-gray-500 w-10" size={18}/>
-                            <input
-                                type="password"
-                                value={passwordConf}
-                                onChange={(e) => setPasswordConf(e.target.value)}
-                                placeholder="*"
-                                className="w-full py-3 px-2 outline-none"
-                                required
-                            />
-                        </div>
-                    </div>
-
-                    {error && <p className="text-red-500 text-sm">{error}</p>}
-
-                    <SelectAndLabel
-                        title={"Country"}
-                        name="country"
-                        value={formik.values.country} // Ensure it’s controlled
-                        onChange={(val) => formik.setFieldValue("country", val)} // Send _id
+                    <InputAndLabel
+                        title={t("Password")}
+                        name="password"
+                        type="password"
+                        value={formik.values.password}
+                        onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
-                        options={countries} // Ensure _id is used internally but name is displayed
-                        error={formik.touched.country && formik.errors.country ? formik.errors.country : ""}
-                        placeholder={"Select Country..."}
+                        placeholder="********"
+                        error={formik.touched.password && formik.errors.password}
                         isRequired={true}
                     />
 
-                    <SelectAndLabel
-                        title={"City"}
-                        name="city"
-                        value={formik.values.city} // Ensure it’s controlled
-                        onChange={(val) => formik.setFieldValue("city", val)} // Send _id
+                    <InputAndLabel
+                        title={t("Confirm Password")}
+                        name="password_confirmation"
+                        type="password"
+                        value={formik.values.password_confirmation}
+                        onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
-                        options={cities} // Ensure _id is used internally but name is displayed
-                        error={formik.touched.city && formik.errors.city ? formik.errors.city : ""}
-                        placeholder={"Select City..."}
+                        placeholder="********"
+                        error={formik.touched.password_confirmation && formik.errors.password_confirmation}
                         isRequired={true}
                     />
 
-                    <div className={`relative flex flex-col gap-1 w-full items-start`}>
-                        <label className="text-gray-900 dark:text-gray-200 text-sm">
-                            {t('Avatar')}
-                        </label>
-                        <FileUpload/>
+                    {/* Buttons */}
+                    <div className="flex flex-col items-center justify-center mt-4">
+                        <button
+                            type="submit"
+                            disabled={isLoading}
+                            className="bg-primary-500 text-white font-medium text-md w-full py-3 rounded-xl cursor-pointer
+                            hover:bg-primary-600 transition-colors shadow-md disabled:bg-primary-300 flex items-center justify-center gap-2"
+                        >
+                            {isLoading ? (
+                                <>
+                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                    {t("Processing...")}
+                                </>
+                            ) : t("Register Account")}
+                        </button>
                     </div>
-
-
-                </div>
-
-                {/* Buttons */}
-                <div className="flex flex-col md:flex-row w-full items-center justify-center gap-8">
-                    <div className="bg-primary-500 text-primary-50 text-md w-48 py-2 rounded-xl cursor-pointer
-                        hover:bg-primary-600 text-center">
-                        Register Account
-                    </div>
-                </div>
+                </form>
             </div>
         </>
     );
-}
+};
 
-export default SetupCompanyProfile;
+export default EmployeeRegistration;
