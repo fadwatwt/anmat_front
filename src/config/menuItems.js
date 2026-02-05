@@ -99,6 +99,12 @@ export const dashboardSideMenuItems = [
         icon: <TaskSquare />
     },
     {
+        allowed_to: ['Employee'],
+        title: 'Salary',
+        path: '/salary',
+        icon: <EmptyWallet />
+    },
+    {
         allowed_to: ['Subscriber', 'Employee'],
         title: 'Projects',
         path: '/projects',
