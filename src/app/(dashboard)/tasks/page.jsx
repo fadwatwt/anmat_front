@@ -6,7 +6,8 @@ import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import Page from "@/components/Page.jsx";
 import Table from "@/components/Tables/Table.jsx";
-import useAuthStore from '@/store/authStore.js';
+import { useSelector } from "react-redux";
+import { selectUserType } from "@/redux/auth/authSlice";
 import { convertToSlug } from "@/functions/AnotherFunctions";
 import { translateDate } from "@/functions/Days";
 import { RiEyeLine, RiDeleteBinLine, RiEditLine } from "react-icons/ri";
@@ -15,6 +16,7 @@ import {
   useGetSubscriberTasksQuery,
   useDeleteSubscriberTaskMutation
 } from "@/redux/tasks/subscriberTasksApi";
+import { useGetEmployeeTasksQuery } from "@/redux/tasks/employeeTasksApi";
 
 // ✅ Lazy-loaded components
 const NameAndDescription = dynamic(() => import("@/app/(dashboard)/projects/_components/TableInfo/NameAndDescription"), { ssr: false });
@@ -28,29 +30,39 @@ function TasksPage() {
   const { t } = useTranslation();
   const router = useRouter();
 
-  const { data: tasks = [], isLoading, isError } = useGetSubscriberTasksQuery();
+  const authUserType = useSelector(selectUserType);
+  const isEmployee = authUserType === "Employee";
+  const isSubscriber = authUserType === "Subscriber";
+
+  const { data: subscriberTasks = [], isLoading: isSubscriberLoading, isError: isSubscriberError } = useGetSubscriberTasksQuery(undefined, { skip: !isSubscriber });
+  const { data: employeeTasks = [], isLoading: isEmployeeLoading, isError: isEmployeeError } = useGetEmployeeTasksQuery(undefined, { skip: !isEmployee });
+
+  const tasks = isEmployee ? employeeTasks : subscriberTasks;
+  const isLoading = authUserType ? (isEmployee ? isEmployeeLoading : isSubscriberLoading) : true;
+  const isError = isEmployee ? isEmployeeError : isSubscriberError;
+
   const [deleteSubscriberTask] = useDeleteSubscriberTaskMutation();
 
   const [isOpenDeleteAlert, setIsOpenDeleteAlert] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState(null);
   const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
-  // Define authUserType (e.g., from context or state management)
-  const { authUserType } = useAuthStore();
 
   // Headers matching the design and important info
-  const headers = [
+  const headers = useMemo(() => [
     { label: t("Tasks"), width: "250px" },
-    { label: t("Project"), width: "150px" },
-    { label: t("Department"), width: "150px" },
-    { label: t("Assignee"), width: "150px" },
-    { label: t("Creator"), width: "150px" },
+    ...(!isEmployee ? [
+      { label: t("Project"), width: "150px" },
+      { label: t("Department"), width: "150px" },
+      { label: t("Assignee"), width: "150px" },
+      { label: t("Creator"), width: "150px" },
+    ] : []),
     { label: t("Priority"), width: "100px" },
     { label: t("Status"), width: "100px" },
     { label: t("Progress"), width: "120px" },
     { label: t("Due Date"), width: "120px" },
     { label: "", width: "50px" },
-  ];
+  ], [isEmployee, t]);
 
   const handleCreateTask = () => router.push("/tasks/create");
 
@@ -101,11 +113,11 @@ function TasksPage() {
         icon: <RiEditLine size={16} className="text-primary-500" />,
         onClick: () => router.push(`/tasks/${task._id}/edit`),
       },
-      {
+      ...(!isEmployee ? [{
         text: t("Delete"),
         icon: <RiDeleteBinLine size={16} className="text-red-500" />,
         onClick: () => handleDeleteConfirmation(task),
-      },
+      }] : []),
     ];
 
     return (
@@ -121,26 +133,28 @@ function TasksPage() {
         name={task.title}
         description={task.description}
       />,
-      <p title={task.project?.name} key={`project-${task._id}`} className="text-sm dark:text-sub-300 truncate max-w-[140px]">
-        {task.project?.name || t("No Project")}
-      </p>,
-      <p title={task.department?.name} key={`dept-${task._id}`} className="text-sm dark:text-sub-300 truncate max-w-[140px]">
-        {task.department?.name || t("No Department")}
-      </p>,
-      <AccountDetails
-        key={`assignee-${task._id}`}
-        account={{
-          name: task.assignee?.name || t("Unassigned"),
-          imageProfile: task.assignee?.imageProfile || `https://ui-avatars.com/api/?name=${encodeURIComponent(task.assignee?.name || "U")}`,
-        }}
-      />,
-      <AccountDetails
-        key={`creator-${task._id}`}
-        account={{
-          name: task.creator?.name || t("Unknown"),
-          imageProfile: task.creator?.imageProfile || `https://ui-avatars.com/api/?name=${encodeURIComponent(task.creator?.name || "C")}`,
-        }}
-      />,
+      ...(!isEmployee ? [
+        <p title={task.project?.name} key={`project-${task._id}`} className="text-sm dark:text-sub-300 truncate max-w-[140px]">
+          {task.project?.name || t("No Project")}
+        </p>,
+        <p title={task.department?.name} key={`dept-${task._id}`} className="text-sm dark:text-sub-300 truncate max-w-[140px]">
+          {task.department?.name || t("No Department")}
+        </p>,
+        <AccountDetails
+          key={`assignee-${task._id}`}
+          account={{
+            name: task.assignee?.name || t("Unassigned"),
+            imageProfile: task.assignee?.imageProfile || `https://ui-avatars.com/api/?name=${encodeURIComponent(task.assignee?.name || "U")}`,
+          }}
+        />,
+        <AccountDetails
+          key={`creator-${task._id}`}
+          account={{
+            name: task.creator?.name || t("Unknown"),
+            imageProfile: task.creator?.imageProfile || `https://ui-avatars.com/api/?name=${encodeURIComponent(task.creator?.name || "C")}`,
+          }}
+        />,
+      ] : []),
       <Priority key={`priority-${task._id}`} type={task.priority} />,
       <Status key={`status-${task._id}`} type={task.status} />,
       <div key={`progress-${task._id}`} className="flex items-center gap-2">
@@ -156,7 +170,7 @@ function TasksPage() {
         {task.due_date ? translateDate(task.due_date) : "-"}
       </p>,
     ]);
-  }, [tasks, t]);
+  }, [tasks, t, isEmployee]);
 
   if (isError) {
     return (
