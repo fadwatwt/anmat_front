@@ -105,6 +105,12 @@ export const dashboardSideMenuItems = [
         icon: <EmptyWallet />
     },
     {
+        allowed_to: ['Employee'],
+        title: 'Requests',
+        path: '/requests',
+        icon: <Stickynote />
+    },
+    {
         allowed_to: ['Subscriber', 'Employee'],
         title: 'Projects',
         path: '/projects',
