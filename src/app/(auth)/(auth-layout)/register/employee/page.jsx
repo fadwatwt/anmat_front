@@ -15,6 +15,7 @@ const EmployeeRegistration = () => {
     const [registerEmployee, { isLoading }] = useRegisterEmployeeAccountMutation();
     const [error, setError] = useState("");
     const [invitationToken, setInvitationToken] = useState("");
+    const [organizationId, setOrganizationId] = useState("");
     const [isCheckingToken, setIsCheckingToken] = useState(true);
 
     const [alertConfig, setAlertConfig] = useState({
@@ -24,16 +25,23 @@ const EmployeeRegistration = () => {
     });
 
     useEffect(() => {
-        // Extract token from hash: #reg_emp_t=token...
-        const hash = window.location.hash;
-        if (hash.startsWith('#reg_emp_t=')) {
-            const token = hash.substring('#reg_emp_t='.length);
-            if (token) {
-                setInvitationToken(token);
-                setIsCheckingToken(false);
-            } else {
-                router.push('/sign-in');
-            }
+        // Extract token and org from hash, handling potential multiple '#' delimiters
+        const hash = window.location.hash.substring(1); // remove first #
+        const paramsArray = hash.split(/[&#]/);
+
+        let token = "";
+        let orgId = "";
+
+        paramsArray.forEach(p => {
+            const [key, ...val] = p.split('=');
+            if (key === 'reg_emp_t') token = val.join('=');
+            if (key === 'org') orgId = val.join('=');
+        });
+
+        if (token) {
+            setInvitationToken(token);
+            setOrganizationId(orgId || "");
+            setIsCheckingToken(false);
         } else {
             router.push('/sign-in');
         }
@@ -61,7 +69,8 @@ const EmployeeRegistration = () => {
             try {
                 const payload = {
                     ...values,
-                    invitation_token: invitationToken
+                    invitation_token: invitationToken,
+                    organization_id: organizationId
                 };
 
                 const response = await registerEmployee(payload).unwrap();

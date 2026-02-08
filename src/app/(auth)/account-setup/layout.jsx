@@ -29,28 +29,45 @@ function AccountSetupLayout({ children }) {
                 const result = await triggerGetUser(token).unwrap();
                 const userData = result.data || result;
 
-                // Security Check: Only Subscriber allowed in account setup
-                if (userData.type !== "Subscriber") {
+                // Security Check: Subscriber and Employee allowed in account setup
+                if (!["Subscriber", "Employee"].includes(userData.type)) {
                     router.push("/dashboard");
                     return;
                 }
 
-                // If already fully set up (Org + Subscription), go to dashboard
-                if (userData.is_organization_registered && userData.active_subscription_id) {
-                    router.push("/dashboard");
-                    return;
-                }
-
-                // Internal setup redirects
-                if (userData.is_organization_registered) {
-                    if (!pathname.includes("/account-setup/subscriber/plans")) {
-                        router.push("/account-setup/subscriber/plans");
+                // Employee specific logic
+                if (userData.type === "Employee") {
+                    if (userData.employee_detail && userData.is_active) {
+                        router.push("/dashboard");
                         return;
                     }
-                } else {
-                    if (pathname.includes("/account-setup/subscriber/plans")) {
-                        router.push("/account-setup/subscriber/business-selection");
+                    if (!pathname.includes("/account-setup/employee")) {
+                        router.push("/account-setup/employee");
                         return;
+                    }
+                }
+
+                // Subscriber specific logic
+                if (userData.type === "Subscriber") {
+                    // If already fully set up (Org + Subscription), go to dashboard
+                    if (userData.is_organization_registered && userData.active_subscription_id) {
+                        router.push("/dashboard");
+                        return;
+                    }
+
+                    // Internal setup redirects
+                    if (userData.is_organization_registered) {
+                        if (!pathname.includes("/account-setup/subscriber/plans")) {
+                            router.push("/account-setup/subscriber/plans");
+                            return;
+                        }
+                    } else {
+                        if (pathname.includes("/account-setup/subscriber/business-selection")) {
+                            // Already on the right page
+                        } else if (pathname.includes("/account-setup/subscriber/plans")) {
+                            router.push("/account-setup/subscriber/business-selection");
+                            return;
+                        }
                     }
                 }
 

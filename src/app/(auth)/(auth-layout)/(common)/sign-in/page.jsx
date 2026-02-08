@@ -54,7 +54,7 @@ function SignIn() {
                         console.warn("Admin user trying to access non-admin login. Logging out.");
                         await performLogout(token);
                         dispatch(loginFailure("Access Denied: Use Admin Sign In."));
-                    } else if (['Subscriber', 'Employee'].includes(userData?.type)) {
+                    } else if (userData?.type === 'Subscriber') {
                         const loginPayload = {
                             data: {
                                 access_token: token,
@@ -63,6 +63,19 @@ function SignIn() {
                         };
                         dispatch(loginSuccess(loginPayload));
                         router.push("/dashboard");
+                    } else if (userData?.type === 'Employee') {
+                        const loginPayload = {
+                            data: {
+                                access_token: token,
+                                user: userData
+                            }
+                        };
+                        dispatch(loginSuccess(loginPayload));
+                        if (!userData.employee_detail || !userData.is_active) {
+                            router.push("/account-setup/employee");
+                        } else {
+                            router.push("/dashboard");
+                        }
                     } else {
                         // Default fallback or other types
                         setIsCheckingAuth(false);
@@ -93,19 +106,42 @@ function SignIn() {
         e.preventDefault();
         setIsSubmitting(true);
         try {
-            const response = await login({ email, password }).unwrap();
-            const userData = response.data?.user;
+            const loginResponse = await login({ email, password }).unwrap();
+            const token = loginResponse.data?.access_token;
+
+            // Get fresh user data after login
+            const userResponse = await triggerGetUser(token).unwrap();
+            const userData = userResponse.data || userResponse;
 
             if (userData?.type === 'Admin') {
-                await performLogout(response.data?.access_token);
+                await performLogout(token);
                 dispatch(loginFailure("Access Denied: Use Admin Sign In."));
                 setIsSubmitting(false);
-            } else if (['Subscriber', 'Employee'].includes(userData?.type)) {
-                dispatch(loginSuccess(response));
+            } else if (userData?.type === 'Subscriber') {
+                const loginPayload = {
+                    data: {
+                        access_token: token,
+                        user: userData
+                    }
+                };
+                dispatch(loginSuccess(loginPayload));
                 router.push("/dashboard");
+            } else if (userData?.type === 'Employee') {
+                const loginPayload = {
+                    data: {
+                        access_token: token,
+                        user: userData
+                    }
+                };
+                dispatch(loginSuccess(loginPayload));
+                if (!userData.employee_detail || !userData.is_active) {
+                    router.push("/account-setup/employee");
+                } else {
+                    router.push("/dashboard");
+                }
             } else {
                 // If unknown role, logout just in case or show error
-                await performLogout(response.data?.access_token);
+                await performLogout(token);
                 dispatch(loginFailure("Access Denied: Unknown user role."));
                 setIsSubmitting(false);
             }
@@ -122,7 +158,7 @@ function SignIn() {
                         dispatch(loginFailure("Access Denied: Use Admin Sign In."));
                         setIsSubmitting(false);
                         return;
-                    } else if (['Subscriber', 'Employee'].includes(userData?.type)) {
+                    } else if (userData?.type === 'Subscriber') {
                         const loginPayload = {
                             data: {
                                 access_token: token,
@@ -131,6 +167,20 @@ function SignIn() {
                         };
                         dispatch(loginSuccess(loginPayload));
                         router.push("/dashboard");
+                        return;
+                    } else if (userData?.type === 'Employee') {
+                        const loginPayload = {
+                            data: {
+                                access_token: token,
+                                user: userData
+                            }
+                        };
+                        dispatch(loginSuccess(loginPayload));
+                        if (!userData.employee_detail || !userData.is_active) {
+                            router.push("/account-setup/employee");
+                        } else {
+                            router.push("/dashboard");
+                        }
                         return;
                     } else {
                         await performLogout(token);
