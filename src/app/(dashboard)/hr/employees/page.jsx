@@ -9,6 +9,7 @@ import AttendanceTab from "@/app/(dashboard)/hr/employees/tabs/AttendanceTab.jsx
 import SalaryTab from "@/app/(dashboard)/hr/employees/tabs/SalaryTab.jsx";
 import RequestsTab from "@/app/(dashboard)/hr/employees/tabs/RequestsTab.jsx";
 import LeavesTab from "@/app/(dashboard)/hr/employees/tabs/LeavesTab.jsx";
+import NewEmployeesTab from "@/app/(dashboard)/hr/employees/tabs/NewEmployeesTab.jsx";
 import CreateADepartmentModal from "@/app/(dashboard)/hr/_modals/CreateADepartmentModal.jsx";
 import EditAnEmployeeModal from "@/app/(dashboard)/hr/_modals/AddingAnEmployeeModal.jsx";
 import InviteEmployeeModal from "@/app/(dashboard)/hr/_modals/InviteEmployeeModal";
@@ -23,6 +24,10 @@ function HRPage() {
         {
             title: "Employees",
             content: <EmployeesTap />,
+        },
+        {
+            title: "New Employees",
+            content: <NewEmployeesTab />,
         },
         {
             title: "Attendances",
