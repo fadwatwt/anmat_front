@@ -16,7 +16,8 @@ import {
   useGetSubscriberTasksQuery,
   useDeleteSubscriberTaskMutation
 } from "@/redux/tasks/subscriberTasksApi";
-import { useGetEmployeeTasksQuery } from "@/redux/tasks/employeeTasksApi";
+import { useGetEmployeeTasksQuery, useUpdateTaskStatusMutation } from "@/redux/tasks/employeeTasksApi";
+import Modal from "@/components/Modal/Modal.jsx";
 
 // ✅ Lazy-loaded components
 const NameAndDescription = dynamic(() => import("@/app/(dashboard)/projects/_components/TableInfo/NameAndDescription"), { ssr: false });
@@ -42,10 +43,15 @@ function TasksPage() {
   const isError = isEmployee ? isEmployeeError : isSubscriberError;
 
   const [deleteSubscriberTask] = useDeleteSubscriberTaskMutation();
+  const [updateTaskStatus] = useUpdateTaskStatusMutation();
 
   const [isOpenDeleteAlert, setIsOpenDeleteAlert] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState(null);
+  const [isOpenStatusModal, setIsOpenStatusModal] = useState(false);
+  const [taskToUpdateStatus, setTaskToUpdateStatus] = useState(null);
   const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
+
+  const allowedStatuses = ['open', 'pending', 'in-progress', 'completed', 'rejected', 'cancelled'];
 
 
   // Headers matching the design and important info
@@ -98,27 +104,63 @@ function TasksPage() {
     }
   };
 
+  const handleOpenStatusModal = (task) => {
+    setTaskToUpdateStatus(task);
+    setIsOpenStatusModal(true);
+  };
+
+  const handleStatusUpdate = async (status) => {
+    if (taskToUpdateStatus) {
+      try {
+        const res = await updateTaskStatus({ id: taskToUpdateStatus._id, status }).unwrap();
+        setApiResponse({
+          isOpen: true,
+          status: "success",
+          message: res?.message || t("Status updated successfully"),
+        });
+        setIsOpenStatusModal(false);
+        setTaskToUpdateStatus(null);
+      } catch (err) {
+        setApiResponse({
+          isOpen: true,
+          status: "error",
+          message: err?.data?.message || t("Failed to update status"),
+        });
+      }
+    }
+  };
+
   const customActions = (index) => {
     const task = tasks[index];
     if (!task) return null;
 
-    const actions = [
-      {
-        text: t("View"),
-        icon: <RiEyeLine size={16} className="text-blue-500" />,
-        onClick: () => router.push(`/tasks/${task._id}/details`),
-      },
-      {
-        text: t("Edit"),
+    const actions = [];
+
+    if (!isEmployee) {
+      actions.push(
+        {
+          text: t("View"),
+          icon: <RiEyeLine size={16} className="text-blue-500" />,
+          onClick: () => router.push(`/tasks/${task._id}-${convertToSlug(task.title)}/details`),
+        },
+        {
+          text: t("Edit"),
+          icon: <RiEditLine size={16} className="text-primary-500" />,
+          onClick: () => router.push(`/tasks/${task._id}/edit`),
+        },
+        {
+          text: t("Delete"),
+          icon: <RiDeleteBinLine size={16} className="text-red-500" />,
+          onClick: () => handleDeleteConfirmation(task),
+        }
+      );
+    } else {
+      actions.push({
+        text: t("Change Status"),
         icon: <RiEditLine size={16} className="text-primary-500" />,
-        onClick: () => router.push(`/tasks/${task._id}/edit`),
-      },
-      ...(!isEmployee ? [{
-        text: t("Delete"),
-        icon: <RiDeleteBinLine size={16} className="text-red-500" />,
-        onClick: () => handleDeleteConfirmation(task),
-      }] : []),
-    ];
+        onClick: () => handleOpenStatusModal(task),
+      });
+    }
 
     return (
       <StatusActions states={actions} />
@@ -226,6 +268,25 @@ function TasksPage() {
         message={apiResponse.message}
         onClose={() => setApiResponse({ ...apiResponse, isOpen: false })}
       />
+
+      <Modal
+        isOpen={isOpenStatusModal}
+        onClose={() => setIsOpenStatusModal(false)}
+        title={t("Update Task Status")}
+        className="w-11/12 md:w-1/3 p-4"
+      >
+        <div className="flex flex-col gap-2 p-4">
+          {allowedStatuses.map((status) => (
+            <button
+              key={status}
+              onClick={() => handleStatusUpdate(status)}
+              className="flex items-center justify-between p-3 rounded-xl border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900 transition-all"
+            >
+              <Status type={status} />
+            </button>
+          ))}
+        </div>
+      </Modal>
     </>
   );
 }
