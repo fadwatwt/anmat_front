@@ -8,8 +8,7 @@ import SelectWithoutLabel from "@/components/Form/SelectWithoutLabel.jsx";
 import TabsOutContent from "@/components/Modal/TabsContener/TabsOutContent.jsx";
 import { useState } from "react";
 import Rating from "@/app/(dashboard)/hr/Rating.jsx";
-import ToDoList from "@/app/(dashboard)/profile/_components/components/ToDoList.jsx";
-import CalendarEmployee from "@/app/(dashboard)/profile/_components/components/CalendarEmployee.jsx";
+import EditProfileModal from "@/app/(dashboard)/profile/_components/modals/EditProfile.modal.jsx";
 import AddRequestModal from "@/app/(dashboard)/profile/_components/modals/AddRequest.modal.jsx";
 import {
     RiCake2Line, RiCalendarLine,
@@ -22,7 +21,10 @@ import {
 } from "@remixicon/react";
 import { useSelector } from 'react-redux';
 import { selectUser } from '@/redux/auth/authSlice';
-import { useGetEmployeeAuthRequestsQuery } from '@/redux/employees/employeeAuthRequestsApi';
+import {
+    useGetEmployeeAuthRequestsQuery,
+    useUpdateEmployeeDetailMutation
+} from '@/redux/employees/employeeAuthRequestsApi';
 import { translateDate } from '@/functions/Days';
 import dayjs from 'dayjs';
 
@@ -37,6 +39,9 @@ function EmployeeProfile() {
 
     const [activeTab, setActiveTab] = useState("Leave");
     const [isAddRequestModal, setIsAddRequestModal] = useState(false);
+    const [isEditProfileModal, setIsEditProfileModal] = useState(false);
+
+    const [updateProfile, { isLoading: isUpdatingProfile }] = useUpdateEmployeeDetailMutation();
 
     const calculateAge = (dob) => {
         if (!dob) return "-";
@@ -154,6 +159,10 @@ function EmployeeProfile() {
         setIsAddRequestModal(!isAddRequestModal)
     }
 
+    const handelEditProfileModal = () => {
+        setIsEditProfileModal(!isEditProfileModal)
+    }
+
     const tasksRows = user?.employee_detail?.ratings?.map(rating => [
         rating.task_name || "-",
         rating.date ? translateDate(rating.date) : "-",
@@ -183,6 +192,7 @@ function EmployeeProfile() {
                                         )}
                                     </div>
                                     <button
+                                        onClick={handelEditProfileModal}
                                         className={"p-1.5 rounded-lg md:hidden text-nowrap bg-none border text-sm dark:border-gray-700 dark:text-gray-200 self-start"}>{t("Edit profile")}
                                     </button>
                                 </div>
@@ -226,6 +236,7 @@ function EmployeeProfile() {
                                 </div>
 
                                 <button
+                                    onClick={handelEditProfileModal}
                                     className={"p-1.5 rounded-lg hidden md:block text-nowrap bg-none border text-sm self-start dark:text-gray-200 dark:border-gray-700"}>
                                     {t("Edit profile")}
                                 </button>
@@ -323,6 +334,13 @@ function EmployeeProfile() {
                 </div>
             </div>
             <AddRequestModal isOpen={isAddRequestModal} onClose={handelAddRequestModal} onClick={() => { }} />
+            <EditProfileModal
+                isOpen={isEditProfileModal}
+                onClose={handelEditProfileModal}
+                user={user}
+                updateProfile={updateProfile}
+                isLoading={isUpdatingProfile}
+            />
         </Page>
     );
 }

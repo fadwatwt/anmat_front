@@ -26,6 +26,14 @@ export const employeeAuthRequestsApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["EmployeeRequests"],
         }),
+        updateEmployeeDetail: builder.mutation({
+            query: (data) => ({
+                url: "api/employee/details",
+                method: "PUT",
+                body: data,
+            }),
+            invalidatesTags: ["User"],
+        }),
     }),
 });
 
@@ -33,4 +41,5 @@ export const {
     useGetEmployeeAuthRequestsQuery,
     useCreateEmployeeRequestMutation,
     useCancelEmployeeRequestMutation,
+    useUpdateEmployeeDetailMutation,
 } = employeeAuthRequestsApi;

@@ -24,6 +24,7 @@ export const authApi = apiSlice.injectEndpoints({
           Authorization: `Bearer ${token}`,
         },
       }),
+      providesTags: ["User"],
     }),
     logout: builder.query({
       query: (token) => ({
