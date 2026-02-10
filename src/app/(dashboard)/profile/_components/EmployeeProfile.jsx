@@ -9,6 +9,7 @@ import TabsOutContent from "@/components/Modal/TabsContener/TabsOutContent.jsx";
 import { useState } from "react";
 import Rating from "@/app/(dashboard)/hr/Rating.jsx";
 import EditProfileModal from "@/app/(dashboard)/profile/_components/modals/EditProfile.modal.jsx";
+import ChangePasswordModal from "@/app/(dashboard)/profile/_components/modals/ChangePassword.modal.jsx";
 import AddRequestModal from "@/app/(dashboard)/profile/_components/modals/AddRequest.modal.jsx";
 import {
     RiCake2Line, RiCalendarLine,
@@ -40,6 +41,7 @@ function EmployeeProfile() {
     const [activeTab, setActiveTab] = useState("Leave");
     const [isAddRequestModal, setIsAddRequestModal] = useState(false);
     const [isEditProfileModal, setIsEditProfileModal] = useState(false);
+    const [isChangePasswordModal, setIsChangePasswordModal] = useState(false);
 
     const [updateProfile, { isLoading: isUpdatingProfile }] = useUpdateEmployeeDetailMutation();
 
@@ -163,6 +165,10 @@ function EmployeeProfile() {
         setIsEditProfileModal(!isEditProfileModal)
     }
 
+    const handelChangePasswordModal = () => {
+        setIsChangePasswordModal(!isChangePasswordModal)
+    }
+
     const tasksRows = user?.employee_detail?.ratings?.map(rating => [
         rating.task_name || "-",
         rating.date ? translateDate(rating.date) : "-",
@@ -235,6 +241,11 @@ function EmployeeProfile() {
                                     </div>
                                 </div>
 
+                                <button
+                                    onClick={handelChangePasswordModal}
+                                    className={"p-1.5 rounded-lg hidden md:block text-nowrap bg-blue-100 text-blue-500 border text-sm self-start dark:text-gray-200 dark:border-gray-700"}>
+                                    {t("Change password")}
+                                </button>
                                 <button
                                     onClick={handelEditProfileModal}
                                     className={"p-1.5 rounded-lg hidden md:block text-nowrap bg-none border text-sm self-start dark:text-gray-200 dark:border-gray-700"}>
@@ -340,6 +351,10 @@ function EmployeeProfile() {
                 user={user}
                 updateProfile={updateProfile}
                 isLoading={isUpdatingProfile}
+            />
+            <ChangePasswordModal
+                isOpen={isChangePasswordModal}
+                onClose={handelChangePasswordModal}
             />
         </Page>
     );

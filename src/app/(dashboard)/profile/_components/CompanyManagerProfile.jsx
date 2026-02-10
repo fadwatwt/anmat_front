@@ -171,7 +171,6 @@ function CompanyManagerProfile() {
             <ChangePasswordModal
                 isOpen={isChangePasswordOpen}
                 onClose={() => setIsChangePasswordOpen(false)}
-                onClick={() => { }}
             />
         </Page>
     );

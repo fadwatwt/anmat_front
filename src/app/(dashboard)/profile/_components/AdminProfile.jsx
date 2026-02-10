@@ -143,7 +143,7 @@ function AdminProfile() {
             </div>
 
             <EditAdminProfileModal isOpen={isEditAdminProfileModal} onClose={handelEditAdminProfileModal} onClick={() => { }} />
-            <ChangePasswordModal isOpen={isChangePasswordModal} onClose={handelChangePasswordModal} onClick={() => { }} />
+            <ChangePasswordModal isOpen={isChangePasswordModal} onClose={handelChangePasswordModal} />
         </Page>
     );
 }

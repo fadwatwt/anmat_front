@@ -56,7 +56,31 @@ export const authApi = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    updatePassword: builder.mutation({
+      query: (data) => ({
+        url: "api/user/account/update-password",
+        method: "PUT",
+        body: data,
+      }),
+    }),
+    adminUpdatePassword: builder.mutation({
+      query: (data) => ({
+        url: "api/admin/account/update-password",
+        method: "PUT",
+        body: data,
+      }),
+    }),
   }),
 });
 
-export const { useLoginMutation, useLazyGetUserQuery, useLazyLogoutQuery, useAdminLoginMutation, useRegisterSubscriberEmailMutation, useCompleteSubscriberProfileMutation, useRegisterEmployeeAccountMutation } = authApi;
+export const {
+  useLoginMutation,
+  useLazyGetUserQuery,
+  useLazyLogoutQuery,
+  useAdminLoginMutation,
+  useRegisterSubscriberEmailMutation,
+  useCompleteSubscriberProfileMutation,
+  useRegisterEmployeeAccountMutation,
+  useUpdatePasswordMutation,
+  useAdminUpdatePasswordMutation,
+} = authApi;
