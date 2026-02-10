@@ -22,6 +22,8 @@ function EditProfileModal({ isOpen, onClose, user, updateProfile, isLoading }) {
     const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
     const [showApproval, setShowApproval] = useState(false);
 
+    const isEmployee = user?.type === "Employee";
+
     // Mock data for selects - in a real app, these might come from an API
     const countries = [
         { _id: "Egypt", name: "Egypt" },
@@ -51,7 +53,7 @@ function EditProfileModal({ isOpen, onClose, user, updateProfile, isLoading }) {
     const formik = useFormik({
         initialValues: {
             name: user?.name || "",
-            phone: user?.phone || "",
+            phone: user?.phone || user?.phoneNumber || "",
             country: user?.employee_detail?.country || "",
             city: user?.employee_detail?.city || "",
             date_of_birth: user?.employee_detail?.date_of_birth ? user.employee_detail.date_of_birth.split("T")[0] : "",
@@ -60,9 +62,9 @@ function EditProfileModal({ isOpen, onClose, user, updateProfile, isLoading }) {
         validationSchema: Yup.object({
             name: Yup.string().required(t("Required")),
             phone: Yup.string().required(t("Required")),
-            country: Yup.string().required(t("Required")),
-            city: Yup.string().required(t("Required")),
-            date_of_birth: Yup.string().required(t("Required")),
+            country: isEmployee ? Yup.string().required(t("Required")) : Yup.string(),
+            city: isEmployee ? Yup.string().required(t("Required")) : Yup.string(),
+            date_of_birth: isEmployee ? Yup.string().required(t("Required")) : Yup.string(),
         }),
         onSubmit: () => {
             setShowApproval(true);
@@ -71,15 +73,19 @@ function EditProfileModal({ isOpen, onClose, user, updateProfile, isLoading }) {
 
     const handleConfirmUpdate = async () => {
         try {
-            const payload = {
+            let payload = {
                 name: formik.values.name,
                 phone: formik.values.phone,
-                employee_details: {
+            };
+
+            if (isEmployee) {
+                payload.employee_details = {
                     country: formik.values.country,
                     city: formik.values.city,
                     date_of_birth: formik.values.date_of_birth
-                }
-            };
+                };
+            }
+
             await updateProfile(payload).unwrap();
 
             // Refresh user info after successful update
@@ -93,8 +99,10 @@ function EditProfileModal({ isOpen, onClose, user, updateProfile, isLoading }) {
                 status: "success",
                 message: t("Profile updated successfully")
             });
+            setShowApproval(false);
             onClose();
         } catch (error) {
+            setShowApproval(false);
             setApiResponse({
                 isOpen: true,
                 status: "error",
@@ -120,8 +128,8 @@ function EditProfileModal({ isOpen, onClose, user, updateProfile, isLoading }) {
             >
                 <div className={"w-full flex flex-col gap-5"}>
                     <InputAndLabel
-                        title={"Name"}
-                        placeholder={"Name"}
+                        title={t("Name")}
+                        placeholder={t("Name")}
                         isRequired={true}
                         name="name"
                         onChange={formik.handleChange}
@@ -131,8 +139,8 @@ function EditProfileModal({ isOpen, onClose, user, updateProfile, isLoading }) {
                     />
 
                     <InputAndLabel
-                        title={"Phone"}
-                        placeholder={"Phone"}
+                        title={t("Phone")}
+                        placeholder={t("Phone")}
                         isRequired={true}
                         name="phone"
                         onChange={formik.handleChange}
@@ -141,41 +149,45 @@ function EditProfileModal({ isOpen, onClose, user, updateProfile, isLoading }) {
                         error={formik.touched.phone && formik.errors.phone}
                     />
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <SelectAndLabel
-                            title={"Country"}
-                            placeholder={"Select Country"}
-                            isRequired={true}
-                            name="country"
-                            options={countryOptions}
-                            onChange={(val) => {
-                                formik.setFieldValue("country", val);
-                                formik.setFieldValue("city", ""); // Reset city on country change
-                            }}
-                            onBlur={formik.handleBlur}
-                            value={formik.values.country}
-                            error={formik.touched.country && formik.errors.country}
-                        />
-                        <SelectAndLabel
-                            title={"City"}
-                            placeholder={"Select City"}
-                            isRequired={true}
-                            name="city"
-                            options={cityOptions}
-                            onChange={(val) => formik.setFieldValue("city", val)}
-                            onBlur={formik.handleBlur}
-                            value={formik.values.city}
-                            error={formik.touched.city && formik.errors.city}
-                        />
-                    </div>
+                    {isEmployee && (
+                        <>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <SelectAndLabel
+                                    title={t("Country")}
+                                    placeholder={t("Select Country")}
+                                    isRequired={true}
+                                    name="country"
+                                    options={countryOptions}
+                                    onChange={(val) => {
+                                        formik.setFieldValue("country", val);
+                                        formik.setFieldValue("city", ""); // Reset city on country change
+                                    }}
+                                    onBlur={formik.handleBlur}
+                                    value={formik.values.country}
+                                    error={formik.touched.country && formik.errors.country}
+                                />
+                                <SelectAndLabel
+                                    title={t("City")}
+                                    placeholder={t("Select City")}
+                                    isRequired={true}
+                                    name="city"
+                                    options={cityOptions}
+                                    onChange={(val) => formik.setFieldValue("city", val)}
+                                    onBlur={formik.handleBlur}
+                                    value={formik.values.city}
+                                    error={formik.touched.city && formik.errors.city}
+                                />
+                            </div>
 
-                    <DateInput
-                        title={"Date of Birth"}
-                        isRequired={true}
-                        name="date_of_birth"
-                        onChange={formik.handleChange}
-                        value={formik.values.date_of_birth}
-                    />
+                            <DateInput
+                                title={t("Date of Birth")}
+                                isRequired={true}
+                                name="date_of_birth"
+                                onChange={formik.handleChange}
+                                value={formik.values.date_of_birth}
+                            />
+                        </>
+                    )}
                 </div>
             </Modal>
 

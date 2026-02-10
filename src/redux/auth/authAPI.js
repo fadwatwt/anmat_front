@@ -77,6 +77,13 @@ export const authApi = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    updateUserAccount: builder.mutation({
+      query: (data) => ({
+        url: "api/user/account",
+        method: "PUT",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -91,4 +98,5 @@ export const {
   useUpdatePasswordMutation,
   useAdminUpdatePasswordMutation,
   useUpdateAdminAccountMutation,
+  useUpdateUserAccountMutation,
 } = authApi;
