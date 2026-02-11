@@ -1,15 +1,16 @@
-import {RiCheckLine, RiCopperDiamondLine} from "@remixicon/react";
+import { RiCheckLine, RiCopperDiamondLine } from "@remixicon/react";
 import PropTypes from "prop-types";
 
 function PlanCard({
-                      isPlanBadge = false,
-                      planBadgeText = "Recommended",
-                      planBadgeClass = "bg-primary-100 text-primary-500",
-                      name = "",
-                      price = 0,
-                      description = "",
-                      features = [],
-                  }) {
+    isPlanBadge = false,
+    planBadgeText = "Recommended",
+    planBadgeClass = "bg-primary-100 text-primary-500",
+    name = "",
+    price = 0,
+    description = "",
+    features = [],
+    onClick,
+}) {
     return (
         <div
             className={"w-1/4 h-full rounded-xl border-box border border-gray-300 shadow-md flex flex-col items-center"}>
@@ -22,26 +23,27 @@ function PlanCard({
                             "rounded-full w-12 h-12 bg-primary-100 flex items-center justify-center"
                         }
                     >
-                    <span
-                        className={
-                            "rounded-full p-1 bg-primary-200 flex items-center justify-center"
-                        }
-                    >
-                      <RiCopperDiamondLine
-                          size={"25"}
-                          className={"text-blue-700"}
-                      />
-                    </span>
+                        <span
+                            className={
+                                "rounded-full p-1 bg-primary-200 flex items-center justify-center"
+                            }
+                        >
+                            <RiCopperDiamondLine
+                                size={"25"}
+                                className={"text-blue-700"}
+                            />
+                        </span>
                     </div>
                     <p className={"text-primary-700 text-2xl"}>
-                        Professional plan
+                        {name || "Professional plan"}
                     </p>
-                    <p className={"text-4xl font-bold text-black"}>$30/mth</p>
+                    <p className={"text-4xl font-bold text-black"}>${price}/mth</p>
                     <p className={"text-gray-400 text-sm"}>
-                        Enhanced features for growing teams.
+                        {description || "Enhanced features for growing teams."}
                     </p>
                 </div>
                 <button
+                    onClick={onClick}
                     className={
                         "rounded-[10px] bg-primary-base w-full py-2.5 text-white"
                     }
@@ -127,7 +129,7 @@ function PlanCard({
     );
 }
 
-PlanCard.propTypes  = {
+PlanCard.propTypes = {
     isPlanBadge: PropTypes.bool,
     planBadgeText: PropTypes.string,
     planBadgeClass: PropTypes.string,
@@ -135,6 +137,7 @@ PlanCard.propTypes  = {
     price: PropTypes.number,
     description: PropTypes.string,
     features: PropTypes.array,
+    onClick: PropTypes.func,
 }
 
 export default PlanCard;
