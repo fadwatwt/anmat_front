@@ -10,6 +10,14 @@ export const subscriptionPlansApi = apiSlice.injectEndpoints({
             transformResponse: (response) => response.data,
             providesTags: ["SubscriptionPlans"],
         }),
+        getSubscriberSubscriptionPlans: builder.query({
+            query: () => ({
+                url: "api/subscriber/subscription-plans",
+                method: "GET",
+            }),
+            transformResponse: (response) => response.data,
+            providesTags: ["SubscriptionPlans"],
+        }),
         getSubscriptionPlan: builder.query({
             query: (id) => ({
                 url: `api/admin/subscription-plans/${id}`,
@@ -52,6 +60,7 @@ export const subscriptionPlansApi = apiSlice.injectEndpoints({
 
 export const {
     useGetSubscriptionPlansQuery,
+    useGetSubscriberSubscriptionPlansQuery,
     useGetSubscriptionPlanQuery,
     useCreateSubscriptionPlanMutation,
     useDeleteSubscriptionPlanMutation,

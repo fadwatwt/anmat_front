@@ -20,30 +20,45 @@ const CheckoutForm = ({ amount, onFinish }) => {
             return;
         }
 
-        const clientSecret = new URLSearchParams(window.location.search).get(
-            "payment_intent_client_secret"
-        );
+        const urlParams = new URLSearchParams(window.location.search);
+        const piSecret = urlParams.get("payment_intent_client_secret");
+        const siSecret = urlParams.get("setup_intent_client_secret");
 
-        if (!clientSecret) {
-            return;
+        if (piSecret) {
+            stripe.retrievePaymentIntent(piSecret).then(({ paymentIntent }) => {
+                switch (paymentIntent.status) {
+                    case "succeeded":
+                        setMessage("Payment succeeded!");
+                        break;
+                    case "processing":
+                        setMessage("Your payment is processing.");
+                        break;
+                    case "requires_payment_method":
+                        setMessage("Your payment was not successful, please try again.");
+                        break;
+                    default:
+                        setMessage("Something went wrong.");
+                        break;
+                }
+            });
+        } else if (siSecret) {
+            stripe.retrieveSetupIntent(siSecret).then(({ setupIntent }) => {
+                switch (setupIntent.status) {
+                    case "succeeded":
+                        setMessage("Subscription setup successful!");
+                        break;
+                    case "processing":
+                        setMessage("Your setup is processing.");
+                        break;
+                    case "requires_payment_method":
+                        setMessage("Setup failed, please try again.");
+                        break;
+                    default:
+                        setMessage("Something went wrong.");
+                        break;
+                }
+            });
         }
-
-        stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
-            switch (paymentIntent.status) {
-                case "succeeded":
-                    setMessage("Payment succeeded!");
-                    break;
-                case "processing":
-                    setMessage("Your payment is processing.");
-                    break;
-                case "requires_payment_method":
-                    setMessage("Your payment was not successful, please try again.");
-                    break;
-                default:
-                    setMessage("Something went wrong.");
-                    break;
-            }
-        });
     }, [stripe]);
 
     const handleSubmit = async (e) => {
@@ -96,7 +111,7 @@ const CheckoutForm = ({ amount, onFinish }) => {
                 {isLoading ? (
                     <RiLoader4Line className="animate-spin" size={24} />
                 ) : (
-                    `Pay Now`
+                    `Complete Subscription`
                 )}
             </button>
 

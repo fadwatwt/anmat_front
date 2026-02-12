@@ -6,33 +6,48 @@ import getStripe from "@/lib/stripe-client";
 import CheckoutForm from "./CheckoutForm";
 import { RiLoader4Line } from "@remixicon/react";
 
-const StripePaymentWrapper = ({ amount, onFinish, userEmail, userName }) => {
+const StripePaymentWrapper = ({ amount, onFinish, userEmail, userName, userPhone, priceId }) => {
     const [clientSecret, setClientSecret] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        // Create PaymentIntent as soon as the component mounts
+        // Create PaymentIntent or Subscription as soon as the component mounts
         setLoading(true);
         fetch("/api/create-payment-intent", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ amount, email: userEmail, name: userName }),
+            body: JSON.stringify({
+                amount,
+                email: userEmail,
+                name: userName,
+                phone: userPhone,
+                priceId
+            }),
         })
             .then((res) => res.json())
             .then((data) => {
                 if (data.clientSecret) {
                     setClientSecret(data.clientSecret);
+                    setLoading(false);
                 } else if (data.error) {
                     setError(data.error);
+                    setLoading(false);
+                } else if (data.subscriptionId) {
+                    // This case means no clientSecret was returned by the API
+                    // We'll show an error because we want to force card collection
+                    setError("Unable to initialize secure card collection. Please verify plan details.");
+                    setLoading(false);
+                } else {
+                    setError("Failed to create a payment session.");
+                    setLoading(false);
                 }
-                setLoading(false);
             })
             .catch((err) => {
                 setError("Failed to initialize payment.");
                 setLoading(false);
             });
-    }, [amount, userEmail, userName]);
+    }, [amount, userEmail, userName, userPhone, priceId, onFinish]);
 
     const appearance = {
         theme: "stripe",
@@ -49,6 +64,7 @@ const StripePaymentWrapper = ({ amount, onFinish, userEmail, userName }) => {
             billingDetails: {
                 email: userEmail,
                 name: userName,
+                phone: userPhone,
             },
         },
     };
