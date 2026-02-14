@@ -59,14 +59,6 @@ const StripePaymentWrapper = ({ amount, onFinish, userEmail, userName, userPhone
     const options = {
         clientSecret,
         appearance,
-        // Add default values to pre-fill the form
-        defaultValues: {
-            billingDetails: {
-                email: userEmail,
-                name: userName,
-                phone: userPhone,
-            },
-        },
     };
 
     if (loading) {
@@ -90,8 +82,16 @@ const StripePaymentWrapper = ({ amount, onFinish, userEmail, userName, userPhone
     return (
         <div className="stripe-wrapper">
             {clientSecret && (
-                <Elements options={options} stripe={getStripe()}>
-                    <CheckoutForm amount={amount} onFinish={onFinish} />
+                <Elements key={clientSecret} options={options} stripe={getStripe()}>
+                    <CheckoutForm
+                        amount={amount}
+                        onFinish={onFinish}
+                        clientSecret={clientSecret}
+                        userName={userName}
+                        userEmail={userEmail}
+                        userPhone={userPhone}
+                        priceId={priceId}
+                    />
                 </Elements>
             )}
         </div>

@@ -3,7 +3,14 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 export async function POST(request) {
     try {
-        const { amount, currency = "usd", email, name, phone, priceId } = await request.json();
+        const { amount, currency = "usd", email, name, phone, priceId, paymentMethodId } = await request.json();
+
+        if (!email) {
+            return NextResponse.json(
+                { error: "User email is required to initialize checkout." },
+                { status: 400 }
+            );
+        }
 
         // 1. Search for existing customer or create/update one
         let customer;
@@ -14,9 +21,12 @@ export async function POST(request) {
 
         if (existingCustomers.data.length > 0) {
             customer = existingCustomers.data[0];
-            // Update customer if phone is provided and missing
-            if (phone && !customer.phone) {
-                customer = await stripe.customers.update(customer.id, { phone, name });
+            // Update customer if phone/name is provided and missing
+            if ((phone && !customer.phone) || (name && !customer.name)) {
+                customer = await stripe.customers.update(customer.id, {
+                    phone: phone || customer.phone,
+                    name: name || customer.name
+                });
             }
         } else {
             customer = await stripe.customers.create({
@@ -26,59 +36,72 @@ export async function POST(request) {
             });
         }
 
-        let clientSecret;
-        let subscriptionId;
+        // 2. Step 2: Formalize Subscription if we have a paymentMethodId and priceId
+        if (paymentMethodId && priceId) {
+            console.log(`Finalizing subscription for customer: ${customer.id}, price: ${priceId}`);
 
-        if (priceId) {
-            // 2a. Create Subscription if priceId is provided
+            // Attach the payment method to the customer
+            await stripe.paymentMethods.attach(paymentMethodId, { customer: customer.id });
+
+            // Set it as the default for the customer's future invoices
+            await stripe.customers.update(customer.id, {
+                invoice_settings: { default_payment_method: paymentMethodId },
+            });
+
+            // Create the subscription
             const subscription = await stripe.subscriptions.create({
                 customer: customer.id,
                 items: [{ price: priceId }],
-                payment_behavior: 'default_incomplete',
-                payment_settings: {
-                    save_default_payment_method: 'on_subscription',
-                },
-                expand: ['latest_invoice', 'latest_invoice.payment_intent', 'pending_setup_intent'],
+                trial_period_days: 30, // 30 days trial
+                expand: ['latest_invoice.payment_intent'],
             });
 
-            console.log("Subscription status:", subscription.status);
-            console.log("Has Payment Intent:", !!subscription.latest_invoice?.payment_intent);
-            console.log("Has Setup Intent:", !!subscription.pending_setup_intent);
-
-            // If there's a payment intent (immediate charge)
-            if (subscription.latest_invoice?.payment_intent) {
-                clientSecret = subscription.latest_invoice.payment_intent.client_secret;
-            }
-            // If there's a setup intent (trial / collect card without immediate charge)
-            else if (subscription.pending_setup_intent) {
-                clientSecret = subscription.pending_setup_intent.client_secret;
-            }
-            else {
-                console.log("Neither Payment nor Setup Intent found.");
-                clientSecret = null;
-            }
-            subscriptionId = subscription.id;
-        } else {
-            // 2b. Fallback to simple PaymentIntent if no priceId (one-time payment)
-            const paymentIntent = await stripe.paymentIntents.create({
-                amount: Math.round(amount * 100),
-                currency,
-                customer: customer.id,
-                setup_future_usage: "off_session",
-                automatic_payment_methods: {
-                    enabled: true,
-                },
+            return NextResponse.json({
+                subscriptionId: subscription.id,
+                status: subscription.status,
+                customerId: customer.id
             });
-            clientSecret = paymentIntent.client_secret;
         }
 
-        return NextResponse.json({
-            clientSecret,
-            customerId: customer.id,
-            subscriptionId
+        // 3. Step 1: Collect Card via SetupIntent (Default for subscriptions without payment method)
+        if (priceId) {
+            console.log(`Creating SetupIntent for customer: ${customer.id} for plan: ${priceId}`);
+            const setupIntent = await stripe.setupIntents.create({
+                customer: customer.id,
+                payment_method_types: ['card'],
+                usage: 'off_session',
+                metadata: { plan_id: priceId }
+            });
+
+            return NextResponse.json({
+                clientSecret: setupIntent.client_secret,
+                customerId: customer.id
+            });
+        }
+
+        // 4. Fallback for one-time payments (if any)
+        if (!amount || amount <= 0) {
+            return NextResponse.json(
+                { error: "Invalid amount or priceId missing." },
+                { status: 400 }
+            );
+        }
+
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: Math.round(amount * 100),
+            currency,
+            customer: customer.id,
+            payment_method_types: ['card'],
+            setup_future_usage: "off_session",
         });
+
+        return NextResponse.json({
+            clientSecret: paymentIntent.client_secret,
+            customerId: customer.id
+        });
+
     } catch (error) {
-        console.error("Stripe Error Detail:", error);
+        console.error("Stripe Route Error:", error);
         return NextResponse.json(
             { error: `Stripe Error: ${error.message}` },
             { status: 500 }
