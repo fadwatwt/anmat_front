@@ -47,11 +47,11 @@ function Desktop2Page() {
             <div className={"flex items-center gap-3"}>
               <p className={" text-white"}>
                 {" "}
-                <Link href="login"> {"Login"}</Link>
+                <Link href="sign-in"> {"Login"}</Link>
               </p>
-              <button className={"bg-white py-1.5 px-3 rounded-md "}>
+              <Link href={"register/subscriber/email"} className={"bg-white py-1.5 px-3 rounded-md "}>
                 Sign up
-              </button>
+              </Link>
             </div>
           </div>
           <div className={"w-full flex flex-col items-center gap-3"}>
@@ -72,7 +72,7 @@ function Desktop2Page() {
               <a href="/dashboard"> Get started</a>
             </button>
             <p className={"text-primary-200"}>
-              <a href="/login"> Login</a>{" "}
+              <a href="/sign-in"> Login</a>{" "}
             </p>
           </div>
           <div className={"flex justify-center w-full"}>
@@ -302,11 +302,10 @@ function Desktop2Page() {
               <p>Pay Monthly </p>
               <button
                 type={"submit"}
-                className={`w-10 h-5 flex items-center dark:shadow-inner dark:drop-shadow shadow-gray-500 dark:border border-gray-700 rounded-full p-0.5 transition-colors ${
-                  isOnSwitch
-                    ? "bg-primary-500 dark:bg-primary-200"
-                    : "bg-[#E2E4E9] dark:bg-gray-800"
-                }`}
+                className={`w-10 h-5 flex items-center dark:shadow-inner dark:drop-shadow shadow-gray-500 dark:border border-gray-700 rounded-full p-0.5 transition-colors ${isOnSwitch
+                  ? "bg-primary-500 dark:bg-primary-200"
+                  : "bg-[#E2E4E9] dark:bg-gray-800"
+                  }`}
               >
                 <div
                   className={`relative bg-white  dark:shadow-inner  dark:shadow-gray-500 dark:bg-gray-800 w-3.5 h-3.5 rounded-full  transform transition-transform flex items-center justify-center  `}
