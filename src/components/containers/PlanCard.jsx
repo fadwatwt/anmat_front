@@ -184,5 +184,4 @@ PlanCard.propTypes = {
     initialPricingIndex: PropTypes.number,
 }
 
-
 export default PlanCard;

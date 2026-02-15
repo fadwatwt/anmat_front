@@ -3,7 +3,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 export async function POST(request) {
     try {
-        const { amount, currency = "usd", email, name, phone, priceId, paymentMethodId } = await request.json();
+        const { amount, currency = "usd", email, name, phone, priceId, paymentMethodId, trialDays = 0 } = await request.json();
 
         if (!email) {
             return NextResponse.json(
@@ -48,13 +48,20 @@ export async function POST(request) {
                 invoice_settings: { default_payment_method: paymentMethodId },
             });
 
-            // Create the subscription
-            const subscription = await stripe.subscriptions.create({
+            // Create the subscription object
+            const subscriptionParams = {
                 customer: customer.id,
                 items: [{ price: priceId }],
-                trial_period_days: 30, // 30 days trial
                 expand: ['latest_invoice.payment_intent'],
-            });
+            };
+
+            // Only add trial if trialDays is greater than 0
+            if (trialDays > 0) {
+                subscriptionParams.trial_period_days = trialDays;
+            }
+
+            // Create the subscription
+            const subscription = await stripe.subscriptions.create(subscriptionParams);
 
             return NextResponse.json({
                 subscriptionId: subscription.id,

@@ -21,6 +21,7 @@ function Page() {
             plan,
             price: plan.pricing[pricingIndex].price,
             priceId: plan.stripe_price_ids[pricingIndex],
+            trialDays: plan.trial?.is_active ? plan.trial?.trial_days : 0,
         });
         setIsModalOpen(true);
     };
@@ -102,6 +103,7 @@ function Page() {
                             <StripePaymentWrapper
                                 amount={selectedPlanInfo.price}
                                 priceId={selectedPlanInfo.priceId}
+                                trialDays={selectedPlanInfo.trialDays}
                                 onFinish={() => setIsModalOpen(false)}
                                 userEmail={user?.email}
                                 userName={user?.name}

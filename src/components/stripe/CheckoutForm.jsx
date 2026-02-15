@@ -10,7 +10,7 @@ import { RiLoader4Line } from "@remixicon/react";
 
 import { useRouter } from "next/navigation";
 
-const CheckoutForm = ({ amount, onFinish, clientSecret, userName, userEmail, userPhone, priceId }) => {
+const CheckoutForm = ({ amount, onFinish, clientSecret, userName, userEmail, userPhone, priceId, trialDays }) => {
     const stripe = useStripe();
     const elements = useElements();
     const router = useRouter();
@@ -128,7 +128,8 @@ const CheckoutForm = ({ amount, onFinish, clientSecret, userName, userEmail, use
                         body: JSON.stringify({
                             email: userEmail,
                             priceId: priceId,
-                            paymentMethodId: intent.payment_method
+                            paymentMethodId: intent.payment_method,
+                            trialDays: trialDays // Pass trial days here too
                         }),
                     });
 

@@ -6,7 +6,7 @@ import getStripe from "@/lib/stripe-client";
 import CheckoutForm from "./CheckoutForm";
 import { RiLoader4Line } from "@remixicon/react";
 
-const StripePaymentWrapper = ({ amount, onFinish, userEmail, userName, userPhone, priceId }) => {
+const StripePaymentWrapper = ({ amount, onFinish, userEmail, userName, userPhone, priceId, trialDays }) => {
     const [clientSecret, setClientSecret] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -22,7 +22,8 @@ const StripePaymentWrapper = ({ amount, onFinish, userEmail, userName, userPhone
                 email: userEmail,
                 name: userName,
                 phone: userPhone,
-                priceId
+                priceId,
+                trialDays
             }),
         })
             .then((res) => res.json())
@@ -47,7 +48,7 @@ const StripePaymentWrapper = ({ amount, onFinish, userEmail, userName, userPhone
                 setError("Failed to initialize payment.");
                 setLoading(false);
             });
-    }, [amount, userEmail, userName, userPhone, priceId, onFinish]);
+    }, [amount, userEmail, userName, userPhone, priceId, trialDays, onFinish]);
 
     const appearance = {
         theme: "stripe",
@@ -91,6 +92,7 @@ const StripePaymentWrapper = ({ amount, onFinish, userEmail, userName, userPhone
                         userEmail={userEmail}
                         userPhone={userPhone}
                         priceId={priceId}
+                        trialDays={trialDays}
                     />
                 </Elements>
             )}
