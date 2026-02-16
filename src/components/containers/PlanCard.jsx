@@ -130,7 +130,7 @@ function PlanCard({
                                     <div className="flex flex-col gap-1.5 flex-1">
                                         <div className="flex flex-col">
                                             <p className={"text-sm text-gray-800 font-bold"}>
-                                                {feature.plan_feature?.title || feature.title || feature.feature_type?.title || "Premium Feature"}
+                                                {feature.plan_feature?.title || feature.title || feature.feature_type?.title || "Feature"}
                                             </p>
                                             {(feature.plan_feature?.details || feature.details || feature.feature_type?.details) && (
                                                 <p className="text-xs text-gray-500 leading-normal">
