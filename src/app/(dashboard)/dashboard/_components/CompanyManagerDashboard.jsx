@@ -13,12 +13,44 @@ const Page = dynamic(() => import("@/components/Page"));
 import TasksSummaryChart from "../../analytics/_components/employee/TasksSummaryChart";
 import DepartmentsAnalytics from "../../analytics/_components/company_manager/departments/DepartmentsAnalytics";
 import EmployeeRequests from "./employee/EmployeeRequests";
+import { useGetSubscriberTaskStatisticsStatusQuery } from "@/redux/tasks/subscriberTasksApi";
 
 const AdminDashboard = () => {
   const { t } = useTranslation("common");
   // const [theme, setTheme] = useState("light");
   const [isRatingModal, setIsModalSetting] = useState(false);
   const [isConfirmApprovalAlert, setIsConfirmApprovalAlert] = useState(false);
+
+  const { data: statsData } = useGetSubscriberTaskStatisticsStatusQuery();
+
+  const statusColorMap = {
+    open: "#375DFB", // Blue
+    in_progress: "#F17B2C", // Orange
+    completed: "#38C793", // Green
+    cancelled: "#DF1C41", // Red
+    overdue: "#9E1C1C", // Dark Red
+    on_hold: "#6B7280", // Gray
+    pending: "#FACC15", // Yellow
+  };
+
+  const extraColors = ["#8B5CF6", "#EC4899", "#06B6D4", "#10B981", "#F59E0B"];
+
+  const getStatusColor = (status, index) => {
+    const key = status.toLowerCase().replace(/\s+/g, '_');
+    return statusColorMap[key] || extraColors[index % extraColors.length];
+  };
+
+  const chartData = statsData?.data ? {
+    total: statsData.data.total,
+    records: Object.entries(statsData.data.status_counts).map(([status, count], index) => ({
+      title: status.charAt(0).toUpperCase() + status.slice(1).replace(/_/g, " "),
+      value: count,
+      color: getStatusColor(status, index),
+    })),
+  } : {
+    total: 0,
+    records: []
+  };
 
   useEffect(() => {
     // const storedTheme = typeof window !== "undefined" && localStorage.getItem("theme");
@@ -123,7 +155,7 @@ const AdminDashboard = () => {
     <Page isTitle={false}>
       <div className="flex flex-col md:flex-row items-stretch gap-4 justify-between w-full">
         <div className="w-full md:w-1/2">
-          <TasksSummaryChart />
+          <TasksSummaryChart data={chartData} />
         </div>
         <div className="w-full md:w-1/2">
           <DepartmentsAnalytics />

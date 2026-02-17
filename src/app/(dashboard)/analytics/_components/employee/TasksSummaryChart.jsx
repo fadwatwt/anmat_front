@@ -3,34 +3,14 @@
 import DonutChartComponent from "@/components/containers/chart/DonutChartComponent";
 import DefaultSelect from "@/components/Form/DefaultSelect";
 
-const TasksSummaryChart = () => {
+const TasksSummaryChart = ({ data }) => {
 
-    const chartData = {
-        total: 300,
-        records: [
-
-            {
-                title: "Active",
-                value: 50,
-                color: "#375DFB"
-            },
-            {
-                title: "Completed before due date",
-                value: 75,
-                color: "#38C793"
-            },
-            {
-                title: "Late Completed",
-                value: 100,
-                color: "#F17B2C"
-            },
-            {
-                title: "Overdue",
-                value: 75,
-                color: "#DF1C41"
-            }
-        ]
+    const defaultChartData = {
+        total: 0,
+        records: []
     };
+
+    const displayData = data || defaultChartData;
 
     return (
         <DonutChartComponent
@@ -41,7 +21,7 @@ const TasksSummaryChart = () => {
                 </div>
             }
             subtitle={"TASKS"}
-            data={chartData}
+            data={displayData}
         />
     );
 };

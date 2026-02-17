@@ -41,6 +41,13 @@ export const subscriberTasksApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: (result, error, { id }) => ["Tasks", { type: "Tasks", id }],
         }),
+        getSubscriberTaskStatisticsStatus: builder.query({
+            query: () => ({
+                url: "api/subscriber/organization/tasks/statistics/status",
+                method: "GET",
+            }),
+            providesTags: ["Tasks"],
+        }),
     }),
 });
 
@@ -50,4 +57,5 @@ export const {
     useDeleteSubscriberTaskMutation,
     useGetSubscriberTaskDetailsQuery,
     useUpdateSubscriberTaskMutation,
+    useGetSubscriberTaskStatisticsStatusQuery,
 } = subscriberTasksApi;
