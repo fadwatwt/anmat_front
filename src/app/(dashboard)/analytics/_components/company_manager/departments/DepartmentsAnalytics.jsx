@@ -3,31 +3,25 @@
 import DefaultSelect from "@/components/Form/DefaultSelect";
 import BarChartComponent from "@/components/containers/chart/BarChartComponent";
 
+import { useGetDepartmentsQuery } from "@/redux/departments/departmentsApi";
+
 const DepartmentsAnalytics = () => {
+    const { data: departments = [], isLoading } = useGetDepartmentsQuery();
 
     const barGab = 4;
-    const monthlyData = [
-        { name: "Jan", onTime: 45, late: 35 },
-        { name: "Feb", onTime: 65, late: 55 },
-        { name: "Mar", onTime: 35, late: 30 },
-        { name: "Apr", onTime: 60, late: 85 },
-        { name: "May", onTime: 55, late: 30 },
-        { name: "Jun", onTime: 50, late: 45 },
-    ];
+
+    const chartData = departments.map(dept => ({
+        name: dept.name,
+        rate: parseFloat(((dept.rate || 0) * 5).toFixed(2))
+    }));
+
     const bars = [
         {
-            dataKey: 'onTime',
-            fill: '#38C793',
-            name: 'On-Time Completed',
+            dataKey: 'rate',
+            fill: '#375DFB',
+            name: 'Department Rating',
             radius: [15, 15, 0, 0],
-            barSize: 15
-        },
-        {
-            dataKey: 'late',
-            fill: '#F17B2C',
-            name: 'Late Completed',
-            radius: [15, 15, 0, 0],
-            barSize: 15
+            barSize: 30
         }
     ];
 
@@ -47,9 +41,11 @@ const DepartmentsAnalytics = () => {
                 </div>
             }
             barGab={barGab}
-            monthlyData={monthlyData}
+            monthlyData={chartData}
             bars={bars}
-            yaxisTitle="Number of tasks"
+            yaxisTitle="Rating"
+            domain={[0, 5]}
+            ticks={[0, 1, 2, 3, 4, 5]}
         />
     );
 };

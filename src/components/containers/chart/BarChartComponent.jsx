@@ -11,7 +11,9 @@ const BarChartComponent = ({
     barGab,
     monthlyData,
     bars,
-    yaxisTitle = ''
+    yaxisTitle = '',
+    domain,
+    ticks
 }) => {
 
     return (
@@ -21,7 +23,7 @@ const BarChartComponent = ({
             toolbar={toolbar}
             main={
                 <div className="flex justify-center mb-6 w-full">
-                    <BarChartDraw barGab={barGab} monthlyData={monthlyData} bars={bars} yaxisTitle={yaxisTitle} />
+                    <BarChartDraw barGab={barGab} monthlyData={monthlyData} bars={bars} yaxisTitle={yaxisTitle} domain={domain} ticks={ticks} />
                 </div>
             }
             footer={
