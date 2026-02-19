@@ -10,6 +10,13 @@ export const employeeTasksApi = apiSlice.injectEndpoints({
             providesTags: ["Tasks"],
             transformResponse: (response) => response.data || response,
         }),
+        getEmployeeTaskStatisticsStatus: builder.query({
+            query: () => ({
+                url: "api/employee/tasks/statistics/status",
+                method: "GET",
+            }),
+            providesTags: ["Tasks"],
+        }),
         updateTaskStatus: builder.mutation({
             query: ({ id, status }) => ({
                 url: `api/employee/tasks/${id}/status-update`,
@@ -24,4 +31,5 @@ export const employeeTasksApi = apiSlice.injectEndpoints({
 export const {
     useGetEmployeeTasksQuery,
     useUpdateTaskStatusMutation,
+    useGetEmployeeTaskStatisticsStatusQuery,
 } = employeeTasksApi;

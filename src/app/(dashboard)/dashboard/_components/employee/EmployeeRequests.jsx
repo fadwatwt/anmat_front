@@ -4,21 +4,56 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import Table from '@/components/Tables/Table';
-import useAuthStore from '@/store/authStore';
+import { useSelector } from 'react-redux';
+import { selectUserType } from '@/redux/auth/authSlice';
 import { useGetEmployeeRequestsQuery } from '@/redux/employees/employeeRequestsApi';
+import { useGetEmployeeAuthRequestsQuery, useCancelEmployeeRequestMutation } from '@/redux/employees/employeeAuthRequestsApi';
 import { statusCell } from '@/components/StatusCell';
 import ViewRequestModal from '@/app/(dashboard)/hr/employees/modals/ViewRequestModal';
 import StatusActions from '@/components/Dropdowns/StatusActions';
-import { RiEditLine } from '@remixicon/react';
+import { RiEditLine, RiCloseCircleLine } from '@remixicon/react';
+import ApprovalAlert from '@/components/Alerts/ApprovalAlert';
+import ApiResponseAlert from '@/components/Alerts/ApiResponseAlert';
 
 export default function EmployeeRequests() {
   const { t } = useTranslation();
-  const { authUserType } = useAuthStore();
+  const authUserType = useSelector(selectUserType);
   const [activeTab, setActiveTab] = useState("DAY_OFF"); // "DAY_OFF", "SALARY_ADVANCE", "WORK_DELAY"
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [cancelAlert, setCancelAlert] = useState({ isOpen: false, requestId: null });
+  const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
-  const { data: requests = [], isLoading } = useGetEmployeeRequestsQuery();
+  const isEmployee = authUserType === 'Employee';
+
+  const { data: subscriberRequests = [], isLoading: isSubscriberLoading } = useGetEmployeeRequestsQuery(undefined, { skip: isEmployee });
+  const { data: employeeRequests = [], isLoading: isEmployeeLoading } = useGetEmployeeAuthRequestsQuery(undefined, { skip: !isEmployee });
+  const [cancelRequest, { isLoading: isCancelling }] = useCancelEmployeeRequestMutation();
+
+  const requests = isEmployee ? employeeRequests : subscriberRequests;
+  const isLoading = isEmployee ? isEmployeeLoading : isSubscriberLoading;
+
+  const handleCancelClick = (requestId) => {
+    setCancelAlert({ isOpen: true, requestId });
+  };
+
+  const handleConfirmCancel = async () => {
+    try {
+      await cancelRequest(cancelAlert.requestId).unwrap();
+      setApiResponse({
+        isOpen: true,
+        status: "success",
+        message: t("Request cancelled successfully")
+      });
+      setCancelAlert({ isOpen: false, requestId: null });
+    } catch (error) {
+      setApiResponse({
+        isOpen: true,
+        status: "error",
+        message: error?.data?.message || t("Failed to cancel request")
+      });
+    }
+  };
 
   const filteredData = requests.filter(req => req.type === activeTab);
 
@@ -55,7 +90,7 @@ export default function EmployeeRequests() {
         { label: t('Work Due At'), width: '20%' },
         { label: t('Reason'), width: '20%' },
         { label: t('Status'), width: '10%' },
-        (authUserType === 'Subscriber') && { label: '', width: '5%' },
+        { label: '', width: '5%' },
       ].filter(Boolean);
     }
   };
@@ -110,8 +145,8 @@ export default function EmployeeRequests() {
       ...commonCells,
       ...specificCells,
       statusCell(request.status, request._id),
-      (authUserType === 'Subscriber') && !['accepted', 'rejected', 'cancelled'].includes(request.status) && (
-        <div key={`actions-${index}`} className="flex justify-end pr-4">
+      <div key={`actions-${index}`} className="flex justify-end pr-4">
+        {authUserType === 'Subscriber' && !['accepted', 'rejected', 'cancelled'].includes(request.status) && (
           <StatusActions
             states={[
               {
@@ -121,39 +156,43 @@ export default function EmployeeRequests() {
               }
             ]}
           />
-        </div>
-      )
+        )}
+        {authUserType === 'Employee' && (['open', 'pending'].includes(request.status)) && (
+          <StatusActions
+            states={[
+              {
+                text: t("Cancel Request"),
+                icon: <RiCloseCircleLine size={18} className="text-red-500" />,
+                onClick: () => handleCancelClick(request.id),
+              }
+            ]}
+          />
+        )}
+      </div>
     ].filter(Boolean);
   });
+  const headerActions = (
+    <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+      {[
+        { id: "DAY_OFF", label: t("Leave Requests") },
+        { id: "SALARY_ADVANCE", label: t("Financial Requests") },
+        { id: "WORK_DELAY", label: t("Delay Requests") }
+      ].map(tab => (
+        <button
+          key={tab.id}
+          onClick={() => setActiveTab(tab.id)}
+          className={`px-4 py-1 text-sm rounded-md transition-colors ${activeTab === tab.id ? "bg-white dark:bg-gray-700 shadow-sm text-primary-600 font-medium" : "text-gray-500 dark:text-gray-400 hover:text-gray-700"}`}
+        >
+          {tab.label}
+        </button>
+      ))}
+    </div>
+  );
 
   return (
     <>
       <Table
-        customTitle={
-          <div className="flex space-x-2 border border-gray-100 bg-gray-50 p-1 rounded-xl">
-            <button
-              className={`px-4 py-2 text-sm rounded-xl transition-all ${activeTab === "DAY_OFF" ? "bg-white shadow text-primary-600 font-medium" : "bg-transparent text-gray-500 hover:text-gray-700"
-                }`}
-              onClick={() => setActiveTab("DAY_OFF")}
-            >
-              {t("Leave Requests")}
-            </button>
-            <button
-              className={`px-4 py-2 text-sm rounded-xl transition-all ${activeTab === "SALARY_ADVANCE" ? "bg-white shadow text-primary-600 font-medium" : "bg-transparent text-gray-500 hover:text-gray-700"
-                }`}
-              onClick={() => setActiveTab("SALARY_ADVANCE")}
-            >
-              {t("Financial Requests")}
-            </button>
-            <button
-              className={`px-4 py-2 text-sm rounded-xl transition-all ${activeTab === "WORK_DELAY" ? "bg-white shadow text-primary-600 font-medium" : "bg-transparent text-gray-500 hover:text-gray-700"
-                }`}
-              onClick={() => setActiveTab("WORK_DELAY")}
-            >
-              {t("Delay Requests")}
-            </button>
-          </div>
-        }
+        title={t("Employee Requests")}
         headers={getHeaders()}
         hideSearchInput={true}
         rows={rows}
@@ -161,6 +200,7 @@ export default function EmployeeRequests() {
         isCheckInput={false}
         showStatusFilter={true}
         isLoading={isLoading}
+        headerActions={headerActions}
         toolbarCustomContent={
           <button className="bg-white text-gray-700 hover:bg-gray-50 px-4 py-2 text-sm items-baseline p-2 gap-2 rounded-lg border border-gray-200 dark:border-gray-600">
             {t("See All")}
@@ -178,6 +218,23 @@ export default function EmployeeRequests() {
           request={selectedRequest}
         />
       )}
+
+      <ApprovalAlert
+        isOpen={cancelAlert.isOpen}
+        onClose={() => setCancelAlert({ isOpen: false, requestId: null })}
+        onConfirm={handleConfirmCancel}
+        title={t("Cancel Request")}
+        message={t("Are you sure you want to cancel this request? This action cannot be undone.")}
+        confirmBtnText={t("Confirm")}
+        cancelBtnText={t("Cancel")}
+      />
+
+      <ApiResponseAlert
+        isOpen={apiResponse.isOpen}
+        status={apiResponse.status}
+        message={apiResponse.message}
+        onClose={() => setApiResponse(prev => ({ ...prev, isOpen: false }))}
+      />
     </>
   );
 }
