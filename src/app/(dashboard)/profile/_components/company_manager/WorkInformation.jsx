@@ -5,6 +5,7 @@ import {
     RiCalendarLine,
     RiCheckboxCircleLine,
     RiTaskLine,
+    RiStarLine
 } from "@remixicon/react";
 import StarRating from "@/components/StarRating";
 
@@ -51,7 +52,10 @@ function WorkInformation() {
                     </div>
                 ))}
                 <div className="flex items-center gap-2">
+                    <RiStarLine size={18} className="text-gray-400" />
+                    <span className="text-gray-400 text-sm">{t("Rating")}:</span>
                     <StarRating rating={4.5} />
+                    <span className="text-gray-900 dark:text-gray-100 text-sm font-medium">4.5</span>
                 </div>
             </div>
         </div>
