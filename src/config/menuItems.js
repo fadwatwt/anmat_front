@@ -34,12 +34,12 @@ export const dashboardSideMenuItems = [
         path: '/industries',
         icon: <Category2 />
     },
-    {
-        allowed_to: ['Subscriber'],
-        title: 'Subscriptions',
-        path: '/subscriptions',
-        icon: <ReceiptText />
-    },
+    // {
+    //     allowed_to: ['Subscriber'],
+    //     title: 'Subscriptions',
+    //     path: '/subscriptions',
+    //     icon: <ReceiptText />
+    // },
     {
         allowed_to: ['Subscriber'],
         title: 'HR Management',
@@ -48,12 +48,12 @@ export const dashboardSideMenuItems = [
         children: [
             { title: 'Employees', path: '/hr/employees' },
             { title: 'Departments', path: '/hr/departments' },
-            { title: 'Teams', path: '/hr/teams' },
+            // { title: 'Teams', path: '/hr/teams' },
             { title: 'Positions', path: '/hr/positions' },
-            { title: 'Meetings', path: '/hr/meetings' },
-            { title: 'Chats', path: '/hr/chats' },
-            { title: 'Holidays', path: '/hr/holidays' },
-            { title: 'Financials', path: '/hr/financials' },
+            // { title: 'Meetings', path: '/hr/meetings' },
+            // { title: 'Chats', path: '/hr/chats' },
+            // { title: 'Holidays', path: '/hr/holidays' },
+            // { title: 'Financials', path: '/hr/financials' },
         ]
     },
     {
@@ -68,8 +68,15 @@ export const dashboardSideMenuItems = [
         path: '/permissions',
         icon: <Setting5 />
     },
+    // Just to hide the item on Subscriber and Emplyee users till it is ready
+    // {
+    //     allowed_to: ['Admin', 'Subscriber', 'Employee'],
+    //     title: 'Analytics',
+    //     path: '/analytics',
+    //     icon: <Chart2 />
+    // },
     {
-        allowed_to: ['Admin', 'Subscriber', 'Employee'],
+        allowed_to: ['Admin'],
         title: 'Analytics',
         path: '/analytics',
         icon: <Chart2 />
@@ -99,39 +106,51 @@ export const dashboardSideMenuItems = [
         icon: <TaskSquare />
     },
     {
-        allowed_to: ['Subscriber', 'Employee'],
+        allowed_to: ['Employee'],
+        title: 'Salary',
+        path: '/salary',
+        icon: <EmptyWallet />
+    },
+    {
+        allowed_to: ['Employee'],
+        title: 'Requests',
+        path: '/requests',
+        icon: <Stickynote />
+    },
+    {
+        allowed_to: ['Subscriber'], //, 'Employee'
         title: 'Projects',
         path: '/projects',
         icon: <NoteText />
     },
-    {
-        allowed_to: ['Subscriber', 'Employee'],
-        title: 'Conversations',
-        path: '/conversations',
-        icon: <Messages1 />
-    },
-    {
-        allowed_to: ['Subscriber'],
-        title: 'Social Media',
-        path: '/social-media',
-        icon: <Share />
-    },
-    {
-        allowed_to: ['Subscriber', 'Employee'],
-        title: 'Timeline',
-        path: '/time-line',
-        icon: <Edit />
-    },
+    // {
+    //     allowed_to: ['Subscriber', 'Employee'],
+    //     title: 'Conversations',
+    //     path: '/conversations',
+    //     icon: <Messages1 />
+    // },
+    // {
+    //     allowed_to: ['Subscriber'],
+    //     title: 'Social Media',
+    //     path: '/social-media',
+    //     icon: <Share />
+    // },
+    // {
+    //     allowed_to: ['Subscriber', 'Employee'],
+    //     title: 'Timeline',
+    //     path: '/time-line',
+    //     icon: <Edit />
+    // },
     {
         allowed_to: ['Admin', 'Subscriber', 'Employee'],
         title: 'Settings',
         path: '/setting',
         icon: <Setting />
     },
-    {
-        allowed_to: ['Subscriber'],
-        title: 'AI Assistant',
-        path: '/ai',
-        icon: <Cpu />
-    }
+    // {
+    //     allowed_to: ['Subscriber'],
+    //     title: 'AI Assistant',
+    //     path: '/ai',
+    //     icon: <Cpu />
+    // }
 ];

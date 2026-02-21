@@ -18,9 +18,14 @@ import { RiCake2Line } from "react-icons/ri";
 import { useState } from "react";
 import EditProfileModal from "@/app/(dashboard)/profile/_components/modals/EditProfile.modal.jsx";
 import ChangePasswordModal from "@/app/(dashboard)/profile/_components/modals/ChangePassword.modal.jsx";
+import { useSelector } from "react-redux";
+import { selectUser } from "@/redux/auth/authSlice";
+import { useUpdateUserAccountMutation } from "@/redux/auth/authAPI";
 
 function CompanyManagerProfile() {
     const { t, i18n } = useTranslation();
+    const user = useSelector(selectUser);
+    const [updateUserAccount, { isLoading: isUpdating }] = useUpdateUserAccountMutation();
     const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
     const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
 
@@ -41,7 +46,7 @@ function CompanyManagerProfile() {
                                 <div className={"flex justify-between items-start"}>
                                     <div className={"relative h-[80px] w-[80px]"}>
                                         <img className={"rounded-full h-[80px] w-[80px] object-cover border-4 border-white dark:border-gray-800"}
-                                            src={"https://randomuser.me/api/portraits/men/32.jpg"} alt={"image-user"} />
+                                            src={user?.avatar || "/images/userProfile.dark.png"} alt={"image-user"} />
                                         <RiCheckboxCircleFill size="24"
                                             className="absolute top-0 right-0 bg-white dark:bg-gray-800 rounded-full text-blue-500" />
                                     </div>
@@ -60,22 +65,22 @@ function CompanyManagerProfile() {
                                         <div className={"flex items-center gap-2"}>
                                             <RiUserLine size={18} className={"text-gray-400"} />
                                             <span className={"text-gray-400 text-sm"}>{t("Name")}:</span>
-                                            <p className={"text-gray-900 dark:text-white text-sm font-medium"}>Rawan Ahmed</p>
+                                            <p className={"text-gray-900 dark:text-white text-sm font-medium"}>{user?.name || "N/A"}</p>
                                         </div>
                                         <div className={"flex items-center gap-2"}>
                                             <RiCake2Line size={18} className={"text-gray-400"} />
                                             <span className={"text-gray-400 text-sm"}>{t("Age")}:</span>
-                                            <p className={"text-gray-900 dark:text-white text-sm font-medium"}>28</p>
+                                            <p className={"text-gray-900 dark:text-white text-sm font-medium"}>{user?.age || "N/A"}</p>
                                         </div>
                                         <div className={"flex items-center gap-2"}>
                                             <RiGraduationCapLine size={18} className={"text-gray-400"} />
                                             <span className={"text-gray-400 text-sm"}>{t("Education")}:</span>
-                                            <p className={"text-gray-900 dark:text-white text-sm font-medium truncate"}>Bachelor’s Degree in Journalism</p>
+                                            <p className={"text-gray-900 dark:text-white text-sm font-medium truncate"}>{user?.education || "N/A"}</p>
                                         </div>
                                         <div className={"flex items-center gap-2"}>
                                             <RiBuilding2Line size={18} className={"text-gray-400"} />
                                             <span className={"text-gray-400 text-sm"}>{t("Department")}:</span>
-                                            <p className={"text-gray-900 dark:text-white text-sm font-medium"}>{t("Publishing")}</p>
+                                            <p className={"text-gray-900 dark:text-white text-sm font-medium"}>{user?.department?.name || t("N/A")}</p>
                                         </div>
                                     </div>
 
@@ -85,21 +90,23 @@ function CompanyManagerProfile() {
                                         <div className={"flex items-center gap-2"}>
                                             <RiBriefcaseLine size={18} className={"text-gray-400"} />
                                             <span className={"text-gray-400 text-sm"}>{t("Role")}:</span>
-                                            <p className={"text-gray-900 dark:text-white text-sm font-medium"}>{t("Content Editor")}</p>
+                                            <p className={"text-gray-900 dark:text-white text-sm font-medium"}>{user?.type || t("N/A")}</p>
                                         </div>
                                         <div className={"flex items-center gap-2"}>
                                             <RiMailLine size={18} className={"text-gray-400"} />
                                             <span className={"text-gray-400 text-sm"}>{t("Email")}:</span>
-                                            <p className={"text-gray-900 dark:text-white text-sm font-medium"}>Rawan@email.com</p>
+                                            <p className={"text-gray-900 dark:text-white text-sm font-medium"}>{user?.email || "N/A"}</p>
                                         </div>
                                         <div className={"flex items-center gap-2"}>
                                             <RiPhoneLine size={18} className={"text-gray-400"} />
                                             <span className={"text-gray-400 text-sm"}>{t("Phone Number")}:</span>
                                             <div className="flex items-center gap-2">
-                                                <p className={"text-gray-900 dark:text-white text-sm font-medium"}>56789087</p>
-                                                <span className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full flex items-center gap-1">
-                                                    <RiCheckboxCircleFill size={10} /> {t("Verified")}
-                                                </span>
+                                                <p className={"text-gray-900 dark:text-white text-sm font-medium"}>{user?.phone || user?.phoneNumber || "N/A"}</p>
+                                                {user?.is_verified && (
+                                                    <span className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full flex items-center gap-1">
+                                                        <RiCheckboxCircleFill size={10} /> {t("Verified")}
+                                                    </span>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -166,12 +173,13 @@ function CompanyManagerProfile() {
             <EditProfileModal
                 isOpen={isEditProfileOpen}
                 onClose={() => setIsEditProfileOpen(false)}
-                onClick={() => { }}
+                user={user}
+                updateProfile={updateUserAccount}
+                isLoading={isUpdating}
             />
             <ChangePasswordModal
                 isOpen={isChangePasswordOpen}
                 onClose={() => setIsChangePasswordOpen(false)}
-                onClick={() => { }}
             />
         </Page>
     );

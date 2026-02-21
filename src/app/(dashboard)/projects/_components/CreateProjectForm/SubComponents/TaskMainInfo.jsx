@@ -1,310 +1,296 @@
-import { useFormik } from "formik";
 import InputAndLabel from "@/components/Form/InputAndLabel.jsx";
 import TextAreaWithLabel from "@/components/Form/TextAreaWithLabel.jsx";
 import DefaultSelect from "@/components/Form/DefaultSelect.jsx";
-import FileUpload from "@/components/Form/FileUpload.jsx";
 import DateInput from "@/components/Form/DateInput.jsx";
-import ElementsSelect from "@/components/Form/ElementsSelect.jsx";
-import Priority from "../../TableInfo/Priority.jsx";
-import Status from "../../TableInfo/Status.jsx";
 import { useTranslation } from "react-i18next";
 import PropTypes from "prop-types";
+import { useGetEmployeesQuery } from "@/redux/employees/employeesApi";
+import { useGetDepartmentsQuery } from "@/redux/departments/departmentsApi";
+import { useGetSubscriberProjectsQuery } from "@/redux/projects/subscriberProjectsApi";
+import TagInput from "@/components/Form/TagInput";
+import { defaultPhoto } from "@/Root.Route";
 
-function TaskMainInfo({ task, type = "task", values, handleChange, setFieldValue, optionsManager: propsOptionsManager, optionsDepartment: propsOptionsDepartment }) {
+function TaskMainInfo({ task, type = "project", values, handleChange, setFieldValue, lockedProjectId, lockedProjectName }) {
   const { t } = useTranslation();
 
-  // Mock users (replace with actual API data)
-  const users = [
-    {
-      id: "66f15fb144588bfbce5cb808",
-      name: "check-permission-admin",
-      username: "Admin",
-      image: "https://example.com/admin.jpg",
-    },
-    {
-      id: "2",
-      name: "Ahmed Khalil",
-      username: "Ahmed",
-      image: "https://example.com/ahmed.jpg",
-    },
-  ];
+  // Fetch real employees
+  const { data: employeesData, isLoading: isLoadingEmployees } = useGetEmployeesQuery();
+  const employees = employeesData || [];
 
-  // Map users to dropdown options
-  const mockOptionsManager = users.map((user) => ({
-    id: user.id,
-    value: user.name,
+  // Fetch real departments
+  const { data: departmentsData, isLoading: isLoadingDepartments } = useGetDepartmentsQuery();
+  const departments = departmentsData || [];
+
+  // Fetch real projects (for task creation)
+  const { data: projectsData, isLoading: isLoadingProjects } = useGetSubscriberProjectsQuery();
+  const projects = projectsData || [];
+
+  // Map employees to dropdown options
+  const optionsManager = employees.map((emp) => ({
+    id: emp.user_id,
+    value: emp.user?.name || emp.name || t("Unknown"),
   }));
 
-  const optionsManager = propsOptionsManager || mockOptionsManager;
+  // Map employees to TagInput suggestions (for Project Assignees)
+  const employeeSuggestions = employees.map(emp => ({
+    id: emp.user_id,
+    name: emp.user?.name || emp.name || t("Unknown"),
+    image: emp.user?.imageProfile || defaultPhoto
+  }));
+
+  // Map projects to dropdown options
+  const optionsProjects = projects.map(proj => ({
+    id: proj._id,
+    value: proj.name
+  }));
 
   // Department options
-  const mockOptionsDepartment = [
-    { id: "", value: `${t("Select Department")}...` },
-    { id: "1", value: "UI / UX Design" },
-    { id: "2", value: "Design" },
+  const optionsDepartment = departments.map(dept => ({
+    id: dept._id,
+    value: dept.name
+  }));
+
+  // Status options for projects
+  const projectStatusOptions = [
+    { id: "open", value: t("Open") },
+    { id: "in-progress", value: t("In Progress") },
+    { id: "completed", value: t("Completed") },
+    { id: "rejected", value: t("Rejected") },
+    { id: "cancelled", value: t("Cancelled") },
   ];
 
-  const optionsDepartment = propsOptionsDepartment || mockOptionsDepartment;
-
-  // Status options
-  const optionsStatus = [
-    { id: "1", element: <Status type={"Scheduled"} title={"Scheduled"} /> },
-    { id: "2", element: <Status type={"Delayed"} title={"Delayed"} /> },
-    { id: "3", element: <Status type={"Inactive"} title={"Inactive"} /> },
-    { id: "4", element: <Status type={"Active"} title={"Active"} /> },
+  // Status options for tasks
+  const taskStatusOptions = [
+    { id: "open", value: t("Open") },
+    { id: "pending", value: t("Pending") },
+    { id: "in-progress", value: t("In Progress") },
+    { id: "completed", value: t("Completed") },
+    { id: "rejected", value: t("Rejected") },
+    { id: "cancelled", value: t("Cancelled") },
   ];
 
-  // Rating options
-  const optionsRating = [
-    { id: "1", value: "1" },
-    { id: "2", value: "2" },
-    { id: "3", value: "3" },
-    { id: "4", value: "4" },
-    { id: "5", value: "5" },
-  ];
-
-  // Projects options (Mock)
-  const optionsProjects = [
-    { id: "1", value: "Project A" },
-    { id: "2", value: "Project B" },
-  ];
-
-  // Project Templates options (Mock)
-  const optionsTemplates = [
-    { id: "1", value: "Template A" },
-    { id: "2", value: "Template B" },
-  ];
-
-  console.log(values)
+  const optionsStatus = type === "project" ? projectStatusOptions : taskStatusOptions;
 
   // Priority options
   const optionsPriority = [
-    {
-      id: "1",
-      element: (
-        <Priority
-          type={"Urgent and Important"}
-          title={"Urgent and Important"}
-        />
-      ),
-    },
-    { id: "2", element: <Priority type={"Urgent"} title={"Urgent"} /> },
-    { id: "3", element: <Priority type={"Not Urgent"} title={"Not Urgent"} /> },
-    {
-      id: "4",
-      element: <Priority type={"Not Important"} title={"Not Important"} />,
-    },
+    { id: "low", value: t("Low") },
+    { id: "medium", value: t("Medium") },
+    { id: "high", value: t("High") },
+    { id: "urgent", value: t("Urgent") },
   ];
 
-  // Formik
-  const formik = useFormik({
-    initialValues: {
-      taskName: task?.name || "",
-      assignedProject: task?.assignedProject || "",
-      projectTemplate: task?.projectTemplate || "",
-      description: task?.description || "",
-      department: task?.department || "",
-      assignedEmployee: task?.assignedTo?._id || "",
-      assignedDate: task?.startDate
-        ? new Date(task.startDate).toISOString().split("T")[0]
-        : "",
-      dueDate: task?.endDate
-        ? new Date(task.endDate).toISOString().split("T")[0]
-        : "",
-      startedAt: task?.startedAt || "",
-      endedAt: task?.endedAt || "",
-      status: task?.status || optionsStatus[0].id,
-      priority: task?.priority || optionsPriority[0].id,
-      dependentDepartment: task?.dependentDepartment || "",
-      rating: task?.rating || "",
-      comment: task?.comment || "",
-    },
-    onSubmit: (values) => {
-      console.log("Submitted Values:", values);
-    },
-  });
-
-  const valuesInputs = values || formik.values;
-  const handleChangeFunc = handleChange || formik.handleChange;
-
-  // Handle dropdown selection
-  const handleSelectChange = (name, value) => {
+  const handleSelectChange = (name, val) => {
     if (setFieldValue) {
-      setFieldValue(name, value);
-    } else {
-      formik.setFieldValue(name, value);
+      const valueToSet = Array.isArray(val) ? (val[0]?.id || "") : val;
+      setFieldValue(name, valueToSet);
     }
   };
 
+  const getSingleValue = (val, options) => {
+    if (!val) return [];
+    const found = options.find(o => o.id === val);
+    return found ? [found] : [];
+  };
+
   return (
-    <div
-      className={"flex flex-col gap-4 max-h-full"}
-    >
-      <p
-        className={
-          "w-full py-[6px] bg-weak-100 text-start text-xs dark:bg-weak-800 text-weak-800 dark:text-weak-100"
-        }
-      >
-        {t("Task main info")}:
+    <div className={"flex flex-col gap-4 max-h-full"}>
+      <p className={"w-full py-[6px] bg-weak-100 text-start text-xs dark:bg-weak-800 text-weak-800 dark:text-weak-100"}>
+        {type === "project" ? t("Project Main Info") : t("Task Main Info")}:
       </p>
 
-      {/* Task Name */}
+      {/* Project Selection (only for Task) */}
+      {type === "task" && (
+        lockedProjectId ? (
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              {t("Project")} <span className="text-red-500">*</span>
+            </label>
+            <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+              <span className="text-gray-700 dark:text-gray-300">{lockedProjectName || t("Selected Project")}</span>
+            </div>
+          </div>
+        ) : (
+          <DefaultSelect
+            title={t("Project")}
+            options={optionsProjects}
+            multi={false}
+            value={getSingleValue(values?.project_id, optionsProjects)}
+            onChange={(val) => handleSelectChange("project_id", val)}
+            name="project_id"
+            placeholder={isLoadingProjects ? t("Loading...") : t("Select Project...")}
+            isRequired
+          />
+        )
+      )}
+
+      {/* Name / Title */}
       <InputAndLabel
-        value={valuesInputs.taskName}
-        onChange={handleChangeFunc}
-        name="taskName"
+        value={type === "project" ? (values?.name || "") : (values?.title || "")}
+        onChange={handleChange}
+        name={type === "project" ? "name" : "title"}
         type="text"
-        title={type === "task" ? "Task Name" : "Project Name"}
-        placeholder="Task Name..."
-      />
-
-      {/* Assigned Project */}
-      <DefaultSelect
-        title="Assigned Project"
-        options={optionsProjects}
-        defaultValue={valuesInputs.assignedProject}
-        onChange={(value) => handleSelectChange("assignedProject", value)}
-        name="assignedProject"
-        placeholder="Select project..."
-      />
-
-      {/* Project Template */}
-      <DefaultSelect
-        title="Project Template"
-        options={optionsTemplates}
-        defaultValue={valuesInputs.projectTemplate}
-        onChange={(value) => handleSelectChange("projectTemplate", value)}
-        name="projectTemplate"
-        placeholder="Select project..."
+        title={type === "project" ? t("Project Name") : t("Task Title")}
+        placeholder={type === "project" ? t("Project Name") : t("Task Title")}
+        isRequired
       />
 
       {/* Description */}
       <TextAreaWithLabel
-        value={valuesInputs.description}
-        onChange={handleChangeFunc}
+        value={values?.description || ""}
+        onChange={handleChange}
         name="description"
-        title="Description"
-        placeholder="Add a description"
+        title={t("Description")}
+        placeholder={t("Add a description")}
       />
 
-      {/* Department */}
-      <DefaultSelect
-        title="Department"
-        options={optionsDepartment}
-        defaultValue={valuesInputs.department}
-        onChange={(value) => handleSelectChange("department", value)}
-        name="department"
-        placeholder="Select Department..."
-      />
-
-      {/* Assigned Employee */}
-      <DefaultSelect
-        title="Assigned Employee *"
-        options={optionsManager}
-        defaultValue={valuesInputs.assignedEmployee}
-        onChange={(value) => handleSelectChange("assignedEmployee", value)}
-        name="assignedEmployee"
-        placeholder="Select Employees..."
-      />
-
-
-      {/* Assigned Date & Due Date */}
-      <div className={"flex items-center justify-center gap-2"}>
-        <DateInput
-          value={valuesInputs.assignedDate}
-          onChange={handleChangeFunc}
-          name="assignedDate"
-          title="Assigned Date *"
-          className={"flex-1"}
-          placeholder="DD / MM / YYYY"
+      <div className={"grid grid-cols-2 gap-4"}>
+        {/* Department */}
+        <DefaultSelect
+          title={t("Department")}
+          options={optionsDepartment}
+          multi={false}
+          value={getSingleValue(values?.department_id, optionsDepartment)}
+          onChange={(val) => handleSelectChange("department_id", val)}
+          name="department_id"
+          placeholder={t("Select Department...")}
         />
-        <DateInput
-          value={valuesInputs.dueDate}
-          onChange={handleChangeFunc}
-          name="dueDate"
-          title="Due Date *"
-          className={"flex-1"}
-          placeholder="DD / MM / YYYY"
-        />
-      </div>
 
-      {/* Started At & Ended At */}
-      <div className={"flex items-center justify-center gap-2"}>
-        <DateInput
-          value={valuesInputs.startedAt}
-          onChange={handleChangeFunc}
-          name="startedAt"
-          title="Started at *"
-          className={"flex-1"}
-          placeholder="DD / MM / YYYY"
-        />
-        <DateInput
-          value={valuesInputs.endedAt}
-          onChange={handleChangeFunc}
-          name="endedAt"
-          title="Ended At *"
-          className={"flex-1"}
-          placeholder="DD / MM / YYYY"
-        />
-      </div>
-
-      {/* Status and Priority */}
-      <div className={" relative flex items-center justify-center gap-2"}>
-        <div className={"relative flex-1"}>
-          <ElementsSelect
-            title="Status"
-            options={optionsStatus}
-            defaultValue={[optionsStatus[0]]} // Pass the selected ID directly
-            onChange={(value) => handleSelectChange("status", value)}
-            name="status"
-            classNameContainer={"w-full"}
-            placeholder="Select Status..."
-          />
-        </div>
-        <div className={"relative flex-1"}>
-          <ElementsSelect
-            title="Priority"
+        {/* Priority (only for Task) */}
+        {type === "task" ? (
+          <DefaultSelect
+            title={t("Priority")}
             options={optionsPriority}
-            defaultValue={valuesInputs.priority} // Pass the selected ID directly
-            onChange={(value) => handleSelectChange("priority", value)}
+            multi={false}
+            value={getSingleValue(values?.priority, optionsPriority)}
+            onChange={(val) => handleSelectChange("priority", val)}
             name="priority"
-            classNameContainer={"flex-1"}
-            placeholder="Select Priority..."
+            placeholder={t("Select Priority...")}
           />
-        </div>
+        ) : (
+          /* Project Manager (only for Project) */
+          <DefaultSelect
+            title={t("Project Manager")}
+            options={optionsManager}
+            multi={false}
+            value={getSingleValue(values?.manager_id, optionsManager)}
+            onChange={(val) => handleSelectChange("manager_id", val)}
+            name="manager_id"
+            placeholder={t("Select Project Manager...")}
+          />
+        )}
       </div>
 
-      {/* Dependent Department */}
-      <DefaultSelect
-        title={"Department Department"}
-        defaultValue={valuesInputs.dependentDepartment}
-        onChange={(value) => handleSelectChange("dependentDepartment", value)}
-        name="dependentDepartment"
-        options={optionsDepartment}
-        placeholder="Select Department.."
-      />
+      {/* Assignees / Assignee_id */}
+      {type === "task" ? (
+        <DefaultSelect
+          title={t("Assignee")}
+          options={optionsManager}
+          multi={false}
+          value={getSingleValue(values?.assignee_id, optionsManager)}
+          onChange={(val) => handleSelectChange("assignee_id", val)}
+          name="assignee_id"
+          placeholder={t("Select Assignee...")}
+          isRequired
+        />
+      ) : (
+        <TagInput
+          title={t("Assignees")}
+          isRequired={false}
+          suggestions={employeeSuggestions}
+          placeholder={isLoadingEmployees ? t("Loading...") : t("Select Assignees...")}
+          value={values?.assignees_ids || []}
+          onChange={(val) => setFieldValue("assignees_ids", val)}
+        />
+      )}
 
-      {/* Rating */}
-      <DefaultSelect
-        title="Rating"
-        options={optionsRating}
-        defaultValue={valuesInputs.rating}
-        onChange={(value) => handleSelectChange("rating", value)}
-        name="rating"
-        placeholder="Select rate.."
-      />
+      {/* Dates Section */}
+      <div className={"grid grid-cols-2 gap-4"}>
+        <DateInput
+          value={values?.start_date || ""}
+          onChange={handleChange}
+          name="start_date"
+          title={t("Start Date")}
+          placeholder="DD / MM / YYYY"
+        />
+        <DateInput
+          value={values?.due_date || ""}
+          onChange={handleChange}
+          name="due_date"
+          title={t("Due Date")}
+          placeholder="DD / MM / YYYY"
+        />
+      </div>
 
-      {/* File Upload */}
-      <FileUpload />
+      <div className={"grid grid-cols-2 gap-4"}>
+        {type === "project" ? (
+          <>
+            <DateInput
+              value={values?.started_in || ""}
+              onChange={handleChange}
+              name="started_in"
+              title={t("Started at")}
+              placeholder="DD / MM / YYYY"
+            />
+            <DateInput
+              value={values?.finished_in || ""}
+              onChange={handleChange}
+              name="finished_in"
+              title={t("Finished at")}
+              placeholder="DD / MM / YYYY"
+            />
+          </>
+        ) : (
+          <DateInput
+            value={values?.end_date || ""}
+            onChange={handleChange}
+            name="end_date"
+            title={t("End Date")}
+            placeholder="DD / MM / YYYY"
+          />
+        )}
+      </div>
 
-      {/* Comment */}
-      <TextAreaWithLabel
-        value={valuesInputs.comment}
-        onChange={handleChangeFunc}
-        name="comment"
-        title="Comment"
-        placeholder="Add a comment"
-      />
+      <div className={"grid grid-cols-2 gap-4 items-end"}>
+        {/* Status */}
+        <DefaultSelect
+          title={t("Status")}
+          options={optionsStatus}
+          multi={false}
+          value={getSingleValue(values?.status, optionsStatus)}
+          onChange={(val) => handleSelectChange("status", val)}
+          name="status"
+          placeholder={t("Select Status...")}
+        />
+
+        {/* Progress */}
+        <InputAndLabel
+          value={values?.progress || 0}
+          onChange={handleChange}
+          name="progress"
+          type="number"
+          title={t("Progress (%)")}
+          placeholder="0"
+          min="0"
+          max="100"
+        />
+      </div>
+
+      {/* is_template (only for Task) */}
+      {type === "task" && (
+        <div className="flex items-center gap-2 mt-2">
+          <input
+            type="checkbox"
+            id="is_template"
+            name="is_template"
+            checked={values?.is_template || false}
+            onChange={(e) => setFieldValue("is_template", e.target.checked)}
+            className="w-4 h-4 text-primary-base border-gray-300 rounded focus:ring-primary-500"
+          />
+          <label htmlFor="is_template" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            {t("Is Template")}
+          </label>
+        </div>
+      )}
     </div>
   );
 }
@@ -312,8 +298,11 @@ function TaskMainInfo({ task, type = "task", values, handleChange, setFieldValue
 TaskMainInfo.propTypes = {
   task: PropTypes.object,
   type: PropTypes.string,
-  values: PropTypes.array,
+  values: PropTypes.object,
   handleChange: PropTypes.func,
+  setFieldValue: PropTypes.func,
+  lockedProjectId: PropTypes.string,
+  lockedProjectName: PropTypes.string,
 };
 
 export default TaskMainInfo;

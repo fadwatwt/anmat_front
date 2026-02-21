@@ -53,6 +53,7 @@ function EmployeeInfoForm({ formData, updateFormData }) {
                 </div>
                 <DateInput
                     title={t("Date of Birth")}
+                    isRequired={true}
                     value={formData.employee_detail.date_of_birth}
                     onChange={(e) => updateFormData("date_of_birth", e.target.value, true)}
                 />

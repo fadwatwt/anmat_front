@@ -41,6 +41,29 @@ export const employeesApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["Employees"],
         }),
+        inviteEmployee: builder.mutation({
+            query: (data) => ({
+                url: "api/subscriber/employee-invitations",
+                method: "POST",
+                body: data,
+            }),
+        }),
+        getNewEmployees: builder.query({
+            query: () => ({
+                url: "api/subscriber/organization/employees/new",
+                method: "GET",
+            }),
+            transformResponse: (response) => response.data,
+            providesTags: ["Employees"],
+        }),
+        createEmployeeDetail: builder.mutation({
+            query: (data) => ({
+                url: "api/subscriber/organization/employees/detail",
+                method: "POST",
+                body: data,
+            }),
+            invalidatesTags: ["Employees"],
+        }),
     }),
 });
 
@@ -50,4 +73,7 @@ export const {
     useUpdateEmployeeMutation,
     useDeleteEmployeeMutation,
     useToggleEmployeeActivityMutation,
+    useInviteEmployeeMutation,
+    useGetNewEmployeesQuery,
+    useCreateEmployeeDetailMutation,
 } = employeesApi;

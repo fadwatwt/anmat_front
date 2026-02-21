@@ -11,7 +11,9 @@ const BarChartDraw = ({
     barGab = 4,
     monthlyData,
     bars,
-    yaxisTitle = ''
+    yaxisTitle = '',
+    domain = [0, 125],
+    ticks = [0, 25, 50, 75, 100, 125]
 }) => {
     const theme = typeof window !== "undefined" ? localStorage.getItem("theme") : null;
 
@@ -42,8 +44,8 @@ const BarChartDraw = ({
                             }}
                         />
                         <YAxis
-                            domain={[0, 125]}
-                            ticks={[0, 25, 50, 75, 100, 125]}
+                            domain={domain}
+                            ticks={ticks}
                             axisLine={false}
                             tickLine={false}
                             tick={theme === "dark" ? { fill: "#d1d2d3", fontSize: 12 } : {

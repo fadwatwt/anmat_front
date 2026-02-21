@@ -1,178 +1,240 @@
 'use client';
 
-import DropdownMenu from '@/components/Dropdowns/DropdownMenu';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { format } from 'date-fns';
 import Table from '@/components/Tables/Table';
-import EmployeeRequestStatus from '@/components/tags/EmpoyeeRequestStatus';
-import useAuthStore from '@/store/authStore';
-import { RiCalendar2Line } from '@remixicon/react';
+import { useSelector } from 'react-redux';
+import { selectUserType } from '@/redux/auth/authSlice';
+import { useGetEmployeeRequestsQuery } from '@/redux/employees/employeeRequestsApi';
+import { useGetEmployeeAuthRequestsQuery, useCancelEmployeeRequestMutation } from '@/redux/employees/employeeAuthRequestsApi';
+import { statusCell } from '@/components/StatusCell';
+import ViewRequestModal from '@/app/(dashboard)/hr/employees/modals/ViewRequestModal';
+import StatusActions from '@/components/Dropdowns/StatusActions';
+import { RiEditLine, RiCloseCircleLine } from '@remixicon/react';
+import ApprovalAlert from '@/components/Alerts/ApprovalAlert';
+import ApiResponseAlert from '@/components/Alerts/ApiResponseAlert';
 
 export default function EmployeeRequests() {
+  const { t } = useTranslation();
+  const authUserType = useSelector(selectUserType);
+  const [activeTab, setActiveTab] = useState("DAY_OFF"); // "DAY_OFF", "SALARY_ADVANCE", "WORK_DELAY"
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [cancelAlert, setCancelAlert] = useState({ isOpen: false, requestId: null });
+  const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
-  const { authUserType } = useAuthStore();
+  const isEmployee = authUserType === 'Employee';
 
-  const headers = [
-    (authUserType === 'Subscriber') && { label: 'Employee Name', width: '25%' },
-    { label: 'Request Date', width: '20%' },
-    { label: 'Days Requested', width: '10%' },
-    { label: 'Days Left', width: '10%' },
-    { label: 'Status', width: '10%' },
-    (authUserType === 'Subscriber') && { label: '', width: '15%' },
-  ];
+  const { data: subscriberRequests = [], isLoading: isSubscriberLoading } = useGetEmployeeRequestsQuery(undefined, { skip: isEmployee });
+  const { data: employeeRequests = [], isLoading: isEmployeeLoading } = useGetEmployeeAuthRequestsQuery(undefined, { skip: !isEmployee });
+  const [cancelRequest, { isLoading: isCancelling }] = useCancelEmployeeRequestMutation();
 
-  const data = [
-    {
-      user: {
-        name: 'Fatma Ahmed Mohamed',
-        department: 'Publishing Dep',
-        avatar_url: 'https://example.com/avatar-fatma-ahmed-mohamed.jpg'
-      },
-      date: '15 Nov, 2024',
-      days: [
-        '15 Nov, 2024',
-        '16 Nov, 2024',
-        '17 Nov, 2024',
-        '18 Nov, 2024'
-      ],
-      left: 3,
-      status: 'Pending'
-    },
-    {
-      user: {
-        name: 'Sophia Williams',
-        department: 'Sales Dep',
-        avatar_url: 'https://example.com/avatar-sophia-williams.jpg'
-      },
-      date: '15 Nov, 2024',
-      days: [
-        '15 Nov, 2024',
-        '16 Nov, 2024'
-      ],
-      left: 1,
-      status: 'Approved'
-    },
-    {
-      user: {
-        name: 'James Brown',
-        department: 'HR Dep',
-        avatar_url: 'https://example.com/avatar-james-brown.jpg'
-      },
-      date: '15 Nov, 2024',
-      days: [
-        '15 Nov, 2024',
-        '16 Nov, 2024',
-        '17 Nov, 2024',
-        '18 Nov, 2024',
-        '19 Nov, 2024'
-      ],
-      left: 2,
-      status: 'Pending'
-    },
-    {
-      user: {
-        name: 'Matthew Johnson',
-        department: 'Marketing Dep',
-        avatar_url: 'https://example.com/avatar-matthew-johnson.jpg'
-      },
-      date: '15 Nov, 2024',
-      days: [
-        '15 Nov, 2024',
-        '16 Nov, 2024',
-        '17 Nov, 2024',
-        '18 Nov, 2024',
-        '19 Nov, 2024',
-        '20 Nov, 2024',
-        '21 Nov, 2024',
-        '22 Nov, 2024',
-        '23 Nov, 2024',
-        '24 Nov, 2024'
-      ],
-      left: 5,
-      status: 'Rejected'
+  const requests = isEmployee ? employeeRequests : subscriberRequests;
+  const isLoading = isEmployee ? isEmployeeLoading : isSubscriberLoading;
+
+  const handleCancelClick = (requestId) => {
+    setCancelAlert({ isOpen: true, requestId });
+  };
+
+  const handleConfirmCancel = async () => {
+    try {
+      await cancelRequest(cancelAlert.requestId).unwrap();
+      setApiResponse({
+        isOpen: true,
+        status: "success",
+        message: t("Request cancelled successfully")
+      });
+      setCancelAlert({ isOpen: false, requestId: null });
+    } catch (error) {
+      setApiResponse({
+        isOpen: true,
+        status: "error",
+        message: error?.data?.message || t("Failed to cancel request")
+      });
     }
-  ];
+  };
 
-  const customActions = (rowIndex) => (
-    <div className="flex gap-2">
-      <button key={`approve_req_${rowIndex}`} className="px-3 py-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg">
-        Approve
-      </button>
-      <button key={`reject_req_${rowIndex}`} className="px-3 py-2 bg-red-50 text-red-700 rounded-lg hover:bg-red-100">
-        Reject
-      </button>
+  const filteredData = requests.filter(req => req.type === activeTab);
+
+  const handleEdit = (request) => {
+    setSelectedRequest(request);
+    setIsModalOpen(true);
+  };
+
+  const getHeaders = () => {
+    const commonHeaders = [
+      (authUserType === 'Subscriber') && { label: t('Employee Name'), width: '25%' },
+      { label: t('Request Date'), width: '20%' },
+    ];
+
+    if (activeTab === "DAY_OFF") {
+      return [
+        ...commonHeaders,
+        { label: t('Vacation Date'), width: '20%' },
+        { label: t('Reason'), width: '20%' },
+        { label: t('Status'), width: '10%' },
+        (authUserType === 'Subscriber') && { label: '', width: '5%' },
+      ].filter(Boolean);
+    } else if (activeTab === "SALARY_ADVANCE") {
+      return [
+        ...commonHeaders,
+        { label: t('Advance By'), width: '15%' },
+        { label: t('Old Salary'), width: '15%' },
+        { label: t('Status'), width: '10%' },
+        (authUserType === 'Subscriber') && { label: '', width: '5%' },
+      ].filter(Boolean);
+    } else {
+      return [
+        ...commonHeaders,
+        { label: t('Work Due At'), width: '20%' },
+        { label: t('Reason'), width: '20%' },
+        { label: t('Status'), width: '10%' },
+        { label: '', width: '5%' },
+      ].filter(Boolean);
+    }
+  };
+
+  const rows = filteredData.map((request, index) => {
+    const commonCells = [
+      (authUserType === 'Subscriber') && (
+        <div key={`emp-${index}`} className="flex gap-2 items-center text-left py-1">
+          <img
+            className='rounded-full w-8 h-8 object-cover'
+            src={request.employee?.image || `https://ui-avatars.com/api/?name=${request.employee?.name || "User"}`}
+            alt={request.employee?.name}
+          />
+          <div className="flex flex-col">
+            <span className="font-semibold text-sm text-gray-800">{request.employee?.name || 'N/A'}</span>
+            <span className="text-xs text-gray-400">{request.department?.name || ''}</span>
+          </div>
+        </div>
+      ),
+      <span key={`date-${index}`} className="text-gray-500 text-sm">
+        {request.created_at ? format(new Date(request.created_at), "dd MMM, yyyy") : 'N/A'}
+      </span>,
+    ];
+
+    let specificCells = [];
+    if (activeTab === "DAY_OFF") {
+      specificCells = [
+        <span key={`vacation-${index}`} className="text-gray-600 dark:text-gray-400 text-sm">
+          {request.vacation_date ? format(new Date(request.vacation_date), "dd MMM, yyyy") : "N/A"}
+        </span>,
+        <div key={`reason-${index}`} className="text-gray-500 text-sm truncate max-w-[150px]" title={request.reason}>
+          {request.reason || "N/A"}
+        </div>
+      ];
+    } else if (activeTab === "SALARY_ADVANCE") {
+      specificCells = [
+        <span key={`advance-${index}`} className="text-gray-600 dark:text-gray-400 text-sm">{request.advance_salary_by || "N/A"}</span>,
+        <span key={`old_salary-${index}`} className="text-gray-600 dark:text-gray-400 text-sm">{request.old_salary_amount || "N/A"}</span>
+      ];
+    } else {
+      specificCells = [
+        <span key={`due-${index}`} className="text-gray-600 dark:text-gray-400 text-sm">
+          {request.work_due_at ? format(new Date(request.work_due_at), "dd MMM, yyyy HH:mm") : "N/A"}
+        </span>,
+        <div key={`reason-${index}`} className="text-gray-500 text-sm truncate max-w-[150px]" title={request.reason}>
+          {request.reason || "N/A"}
+        </div>
+      ];
+    }
+
+    return [
+      ...commonCells,
+      ...specificCells,
+      statusCell(request.status, request._id),
+      <div key={`actions-${index}`} className="flex justify-end pr-4">
+        {authUserType === 'Subscriber' && !['accepted', 'rejected', 'cancelled'].includes(request.status) && (
+          <StatusActions
+            states={[
+              {
+                text: t("Update Status"),
+                icon: <RiEditLine size={18} className="text-primary-400" />,
+                onClick: () => handleEdit(request),
+              }
+            ]}
+          />
+        )}
+        {authUserType === 'Employee' && (['open', 'pending'].includes(request.status)) && (
+          <StatusActions
+            states={[
+              {
+                text: t("Cancel Request"),
+                icon: <RiCloseCircleLine size={18} className="text-red-500" />,
+                onClick: () => handleCancelClick(request.id),
+              }
+            ]}
+          />
+        )}
+      </div>
+    ].filter(Boolean);
+  });
+  const headerActions = (
+    <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+      {[
+        { id: "DAY_OFF", label: t("Leave Requests") },
+        { id: "SALARY_ADVANCE", label: t("Financial Requests") },
+        { id: "WORK_DELAY", label: t("Delay Requests") }
+      ].map(tab => (
+        <button
+          key={tab.id}
+          onClick={() => setActiveTab(tab.id)}
+          className={`px-4 py-1 text-sm rounded-md transition-colors ${activeTab === tab.id ? "bg-white dark:bg-gray-700 shadow-sm text-primary-600 font-medium" : "text-gray-500 dark:text-gray-400 hover:text-gray-700"}`}
+        >
+          {tab.label}
+        </button>
+      ))}
     </div>
   );
 
-  const rows = data.map((request, index) => ([
-    (authUserType === 'Subscriber') && <div className="flex gap-1">
-      <img className='rounded-full w-8 h-8'
-        src={request.user.avatar_url} />
-      <div className="flex flex-col">
-        <span className="font-semibold text-md text-gray-800">{request.user.name}</span>
-        <span className="text-sm text-gray-500">{request.user.department}</span>
-      </div>
-    </div>,
-    <span className="text-gray-500">{request.date}</span>,
-    <DropdownMenu
-      button={`${request.days.length} Days`}
-      content={
-        <div className="flex flex-col gap-2 bg-white dark:bg-gray-800 rounded-lg">
-          <div className="flex items-center gap-2 border-b border-gray-500 px-4 py-2">
-            <RiCalendar2Line size={25} className='text-gray-800' />
-            <div className="flex flex-col">
-              <span className="text-gray-800 text-md">
-                Dates of the requested days:
-              </span>
-              <span className="text-gray-500 text-sm">
-                {request.user.name}
-              </span>
-            </div>
-          </div>
-          <div className="flex flex-col gap-1 px-4 py-2">
-            {request.days.map((day, i) => (
-              <span className="text-gray-700 border-b border-gray-100">
-                {`${i + 1}. ${day}`}
-              </span>
-            ))}
-          </div>
-        </div>
-      } />,
-    <span className="text-gray-500">{request.left}</span>,
-    <EmployeeRequestStatus type={request.status} />,
-    (authUserType === 'Subscriber') && (request.status === "Pending") && customActions(index)
-  ]))
-
   return (
-    <Table
-      customTitle={
-        <div className="flex space-x-2 border border-gray-100 bg-gray-50 p-1 rounded-xl">
-          <button
-            className="px-4 py-2 bg-gray-50 hover:bg-white hover:shadow text-sm rounded-xl"
-            onClick={() => {/* Handle Employee Requests click */ }}
-          >
-            Leave Requests
+    <>
+      <Table
+        title={t("Employee Requests")}
+        headers={getHeaders()}
+        hideSearchInput={true}
+        rows={rows}
+        isActions={false}
+        isCheckInput={false}
+        showStatusFilter={true}
+        isLoading={isLoading}
+        headerActions={headerActions}
+        toolbarCustomContent={
+          <button className="bg-white text-gray-700 hover:bg-gray-50 px-4 py-2 text-sm items-baseline p-2 gap-2 rounded-lg border border-gray-200 dark:border-gray-600">
+            {t("See All")}
           </button>
-          <button
-            className="px-4 py-2 bg-gray-50 hover:bg-white hover:shadow text-sm rounded-xl"
-            onClick={() => {/* Handle Financial Requests click */ }}
-          >
-            Financial Requests
-          </button>
-        </div>
-      }
-      headers={headers}
-      hideSearchInput={true}
-      rows={rows}
-      isActions={false}
-      isCheckInput={false}
-      showStatusFilter={true}
-      statusOptions={[{ value: 'Pending', name: 'Pending' }, { value: 'Approved', name: 'Approved' }, { value: 'Rejected', name: 'Rejected' }]}
-      selectedStatus="Pending"
-      className="min-w-full"
-      toolbarCustomContent={
-        <button className="bg-white text-gray-700 hover:bg-gray-50 px-4 py-2flex dark:text-gray-400 text-sm items-baseline p-2 gap-2 rounded-lg border border-gray-200 dark:border-gray-600">
-          See All
-        </button>
-      }
-    />
+        }
+      />
+
+      {selectedRequest && (
+        <ViewRequestModal
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedRequest(null);
+          }}
+          request={selectedRequest}
+        />
+      )}
+
+      <ApprovalAlert
+        isOpen={cancelAlert.isOpen}
+        onClose={() => setCancelAlert({ isOpen: false, requestId: null })}
+        onConfirm={handleConfirmCancel}
+        title={t("Cancel Request")}
+        message={t("Are you sure you want to cancel this request? This action cannot be undone.")}
+        confirmBtnText={t("Confirm")}
+        cancelBtnText={t("Cancel")}
+      />
+
+      <ApiResponseAlert
+        isOpen={apiResponse.isOpen}
+        status={apiResponse.status}
+        message={apiResponse.message}
+        onClose={() => setApiResponse(prev => ({ ...prev, isOpen: false }))}
+      />
+    </>
   );
 }

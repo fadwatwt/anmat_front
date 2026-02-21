@@ -44,23 +44,15 @@ function ViewRequestModal({ isOpen, onClose, request }) {
     if (!request) return null;
 
     const getAvailableStatusOptions = () => {
-        if (request.status === "open") {
-            return [
-                { id: "in-progress", element: t("In Progress") },
-                { id: "accepted", element: t("Accepted") },
-                { id: "rejected", element: t("Rejected") },
-            ];
-        } else if (request.status === "in-progress") {
-            return [
-                { id: "accepted", element: t("Accepted") },
-                { id: "rejected", element: t("Rejected") },
-            ];
-        }
-        return [];
+        return [
+            { id: "open", element: t("Open") },
+            { id: "in-progress", element: t("In Progress") },
+            { id: "accepted", element: t("Accepted") },
+            { id: "rejected", element: t("Rejected") },
+        ];
     };
 
     const options = getAvailableStatusOptions();
-    const isLocked = request.status === "accepted" || request.status === "rejected";
 
     return (
         <>
@@ -78,19 +70,13 @@ function ViewRequestModal({ isOpen, onClose, request }) {
                         <span className="text-xs text-gray-400 capitalize">{request.type.replace(/_/g, ' ')} Request</span>
                     </div>
 
-                    {isLocked ? (
-                        <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg text-sm text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-600">
-                            {t("This request status is already")} <span className="font-semibold capitalize">{request.status}</span> {t("and cannot be changed.")}
-                        </div>
-                    ) : (
-                        <ElementsSelect
-                            title={t("Select New Status")}
-                            defaultValue={options.find(opt => opt.id === status)}
-                            onChange={(selection) => setStatus(selection[0]?.id)}
-                            options={options}
-                            placeholder={t("Choose status...")}
-                        />
-                    )}
+                    <ElementsSelect
+                        title={t("Select New Status")}
+                        defaultValue={options.find(opt => opt.id === status)}
+                        onChange={(selection) => setStatus(selection[0]?.id)}
+                        options={options}
+                        placeholder={t("Choose status...")}
+                    />
 
                     <div className="flex justify-end gap-2 pt-4 border-t dark:border-gray-700">
                         <button
@@ -99,15 +85,13 @@ function ViewRequestModal({ isOpen, onClose, request }) {
                         >
                             {t("Cancel")}
                         </button>
-                        {!isLocked && (
-                            <button
-                                onClick={handleSave}
-                                disabled={isUpdating || !status || status === request.status}
-                                className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors text-sm font-medium"
-                            >
-                                {isUpdating ? t("Updating...") : t("Update Status")}
-                            </button>
-                        )}
+                        <button
+                            onClick={handleSave}
+                            disabled={isUpdating || !status || status === request.status}
+                            className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors text-sm font-medium"
+                        >
+                            {isUpdating ? t("Updating...") : t("Update Status")}
+                        </button>
                     </div>
                 </div>
             </Modal>

@@ -1,24 +1,27 @@
 
 import PropTypes from "prop-types";
-import {TfiCalendar} from "react-icons/tfi";
-import {useRef} from "react";
-import {useTranslation} from "react-i18next";
+import { TfiCalendar } from "react-icons/tfi";
+import { useRef } from "react";
+import { useTranslation } from "react-i18next";
 
-function DateInput({className,id,classNameLabel,classNameInput,onChange,title,name,value}) {
-    const {t,i18n} = useTranslation()
+function DateInput({ className, id, classNameLabel, classNameInput, onChange, title, name, value, isRequired }) {
+    const { t, i18n } = useTranslation()
     const inputDateRef = useRef(null)
-    const handelOpenPicker = () =>{
+    const handelOpenPicker = () => {
         inputDateRef.current.showPicker()
     }
     return (
-        <div className={`${title && "flex flex-col items-start gap-2 " }` + className}>
-            <p className={"text-sm dark:text-white text-gray-900"}> {t(title)}</p>
+        <div className={`${title && "flex flex-col items-start gap-2 "}` + className}>
+            <p className={"text-sm dark:text-white text-gray-900"}>
+                {t(title)}
+                {isRequired && <span className="text-red-500 ml-1">*</span>}
+            </p>
             <label
-                className={"flex w-full items-center text-xs dark:bg-white-0 dark:border-gray-700 border-2 rounded-xl  focus:outline-none focus:border-blue-500 dark:text-gray-200 " + (classNameLabel ? classNameLabel :"pl-2 px-2")}
+                className={"flex w-full items-center text-xs dark:bg-white-0 dark:border-gray-700 border-2 rounded-xl  focus:outline-none focus:border-blue-500 dark:text-gray-200 " + (classNameLabel ? classNameLabel : "pl-2 px-2")}
                 htmlFor={id}>
-                <TfiCalendar className={"cursor-pointer"} onClick={handelOpenPicker}   size={18} />
-                <input  ref={inputDateRef} type={"date"} className={` custom-date-input dark:bg-white-0 w-full ${classNameInput ? classNameInput :"py-3 px-2"}  outline-none appearance-none focus:outline-none peer ` + (i18n.language === 'ar' && "text-end")} name={name}  value={value}
-                       onChange={onChange}/>
+                <TfiCalendar className={"cursor-pointer"} onClick={handelOpenPicker} size={18} />
+                <input ref={inputDateRef} type={"date"} className={` custom-date-input dark:bg-white-0 w-full ${classNameInput ? classNameInput : "py-3 px-2"}  outline-none appearance-none focus:outline-none peer ` + (i18n.language === 'ar' && "text-end")} name={name} value={value}
+                    onChange={onChange} />
             </label>
 
         </div>
@@ -33,7 +36,8 @@ DateInput.propTypes = {
     title: PropTypes.string,
     name: PropTypes.string,
     value: PropTypes.string,
-    classNameInput:PropTypes.string,
+    classNameInput: PropTypes.string,
+    isRequired: PropTypes.bool,
 }
 
 export default DateInput;

@@ -1,66 +1,74 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import { fetchTasks, deleteTask } from "@/redux/tasks/tasksAPI";
 import Page from "@/components/Page.jsx";
 import Table from "@/components/Tables/Table.jsx";
-import EmployeeProjectStates from "@/app/(dashboard)/_components/EmployeeStates";
-import useAuthStore from '@/store/authStore.js';
+import { useSelector } from "react-redux";
+import { selectUserType } from "@/redux/auth/authSlice";
 import { convertToSlug } from "@/functions/AnotherFunctions";
 import { translateDate } from "@/functions/Days";
-
 import { RiEyeLine, RiDeleteBinLine, RiEditLine } from "react-icons/ri";
 import StatusActions from "@/components/Dropdowns/StatusActions";
+import {
+  useGetSubscriberTasksQuery,
+  useDeleteSubscriberTaskMutation
+} from "@/redux/tasks/subscriberTasksApi";
+import { useGetEmployeeTasksQuery, useUpdateTaskStatusMutation } from "@/redux/tasks/employeeTasksApi";
+import Modal from "@/components/Modal/Modal.jsx";
 
 // ✅ Lazy-loaded components
 const NameAndDescription = dynamic(() => import("@/app/(dashboard)/projects/_components/TableInfo/NameAndDescription"), { ssr: false });
 const AccountDetails = dynamic(() => import("@/app/(dashboard)/projects/_components/TableInfo/AccountDetails"), { ssr: false });
 const Priority = dynamic(() => import("@/app/(dashboard)/projects/_components/TableInfo/Priority"), { ssr: false });
 const Status = dynamic(() => import("@/app/(dashboard)/projects/_components/TableInfo/Status"), { ssr: false });
-const MembersListXLine = dynamic(() => import("@/app/(dashboard)/projects/[slug]/_components/MembersListXLine"), { ssr: false });
-const TimeLine = dynamic(() => import("@/components/TimeLine/TimeLine"), { ssr: false });
 const Alert = dynamic(() => import("@/components/Alerts/Alert"), { ssr: false });
-const StatusCell = dynamic(() => import("@/components/StatusCell"), { ssr: false });
-
-import { tasksRows } from "@/functions/FactoryData.jsx";
+const ApiResponseAlert = dynamic(() => import("@/components/Alerts/ApiResponseAlert"), { ssr: false });
 
 function TasksPage() {
   const { t } = useTranslation();
   const router = useRouter();
-  const dispatch = useDispatch();
-  const reduxTasks = useSelector((state) => state.tasks);
-  const tasks = (reduxTasks?.tasks && reduxTasks.tasks.length > 0)
-    ? reduxTasks.tasks
-    : tasksRows.map(t => ({ ...t, _id: t.id }));
-  const loading = reduxTasks?.loading || false;
-  const error = reduxTasks?.error || null;
+
+  const authUserType = useSelector(selectUserType);
+  const isEmployee = authUserType === "Employee";
+  const isSubscriber = authUserType === "Subscriber";
+
+  const { data: subscriberTasks = [], isLoading: isSubscriberLoading, isError: isSubscriberError } = useGetSubscriberTasksQuery(undefined, { skip: !isSubscriber });
+  const { data: employeeTasks = [], isLoading: isEmployeeLoading, isError: isEmployeeError } = useGetEmployeeTasksQuery(undefined, { skip: !isEmployee });
+
+  const tasks = isEmployee ? employeeTasks : subscriberTasks;
+  const isLoading = authUserType ? (isEmployee ? isEmployeeLoading : isSubscriberLoading) : true;
+  const isError = isEmployee ? isEmployeeError : isSubscriberError;
+
+  const [deleteSubscriberTask] = useDeleteSubscriberTaskMutation();
+  const [updateTaskStatus] = useUpdateTaskStatusMutation();
+
   const [isOpenDeleteAlert, setIsOpenDeleteAlert] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState(null);
+  const [isOpenStatusModal, setIsOpenStatusModal] = useState(false);
+  const [taskToUpdateStatus, setTaskToUpdateStatus] = useState(null);
+  const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
-  // Define authUserType (e.g., from context or state management)
-  const { authUserType } = useAuthStore();
+  const allowedStatuses = ['open', 'pending', 'in-progress', 'completed', 'rejected', 'cancelled'];
 
-  // ✅ Fetch tasks only if needed
-  useEffect(() => {
-    if (!tasks || tasks.length === 0) {
-      dispatch(fetchTasks());
-    }
-  }, [dispatch, tasks]);
 
-  // Headers matching the design
-  const headers = [
+  // Headers matching the design and important info
+  const headers = useMemo(() => [
     { label: t("Tasks"), width: "250px" },
-    { label: t("Assignee"), width: "200px" },
-    { label: t("Assigned - Due Date"), width: "300px" },
-    { label: t("Started - Ended at Date"), width: "300px" },
-    { label: t("Priority"), width: "120px" },
-    { label: t("Status"), width: "120px" },
+    ...(!isEmployee ? [
+      { label: t("Project"), width: "150px" },
+      { label: t("Department"), width: "150px" },
+      { label: t("Assignee"), width: "150px" },
+      { label: t("Creator"), width: "150px" },
+    ] : []),
+    { label: t("Priority"), width: "100px" },
+    { label: t("Status"), width: "100px" },
+    { label: t("Progress"), width: "120px" },
+    { label: t("Due Date"), width: "120px" },
     { label: "", width: "50px" },
-  ];
+  ], [isEmployee, t]);
 
   const handleCreateTask = () => router.push("/tasks/create");
 
@@ -68,37 +76,91 @@ function TasksPage() {
     setTaskToDelete(task);
     setIsOpenDeleteAlert(true);
   };
-  const handleDeleteTask = async () => {
+
+  const handleDeleteTask = async (confirmed) => {
+    if (!confirmed) {
+      setIsOpenDeleteAlert(false);
+      setTaskToDelete(null);
+      return;
+    }
     if (taskToDelete) {
       try {
-        await dispatch(deleteTask(taskToDelete._id)).unwrap();
+        const res = await deleteSubscriberTask(taskToDelete._id).unwrap();
+        setApiResponse({
+          isOpen: true,
+          status: "success",
+          message: res?.message || t("Task deleted successfully"),
+        });
         setIsOpenDeleteAlert(false);
         setTaskToDelete(null);
       } catch (err) {
-        console.error("Failed to delete task:", err);
+        setApiResponse({
+          isOpen: true,
+          status: "error",
+          message: err?.data?.message || t("Failed to delete task"),
+        });
+        setIsOpenDeleteAlert(false);
+      }
+    }
+  };
+
+  const handleOpenStatusModal = (task) => {
+    setTaskToUpdateStatus(task);
+    setIsOpenStatusModal(true);
+  };
+
+  const handleStatusUpdate = async (status) => {
+    if (taskToUpdateStatus) {
+      try {
+        const res = await updateTaskStatus({ id: taskToUpdateStatus._id, status }).unwrap();
+        setApiResponse({
+          isOpen: true,
+          status: "success",
+          message: res?.message || t("Status updated successfully"),
+        });
+        setIsOpenStatusModal(false);
+        setTaskToUpdateStatus(null);
+      } catch (err) {
+        setApiResponse({
+          isOpen: true,
+          status: "error",
+          message: err?.data?.message || t("Failed to update status"),
+        });
       }
     }
   };
 
   const customActions = (index) => {
     const task = tasks[index];
-    const actions = [
-      {
-        text: t("View"),
-        icon: <RiEyeLine size={16} className="text-blue-500" />,
-        onClick: () => router.push(`/tasks/${task._id}-${convertToSlug(task.title)}/details`),
-      },
-      {
-        text: t("Edit"),
+    if (!task) return null;
+
+    const actions = [];
+
+    if (!isEmployee) {
+      actions.push(
+        {
+          text: t("View"),
+          icon: <RiEyeLine size={16} className="text-blue-500" />,
+          onClick: () => router.push(`/tasks/${task._id}-${convertToSlug(task.title)}/details`),
+        },
+        {
+          text: t("Edit"),
+          icon: <RiEditLine size={16} className="text-primary-500" />,
+          onClick: () => router.push(`/tasks/${task._id}/edit`),
+        },
+        {
+          text: t("Delete"),
+          icon: <RiDeleteBinLine size={16} className="text-red-500" />,
+          onClick: () => handleDeleteConfirmation(task),
+        }
+      );
+    } else {
+      actions.push({
+        text: t("Change Status"),
         icon: <RiEditLine size={16} className="text-primary-500" />,
-        onClick: () => router.push(`/tasks/${task._id}-${convertToSlug(task.title)}/edit`),
-      },
-      {
-        text: t("Delete"),
-        icon: <RiDeleteBinLine size={16} className="text-red-500" />,
-        onClick: () => handleDeleteConfirmation(task),
-      },
-    ];
+        onClick: () => handleOpenStatusModal(task),
+      });
+    }
 
     return (
       <StatusActions states={actions} />
@@ -113,25 +175,46 @@ function TasksPage() {
         name={task.title}
         description={task.description}
       />,
-      <AccountDetails
-        key={`assignee-${task._id}`}
-        account={{
-          name: task.assignedTo?.[0]?.name || "Unassigned",
-          imageProfile: task.assignedTo?.[0]?.imageProfile || `https://ui-avatars.com/api/?name=${encodeURIComponent(task.assignedTo?.[0]?.name || "Unassigned")}`,
-        }}
-      />,
-      <p key={`dates-${task._id}`} className="text-sm dark:text-sub-300">
-        {translateDate(task.assignedDate)} - {translateDate(task.dueDate)}
+      ...(!isEmployee ? [
+        <p title={task.project?.name} key={`project-${task._id}`} className="text-sm dark:text-sub-300 truncate max-w-[140px]">
+          {task.project?.name || t("No Project")}
+        </p>,
+        <p title={task.department?.name} key={`dept-${task._id}`} className="text-sm dark:text-sub-300 truncate max-w-[140px]">
+          {task.department?.name || t("No Department")}
+        </p>,
+        <AccountDetails
+          key={`assignee-${task._id}`}
+          account={{
+            name: task.assignee?.name || t("Unassigned"),
+            imageProfile: task.assignee?.imageProfile || `https://ui-avatars.com/api/?name=${encodeURIComponent(task.assignee?.name || "U")}`,
+          }}
+        />,
+        <AccountDetails
+          key={`creator-${task._id}`}
+          account={{
+            name: task.creator?.name || t("Unknown"),
+            imageProfile: task.creator?.imageProfile || `https://ui-avatars.com/api/?name=${encodeURIComponent(task.creator?.name || "C")}`,
+          }}
+        />,
+      ] : []),
+      <Priority key={`priority-${task._id}`} type={task.priority} />,
+      <Status key={`status-${task._id}`} type={task.status} />,
+      <div key={`progress-${task._id}`} className="flex items-center gap-2">
+        <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 min-w-[60px]">
+          <div
+            className="bg-primary-500 h-1.5 rounded-full"
+            style={{ width: `${task.progress || 0}%` }}
+          ></div>
+        </div>
+        <span className="text-xs font-medium text-sub-500 dark:text-sub-300">{task.progress || 0}%</span>
+      </div>,
+      <p key={`due-date-${task._id}`} className="text-sm dark:text-sub-300 text-nowrap">
+        {task.due_date ? translateDate(task.due_date) : "-"}
       </p>,
-      <p key={`start-end-${task._id}`} className="text-sm dark:text-sub-300">
-        {task.startDate ? `${translateDate(task.startDate)} - ${translateDate(task.endDate || task.dueDate)}` : "-"}
-      </p>,
-      <Priority key={`priority-${task._id}`} type={task.priority} title={task.priority} />,
-      <Status key={`status-${task._id}`} type={task.status} title={task.status} />,
     ]);
-  }, [tasks]);
+  }, [tasks, t, isEmployee]);
 
-  if (error) {
+  if (isError) {
     return (
       <Page title={t("Tasks")}>
         <div className="text-center text-red-500 mt-8">
@@ -149,7 +232,7 @@ function TasksPage() {
       >
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-2 h-full">
-            {loading ? (
+            {isLoading ? (
               <div className="text-center py-6">{t("Loading tasks...")}</div>
             ) : (
               <Table
@@ -160,15 +243,12 @@ function TasksPage() {
                 isCheckInput={true}
                 customActions={customActions}
                 showStatusFilter={true}
-                isActions={false} // We use customActions
+                isActions={false}
               />
             )}
           </div>
-          {/* Timeline removed from design requirement */}
         </div>
       </Page>
-
-
 
       <Alert
         type="warning"
@@ -181,6 +261,32 @@ function TasksPage() {
         onSubmit={handleDeleteTask}
         isBtns={1}
       />
+
+      <ApiResponseAlert
+        isOpen={apiResponse.isOpen}
+        status={apiResponse.status}
+        message={apiResponse.message}
+        onClose={() => setApiResponse({ ...apiResponse, isOpen: false })}
+      />
+
+      <Modal
+        isOpen={isOpenStatusModal}
+        onClose={() => setIsOpenStatusModal(false)}
+        title={t("Update Task Status")}
+        className="w-11/12 md:w-1/3 p-4"
+      >
+        <div className="flex flex-col gap-2 p-4">
+          {allowedStatuses.map((status) => (
+            <button
+              key={status}
+              onClick={() => handleStatusUpdate(status)}
+              className="flex items-center justify-between p-3 rounded-xl border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900 transition-all"
+            >
+              <Status type={status} />
+            </button>
+          ))}
+        </div>
+      </Modal>
     </>
   );
 }

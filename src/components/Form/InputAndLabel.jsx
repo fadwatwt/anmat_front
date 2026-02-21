@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 function InputAndLabel({
   title,
   placeholder,
-    disabled = false,
+  disabled = false,
   type,
   className,
   value,
@@ -13,7 +13,8 @@ function InputAndLabel({
   onChange,
   onBlur,
   error,
-    isRequired
+  isRequired,
+  ...rest
 }) {
   const { t } = useTranslation();
 
@@ -30,9 +31,9 @@ function InputAndLabel({
         onBlur={onBlur}
         value={value}
         placeholder={`${t(placeholder)}...`}
-        className={`py-3 px-2 text-sm dark:bg-white-0 dark:border-gray-700 border-2 rounded-xl w-full focus:outline-none focus:border-blue-500 dark:text-gray-200 ${
-          error ? "border-red-500" : ""
-        }`}
+        className={`py-3 px-2 text-sm dark:bg-white-0 dark:border-gray-700 border-2 rounded-xl w-full focus:outline-none focus:border-blue-500 dark:text-gray-200 ${error ? "border-red-500" : ""
+          }`}
+        {...rest}
       />
       {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
     </div>
@@ -40,15 +41,15 @@ function InputAndLabel({
 }
 
 InputAndLabel.propTypes = {
-    title: PropTypes.string,
-    placeholder: PropTypes.string,
-    type: PropTypes.string,
-    className: PropTypes.string,
-    value:PropTypes.string,
-    disabled:PropTypes.bool,
-    name:PropTypes.string,
-    onChange: PropTypes.func,
-    isRequired: PropTypes.bool,
+  title: PropTypes.string,
+  placeholder: PropTypes.string,
+  type: PropTypes.string,
+  className: PropTypes.string,
+  value: PropTypes.string,
+  disabled: PropTypes.bool,
+  name: PropTypes.string,
+  onChange: PropTypes.func,
+  isRequired: PropTypes.bool,
   onBlur: PropTypes.func,
   error: PropTypes.string,
 

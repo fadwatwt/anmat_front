@@ -138,7 +138,7 @@ function RequestsTab() {
 
     const customActions = (rowIndex) => {
         const request = currentData[rowIndex];
-        const isLocked = request.status === "accepted" || request.status === "rejected";
+        const isLocked = ["accepted", "rejected", "cancelled"].includes(request.status);
 
         return (
             <div className="flex flex-col bg-white dark:bg-gray-800 shadow-lg rounded-lg border border-gray-200 dark:border-gray-700 min-w-32 overflow-hidden">

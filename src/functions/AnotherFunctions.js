@@ -8,5 +8,7 @@ export const convertToSlug = (text) => {
     .replace(/[^\w-]+/g, "");
 };
 
-export const capitalize = (text) =>
-    text.charAt(0).toUpperCase() + text.slice(1);
+export const capitalize = (text) => {
+  if (!text) return "";
+  return text.charAt(0).toUpperCase() + text.slice(1);
+};

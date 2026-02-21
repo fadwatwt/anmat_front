@@ -10,84 +10,131 @@ import ActivityLogs from "@/components/ActivityLogs.jsx";
 import TimeLine from "@/components/TimeLine/TimeLine.jsx";
 import { useTranslation } from "react-i18next";
 import InfoCard from "@/app/(dashboard)/_components/InfoCard.jsx";
-import { useState } from "react";
+import { useState, useMemo, use } from "react";
 import { filterAndSortTasks } from "@/functions/functionsForTasks.js";
-import EditTaskModal from "@/app/(dashboard)/tasks/_modal/EditTaskModal.jsx";
 import { useRouter } from "next/navigation";
-import { filterOptions, tasks, comments, members as defaultMembers, attachments, activityLogs, tasksRows } from "@/functions/FactoryData.jsx";
+import { filterOptions, comments, members as defaultMembers, attachments, activityLogs } from "@/functions/FactoryData.jsx";
+import { useGetSubscriberTaskDetailsQuery } from "@/redux/tasks/subscriberTasksApi";
 
 function TaskDetailsPage({ params }) {
-    const slug = params?.slug;
-    const taskId = slug?.split("-")[0];
-    const taskData = tasksRows.find(t => t.id === taskId) || tasksRows[0];
+    const { t } = useTranslation();
+    const router = useRouter();
+    const resolvedParams = use(params);
+    const slug = resolvedParams?.slug;
+    // Handle both "id-title" and just "id"
+    const taskId = slug?.includes("-") ? slug.split("-")[0] : slug;
 
-    const { t } = useTranslation()
+    const { data: task, isLoading, isError } = useGetSubscriberTaskDetailsQuery(taskId, {
+        skip: !taskId
+    });
+
     const breadcrumbItems = [
         { title: t('Tasks'), path: '/tasks' },
         { title: t('Task Details'), path: '' }
     ];
 
-    const router = useRouter();
     const handleEditPageNavigation = () => {
         router.push(`/tasks/${slug}/edit`);
     }
 
-    const [filterTasks, setFilterTasks] = useState(tasks);
-    const handelChangeFilterTask = (value) => {
-        switch (value) {
-            case "deadLine":
-                setFilterTasks(filterAndSortTasks(tasks, "deadLine", true));
-                break;
-            case "startDate":
-                setFilterTasks(filterAndSortTasks(tasks, "startDate", true));
-                break;
-            case "department":
-                setFilterTasks(filterAndSortTasks(tasks, "department", true));
-                break;
-            default:
-                setFilterTasks(tasks);
-        }
-    };
+    const [filterBy, setFilterBy] = useState("all");
+
+    const mappedStages = useMemo(() => {
+        if (!task?.stages) return [];
+
+        let stages = task.stages.map(stage => ({
+            _id: stage._id,
+            name: stage.name,
+            status: stage.status,
+            assignedDate: stage.start_date,
+            dueDate: stage.due_date,
+            delivery: stage.status === "completed" ? "Delayed" : "", // Mapping to StateOfTask ahead of deadline
+        }));
+
+        if (filterBy === "all") return stages;
+        return filterAndSortTasks(stages, filterBy, true);
+    }, [task?.stages, filterBy]);
+
+    const infoCardData = useMemo(() => {
+        if (!task) return null;
+        return {
+            ...task,
+            name: task.title,
+            totalTasks: task.stages?.length || 0,
+            completedTasks: task.stages?.filter(s => s.status === 'completed').length || 0,
+            assignedDate: task.start_date,
+            dueDate: task.due_date,
+            department: task.department?.name || t("No Department")
+        };
+    }, [task, t]);
+
+    const assigneeMember = useMemo(() => {
+        if (!task?.assignee) return [];
+        return [{
+            ...task.assignee,
+            role: "Assignee",
+            work: task.assignee.email
+        }];
+    }, [task?.assignee]);
+
+    if (isLoading) {
+        return (
+            <Page title={t("Task Details")} isBreadcrumbs={true} breadcrumbs={breadcrumbItems}>
+                <div className="flex items-center justify-center h-64">
+                    <p className="text-gray-500">{t("Loading task details...")}</p>
+                </div>
+            </Page>
+        );
+    }
+
+    if (isError || !task) {
+        return (
+            <Page title={t("Task Details")} isBreadcrumbs={true} breadcrumbs={breadcrumbItems}>
+                <div className="flex items-center justify-center h-64 text-red-500 text-center">
+                    <p>{t("Failed to load task details. Please try again later.")}</p>
+                </div>
+            </Page>
+        );
+    }
 
     return (
         <>
             <Page title={t("Task Details")} isBreadcrumbs={true} breadcrumbs={breadcrumbItems}>
-                <div className={"w-full flex items-start  gap-8 flex-col md:flex-row h-full"}>
+                <div className={"w-full flex items-start gap-8 flex-col md:flex-row h-full"}>
                     <div className={"flex flex-col gap-6 md:w-[60%] w-full "}>
-                        <InfoCard type={"task"} data={taskData} handelEditAction={handleEditPageNavigation} />
+                        <InfoCard type={"task"} data={infoCardData} handelEditAction={handleEditPageNavigation} />
                         <div className={"p-4 bg-white dark:bg-white-0 rounded-2xl w-full flex flex-col gap-3 h-96"}>
                             <div className={"title-header pb-3 w-full flex items-center justify-between "}>
                                 <p className={"text-lg dark:text-gray-200"}>{t("Task Stages")} </p>
-                                <SelectWithoutLabel title={t("Filter by")} options={filterOptions} onChange={handelChangeFilterTask} className={"w-[120px] h-[36px]"} />
+                                <SelectWithoutLabel
+                                    title={t("Filter by")}
+                                    options={filterOptions}
+                                    onChange={(val) => setFilterBy(val)}
+                                    className={"w-[120px] h-[36px]"}
+                                />
                             </div>
-                            <TasksList isAssignedDate={true} tasks={filterTasks} />
+                            <TasksList isAssignedDate={true} tasks={mappedStages} />
                         </div>
                         <div className={"bg-white dark:bg-white-0 rounded-2xl w-full flex flex-col gap-3"}>
                             <div className={"p-4 flex flex-col gap-3"}>
                                 <div className={"title-header w-full flex items-center justify-between"}>
                                     <p className={"text-lg dark:text-gray-200 "}>{t("Comments")}</p>
                                 </div>
-                                <TaskComments comments={comments} />
+                                <TaskComments comments={task.comments || comments} />
                             </div>
                             <CommentInput />
                         </div>
                     </div>
                     <div className={"flex-1 flex flex-col gap-6"}>
-                        <ProjectMembers members={taskData?.members || defaultMembers} title="Assignee Employee" />
+                        <ProjectMembers members={assigneeMember.length > 0 ? assigneeMember : defaultMembers} title="Assignee Employee" />
                         <AttachmentsList attachments={attachments} />
                         <ActivityLogs activityLogs={activityLogs} className={"h-72"} />
                         <TimeLine />
                     </div>
-
                 </div>
             </Page>
-
         </>
     );
-}
-
-TaskDetailsPage.propTypes = {
-    slug: String,
 }
 
 export default TaskDetailsPage;

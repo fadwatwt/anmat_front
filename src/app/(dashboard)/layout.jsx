@@ -44,7 +44,7 @@ const MainLayout = ({ children }) => {
                     const userData = result?.data || result;
                     if (userData) {
                         dispatch(setUser(userData));
-                        // Subscriber specific redirects
+                        // Specific redirects
                         if (userData.type === "Subscriber") {
                             if (!userData.is_organization_registered) {
                                 router.push("/account-setup/subscriber/business-selection");
@@ -52,6 +52,11 @@ const MainLayout = ({ children }) => {
                             }
                             if (!userData.active_subscription_id) {
                                 router.push("/account-setup/subscriber/plans");
+                                return;
+                            }
+                        } else if (userData.type === "Employee") {
+                            if (!userData.employee_detail || !userData.is_active) {
+                                router.push("/account-setup/employee");
                                 return;
                             }
                         }
@@ -66,7 +71,7 @@ const MainLayout = ({ children }) => {
                     router.push("/sign-in");
                 }
             } else if (user) {
-                // Check subscriber status even if user is already in state
+                // Check status even if user is already in state
                 if (user.type === "Subscriber") {
                     if (!user.is_organization_registered) {
                         router.push("/account-setup/subscriber/business-selection");
@@ -74,6 +79,11 @@ const MainLayout = ({ children }) => {
                     }
                     if (!user.active_subscription_id) {
                         router.push("/account-setup/subscriber/plans");
+                        return;
+                    }
+                } else if (user.type === "Employee") {
+                    if (!user.employee_detail || !user.is_active) {
+                        router.push("/account-setup/employee");
                         return;
                     }
                 }
@@ -108,8 +118,11 @@ const MainLayout = ({ children }) => {
         setLanguage(i18n.language);
     }, [i18n.language]);
 
-    // Check if redirection is needed for Subscribers
-    const shouldRedirect = user && user.type === "Subscriber" && (!user.is_organization_registered || !user.active_subscription_id);
+    // Check if redirection is needed
+    const shouldRedirect = user && (
+        (user.type === "Subscriber" && (!user.is_organization_registered || !user.active_subscription_id)) ||
+        (user.type === "Employee" && (!user.employee_detail || !user.is_active))
+    );
 
     // Show loading while fetching user or if state is being initialized or redirection is pending
     if (isFetchingUser || !user || shouldRedirect) {

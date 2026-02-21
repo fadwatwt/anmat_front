@@ -5,8 +5,8 @@ function NameAndDescription({ name, description, path }) {
   console.log(description, "description")
   return (
     <Link href={path}>
-      <p className="text-sm text-main-100 dark:text-main-900 truncate max-w-[200px]">{name}</p>
-      <p className="text-xs text-sub-500 truncate max-w-[200px]  dark:text-sub-300">
+      <p title={name} className="text-sm text-main-100 dark:text-main-900 truncate max-w-[200px]">{name}</p>
+      <p title={description} className="text-xs text-sub-500 truncate max-w-[200px]  dark:text-sub-300">
         {description}
       </p>
     </Link>

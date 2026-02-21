@@ -1,8 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-function Teams({ teams, maxDisplay = 3 }) {
-    const displayedTeams = teams.slice(0, maxDisplay);
+function Teams({ teams = [], maxDisplay = 3 }) {
+    const safeTeams = Array.isArray(teams) ? teams : [];
+    const displayedTeams = safeTeams.slice(0, maxDisplay);
 
     return (
         <div className="flex gap-1 items-center">
