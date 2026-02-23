@@ -1,10 +1,95 @@
 "use client";
 
-import Link from "next/link";
+import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useRequestVerificationMutation, useLazyGetUserQuery } from "@/redux/auth/authAPI";
+import { selectAuth, setUser } from "@/redux/auth/authSlice";
+import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 
 const VerifyEmail = () => {
+    const dispatch = useDispatch();
+    const { user } = useSelector(selectAuth);
+    const [requestVerification, { isLoading: isRequesting, isSuccess, isError, error, data }] = useRequestVerificationMutation();
+    const [triggerGetUser, { isLoading: isFetchingUser }] = useLazyGetUserQuery();
+    const [timeLeft, setTimeLeft] = useState(0);
+    const [hasRequested, setHasRequested] = useState(false);
+    const [isRefreshing, setIsRefreshing] = useState(false);
+
+    const nextSendAt = user?.email_verification?.next_send_at;
+
+    useEffect(() => {
+        if (!nextSendAt) return;
+
+        const calculateTimeLeft = () => {
+            const now = new Date().getTime();
+            const target = new Date(nextSendAt).getTime();
+            const difference = target - now;
+
+            if (difference <= 0) {
+                setTimeLeft(0);
+                return true;
+            } else {
+                setTimeLeft(Math.floor(difference / 1000));
+                return false;
+            }
+        };
+
+        const isFinished = calculateTimeLeft();
+        if (isFinished) return;
+
+        const interval = setInterval(() => {
+            if (calculateTimeLeft()) {
+                clearInterval(interval);
+            }
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [nextSendAt]);
+
+    const formatTimeSpaced = (seconds) => {
+        if (seconds <= 0) return "0 0 : 0 0";
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+
+        const m1 = Math.floor(mins / 10);
+        const m2 = mins % 10;
+        const s1 = Math.floor(secs / 10);
+        const s2 = secs % 10;
+
+        return `${m1} ${m2} : ${s1} ${s2}`;
+    };
+
+    const handleResend = async () => {
+        if (timeLeft > 0 || isRequesting || isRefreshing || isFetchingUser) return;
+
+        try {
+            setIsRefreshing(true);
+            await requestVerification().unwrap();
+            setHasRequested(true);
+
+            // Fetch user data to update next_send_at timer from the latest API state
+            const token = localStorage.getItem("token");
+            if (token) {
+                const userResult = await triggerGetUser(token).unwrap();
+                const userData = userResult?.data || userResult;
+                if (userData) {
+                    dispatch(setUser(userData));
+                }
+            }
+        } catch (err) {
+            console.error("Failed to resend verification email:", err);
+        } finally {
+            setIsRefreshing(false);
+        }
+    };
+
+    const isLoading = isRequesting || isFetchingUser || isRefreshing;
+
     return (
         <>
+            {isSuccess && <ApiResponseAlert status="success" message={data?.message || "Verification email sent!"} />}
+            {isError && <ApiResponseAlert status="error" message={error?.data?.message || "Failed to send verification email."} />}
+
             <div className="relative rounded-xl px-12 py-16 border">
                 <div className="absolute top-0 left-0 w-full">
                     <img src="/images/patterns/pattern_rec_top.png" className="w-full h-[120px]" alt="" />
@@ -28,17 +113,22 @@ const VerifyEmail = () => {
                         </div>
 
                         <span className="block text-gray-500 text-lg text-wrap px-4">
-                            We have sent you a link to your email for verifying your account, please check your email and continue.
+                            {hasRequested || isSuccess
+                                ? "We have sent you a link to your email for verifying your account, please check your email and continue."
+                                : "To complete your account setup, please verify your email address by clicking the link we sent to your inbox."
+                            }
                         </span>
 
                         <button
+                            onClick={handleResend}
+                            disabled={timeLeft > 0 || isLoading}
                             className="bg-primary-500 text-primary-50 text-nowrap text-sm px-12 py-2 rounded-lg cursor-pointer
-                                        hover:bg-primary-600 text-center disabled:bg-primary-400 disabled:cursor-auto" disabled={true}
+                                        hover:bg-primary-600 text-center disabled:bg-primary-400 disabled:cursor-auto transition-colors"
                         >
-                            {"Send New Email"}
+                            {isLoading ? "Sending..." : "Send New Email"}
                         </button>
                         <span className="block text-gray-500 text-xs text-wrap px-4">
-                            resend after <span className="text-primary-500 text-sm mx-2">0 0 : 1 5</span>
+                            resend after <span className="text-primary-500 text-sm mx-2 uppercase tabular-nums">{formatTimeSpaced(timeLeft)}</span>
                         </span>
                     </div>
 

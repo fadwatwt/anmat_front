@@ -37,11 +37,15 @@ function AccountSetupLayout({ children }) {
 
                 // Employee specific logic
                 if (userData.type === "Employee") {
-                    if (userData.employee_detail && userData.is_active) {
+                    if (!userData.email_verification?.is_verified) {
+                        if (!pathname.includes("/account-setup/employee/email/verification")) {
+                            router.push("/account-setup/employee/email/verification");
+                            return;
+                        }
+                    } else if (userData.employee_detail && userData.is_active) {
                         router.push("/dashboard");
                         return;
-                    }
-                    if (!pathname.includes("/account-setup/employee")) {
+                    } else if (!pathname.includes("/account-setup/employee") || pathname.includes("/email/verification")) {
                         router.push("/account-setup/employee");
                         return;
                     }

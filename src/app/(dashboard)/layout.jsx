@@ -55,6 +55,10 @@ const MainLayout = ({ children }) => {
                                 return;
                             }
                         } else if (userData.type === "Employee") {
+                            if (!userData.email_verification?.is_verified) {
+                                router.push("/account-setup/employee/email/verification");
+                                return;
+                            }
                             if (!userData.employee_detail || !userData.is_active) {
                                 router.push("/account-setup/employee");
                                 return;
@@ -82,6 +86,10 @@ const MainLayout = ({ children }) => {
                         return;
                     }
                 } else if (user.type === "Employee") {
+                    if (!user.email_verification?.is_verified) {
+                        router.push("/account-setup/employee/email/verification");
+                        return;
+                    }
                     if (!user.employee_detail || !user.is_active) {
                         router.push("/account-setup/employee");
                         return;
@@ -121,7 +129,7 @@ const MainLayout = ({ children }) => {
     // Check if redirection is needed
     const shouldRedirect = user && (
         (user.type === "Subscriber" && (!user.is_organization_registered || !user.active_subscription_id)) ||
-        (user.type === "Employee" && (!user.employee_detail || !user.is_active))
+        (user.type === "Employee" && (!user.email_verification?.is_verified || !user.employee_detail || !user.is_active))
     );
 
     // Show loading while fetching user or if state is being initialized or redirection is pending
