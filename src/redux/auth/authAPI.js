@@ -84,6 +84,13 @@ export const authApi = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    requestVerification: builder.mutation({
+      query: () => ({
+        url: "api/user/auth/request-verification",
+        method: "POST",
+      }),
+      invalidatesTags: ["User"],
+    }),
   }),
 });
 
@@ -99,4 +106,5 @@ export const {
   useAdminUpdatePasswordMutation,
   useUpdateAdminAccountMutation,
   useUpdateUserAccountMutation,
+  useRequestVerificationMutation,
 } = authApi;

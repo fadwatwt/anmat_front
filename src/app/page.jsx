@@ -49,7 +49,7 @@ function Desktop2Page() {
                 {" "}
                 <Link href="sign-in"> {"Login"}</Link>
               </p>
-              <Link href={"register/subscriber/email"} className={"bg-white py-1.5 px-3 rounded-md "}>
+              <Link href={"/register/subscriber/email"} className={"bg-white py-1.5 px-3 rounded-md "}>
                 Sign up
               </Link>
             </div>
