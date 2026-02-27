@@ -5,7 +5,6 @@ import DefaultSelect from "@/components/Form/DefaultSelect.jsx";
 import InputWithIcon from "@/components/Form/InputWithIcon.jsx";
 import { RiTimeLine } from "@remixicon/react";
 import DateInput from "@/components/Form/DateInput.jsx";
-import { employees } from "@/functions/FactoryData.jsx";
 import UserSelect from "@/components/Form/UserSelect.jsx";
 import { useTranslation } from "react-i18next"; // Add this line
 
@@ -33,7 +32,7 @@ function SchedulingMeeting({ isOpen, onClose }) {
       onClose={onClose}
       isBtns={true}
       btnApplyTitle={t("Schedule")}
-      onClick={() => {}}
+      onClick={() => { }}
       dir="rtl" // Add RTL direction
       style={{ fontFamily: "Tajawal, sans-serif" }} // Add Arabic font
     >
@@ -50,13 +49,13 @@ function SchedulingMeeting({ isOpen, onClose }) {
           options={[
             { id: "", value: t("Select Department...") }, // Translate placeholder
           ]}
-          onChange={() => {}}
+          onChange={() => { }}
         />
         <UserSelect
           title={t("Employees")} // Translate label
-          users={employees}
+          users={[]}
           isMultiSelect={true}
-         onChange={() => {}}/>
+          onChange={() => { }} />
         <DateInput title={t("Date")} /> {/* Translate label */}
         <InputWithIcon
           title={t("Time")} // Translate label

@@ -36,7 +36,7 @@ const TasksPerformanceChart = () => {
             title={"Tasks Performance"}
             toolbar={
                 <div className="w-32 flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end">
-                    <DefaultSelect options={[{ id: 1, value: "Last 6 Months" }]} />
+                    <DefaultSelect variant="chart" multi={false} options={[{ id: 1, value: "Last 6 Months" }]} />
                 </div>
             }
             barGab={barGab}

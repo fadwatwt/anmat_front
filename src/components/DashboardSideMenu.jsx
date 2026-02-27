@@ -21,7 +21,7 @@ const Menu = React.memo(({ isSlidebarOpen, toggleSlidebarOpen }) => {
 
     return (
         <div
-            className={`md:relative md:translate-x-0 min-h--[100vh] bg-white dark:bg-gray-800 w-[272px] max-w-[272px] 
+            className={`md:relative md:translate-x-0 min-h--[100vh] bg-white dark:bg-gray-800 md:w-[20%] w-[272px] max-w-[272px] 
         h-screen fixed flex flex-col gap-5 top-0 z-40 transition-transform 
         ${i18n.language === "ar" ? "right-0" : "left-0"} 
         ${isSlidebarOpen ? "translate-x-0" : (i18n.language === "ar" ? "translate-x-full" : "-translate-x-full")}`}
