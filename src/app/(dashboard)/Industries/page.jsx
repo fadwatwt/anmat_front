@@ -10,7 +10,7 @@ import Table from "@/components/Tables/Table";
 import Page from "@/components/Page";
 import StatusActions from "@/components/Dropdowns/StatusActions";
 import { statusCell } from "@/components/StatusCell";
-import CreateIndustryModal from "@/app/(dashboard)/industries/modals/CreateIndustry.modal.";
+import CreateIndustryModal from "./modals/CreateIndustry.modal.jsx";
 
 import {
     useGetIndustriesQuery,
