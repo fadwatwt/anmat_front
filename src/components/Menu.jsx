@@ -28,7 +28,7 @@ const Menu = React.memo(({ isSlidebarOpen, toggleSlidebarOpen }) => {
     // }
     return (
         <div
-            className={`md:relative md:translate-x-0 min-h--[100vh] bg-white dark:bg-gray-800 w-[272px] max-w-[272px] 
+            className={`md:relative md:translate-x-0 min-h-[100vh] bg-surface w-[272px] max-w-[272px] 
         h-screen fixed flex flex-col gap-5 top-0 z-40 transition-transform 
         ${i18n.language === "ar" ? "right-0" : "left-0"} 
         ${isSlidebarOpen ? "translate-x-0" : (i18n.language === "ar" ? "translate-x-full" : "-translate-x-full")}`}
@@ -36,7 +36,7 @@ const Menu = React.memo(({ isSlidebarOpen, toggleSlidebarOpen }) => {
             <div className={" h-32 flex p-5 gap-2 border-b-2 dark:border-gray-600 items-center"}>
                 <div className={"profile-image"}>
                     <img src="/images/logo.png" alt={"img"}
-                         className={" w-10 h-10 rounded-full m-0 p-0"} />
+                        className={" w-10 h-10 rounded-full m-0 p-0"} />
                 </div>
                 <div className={"flex flex-col  gap-2 justify-center  "}>
                     <p className={"text-sm dark:text-white text-start truncate w-28 md:w-full"}>{t("Employees Management")}</p>
@@ -46,7 +46,7 @@ const Menu = React.memo(({ isSlidebarOpen, toggleSlidebarOpen }) => {
                     isSlidebarOpen && (
                         <button className="inline-flex h-8 w-8 items-center p-2 text-sm text-gray-500
                 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
-                                onClick={toggleSlidebarOpen}>
+                            onClick={toggleSlidebarOpen}>
                             <HambergerMenu />
                         </button>
                     )
@@ -62,13 +62,13 @@ const Menu = React.memo(({ isSlidebarOpen, toggleSlidebarOpen }) => {
                         {/*<MenuItem path={"/dashboard"} icon={<Category/>} title={"Dashboard"} />*/}
                         <MenuItem path={"/dashboard/projects"} icon={<NoteText />} title={"Projects"} />
                         <MenuItem path={"/dashboard/tasks"} icon={<TaskSquare />} title={"Tasks"} />
-                        <MenuItem path={"/dashboard/analytics"} icon={<Chart2/>} title={"Analytics"} />
-                        <MenuItem path={"/dashboard/hr"} icon={<Profile2User  />} title={"HR Management"} />
-                        <MenuItem path={"/dashboard/conversations"} icon={<Messages1  />} title={"Conversations"} />
-                        <MenuItem path={"/dashboard/social-media"} icon={<Share  />} title={"Social Media"} />
-                        <MenuItem path={"/dashboard/time-line"} icon={<Edit  />} title={"Timeline"} />
-                        <MenuItem path={"/dashboard/setting"} icon={<Setting  />} title={"Settings"} />
-                        <MenuItem path={"/ai-assistant"} icon={<Cpu  />} title={"AI Assistant"} />
+                        <MenuItem path={"/dashboard/analytics"} icon={<Chart2 />} title={"Analytics"} />
+                        <MenuItem path={"/dashboard/hr"} icon={<Profile2User />} title={"HR Management"} />
+                        <MenuItem path={"/dashboard/conversations"} icon={<Messages1 />} title={"Conversations"} />
+                        <MenuItem path={"/dashboard/social-media"} icon={<Share />} title={"Social Media"} />
+                        <MenuItem path={"/dashboard/time-line"} icon={<Edit />} title={"Timeline"} />
+                        <MenuItem path={"/dashboard/setting"} icon={<Setting />} title={"Settings"} />
+                        <MenuItem path={"/ai-assistant"} icon={<Cpu />} title={"AI Assistant"} />
                     </div>
                 </div>
                 {/*<BriefTimeLine tweet={tweet} myAccount={myAccount}/>*/}

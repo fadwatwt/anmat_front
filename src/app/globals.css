@@ -2,78 +2,158 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+    --bg-main: #F6F8FA;
+    --bg-surface: #FFFFFF;
+
+    --color-primary: #375DFB;
+    --color-success: #38C793;
+    --color-error: #DF1C41;
+
+    --text-primary: #111827;
+    --text-secondary: #4B5563;
+
+    --menu-icon: #525866;
+    --menu-item-active: #375DFB;
+    --menu-item-active-bg: #EBF2FF;
+
+    --menu-active-text: #375DFB;
+    --menu-active-bg: #EBF2FF;
+
+    --badge-bg: #EBF2FF;
+
+    /* Specific mappings */
+    --color-gray-f6f8fa: #F6F8FA;
+    --color-blue-c2d6ff: #C2D6FF;
+    --color-blue-dee5ff: #DEE5FF;
+    --color-blue-ebf1ff: #EBF1FF;
+}
+
+html.dark {
+    --bg-main: #161922;
+    --bg-surface: #20232D;
+
+    --color-primary: #375DFB;
+    --color-success: #2D9F75;
+    --color-error: #DF1C41;
+
+    --text-primary: #F9FAFB;
+    --text-secondary: #9CA3AF;
+
+    --menu-icon: #E2E4E9;
+    --menu-active-text: #F6F8FA;
+    --menu-active-bg: #375DFB;
+
+    --badge-bg: #375DFB24;
+
+    /* Specific mappings */
+    --color-gray-f6f8fa: #161922;
+    --color-blue-c2d6ff: #F6F8FA;
+    --color-blue-dee5ff: #C2D6FF;
+    --color-blue-ebf1ff: #EBF1FF21;
+}
+
+.bg-main {
+    background-color: var(--bg-main) !important;
+}
+
+.bg-surface {
+    background-color: var(--bg-surface) !important;
+}
+
 #root {
     margin: 0 auto;
     text-align: center;
 }
 
-body{
-    background-color: #F6F8FA ;
-
+body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
 }
-html,body{
+
+html,
+body {
     margin: 0;
     padding: 0;
     overflow: hidden;
 }
 
-p,div{
-    color:#4B5563
+p,
+div {
+    color: var(--text-secondary);
 }
 
-.tab-content,.none-scroll {
+.tab-content,
+.none-scroll {
     overflow-y: scroll;
     scrollbar-width: none;
 }
 
-.tab-content::-webkit-scrollbar,.none-scroll::-webkit-scrollbar {
+.tab-content::-webkit-scrollbar,
+.none-scroll::-webkit-scrollbar {
     display: none;
 }
 
 .checkbox-custom {
-    appearance: none; /* إزالة الشكل الافتراضي للـ checkbox */
-    width: 16px; /* تحديد عرض الـ checkbox */
-    height: 16px; /* تحديد ارتفاع الـ checkbox */
+    appearance: none;
+    /* إزالة الشكل الافتراضي للـ checkbox */
+    width: 16px;
+    /* تحديد عرض الـ checkbox */
+    height: 16px;
+    /* تحديد ارتفاع الـ checkbox */
     padding: 8px;
-    border: 1px solid #ccc; /* تحديد لون الحدود */
-    border-radius: 4px; /* إضافة حواف دائرية */
-    background-color: #fff; /* لون الخلفية للـ checkbox */
-    position: relative; /* لجعل العنصر يحتوي على المحتويات بشكل صحيح */
-    cursor: pointer; /* تغيير شكل المؤشر عند التمرير فوق الـ checkbox */
-    transition: all 0.3s ease; /* إضافة تأثيرات عند التغيير */
+    border: 1px solid #ccc;
+    /* تحديد لون الحدود */
+    border-radius: 4px;
+    /* إضافة حواف دائرية */
+    background-color: #fff;
+    /* لون الخلفية للـ checkbox */
+    position: relative;
+    /* لجعل العنصر يحتوي على المحتويات بشكل صحيح */
+    cursor: pointer;
+    /* تغيير شكل المؤشر عند التمرير فوق الـ checkbox */
+    transition: all 0.3s ease;
+    /* إضافة تأثيرات عند التغيير */
 }
 
 
 /* إضافة علامة check داخل الـ checkbox */
 .checkbox-custom:checked::before {
-    content: ''; /* لا شيء في البداية */
+    content: '';
+    /* لا شيء في البداية */
     position: absolute;
     top: 3.20px;
     left: 4.80px;
     width: 6.59px;
     height: 9.06px;
-    border: solid white; /* لون الخط */
-    border-width: 0 3px 3px 0; /* تحديد شكل الـ check */
-    transform: rotate(45deg); /* تدوير الخط ليظهر كـ check */
+    border: solid white;
+    /* لون الخط */
+    border-width: 0 3px 3px 0;
+    /* تحديد شكل الـ check */
+    transform: rotate(45deg);
+    /* تدوير الخط ليظهر كـ check */
 
 }
 
 /* الوضع الداكن */
 .dark .checkbox-custom {
-    background-color: #1a202c; /* خلفية داكنة */
-    border-color: #4a5568; /* لون الحدود */
+    background-color: #1a202c;
+    /* خلفية داكنة */
+    border-color: #4a5568;
+    /* لون الحدود */
 }
 
-.checkbox-custom:checked{
+.checkbox-custom:checked {
     background-color: #375DFB;
 }
 
-.dark .checkbox-custom:checked{
+.dark .checkbox-custom:checked {
     background-color: #C2D6FF;
 }
 
 .dark .checkbox-custom:checked::before {
-    border-color: #000; /* لون العلامة (check) في الوضع الداكن */
+    border-color: #000;
+    /* لون العلامة (check) في الوضع الداكن */
 }
 
 .custom-dashed-border {
@@ -134,50 +214,70 @@ p,div{
 
 /* AI Assistant Sidebar Icon Styling */
 .ai-assistant-bg {
-  fill: #fff;
-  transition: fill 0.3s;
+    fill: #fff;
+    transition: fill 0.3s;
 }
+
 .dark .ai-assistant-bg {
-  fill: #23272f;
+    fill: #23272f;
 }
 
 .ai-assistant-star {
-  fill: #4F8CFF;
-  filter: drop-shadow(0 0 0px #fff0);
-  transition: filter 0.3s, fill 0.3s;
+    fill: #4F8CFF;
+    filter: drop-shadow(0 0 0px #fff0);
+    transition: filter 0.3s, fill 0.3s;
 }
+
 .dark .ai-assistant-star {
-  fill: #fff;
+    fill: #fff;
 }
 
 /* Remove the base hover rule for all stars if present */
 .ai-assistant-icon:hover .ai-assistant-star {
-  /* No base filter here, handled per star below */
+    /* No base filter here, handled per star below */
 }
+
 .ai-assistant-icon:hover .ai-assistant-star-large {
-  filter: drop-shadow(0 0 16px #fff) drop-shadow(0 0 32px #4F8CFF) drop-shadow(0 0 8px #fff);
-  animation: twinkle-large 0.8s infinite alternate;
+    filter: drop-shadow(0 0 16px #fff) drop-shadow(0 0 32px #4F8CFF) drop-shadow(0 0 8px #fff);
+    animation: twinkle-large 0.8s infinite alternate;
 }
+
 .ai-assistant-icon:hover .ai-assistant-star-medium {
-  filter: drop-shadow(0 0 12px #fff) drop-shadow(0 0 24px #4F8CFF) drop-shadow(0 0 6px #fff);
-  animation: twinkle-medium 0.7s infinite alternate;
+    filter: drop-shadow(0 0 12px #fff) drop-shadow(0 0 24px #4F8CFF) drop-shadow(0 0 6px #fff);
+    animation: twinkle-medium 0.7s infinite alternate;
 }
+
 .ai-assistant-icon:hover .ai-assistant-star-small {
-  filter: drop-shadow(0 0 8px #fff) drop-shadow(0 0 16px #4F8CFF) drop-shadow(0 0 4px #fff);
-  animation: twinkle-small 0.6s infinite alternate;
+    filter: drop-shadow(0 0 8px #fff) drop-shadow(0 0 16px #4F8CFF) drop-shadow(0 0 4px #fff);
+    animation: twinkle-small 0.6s infinite alternate;
 }
 
 @keyframes twinkle-large {
-  0% { filter: drop-shadow(0 0 8px #fff8) drop-shadow(0 0 16px #4F8CFF88); }
-  100% { filter: drop-shadow(0 0 16px #fff) drop-shadow(0 0 32px #4F8CFF); }
+    0% {
+        filter: drop-shadow(0 0 8px #fff8) drop-shadow(0 0 16px #4F8CFF88);
+    }
+
+    100% {
+        filter: drop-shadow(0 0 16px #fff) drop-shadow(0 0 32px #4F8CFF);
+    }
 }
+
 @keyframes twinkle-medium {
-  0% { filter: drop-shadow(0 0 6px #fff6) drop-shadow(0 0 12px #4F8CFF66); }
-  100% { filter: drop-shadow(0 0 12px #fff) drop-shadow(0 0 24px #4F8CFF); }
+    0% {
+        filter: drop-shadow(0 0 6px #fff6) drop-shadow(0 0 12px #4F8CFF66);
+    }
+
+    100% {
+        filter: drop-shadow(0 0 12px #fff) drop-shadow(0 0 24px #4F8CFF);
+    }
 }
+
 @keyframes twinkle-small {
-  0% { filter: drop-shadow(0 0 4px #fff4) drop-shadow(0 0 8px #4F8CFF44); }
-  100% { filter: drop-shadow(0 0 8px #fff) drop-shadow(0 0 16px #4F8CFF); }
+    0% {
+        filter: drop-shadow(0 0 4px #fff4) drop-shadow(0 0 8px #4F8CFF44);
+    }
+
+    100% {
+        filter: drop-shadow(0 0 8px #fff) drop-shadow(0 0 16px #4F8CFF);
+    }
 }
-
-

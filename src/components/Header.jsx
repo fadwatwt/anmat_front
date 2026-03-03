@@ -19,7 +19,7 @@ const Header = React.memo(({ taggleSlidebarOpen, className }) => {
   return (
     <div
       className={
-        "header dark:bg-gray-800 max-w-full bg-white h-[72px] flex px-8 items-center justify-between relative " +
+        "header bg-surface max-w-full h-[72px] flex px-8 items-center justify-between relative " +
         className
       }
     >

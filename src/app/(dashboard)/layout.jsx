@@ -172,7 +172,7 @@ const MainLayout = ({ children }) => {
                     )
                 )}
 
-                <main className="h-[calc(100vh-72px)] overflow-auto max-w-[100vw] tab-content dark:bg-gray-900">
+                <main className="h-[calc(100vh-72px)] overflow-auto max-w-[100vw] tab-content bg-main">
                     {children}
                 </main>
             </div>

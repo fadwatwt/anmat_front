@@ -23,13 +23,13 @@ function MenuItem({ path, icon, title, children }) {
 
     const ItemContent = (
         <div className={`flex gap-1 w-11/12 items-center p-3 rounded-lg transition-all
-            ${isActive ? 'bg-primary-100' : 'group-hover:bg-[#EBF1FF]'} 
-            dark:group-hover:bg-primary-700 hover:text-black`}>
+            ${isActive ? 'bg-menu-active-bg' : 'group-hover:bg-primary-100'} 
+            hover:text-black`}>
             {icon && React.cloneElement(icon, {
                 size: 25,
-                color: `${isActive ? '#375DFB' : '#504e4e'}`,
+                color: `${isActive ? 'var(--menu-active-text)' : 'var(--menu-icon)'}`,
             })}
-            <p className={`text-sm flex-1 dark:text-gray-300 ${isActive ? 'text-primary-600 ' : ''}`}>
+            <p className={`text-sm flex-1 ${isActive ? 'text-menu-active-text' : 'dark:text-gray-300'}`}>
                 {t(title)}
             </p>
             {children && (
@@ -60,17 +60,17 @@ function MenuItem({ path, icon, title, children }) {
             {children && (
                 <div className={`ml-3 mt-1 flex flex-col gap-1 overflow-hidden transition-all duration-300 
                     ${isOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
-                    <div className="bg-[#F4F7FF] dark:bg-gray-700 rounded-lg p-2 mr-4">
+                    <div className="bg-primary-100 rounded-lg p-2 mr-4">
                         {children.map((child, index) => {
                             const isSubActive = pathname === child.path;
                             return (
                                 <Link
                                     key={index}
                                     href={child.path}
-                                    className={`block text-black p-2 text-sm rounded-md transition-colors
+                                    className={`block p-2 text-sm rounded-md transition-colors
                                         ${isSubActive
-                                        ? 'bg-white dark:bg-gray-600 text-primary-600 shadow-sm'
-                                        : 'text-gray-500 dark:text-gray-300 hover:bg-blue-50'}`}
+                                            ? 'bg-surface text-primary-600 shadow-sm'
+                                            : 'text-gray-500 hover:bg-primary-100'}`}
                                 >
                                     {t(child.title)}
                                 </Link>
