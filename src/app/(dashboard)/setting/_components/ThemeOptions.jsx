@@ -2,14 +2,15 @@ import { useState } from "react";
 import ThemeOptionItem from "./ThemeOptionItem.jsx";
 import { IoOptionsOutline, IoSunnyOutline } from "react-icons/io5";
 import { MdOutlineDarkMode } from "react-icons/md";
-import DefaultButton from "@/components/Form/DefaultButton.jsx";
 import useDarkMode from "@/Hooks/useDarkMode.js";
-import {useTranslation} from "react-i18next";
+import { useTranslation } from "react-i18next";
+import ApprovalAlert from "@/components/Alerts/ApprovalAlert.jsx";
 
 function ThemeOptions() {
-    const {t} = useTranslation()
+    const { t } = useTranslation()
     const [theme, setTheme] = useDarkMode();
-    const [tempTheme, setTempTheme] = useState(theme);
+    const [isAlertOpen, setIsAlertOpen] = useState(false);
+    const [pendingTheme, setPendingTheme] = useState(null);
 
     const themeOptions = [
         {
@@ -32,30 +33,22 @@ function ThemeOptions() {
         },
     ];
 
-    const handleTempThemeChange = (value) => {
-        setTempTheme(value);
-        const root = window.document.documentElement;
-
-        if (value === "dark") {
-            root.classList.add("dark");
-            root.classList.remove("light");
-        } else if (value === "light") {
-            root.classList.add("light");
-            root.classList.remove("dark");
-        } else {
-            const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-            if (systemTheme === "dark") {
-                root.classList.add("dark");
-                root.classList.remove("light");
-            } else {
-                root.classList.add("light");
-                root.classList.remove("dark");
-            }
-        }
+    const handleOptionSelect = (value) => {
+        if (value === theme) return;
+        setPendingTheme(value);
+        setIsAlertOpen(true);
     };
 
-    const handleApplyChanges = () => {
-        setTheme(tempTheme);
+    const handleConfirmTheme = () => {
+        if (pendingTheme) {
+            setTheme(pendingTheme);
+        }
+        setIsAlertOpen(false);
+    };
+
+    const handleCancelTheme = () => {
+        setPendingTheme(null);
+        setIsAlertOpen(false);
     };
 
     return (
@@ -72,16 +65,23 @@ function ThemeOptions() {
                             title={option.title}
                             icon={option.icon}
                             description={option.description}
-                            isActive={tempTheme === option.value}
-                            onClick={() => handleTempThemeChange(option.value)}
+                            isActive={pendingTheme ? pendingTheme === option.value : theme === option.value}
+                            onClick={() => handleOptionSelect(option.value)}
                         />
                     ))}
                 </div>
-                <div className={"flex gap-3"}>
-                    <DefaultButton type={'button'}  onClick={() => setTempTheme(theme)} title={"Cancel"} className={"font-medium dark:text-gray-200"} />
-                    <DefaultButton type={'button'} onClick={handleApplyChanges} title={"Apply Changes"} className={"bg-primary-500 font-medium dark:bg-primary-200 dark:text-black text-white"} />
-                </div>
             </div>
+
+            <ApprovalAlert
+                isOpen={isAlertOpen}
+                onClose={handleCancelTheme}
+                onConfirm={handleConfirmTheme}
+                title="Change Theme"
+                message={t("Are you sure you want to change the theme to {{theme}}?", { theme: t(themeOptions.find(o => o.value === pendingTheme)?.title) })}
+                confirmBtnText="Apply"
+                cancelBtnText="Cancel"
+                type="info"
+            />
         </div>
     );
 }

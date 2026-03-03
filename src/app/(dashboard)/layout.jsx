@@ -11,9 +11,11 @@ import DashboardSideMenu from "@/components/DashboardSideMenu";
 import { useSelector, useDispatch } from "react-redux";
 import { selectAuth, loadAuthState, logout, setUser } from "@/redux/auth/authSlice";
 import { useLazyGetUserQuery } from "@/redux/auth/authAPI";
+import useDarkMode from "@/Hooks/useDarkMode";
 
 const MainLayout = ({ children }) => {
     const [isSlidebarOpen, setSlidebarOpen] = useState(false);
+    useDarkMode();
     const router = useRouter();
     const pathname = usePathname();
     const dispatch = useDispatch();
