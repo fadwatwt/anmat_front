@@ -87,19 +87,19 @@ const AdminDashboard = () => {
         <span className={`px-2 py-1 rounded-full text-[10px] font-medium ${project.status === 'completed' ? 'bg-green-100 text-green-700' :
           project.status === 'in_progress' ? 'bg-blue-100 text-blue-700' :
             project.status === 'on_hold' ? 'bg-orange-100 text-orange-700' :
-              'bg-gray-100 text-gray-700'
+              'bg-status-bg text-cell-secondary border border-status-border'
           }`}>
           {project.status ? project.status.charAt(0).toUpperCase() + project.status.slice(1).replace(/_/g, " ") : t("Pending")}
         </span>
       </div>,
       <div key={`progress-${index}`} className="flex items-center gap-2 w-full">
-        <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+        <div className="flex-1 h-1.5 bg-status-bg border border-status-border rounded-full overflow-hidden">
           <div
             className="h-full bg-primary-400"
             style={{ width: `${project.progress || 0}%` }}
           />
         </div>
-        <span className="text-[10px] text-gray-500 whitespace-nowrap">{project.progress || 0}%</span>
+        <span className="text-[10px] text-cell-secondary whitespace-nowrap">{project.progress || 0}%</span>
       </div>,
       <div key={`assignees-${index}`} className="flex">
         {project.assignees?.map((assignee, idx) => (
@@ -112,7 +112,7 @@ const AdminDashboard = () => {
           />
         ))}
         {(!project.assignees || project.assignees.length === 0) && (
-          <span className="text-gray-400 text-xs italic">{t("No Assignees")}</span>
+          <span className="text-cell-secondary text-xs italic">{t("No Assignees")}</span>
         )}
       </div>,
       project.due_date ? new Date(project.due_date).toLocaleDateString() : t("No Date"),
@@ -144,7 +144,7 @@ const AdminDashboard = () => {
             hideSearchInput={true}
             showStatusFilter={true}
             toolbarCustomContent={
-              <button className="bg-white text-gray-700 hover:bg-gray-50 px-4 py-2flex dark:text-gray-400 text-sm items-baseline p-2 gap-2 rounded-lg border border-gray-200 dark:border-gray-600">
+              <button className="bg-status-bg text-cell-secondary hover:bg-gray-50 px-4 py-2flex dark:text-gray-400 text-sm items-baseline p-2 gap-2 rounded-lg border border-status-border dark:border-gray-600">
                 See All
               </button>
             }

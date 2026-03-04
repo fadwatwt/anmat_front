@@ -23,7 +23,7 @@ const data = [
 const TimelineLine = () => {
     return (
         <div className="h-full w-full">
-            <p className="text-[10px] text-gray-400 mb-2 absolute top-0 left-0">Hours</p>
+            <p className="text-[10px] text-cell-secondary mb-2 absolute top-0 left-0">Hours</p>
             <ResponsiveContainer width="100%" height="100%">
                 <LineChart
                     data={data}
@@ -32,18 +32,18 @@ const TimelineLine = () => {
                     <CartesianGrid
                         strokeDasharray="3 3"
                         vertical={false}
-                        stroke="#f0f0f0"
+                        stroke="var(--status-border)"
                     />
                     <XAxis
                         dataKey="name"
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fontSize: 11, fill: '#9ca3af' }}
+                        tick={{ fontSize: 11, fill: 'var(--text-cell-secondary)' }}
                     />
                     <YAxis
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fontSize: 11, fill: '#9ca3af' }}
+                        tick={{ fontSize: 11, fill: 'var(--text-cell-secondary)' }}
                         domain={[0, 15]}
                         ticks={[0, 5, 10, 15]}
                     />

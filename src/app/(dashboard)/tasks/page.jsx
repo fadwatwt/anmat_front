@@ -176,10 +176,10 @@ function TasksPage() {
         description={task.description}
       />,
       ...(!isEmployee ? [
-        <p title={task.project?.name} key={`project-${task._id}`} className="text-sm dark:text-sub-300 truncate max-w-[140px]">
+        <p title={task.project?.name} key={`project-${task._id}`} className="text-sm text-cell-secondary truncate max-w-[140px]">
           {task.project?.name || t("No Project")}
         </p>,
-        <p title={task.department?.name} key={`dept-${task._id}`} className="text-sm dark:text-sub-300 truncate max-w-[140px]">
+        <p title={task.department?.name} key={`dept-${task._id}`} className="text-sm text-cell-secondary truncate max-w-[140px]">
           {task.department?.name || t("No Department")}
         </p>,
         <AccountDetails
@@ -200,15 +200,15 @@ function TasksPage() {
       <Priority key={`priority-${task._id}`} type={task.priority} />,
       <Status key={`status-${task._id}`} type={task.status} />,
       <div key={`progress-${task._id}`} className="flex items-center gap-2">
-        <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 min-w-[60px]">
+        <div className="flex-1 bg-status-bg border border-status-border rounded-full h-1.5 min-w-[60px]">
           <div
             className="bg-primary-500 h-1.5 rounded-full"
             style={{ width: `${task.progress || 0}%` }}
           ></div>
         </div>
-        <span className="text-xs font-medium text-sub-500 dark:text-sub-300">{task.progress || 0}%</span>
+        <span className="text-xs font-medium text-cell-secondary">{task.progress || 0}%</span>
       </div>,
-      <p key={`due-date-${task._id}`} className="text-sm dark:text-sub-300 text-nowrap">
+      <p key={`due-date-${task._id}`} className="text-sm text-cell-secondary text-nowrap">
         {task.due_date ? translateDate(task.due_date) : "-"}
       </p>,
     ]);

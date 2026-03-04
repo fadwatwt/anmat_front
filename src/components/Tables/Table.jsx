@@ -116,11 +116,11 @@ function Table({
     const currentRows = rows.slice(startIndex, startIndex + rowsPerPage);
 
     return (
-        <div className={"rounded-2xl md:w-full pb-10 tab-content dark:bg-gray-800 border border-gary-200 dark:border-gray-700 p-3 flex flex-col gap-4 bg-white " + (classContainer ? classContainer : "")}>
+        <div className={"rounded-2xl md:w-full pb-10 tab-content dark:bg-gray-800 border border-status-border p-3 flex flex-col gap-4 bg-white " + (classContainer ? classContainer : "")}>
             {isTitle && (
                 <div className={"flex flex-wrap justify-between items-center gap-4 mb-2"}>
                     <div className="flex flex-wrap items-center gap-4">
-                        {customTitle || <p className={"text-gray-800 text-start text-lg dark:text-gray-400"}>{t(title)}</p>}
+                        {customTitle || <p className={"text-table-title text-start text-lg"}>{t(title)}</p>}
 
                         {headerActions && (
                             <div className="flex items-center gap-2">
@@ -210,7 +210,7 @@ function Table({
                 <div className="w-full overflow-x-auto">
                     <table className={"relative table-auto w-full " + className} style={{ borderSpacing: "0 1px" }}>
                         <thead>
-                            <tr className="bg-weak-100 dark:bg-gray-800">
+                            <tr className="bg-status-bg">
                                 {isCheckInput && (
                                     <th className="px-1 pt-1 w-5 rounded-tl-lg rounded-bl-lg dark:bg-gray-900">
                                         <input
@@ -224,7 +224,7 @@ function Table({
                                 {headers?.map((header, index) => (
                                     header && <th
                                         key={index}
-                                        className="p-2 text-start text-sm font-normal dark:bg-gray-900 dark:text-gray-300 "
+                                        className="p-2 text-start text-sm font-normal text-cell-primary"
                                         style={{
                                             width: header.width || "auto",
                                             borderTopRightRadius: index === headers.length - 1 ? "8px" : "0px",
@@ -254,7 +254,7 @@ function Table({
                                         {row.map((cell, cellIndex) => (
                                             cell && <td
                                                 key={cellIndex}
-                                                className={"text-sm text-start max-w-10 sm:max-w-24 text-nowrap dark:text-gray-300 " + (classNameCell ? classNameCell : "px-2 py-6")}
+                                                className={"text-sm text-start max-w-10 sm:max-w-24 text-nowrap text-cell-primary " + (classNameCell ? classNameCell : "px-2 py-6")}
                                                 style={{ borderBottomRightRadius: cellIndex === row.length - 1 ? "8px" : "" }}
                                             >
                                                 {cell}

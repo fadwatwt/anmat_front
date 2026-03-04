@@ -107,12 +107,12 @@ const VerifyEmail = () => {
 
                     <div className="flex flex-col items-center justify-start gap-8 text-center w-[30rem]">
                         <div className="flex flex-col gap-1 text-2xl w-full">
-                            <span className="text-gray-900 dark:text-gray-50">
+                            <span className="text-table-title">
                                 {"Email Verification"}
                             </span>
                         </div>
 
-                        <span className="block text-gray-500 text-lg text-wrap px-4">
+                        <span className="block text-cell-secondary text-lg text-wrap px-4">
                             {hasRequested || isSuccess
                                 ? "We have sent you a link to your email for verifying your account, please check your email and continue."
                                 : "To complete your account setup, please verify your email address by clicking the link we sent to your inbox."
@@ -127,7 +127,7 @@ const VerifyEmail = () => {
                         >
                             {isLoading ? "Sending..." : "Send New Email"}
                         </button>
-                        <span className="block text-gray-500 text-xs text-wrap px-4">
+                        <span className="block text-cell-secondary text-xs text-wrap px-4">
                             resend after <span className="text-primary-500 text-sm mx-2 uppercase tabular-nums">{formatTimeSpaced(timeLeft)}</span>
                         </span>
                     </div>

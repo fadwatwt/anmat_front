@@ -105,12 +105,12 @@ export default function EmployeeRequests() {
             alt={request.employee?.name}
           />
           <div className="flex flex-col">
-            <span className="font-semibold text-sm text-gray-800">{request.employee?.name || 'N/A'}</span>
-            <span className="text-xs text-gray-400">{request.department?.name || ''}</span>
+            <span className="font-semibold text-sm text-table-title">{request.employee?.name || 'N/A'}</span>
+            <span className="text-xs text-cell-secondary">{request.department?.name || ''}</span>
           </div>
         </div>
       ),
-      <span key={`date-${index}`} className="text-gray-500 text-sm">
+      <span key={`date-${index}`} className="text-cell-secondary text-sm">
         {request.created_at ? format(new Date(request.created_at), "dd MMM, yyyy") : 'N/A'}
       </span>,
     ];
@@ -118,24 +118,24 @@ export default function EmployeeRequests() {
     let specificCells = [];
     if (activeTab === "DAY_OFF") {
       specificCells = [
-        <span key={`vacation-${index}`} className="text-gray-600 dark:text-gray-400 text-sm">
+        <span key={`vacation-${index}`} className="text-cell-secondary text-sm">
           {request.vacation_date ? format(new Date(request.vacation_date), "dd MMM, yyyy") : "N/A"}
         </span>,
-        <div key={`reason-${index}`} className="text-gray-500 text-sm truncate max-w-[150px]" title={request.reason}>
+        <div key={`reason-${index}`} className="text-cell-secondary text-sm truncate max-w-[150px]" title={request.reason}>
           {request.reason || "N/A"}
         </div>
       ];
     } else if (activeTab === "SALARY_ADVANCE") {
       specificCells = [
-        <span key={`advance-${index}`} className="text-gray-600 dark:text-gray-400 text-sm">{request.advance_salary_by || "N/A"}</span>,
-        <span key={`old_salary-${index}`} className="text-gray-600 dark:text-gray-400 text-sm">{request.old_salary_amount || "N/A"}</span>
+        <span key={`advance-${index}`} className="text-cell-secondary text-sm">{request.advance_salary_by || "N/A"}</span>,
+        <span key={`old_salary-${index}`} className="text-cell-secondary text-sm">{request.old_salary_amount || "N/A"}</span>
       ];
     } else {
       specificCells = [
-        <span key={`due-${index}`} className="text-gray-600 dark:text-gray-400 text-sm">
+        <span key={`due-${index}`} className="text-cell-secondary text-sm">
           {request.work_due_at ? format(new Date(request.work_due_at), "dd MMM, yyyy HH:mm") : "N/A"}
         </span>,
-        <div key={`reason-${index}`} className="text-gray-500 text-sm truncate max-w-[150px]" title={request.reason}>
+        <div key={`reason-${index}`} className="text-cell-secondary text-sm truncate max-w-[150px]" title={request.reason}>
           {request.reason || "N/A"}
         </div>
       ];
@@ -172,7 +172,7 @@ export default function EmployeeRequests() {
     ].filter(Boolean);
   });
   const headerActions = (
-    <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+    <div className="flex bg-status-bg border border-status-border rounded-lg p-1">
       {[
         { id: "DAY_OFF", label: t("Leave Requests") },
         { id: "SALARY_ADVANCE", label: t("Financial Requests") },
@@ -181,7 +181,7 @@ export default function EmployeeRequests() {
         <button
           key={tab.id}
           onClick={() => setActiveTab(tab.id)}
-          className={`px-4 py-1 text-sm rounded-md transition-colors ${activeTab === tab.id ? "bg-white dark:bg-gray-700 shadow-sm text-primary-600 font-medium" : "text-gray-500 dark:text-gray-400 hover:text-gray-700"}`}
+          className={`px-4 py-1 text-sm rounded-md transition-colors ${activeTab === tab.id ? "bg-white dark:bg-gray-700 shadow-sm text-primary-600 font-medium" : "text-cell-secondary hover:text-table-title"}`}
         >
           {tab.label}
         </button>
@@ -202,7 +202,7 @@ export default function EmployeeRequests() {
         isLoading={isLoading}
         headerActions={headerActions}
         toolbarCustomContent={
-          <button className="bg-white text-gray-700 hover:bg-gray-50 px-4 py-2 text-sm items-baseline p-2 gap-2 rounded-lg border border-gray-200 dark:border-gray-600">
+          <button className="bg-status-bg text-cell-secondary hover:bg-gray-50 px-4 py-2 text-sm items-baseline p-2 gap-2 rounded-lg border border-status-border dark:border-gray-600">
             {t("See All")}
           </button>
         }

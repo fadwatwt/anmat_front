@@ -138,10 +138,10 @@ const MainLayout = ({ children }) => {
     if (isFetchingUser || !user || shouldRedirect) {
         if (token || (typeof window !== "undefined" && localStorage.getItem("token"))) {
             return (
-                <div className="h-screen w-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+                <div className="h-screen w-screen flex items-center justify-center bg-status-bg">
                     <div className="flex flex-col items-center gap-4">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-                        <p className="text-gray-600 dark:text-gray-400 font-medium">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-base"></div>
+                        <p className="text-cell-secondary font-medium">
                             {shouldRedirect ? "Redirecting to setup..." : "Loading session..."}
                         </p>
                     </div>

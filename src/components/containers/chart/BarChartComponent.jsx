@@ -31,9 +31,9 @@ const BarChartComponent = ({
                     {
                         bars.map(bar => {
                             return (
-                                <div className="flex gap-1 items-center">
-                                    <RiCircleFill size={10} className={`text-[${bar.fill}]`} />
-                                    <span className="text-sm text-gray-500">
+                                <div key={bar.name} className="flex gap-1 items-center">
+                                    <RiCircleFill size={10} style={{ color: bar.fill }} />
+                                    <span className="text-sm text-cell-secondary">
                                         {bar.name}
                                     </span>
                                 </div>

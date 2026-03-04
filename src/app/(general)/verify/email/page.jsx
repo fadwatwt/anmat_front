@@ -20,15 +20,15 @@ const VerifyEmail = () => {
 
                     <div className="flex flex-col items-center justify-start gap-8 text-center w-[30rem]">
                         <div className="flex flex-col gap-1 text-2xl w-full">
-                            <span className="text-gray-900 dark:text-gray-50">
+                            <span className="text-table-title">
                                 {"Welcome to [Company Name]!"}
                             </span>
-                            <span className="text-gray-900 dark:text-gray-50">
+                            <span className="text-table-title">
                                 {"Please verify your company email"}
                             </span>
                         </div>
 
-                        <span className="block text-gray-500 text-lg text-wrap">
+                        <span className="block text-cell-secondary text-lg text-wrap">
                             You’ve entered
                             <span className="text-gray-700 m-1 font-semibold">{"mai.maged@company.com"}</span>
                             as the company email address for your account, please verify this email address by clicking button below.

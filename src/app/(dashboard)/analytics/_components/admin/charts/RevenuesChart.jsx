@@ -63,7 +63,7 @@ const RevenuesChart = () => {
             footer={
                 <div className="flex gap-1 items-center justify-center">
                     <RiCircleFill size={10} className={`text-[#FCAA0B]`} />
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm text-cell-secondary">
                         {"Revenues has improved from 2 points to 4 points this month"}
                     </span>
                 </div>

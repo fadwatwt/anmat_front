@@ -20,7 +20,14 @@
     --menu-active-text: #375DFB;
     --menu-active-bg: #EBF2FF;
 
-    --badge-bg: #EBF2FF;
+    --badge-bg: #EBF1FF;
+    --text-badge: #162664;
+    --text-page-title: #525866;
+    --text-table-title: #0A0D14;
+    --text-cell-primary: #525866;
+    --text-cell-secondary: #757C8A;
+    --status-bg: #F6F8FA;
+    --status-border: #E2E4E9;
 
     /* Specific mappings */
     --color-gray-f6f8fa: #F6F8FA;
@@ -45,6 +52,13 @@ html.dark {
     --menu-active-bg: #375DFB;
 
     --badge-bg: #375DFB24;
+    --text-badge: #E2E4E9;
+    --text-page-title: #CDD0D5;
+    --text-table-title: #F6F8FA;
+    --text-cell-primary: #CDD0D5;
+    --text-cell-secondary: #CDD0D5;
+    --status-bg: #20232D;
+    --status-border: #31353F;
 
     /* Specific mappings */
     --color-gray-f6f8fa: #161922;

@@ -1,13 +1,13 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
-import { 
-    RiMailFill, 
-    RiYoutubeFill, 
-    RiInstagramFill, 
-    RiTwitterXFill, 
-    RiLinkedinFill, 
-    RiFacebookFill 
+import {
+  RiMailFill,
+  RiYoutubeFill,
+  RiInstagramFill,
+  RiTwitterXFill,
+  RiLinkedinFill,
+  RiFacebookFill
 } from "@remixicon/react";
 import Orandis from "../assets/images/Orandis.png";
 const EmailInvitation = ({
@@ -38,7 +38,7 @@ const EmailInvitation = ({
 
         {/* Welcome Header */}
         {/* Welcome Header */}
-        <h1 className="text-center text-[#0A0D14] dark:text-gray-200 font-[400] text-[24px] leading-[32px] tracking-[0%] font-[Almarai]">
+        <h1 className="text-center text-table-title font-[400] text-[24px] leading-[32px] tracking-[0%] font-[Almarai]">
           {t("Welcome to {{companyName}}! Your New Journey Begins!", {
             companyName,
           })}
@@ -46,14 +46,13 @@ const EmailInvitation = ({
 
         {/* Greeting Text */}
         <div
-          className={`text-left w-full mb-4 ${
-            isRTL ? "text-right" : "text-left"
-          }`}
+          className={`text-left w-full mb-4 ${isRTL ? "text-right" : "text-left"
+            }`}
         >
-          <p className="text-sm text-[#525866] dark:text-gray-300 mb-2">
+          <p className="text-sm text-cell-primary mb-2">
             {t("Dear")} {userName},
           </p>
-          <p className="text-sm text-[#525866] dark:text-gray-300">
+          <p className="text-sm text-cell-primary">
             {t(`We are pleased to welcome you to our team at `)}
             <span className="font-medium">{organization}</span>
             {t(` for the position of ${position} in the ${department}.`)}
@@ -62,11 +61,10 @@ const EmailInvitation = ({
 
         {/* Instructions */}
         <div
-          className={`text-left w-full mb-6 ${
-            isRTL ? "text-right" : "text-left"
-          }`}
+          className={`text-left w-full mb-6 ${isRTL ? "text-right" : "text-left"
+            }`}
         >
-          <p className="text-sm text-[#525866] dark:text-gray-300">
+          <p className="text-sm text-cell-primary dark:text-gray-300">
             {t(
               "To complete your onboarding process, please click the button below to finalize your information and activate your account."
             )}
@@ -95,17 +93,17 @@ const EmailInvitation = ({
 
         {/* Contact Info */}
         <div className={`w-full mt-4 ${isRTL ? "text-right" : "text-left"}`}>
-          <p className="text-sm text-[#525866] dark:text-gray-300">
+          <p className="text-sm text-cell-primary">
             {t(
               "If you have any questions or need assistance during the process, don't hesitate to contact us."
             )}
           </p>
-          <p className="text-sm text-[#525866] dark:text-gray-300 mb-0">
+          <p className="text-sm text-cell-primary mb-0">
             {t("Looking forward to working with you!")}
           </p>
 
           <p
-            className="text-sm font-medium text-[#0A0D14] dark:text-gray-100 mt-4"
+            className="text-sm font-medium text-table-title mt-4"
             style={{
               fontFamily: "Almarai",
               fontWeight: 400,
@@ -117,7 +115,7 @@ const EmailInvitation = ({
             {t("Contact Information:")}
           </p>
           <p
-            className="text-sm text-[#0A0D14] dark:text-gray-200"
+            className="text-sm text-table-title"
             style={{
               fontFamily: "Almarai",
               fontWeight: 400,
@@ -129,7 +127,7 @@ const EmailInvitation = ({
             {t("HR Email:")} {hrEmail}
           </p>
           <p
-            className="text-sm text-[#0A0D14] dark:text-gray-200"
+            className="text-sm text-table-title"
             style={{
               fontFamily: "Almarai",
               fontWeight: 400,
@@ -146,37 +144,37 @@ const EmailInvitation = ({
         <div className="flex justify-center w-full gap-4 mt-2">
           <a
             href="#"
-            className="text-[#757C8A] hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+            className="text-cell-secondary hover:text-gray-700"
           >
             <RiMailFill size={21} />
           </a>
           <a
             href="#"
-            className="text-[#757C8A] hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+            className="text-cell-secondary hover:text-gray-700"
           >
             <RiYoutubeFill size={21} />
           </a>
           <a
             href="#"
-            className="text-[#757C8A] hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+            className="text-cell-secondary hover:text-gray-700"
           >
             <RiInstagramFill size={21} />
           </a>
           <a
             href="#"
-            className="text-[#757C8A] hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+            className="text-cell-secondary hover:text-gray-700"
           >
             <RiTwitterXFill size={21} />
           </a>
           <a
             href="#"
-            className="text-[#757C8A] hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+            className="text-cell-secondary hover:text-gray-700"
           >
             <RiLinkedinFill size={21} />
           </a>
           <a
             href="#"
-            className="text-[#757C8A] hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+            className="text-cell-secondary hover:text-gray-700"
           >
             <RiFacebookFill size={21} />
           </a>
@@ -189,21 +187,21 @@ const EmailInvitation = ({
 export default EmailInvitation;
 
 EmailInvitation.propTypes = {
-    userName: PropTypes.string,
-    companyName: PropTypes.string,
-    position: PropTypes.string,
-    department: PropTypes.string,
-    organization: PropTypes.string,
-    hrEmail: PropTypes.string,
-    phoneNumber: PropTypes.string,
-  };
-  
-  EmailInvitation.defaultProps = {
-    userName: "Amir",
-    companyName: "[Company Name]",
-    position: "Content Editor",
-    department: "Publishing Department",
-    organization: "Visionary Publishing",
-    hrEmail: "hr@domain.com",
-    phoneNumber: "+90 312 213 2965",
-  };
+  userName: PropTypes.string,
+  companyName: PropTypes.string,
+  position: PropTypes.string,
+  department: PropTypes.string,
+  organization: PropTypes.string,
+  hrEmail: PropTypes.string,
+  phoneNumber: PropTypes.string,
+};
+
+EmailInvitation.defaultProps = {
+  userName: "Amir",
+  companyName: "[Company Name]",
+  position: "Content Editor",
+  department: "Publishing Department",
+  organization: "Visionary Publishing",
+  hrEmail: "hr@domain.com",
+  phoneNumber: "+90 312 213 2965",
+};

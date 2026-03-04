@@ -34,12 +34,12 @@ export const StatusBadge = ({ status }) => {
       colors = "bg-[#FFF9F5] text-[#C2540A] border-[#FFD9C2]";
       break;
     case "Absent":
-      Icon = <BsSlashCircleFill size={14} className="text-[#757C8A]" />;
-      colors = "bg-gray-50 text-gray-700 border-gray-200";
+      Icon = <BsSlashCircleFill size={14} className="text-cell-secondary" />;
+      colors = "bg-status-bg text-cell-secondary border-status-border";
       break;
     default:
       Icon = <BsClockFill size={14} className="text-[#C2540A]" />;
-      colors = "bg-gray-50 text-gray-700 border-gray-200";
+      colors = "bg-status-bg text-cell-secondary border-status-border";
   }
 
   return (
@@ -88,24 +88,24 @@ function AttendanceTab() {
         className="w-10 h-10 rounded-full object-cover"
       />
       <div className="flex flex-col">
-        <span className="text-sm font-medium text-gray-900 dark:text-gray-100 whitespace-normal leading-tight">
+        <span className="text-sm font-medium text-cell-primary whitespace-normal leading-tight">
           {record.employee?.name || "N/A"}
         </span>
-        <span className="text-gray-500 text-[11px] whitespace-normal leading-tight mt-0.5">
+        <span className="text-cell-secondary text-[11px] whitespace-normal leading-tight mt-0.5">
           {record.employee?.email || "N/A"}
         </span>
       </div>
     </div>,
-    <span key={`date-${record._id}`} className="text-sm text-gray-700 dark:text-sub-300">
+    <span key={`date-${record._id}`} className="text-sm text-cell-primary">
       {record.date ? format(parse(record.date, "yyyy-MM-dd", new Date()), "dd MMM, yyyy") : "N/A"}
     </span>,
-    <span key={`start-${record._id}`} className="text-sm text-gray-700 dark:text-sub-300">
+    <span key={`start-${record._id}`} className="text-sm text-cell-primary">
       {record.start_time || "-"}
     </span>,
-    <span key={`end-${record._id}`} className="text-sm text-gray-700 dark:text-sub-300">
+    <span key={`end-${record._id}`} className="text-sm text-cell-primary">
       {record.end_time || "-"}
     </span>,
-    <span key={`late-${record._id}`} className="text-sm text-gray-600 dark:text-sub-300">
+    <span key={`late-${record._id}`} className="text-sm text-cell-secondary">
       {record.late_in_minutes > 0 ? `${record.late_in_minutes} min` : "-"}
     </span>,
     <StatusBadge key={`status-${record._id}`} status={record.late_in_minutes > 0 ? "Late" : "On Time"} />,

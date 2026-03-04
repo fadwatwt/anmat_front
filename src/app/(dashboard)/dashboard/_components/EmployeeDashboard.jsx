@@ -61,17 +61,19 @@ const EmployeeDashboard = () => {
     ];
 
     const rows = tasks.map((task, index) => [
-        task.title,
-        task.department?.name || t("No Department"),
-        <div key={index} className="flex">
+        <span key={`title-${index}`} className="text-cell-primary">{task.title}</span>,
+        <span key={`dept-${index}`} className="text-cell-secondary">{task.department?.name || t("No Department")}</span>,
+        <div key={`assignee-${index}`} className="flex">
             <img
                 src={task.assignee?.imageProfile || `https://ui-avatars.com/api/?name=${encodeURIComponent(task.assignee?.name || "U")}`}
                 loading="lazy"
                 alt="assignee"
-                className="w-6 h-6 rounded-full border-2 border-white"
+                className="w-6 h-6 rounded-full border-2 border-status-border"
             />
         </div>,
-        task.due_date ? format(new Date(task.due_date), "dd MMM, yyyy") : "-"
+        <span key={`date-${index}`} className="text-cell-secondary">
+            {task.due_date ? format(new Date(task.due_date), "dd MMM, yyyy") : "-"}
+        </span>
     ]);
 
     return (
@@ -99,7 +101,7 @@ const EmployeeDashboard = () => {
                         classContainer={"w-full md:w-2/3"}
                         isLoading={isTasksLoading}
                         toolbarCustomContent={
-                            <button className="bg-white text-gray-700 hover:bg-gray-50 px-4 py-2flex dark:text-gray-400 text-sm items-baseline p-2 gap-2 rounded-lg border border-gray-200 dark:border-gray-600">
+                            <button className="bg-status-bg text-cell-secondary hover:bg-gray-50 px-4 py-2flex dark:text-gray-400 text-sm items-baseline p-2 gap-2 rounded-lg border border-status-border dark:border-gray-600">
                                 See All
                             </button>
                         }

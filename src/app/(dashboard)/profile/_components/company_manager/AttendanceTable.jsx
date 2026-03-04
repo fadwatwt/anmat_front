@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import {  parseISO } from "date-fns";
+import { parseISO } from "date-fns";
 import Table from "@/components/Tables/Table";
 import {
   fetchAllAttendance,
@@ -28,7 +28,7 @@ export const StatusBadge = ({ status }) => {
       Icon = <BsClockFill className="text-[#C2540A] dark:text-yellow-300" />;
       break;
     case "Absent":
-      Icon = <BsSlashCircleFill className="text-[#757C8A] dark:text-red-300" />;
+      Icon = <BsSlashCircleFill className="text-cell-secondary" />;
       break;
     case "Pending":
       Icon = <BsClockFill className="text-[#C2540A] dark:text-yellow-300" />;
@@ -36,9 +36,9 @@ export const StatusBadge = ({ status }) => {
   }
 
   return (
-    <div className="flex items-center gap-2 border dark:border-gray-700 rounded-md px-2 py-1 w-fit">
+    <div className="flex items-center gap-2 border border-status-border bg-status-bg rounded-md px-2 py-1 w-fit">
       {Icon}
-      <span className="text-xs dark:text-gray-200">{status}</span>
+      <span className="text-xs text-cell-primary">{status}</span>
     </div>
   );
 };
@@ -125,15 +125,15 @@ function AttendanceTable() {
         className="w-12 h-12 rounded-full"
       />
       <div className="flex flex-col">
-        <span className="text-sm text-sub-500 dark:text-sub-300">
+        <span className="text-sm text-cell-primary">
           {record.name || "N/A"}
         </span>
-        <span className="text-gray-500 text-sm">
+        <span className="text-cell-secondary text-sm">
           {record.department || "N/A"}
         </span>
       </div>
     </div>,
-    <span key={`date-${record._id}`} className="text-sm dark:text-sub-300">
+    <span key={record._id} className="text-sm text-cell-secondary">
       {record.date ? record.date : "N/A"}
     </span>,
     <span key={`hours-${record._id}`} className="text-sm dark:text-sub-300">

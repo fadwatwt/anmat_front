@@ -142,7 +142,7 @@ const statusCell = (status, _id) => {
         <div key={`${_id}_status`} className="px-2 py-1">
             <div
                 key={`status-${status}`}
-                className={`flex items-center justify-center gap-1 ${config.bgColor} px-1 py-1 rounded-md`}
+                className={`flex items-center justify-center gap-1 ${config.bgColor ? config.bgColor : "bg-status-bg"} border border-status-border px-1 py-1 rounded-md`}
             >
                 {config.icon}
                 <span className={`text-xs font-medium capitalize ${config.textColor}`}>

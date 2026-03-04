@@ -69,6 +69,13 @@ module.exports = {
         "menu-active-text": "var(--menu-active-text)",
         "menu-active-bg": "var(--menu-active-bg)",
         "badge-bg": "var(--badge-bg)",
+        "badge-text": "var(--text-badge)",
+        "page-title": "var(--text-page-title)",
+        "table-title": "var(--text-table-title)",
+        "cell-primary": "var(--text-cell-primary)",
+        "cell-secondary": "var(--text-cell-secondary)",
+        "status-bg": "var(--status-bg)",
+        "status-border": "var(--status-border)",
       },
       fontFamily: {
         ar: ['"Almarai"', "sans-serif"],

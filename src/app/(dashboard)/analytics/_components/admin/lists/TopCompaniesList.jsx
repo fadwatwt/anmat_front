@@ -43,14 +43,15 @@ const TopCompaniesList = () => {
                                     <img src={company.logo} alt="Logo" className="w-full" />
                                 </div>
                                 <div className="flex flex-col items-start justify-start gap-1">
-                                    <span className="text-md text-gray-900">
+                                    <span className="text-md text-table-title">
                                         {company.name}
                                     </span>
-                                    <span className="text-sm text-gray-500">
+                                    <span className="text-sm text-cell-secondary">
                                         {company.url}
                                     </span>
                                 </div>
-                            </div>)})
+                            </div>)
+                    })
                     }
                 </div>
             }

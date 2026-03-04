@@ -28,11 +28,11 @@ function Subscriptions() {
             <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-500">
                 <RiFlashlightFill size={18} />
             </div>
-            <span className="text-gray-900 dark:text-gray-100 font-medium">{t(item.name)}</span>
+            <span className="text-cell-primary font-medium">{t(item.name)}</span>
         </div>,
-        <span key={`date-${item.id}`} className="text-gray-500 dark:text-gray-400 text-sm">{item.renewalDate}</span>,
+        <span key={`date-${item.id}`} className="text-cell-secondary text-sm">{item.renewalDate}</span>,
         <div key={`users-${item.id}`} className="w-full">
-            <span className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-sm text-gray-600 dark:text-gray-300">
+            <span className="bg-status-bg px-2 py-1 rounded text-sm text-cell-secondary">
                 {item.users}
             </span>
         </div>,
@@ -50,8 +50,8 @@ function Subscriptions() {
 
     return (
         <div className="w-full">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4 px-2">{t("Subscriptions")}</h3>
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-4">
+            <h3 className="text-lg font-medium text-table-title mb-4 px-2">{t("Subscriptions")}</h3>
+            <div className="bg-status-bg border border-status-border rounded-2xl p-4">
                 <Table
                     headers={headers}
                     rows={rows}

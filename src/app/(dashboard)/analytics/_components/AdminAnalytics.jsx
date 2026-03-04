@@ -29,7 +29,7 @@ const AdminAnalytics = () => {
             <div className="flex flex-col gap-12">
                 {/* Companies Analytics */}
                 <div className="flex flex-col items-start justify-start gap-4">
-                    <span className="text-lg text-gray-500">
+                    <span className="text-lg text-cell-secondary">
                         Companies
                     </span>
                     <div className="flex flex-col md:flex-row items-stretch gap-4 justify-between w-full">
@@ -52,7 +52,7 @@ const AdminAnalytics = () => {
 
                 {/* Other Analytics */}
                 <div className="flex flex-col items-start justify-start gap-4 w-full">
-                    <span className="text-lg text-gray-500">
+                    <span className="text-lg text-cell-secondary">
                         Other Analytics
                     </span>
                     <div className="flex flex-col md:flex-row items-stretch gap-4 justify-between w-full">

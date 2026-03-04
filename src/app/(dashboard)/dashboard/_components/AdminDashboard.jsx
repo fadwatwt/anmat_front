@@ -43,13 +43,13 @@ const AdminDashboard = () => {
     const rows = subscriptions?.map((item) => [
         <div key={`sub-${item.subscription?._id}`} className="flex flex-col items-start justify-start gap-0.5 overflow-hidden w-full">
             <span
-                className="text-sm text-gray-700 truncate w-full block max-w-[150px]"
+                className="text-sm text-cell-primary truncate w-full block max-w-[150px]"
                 title={item.subscriber?.name}
             >
                 {item.subscriber?.name || "N/A"}
             </span>
             <span
-                className="text-xs text-gray-400 truncate w-full block max-w-[150px]"
+                className="text-xs text-cell-secondary truncate w-full block max-w-[150px]"
                 title={item.subscriber?.email}
             >
                 {item.subscriber?.email || ""}
@@ -57,26 +57,26 @@ const AdminDashboard = () => {
         </div>,
         <div key={`org-${item.subscription?._id}`} className="flex flex-col items-start justify-start gap-1 overflow-hidden w-full">
             <span
-                className="text-sm font-medium text-gray-900 truncate w-full block max-w-[200px]"
+                className="text-sm font-medium text-table-title truncate w-full block max-w-[200px]"
                 title={item.organization?.name}
             >
                 {item.organization?.name || "N/A"}
             </span>
             <span
-                className="text-xs text-gray-500 truncate w-full block max-w-[200px]"
+                className="text-xs text-cell-secondary truncate w-full block max-w-[200px]"
                 title={item.organization?.website || item.organization?.email}
             >
                 {item.organization?.website || item.organization?.email || ""}
             </span>
         </div>,
-        <span key={`phone-${item.subscription?._id}`} className="text-sm text-gray-600 truncate max-w-[120px]" title={item.organization?.phone || item.subscriber?.phone}>
+        <span key={`phone-${item.subscription?._id}`} className="text-sm text-cell-secondary truncate max-w-[120px]" title={item.organization?.phone || item.subscriber?.phone}>
             {item.organization?.phone || item.subscriber?.phone || "N/A"}
         </span>,
         statusCell(item.subscription?.status, item.subscription?._id),
-        <span key={`start-${item.subscription?._id}`} className="text-sm text-gray-600">
+        <span key={`start-${item.subscription?._id}`} className="text-sm text-cell-secondary">
             {item.subscription?.starts_at ? format(new Date(item.subscription.starts_at), "MMM dd, yyyy") : "N/A"}
         </span>,
-        <span key={`expires-${item.subscription?._id}`} className="text-sm text-gray-600">
+        <span key={`expires-${item.subscription?._id}`} className="text-sm text-cell-secondary">
             {item.subscription?.expires_at ? format(new Date(item.subscription.expires_at), "MMM dd, yyyy") : "N/A"}
         </span>,
     ]) || [];
@@ -128,12 +128,12 @@ const AdminDashboard = () => {
                             main={
                                 <div className="flex flex-col items-start justify-start gap-4 w-full">
                                     {orgsLoading ? (
-                                        <div className="text-sm text-gray-500 py-4 w-full text-center">Loading...</div>
+                                        <div className="text-sm text-cell-secondary py-4 w-full text-center">Loading...</div>
                                     ) : organizations?.length > 0 ? (
                                         organizations.map((org, index) => {
                                             return (
                                                 <div key={org._id || index} className="flex gap-2 items-start justify-start w-full overflow-hidden">
-                                                    <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-50 flex-shrink-0">
+                                                    <div className="w-12 h-12 rounded-full overflow-hidden bg-status-bg border border-status-border flex-shrink-0">
                                                         <img
                                                             src={org.logo || `https://ui-avatars.com/api/?name=${org.name}&background=random`}
                                                             alt={org.name}
@@ -141,17 +141,17 @@ const AdminDashboard = () => {
                                                         />
                                                     </div>
                                                     <div className="flex flex-col items-start justify-start gap-1 overflow-hidden">
-                                                        <span className="text-sm font-medium text-gray-900 truncate w-full" title={org.name}>
+                                                        <span className="text-sm font-medium text-table-title truncate w-full" title={org.name}>
                                                             {org.name}
                                                         </span>
-                                                        <span className="text-xs text-gray-500 truncate w-full" title={org.website || org.email}>
+                                                        <span className="text-xs text-cell-secondary truncate w-full" title={org.website || org.email}>
                                                             {org.website || org.email}
                                                         </span>
                                                     </div>
                                                 </div>)
                                         })
                                     ) : (
-                                        <div className="text-sm text-gray-400 py-4 w-full text-center">No organizations found.</div>
+                                        <div className="text-sm text-cell-secondary py-4 w-full text-center">No organizations found.</div>
                                     )
                                     }
                                 </div>
