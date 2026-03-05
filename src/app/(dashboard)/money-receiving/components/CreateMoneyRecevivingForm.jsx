@@ -48,28 +48,28 @@ function CreateMoneyRecevivingForm() {
                 placeholder="22%"
             />
             <TagInput suggestions={suggestionsCurrancy}
-                      title={"Currency"}
-                      isRequired={true} placeholder={""} />
+                title={"Currency"}
+                isRequired={true} placeholder={""} />
             <DefaultSelect title={"Country"} options={[
-                {_id:"1",value:"Palestine"},
-                {_id:"2",value:"Palestine"},
-                {_id:"3",value:"Palestine"},
-                {_id:"4",value:"Palestine"}
-            ]} onChange={() => {}} />
+                { _id: "1", value: "Palestine" },
+                { _id: "2", value: "Palestine" },
+                { _id: "3", value: "Palestine" },
+                { _id: "4", value: "Palestine" }
+            ]} onChange={() => { }} />
             <DefaultSelect title={"Address"} options={[
-                {_id:"1",value:"Palestine"},
-                {_id:"2",value:"Palestine"},
-                {_id:"3",value:"Palestine"},
-                {_id:"4",value:"Palestine"}
-            ]} onChange={() => {}} />
+                { _id: "1", value: "Palestine" },
+                { _id: "2", value: "Palestine" },
+                { _id: "3", value: "Palestine" },
+                { _id: "4", value: "Palestine" }
+            ]} onChange={() => { }} />
 
             <div className={"flex items-start gap-2"}>
                 <div className={"pt-1 border-box"}>
-                    <input type={"checkbox"} onChange={() => { }} checked={true} className={" checkbox-custom"}/>
+                    <input type={"checkbox"} onChange={() => { }} checked={true} className={" checkbox-custom"} />
                 </div>
-                <div className={"text-gray-800 dark:text-gray-200 flex flex-col text-sm"}>
+                <div className={"text-cell-primary flex flex-col text-sm"}>
                     Set this receiving method as default
-                    <span className={"text-gray-400 text-xs"}>It will save your payment method as the default option.</span>
+                    <span className={"text-cell-secondary text-xs"}>It will save your payment method as the default option.</span>
                 </div>
             </div>
 

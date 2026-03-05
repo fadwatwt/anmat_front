@@ -21,12 +21,12 @@ function MoneyReceivingPage() {
     const rows = methods.map((method => [
         // Name Cell
         <div key={`${method._id}_title`} className="flex items-center justify-start gap-2">
-            <span className="text-md text-gray-900 dark:text-gray-50">
+            <span className="text-md text-cell-primary font-medium">
                 {method.title}
             </span>
         </div>,
 
-        <div key={`${method._id}_type`} className="text-gray-700 dark:text-gray-300">
+        <div key={`${method._id}_type`} className="text-cell-secondary">
             {method.type}
         </div>,
 
@@ -36,7 +36,7 @@ function MoneyReceivingPage() {
         // Attributes Keys Cell
         <div key={`${method._id}_attributes`} className="flex flex-wrap gap-1">
             {method.attributes?.map(attr => (
-                <span key={attr._id} className="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded text-gray-600 dark:text-gray-300">
+                <span key={attr._id} className="text-xs bg-badge-bg border border-status-border px-2 py-0.5 rounded text-badge-text">
                     {attr.key}
                 </span>
             ))}
@@ -47,7 +47,7 @@ function MoneyReceivingPage() {
         return (
             <Page title="Money Receiving Methods" isBtn={false}>
                 <div className="flex justify-center items-center h-64">
-                    <p className="text-gray-500 dark:text-gray-400">{t("Loading...")}</p>
+                    <p className="text-cell-secondary">{t("Loading...")}</p>
                 </div>
             </Page>
         );
