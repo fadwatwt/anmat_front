@@ -116,7 +116,7 @@ function Table({
     const currentRows = rows.slice(startIndex, startIndex + rowsPerPage);
 
     return (
-        <div className={"rounded-2xl md:w-full pb-10 tab-content dark:bg-gray-800 border border-status-border p-3 flex flex-col gap-4 bg-white " + (classContainer ? classContainer : "")}>
+        <div className={"rounded-2xl md:w-full pb-10 tab-content bg-surface border border-status-border p-3 flex flex-col gap-4 " + (classContainer ? classContainer : "")}>
             {isTitle && (
                 <div className={"flex flex-wrap justify-between items-center gap-4 mb-2"}>
                     <div className="flex flex-wrap items-center gap-4">
@@ -206,13 +206,13 @@ function Table({
                 </div>
             )}
 
-            <div className={"flex flex-col gap-5 justify-center dark:bg-gray-800 w-full dark:text-gray-400"}>
+            <div className={"flex flex-col gap-5 justify-center bg-surface w-full text-cell-primary"}>
                 <div className="w-full overflow-x-auto">
                     <table className={"relative table-auto w-full " + className} style={{ borderSpacing: "0 1px" }}>
                         <thead>
                             <tr className="bg-status-bg">
                                 {isCheckInput && (
-                                    <th className="px-1 pt-1 w-5 rounded-tl-lg rounded-bl-lg dark:bg-gray-900">
+                                    <th className="px-1 pt-1 w-5 rounded-tl-lg rounded-bl-lg">
                                         <input
                                             className="checkbox-custom"
                                             type="checkbox"
@@ -240,7 +240,7 @@ function Table({
                             {currentRows?.map((row, rowIndex) => {
                                 const actualRowIndex = rowIndex + startIndex;
                                 return (
-                                    <tr key={actualRowIndex} className="hover:bg-gray-100 w-full dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+                                    <tr key={actualRowIndex} className="hover:bg-gray-50 dark:hover:bg-status-bg w-full border-b border-status-border transition-colors">
                                         {isCheckInput && (
                                             <td className="px- py-6 text-center" style={{ borderBottomLeftRadius: "8px" }}>
                                                 <input
@@ -308,26 +308,26 @@ function Table({
                         {t("Page")} {currentPage} {t("of")} {totalPages}
                     </p>
                     <div className={"flex gap-5 items-center"}>
-                        <MdOutlineKeyboardDoubleArrowLeft onClick={() => handlePageChange(1)} className="cursor-pointer dark:text-gray-400" />
-                        <MdOutlineKeyboardArrowLeft onClick={() => handlePageChange(currentPage - 1)} className="cursor-pointer dark:text-gray-400" />
+                        <MdOutlineKeyboardDoubleArrowLeft onClick={() => handlePageChange(1)} className="cursor-pointer text-cell-secondary" />
+                        <MdOutlineKeyboardArrowLeft onClick={() => handlePageChange(currentPage - 1)} className="cursor-pointer text-cell-secondary" />
                         <div className={"flex pages-numbers gap-1 text-sm"}>
                             {Array.from({ length: totalPages }).map((_, index) => (
                                 <button
                                     key={index}
                                     onClick={() => handlePageChange(index + 1)}
-                                    className={`px-3 py-1 border rounded-lg dark:border-gray-700 dark:text-gray-400 ${currentPage === index + 1 ? "bg-primary-100 dark:text-gray-800" : ""}`}
+                                    className={`px-3 py-1 border rounded-lg border-status-border text-cell-secondary ${currentPage === index + 1 ? "bg-primary-100 dark:bg-primary-900/30 font-bold" : ""}`}
                                 >
                                     {index + 1}
                                 </button>
                             ))}
                         </div>
-                        <MdOutlineKeyboardArrowRight onClick={() => handlePageChange(currentPage + 1)} className="cursor-pointer dark:text-gray-400" />
-                        <MdOutlineKeyboardDoubleArrowRight onClick={() => handlePageChange(totalPages)} className="cursor-pointer dark:text-gray-400" />
+                        <MdOutlineKeyboardArrowRight onClick={() => handlePageChange(currentPage + 1)} className="cursor-pointer text-cell-secondary" />
+                        <MdOutlineKeyboardDoubleArrowRight onClick={() => handlePageChange(totalPages)} className="cursor-pointer text-cell-secondary" />
                     </div>
-                    <div className={"flex rounded-lg border border-gray-300 dark:border-gray-700 dark:text-gray-400 px-2 py-1 items-center"}>
+                    <div className={"flex rounded-lg border border-status-border text-cell-secondary px-2 py-1 items-center"}>
                         <select value={rowsPerPage} onChange={handleRowsPerPageChange} className="bg-transparent outline-none cursor-pointer">
                             {[5, 10, 15, 20].map((value) => (
-                                <option className={"dark:bg-gray-800 dark:text-gray-400 text-sm"} key={value} value={value}>
+                                <option className={"bg-surface text-cell-secondary text-sm"} key={value} value={value}>
                                     {value}/{t("page")}
                                 </option>
                             ))}

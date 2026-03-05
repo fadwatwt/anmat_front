@@ -12,17 +12,17 @@ const Modal = ({ isOpen, onClose, children, title, className, isHideCancel, isBt
             onClick={onClose}
         >
             <div
-                className={` bg-white dark:bg-gray-800 rounded-xl  shadow-lg ${className ? className : "lg:w-1/3 md:w-8/12 sm:w-7/12 w-11/12 p-4"}`}
+                className={`bg-surface rounded-xl shadow-lg border border-status-border ${className ? className : "lg:w-1/3 md:w-8/12 sm:w-7/12 w-11/12 p-4"}`}
                 onClick={(e) => e.stopPropagation()} // منع إغلاق عند النقر داخل المودال
             >
                 {title &&
-                    <div className={`flex justify-between items-center mb-4 ${title && "border-b-2"}  dark:border-gray-700 p-3`}>
-                        <h2 className="dark:text-gray-200 text-base text-black">{t(title)}</h2>
+                    <div className={`flex justify-between items-center mb-4 ${title && "border-b"} border-status-border p-3`}>
+                        <h2 className="text-table-title text-base font-semibold">{t(title)}</h2>
                         <button
                             onClick={onClose}
-                            className="text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 "
+                            className="text-cell-secondary hover:text-table-title transition-colors"
                         >
-                            <IoClose size={18} />
+                            <IoClose size={20} />
                         </button>
                     </div>
                 }
@@ -36,12 +36,12 @@ const Modal = ({ isOpen, onClose, children, title, className, isHideCancel, isBt
                                 {
                                     !isHideCancel &&
                                     <DefaultButton type={'button'} title={("Cancel")}
-                                        className={"font-medium dark:text-gray-200"} />
+                                        className={"font-medium text-cell-secondary"} />
                                 }
 
                                 <DefaultButton onClick={onClick} type={'button'} title={btnApplyTitle ? btnApplyTitle : "Apply"}
                                     disabled={disabled}
-                                    className={"bg-primary-500 font-medium dark:bg-primary-200 dark:text-black text-white"} />
+                                    className={"bg-primary-500 font-medium text-white hover:bg-primary-600 transition-colors"} />
                             </div>
                         )
                     }

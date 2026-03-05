@@ -40,23 +40,23 @@ function SystemAdminsPage() {
     const rows = adminsData.map(adminUser => [
         // Plan Cell
         <div key={`${adminUser._id}_admin`} className="flex items-center justify-start gap-2">
-            <div className={"p-1 rounded-full bg-white"}>
+            <div className={"p-1 rounded-full bg-status-bg border border-status-border"}>
                 <div className="w-10 h-10">
                     <img className={"max-w-full h-full rounded-full "} src={adminUser.avatar || "https://www.svgrepo.com/show/404545/avatar-man-profile-user-3.svg"} alt={"img"} />
                 </div>
             </div>
-            <span className="text-md text-gray-900 dark:text-gray-50">
+            <span className="text-md text-cell-primary">
                 {adminUser.name}
             </span>
         </div>,
 
         // Price cell
-        <div key={`${adminUser._id}_email`}>{adminUser.email}</div>,
+        <div key={`${adminUser._id}_email`} className="text-cell-secondary">{adminUser.email}</div>,
 
         // Created at cell
         <div key={`${adminUser._id}_rules`} className={"flex justify-start items-center gap-1 flex-wrap"}>
             {adminUser?.admin_system_roles?.map((element, index) => (
-                <span key={index} className={"py-1 px-2 rounded-lg bg-blue-100 text-blue-500 flex items-center gap-1"}>
+                <span key={index} className={"py-1 px-2 rounded-lg bg-badge-bg text-badge-text flex items-center gap-1"}>
                     {element?.name}
                     <button
                         onClick={() => handleUnassignClick(adminUser, element)}
@@ -70,9 +70,9 @@ function SystemAdminsPage() {
         // Status cell
         <div key={`${adminUser._id}_status`}>
             {adminUser?.is_active ? (
-                <span className="py-1 px-2 rounded-lg bg-green-100 text-green-600 text-xs font-medium">Active</span>
+                <span className="py-1 px-2 rounded-lg bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-xs font-medium border border-green-200 dark:border-green-800">Active</span>
             ) : (
-                <span className="py-1 px-2 rounded-lg bg-red-100 text-red-600 text-xs font-medium">Inactive</span>
+                <span className="py-1 px-2 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-medium border border-red-200 dark:border-red-800">Inactive</span>
             )}
         </div>,
     ]);

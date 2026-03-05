@@ -9,7 +9,7 @@ function DefaultButton({ title, onClick, className, type, disabled }) {
             disabled={disabled}
             onClick={onClick}
             type={type}
-            className={`flex-1 border-2 dark:border-gray-700 text-sm rounded-xl p-2 text-center transition-all ${disabled ? "opacity-50 cursor-not-allowed" : ""} ${className}`}
+            className={`flex-1 border-2 border-status-border text-sm rounded-xl p-2 text-center transition-all ${disabled ? "opacity-50 cursor-not-allowed" : ""} ${className}`}
         >
             {t(title)}
         </button>
