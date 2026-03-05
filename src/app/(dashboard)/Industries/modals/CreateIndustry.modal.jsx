@@ -54,10 +54,10 @@ function CreateIndustryModal({ isOpen, onClose, onClick, item }) {
                     value={icon}
                     onChange={setIcon}
                 />
-                <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border dark:border-gray-600">
+                <div className="flex items-center justify-between p-4 bg-status-bg rounded-2xl border border-status-border">
                     <div className="flex flex-col gap-1">
-                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Is Allowed</span>
-                        <span className="text-xs text-gray-500">Enable or disable this industry</span>
+                        <span className="text-sm font-medium text-cell-primary">Is Allowed</span>
+                        <span className="text-xs text-cell-secondary">Enable or disable this industry</span>
                     </div>
                     <Switch2 isOn={isAllowed} handleToggle={() => setIsAllowed(!isAllowed)} />
                 </div>

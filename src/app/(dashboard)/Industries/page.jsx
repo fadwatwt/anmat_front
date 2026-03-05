@@ -123,18 +123,18 @@ function IndustriesPage() {
 
             return [
                 // اسم الصناعة
-                <div key={`${item._id}_name`} className="font-medium">{item.name}</div>,
+                <div key={`${item._id}_name`} className="text-cell-primary font-medium">{item.name}</div>,
 
                 // اللوجو
                 <div key={`${item._id}_icon`} className="w-12 h-12 flex items-center justify-center">
                     {IconComponent ? (
-                        <div className="bg-primary-50 p-2 rounded-xl text-primary-500 flex items-center justify-center">
+                        <div className="bg-badge-bg p-2 rounded-xl text-badge-text flex items-center justify-center border border-status-border">
                             <IconComponent size={24} variant="Bold" color="currentColor" />
                         </div>
                     ) : IconName && IconName.includes('/') ? (
                         <img className="w-full h-full object-contain" src={IconName} alt={item.name} />
                     ) : (
-                        <div className="bg-gray-200 w-full h-full rounded flex items-center justify-center text-[10px] text-gray-400">
+                        <div className="bg-status-bg border border-status-border w-full h-full rounded flex items-center justify-center text-[10px] text-cell-secondary">
                             {IconName || t("No Logo")}
                         </div>
                     )}
@@ -142,14 +142,16 @@ function IndustriesPage() {
 
                 // By Subscriber
                 <div key={`${item._id}_bysub`} className="flex items-center">
-                    <span className={`px-2 py-1 rounded-full text-xs ${item.by_subscriber ? "bg-blue-50 text-blue-600" : "bg-gray-50 text-gray-500"}`}>
+                    <span className={`px-2 py-1 rounded-full text-xs border ${item.by_subscriber ? "bg-badge-bg text-badge-text border-status-border" : "bg-status-bg text-cell-secondary border-status-border"}`}>
                         {item.by_subscriber ? t("Subscriber") : t("Admin")}
                     </span>
                 </div>,
 
                 // Is Allowed
                 <div key={`${item._id}_allowed`} className="flex items-center">
-                    <span className={`px-2 py-1 rounded-full text-xs ${item.is_allowed ? "bg-green-50 text-green-600" : "bg-red-50 text-red-600"}`}>
+                    <span className={`px-2 py-1 rounded-full text-xs border ${item.is_allowed
+                        ? "bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 border-green-100 dark:border-green-800"
+                        : "bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-red-100 dark:border-red-800"}`}>
                         {item.is_allowed ? t("Allowed") : t("Blocked")}
                     </span>
                 </div>,
