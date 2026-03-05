@@ -47,7 +47,7 @@ function PermissionsPage() {
 
     const rows = rolesData.map(role => [
         <div key="name" className="flex items-center justify-start gap-2">
-            <span className=" text-md text-gray-900">
+            <span className="text-md text-cell-primary font-medium">
                 {role.name}
             </span>
         </div>,
@@ -57,7 +57,7 @@ function PermissionsPage() {
                     <span
                         key={index}
                         title={permission?.name}
-                        className="bg-primary-100 text-primary-500 text-xs text-center px-3 py-1 rounded-2xl max-w-[140px] truncate"
+                        className="bg-badge-bg text-badge-text text-xs text-center px-3 py-1 rounded-2xl max-w-[140px] truncate border border-status-border"
                     >
                         {permission?.name}
                     </span>
@@ -213,7 +213,7 @@ function PermissionsPage() {
                 description={
                     <p>
                         Are you sure you want to{" "}
-                        <span className="font-bold text-black">
+                        <span className="font-bold text-table-title">
                             Delete {roleToDelete?.name} Role
                         </span>
                         ?

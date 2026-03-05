@@ -41,7 +41,7 @@ function PermissionsPage() {
 
     const rows = (rolesData || []).map(role => [
         <div key="name" className="flex items-center justify-start gap-2">
-            <span className=" text-md text-gray-900 font-medium">
+            <span className="text-md text-cell-primary font-medium">
                 {role.name}
             </span>
         </div>,
@@ -51,7 +51,7 @@ function PermissionsPage() {
                     role.permissions_ids?.map((permission, index) => (
                         <span
                             key={index}
-                            className="bg-primary-100 text-primary-500 text-xs text-center px-3 py-1 rounded-2xl truncate"
+                            className="bg-badge-bg text-badge-text text-xs text-center px-3 py-1 rounded-2xl truncate border border-status-border"
                             title={permission.name}
                         >
                             {permission.name}
