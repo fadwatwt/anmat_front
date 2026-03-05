@@ -6,7 +6,7 @@ import {
     Truck, Wallet, Bill, Graph, Activity, Chart, Messages1, People,
     Security, Setting, Category, Lamp, Music, Camera, Ticket,
     Heart, Star, Verify, SafeHome, ShopAdd, Personalcard, Archive,
-    Book, Call, Direct, Notification, SecurityUser, User, Flash1
+    Book, Call, Direct, Notification, SecurityUser, User
 } from 'iconsax-react';
 
 const ICONS = {
@@ -15,7 +15,7 @@ const ICONS = {
     Truck, Wallet, Bill, Graph, Activity, Chart, Messages1, People,
     Security, Setting, Category, Lamp, Music, Camera, Ticket,
     Heart, Star, Verify, SafeHome, ShopAdd, Personalcard, Archive,
-    Book, Call, Direct, Notification, SecurityUser, User, Flash1
+    Book, Call, Direct, Notification, SecurityUser, User
 };
 
 const ICON_LIST = Object.keys(ICONS);

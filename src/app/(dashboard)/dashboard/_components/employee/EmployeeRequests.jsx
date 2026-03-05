@@ -74,7 +74,7 @@ export default function EmployeeRequests() {
         { label: t('Vacation Date'), width: '20%' },
         { label: t('Reason'), width: '20%' },
         { label: t('Status'), width: '10%' },
-        (authUserType === 'Subscriber') && { label: '', width: '5%' },
+        { label: '', width: '5%' },
       ].filter(Boolean);
     } else if (activeTab === "SALARY_ADVANCE") {
       return [
@@ -82,7 +82,7 @@ export default function EmployeeRequests() {
         { label: t('Advance By'), width: '15%' },
         { label: t('Old Salary'), width: '15%' },
         { label: t('Status'), width: '10%' },
-        (authUserType === 'Subscriber') && { label: '', width: '5%' },
+        { label: '', width: '5%' },
       ].filter(Boolean);
     } else {
       return [
@@ -93,6 +93,32 @@ export default function EmployeeRequests() {
         { label: '', width: '5%' },
       ].filter(Boolean);
     }
+  };
+
+  const customActions = (index) => {
+    const request = filteredData[index];
+    if (!request) return null;
+
+    const actions = [];
+    if (authUserType === 'Subscriber' && !['accepted', 'rejected', 'cancelled'].includes(request.status)) {
+      actions.push({
+        text: t("Update Status"),
+        icon: <RiEditLine size={18} className="text-primary-400" />,
+        onClick: () => handleEdit(request),
+      });
+    }
+
+    if (authUserType === 'Employee' && (['open', 'pending'].includes(request.status))) {
+      actions.push({
+        text: t("Cancel Request"),
+        icon: <RiCloseCircleLine size={18} className="text-red-500" />,
+        onClick: () => handleCancelClick(request.id || request._id),
+      });
+    }
+
+    if (actions.length === 0) return null;
+
+    return <StatusActions states={actions} className="!top-0 !right-0 !static shadow-none border-none" />;
   };
 
   const rows = filteredData.map((request, index) => {
@@ -145,30 +171,6 @@ export default function EmployeeRequests() {
       ...commonCells,
       ...specificCells,
       statusCell(request.status, request._id),
-      <div key={`actions-${index}`} className="flex justify-end pr-4">
-        {authUserType === 'Subscriber' && !['accepted', 'rejected', 'cancelled'].includes(request.status) && (
-          <StatusActions
-            states={[
-              {
-                text: t("Update Status"),
-                icon: <RiEditLine size={18} className="text-primary-400" />,
-                onClick: () => handleEdit(request),
-              }
-            ]}
-          />
-        )}
-        {authUserType === 'Employee' && (['open', 'pending'].includes(request.status)) && (
-          <StatusActions
-            states={[
-              {
-                text: t("Cancel Request"),
-                icon: <RiCloseCircleLine size={18} className="text-red-500" />,
-                onClick: () => handleCancelClick(request.id),
-              }
-            ]}
-          />
-        )}
-      </div>
     ].filter(Boolean);
   });
   const headerActions = (
@@ -197,6 +199,7 @@ export default function EmployeeRequests() {
         hideSearchInput={true}
         rows={rows}
         isActions={false}
+        customActions={customActions}
         isCheckInput={false}
         showStatusFilter={true}
         isLoading={isLoading}

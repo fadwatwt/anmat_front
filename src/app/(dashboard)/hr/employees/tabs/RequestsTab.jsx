@@ -1,4 +1,4 @@
-"use client";
+
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import Table from "@/components/Tables/Table.jsx";

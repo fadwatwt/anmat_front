@@ -26,8 +26,8 @@ const TasksRatingChart = () => {
             title={"Tasks Rating"}
             toolbar={
                 <div className="w-72 flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end">
-                    <DefaultSelect options={[{ id: 1, value: "Art & Design" }]} />
-                    <DefaultSelect options={[{ id: 1, value: "Last Month" }]} />
+                    <DefaultSelect variant="chart" multi={false} options={[{ id: 1, value: "Art & Design" }]} />
+                    <DefaultSelect variant="chart" multi={false} options={[{ id: 1, value: "Last Month" }]} />
                 </div>
             }
             subtitle={"TASKS"}

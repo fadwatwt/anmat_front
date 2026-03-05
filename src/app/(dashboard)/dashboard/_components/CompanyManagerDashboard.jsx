@@ -8,9 +8,12 @@ import dynamic from "next/dynamic";
 const Table = dynamic(() => import("@/components/Tables/Table"), { ssr: false });
 const ActivityLogs = dynamic(() => import("@/components/ActivityLogs"), { ssr: false });
 const Alert = dynamic(() => import("@/components/Alerts/Alert"), { ssr: false });
-const Page = dynamic(() => import("@/components/Page"));
-import TasksSummaryChart from "../../analytics/_components/employee/TasksSummaryChart";
-import DepartmentsAnalytics from "../../analytics/_components/company_manager/departments/DepartmentsAnalytics";
+import Page from "@/components/Page";
+import AnalyticsCard from "../../analytics/_components/AnalyticsCard";
+import DynamicDoughnut from "../../analytics/_components/charts/SummaryDoughnut.";
+import DefaultSelect from "@/components/Form/DefaultSelect";
+import DepartmentsPerformanceChat from "../../analytics/_components/employee/DepartmentsPerformanceChat";
+import { useGetDepartmentsQuery } from "@/redux/departments/departmentsApi";
 import EmployeeRequests from "./employee/EmployeeRequests";
 import { useGetSubscriberTaskStatisticsStatusQuery } from "@/redux/tasks/subscriberTasksApi";
 import { useGetSubscriberProjectsQuery } from "@/redux/projects/subscriberProjectsApi";
@@ -21,14 +24,17 @@ const AdminDashboard = () => {
 
   const { data: statsData } = useGetSubscriberTaskStatisticsStatusQuery();
   const { data: projects = [] } = useGetSubscriberProjectsQuery();
+  const { data: departments = [] } = useGetDepartmentsQuery();
 
   const statusColorMap = {
-    // ... (omitting some lines for brevity in instruction, but keeping them in ReplacementContent)
+    active: "#375DFB", // Blue
     open: "#375DFB", // Blue
-    in_progress: "#F17B2C", // Orange
+    in_progress: "#375DFB", // Blue
     completed: "#38C793", // Green
+    completed_before_due_date: "#38C793", // Green
+    late_completed: "#F17B2C", // Orange
     cancelled: "#DF1C41", // Red
-    overdue: "#9E1C1C", // Dark Red
+    overdue: "#DF1C41", // Red
     on_hold: "#6B7280", // Gray
     pending: "#FACC15", // Yellow
   };
@@ -40,10 +46,28 @@ const AdminDashboard = () => {
     return statusColorMap[key] || extraColors[index % extraColors.length];
   };
 
+  const getStatusLabel = (status) => {
+    const key = status.toLowerCase().replace(/\s+/g, '_');
+    const labelMap = {
+      open: "Active",
+      in_progress: "Active",
+      active: "Active",
+      completed: "Completed before due date",
+      completed_before_due_date: "Completed before due date",
+      late_completed: "Late Completed",
+      cancelled: "Cancelled",
+      overdue: "Overdue",
+      on_hold: "On Hold",
+      pending: "Pending",
+    };
+    return labelMap[key] || status.charAt(0).toUpperCase() + status.slice(1).replace(/_/g, " ");
+  };
+
   const chartData = statsData?.data ? {
     total: statsData.data.total,
     records: Object.entries(statsData.data.status_counts).map(([status, count], index) => ({
-      title: status.charAt(0).toUpperCase() + status.slice(1).replace(/_/g, " "),
+      title: getStatusLabel(status),
+      name: getStatusLabel(status),
       value: count,
       color: getStatusColor(status, index),
     })),
@@ -51,6 +75,11 @@ const AdminDashboard = () => {
     total: 0,
     records: []
   };
+
+  const departmentsData = departments.map(dept => ({
+    name: dept.name,
+    rate: parseFloat(((dept.rate || 0) * 5).toFixed(2))
+  }));
 
   useEffect(() => {
     // const storedTheme = typeof window !== "undefined" && localStorage.getItem("theme");
@@ -122,11 +151,19 @@ const AdminDashboard = () => {
   return (
     <Page isTitle={false}>
       <div className="flex flex-col md:flex-row items-stretch gap-4 justify-between w-full">
+        {/* Tasks Summary Card */}
         <div className="w-full md:w-1/2">
-          <TasksSummaryChart data={chartData} />
+          <AnalyticsCard title="Tasks Summary">
+            <DynamicDoughnut data={chartData.records} centerTitle="TASKS" centerValue={chartData.total} />
+          </AnalyticsCard>
         </div>
+
         <div className="w-full md:w-1/2">
-          <DepartmentsAnalytics />
+          <AnalyticsCard title="Departments" showDropdowns={true} dropdown1Label="Last 6 months">
+            <div className="w-full h-[300px]">
+              <DepartmentsPerformanceChat data={departmentsData} />
+            </div>
+          </AnalyticsCard>
         </div>
       </div>
 

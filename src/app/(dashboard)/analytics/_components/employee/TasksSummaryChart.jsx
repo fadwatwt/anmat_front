@@ -17,7 +17,7 @@ const TasksSummaryChart = ({ data }) => {
             title={"Tasks Summary"}
             toolbar={
                 <div className="w-32">
-                    <DefaultSelect options={[{ id: 1, value: "Last Month" }]} />
+                    <DefaultSelect variant="chart" multi={false} options={[{ id: 1, value: "Last Month" }]} />
                 </div>
             }
             subtitle={"TASKS"}

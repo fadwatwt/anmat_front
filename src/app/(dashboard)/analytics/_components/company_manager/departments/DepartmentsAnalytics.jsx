@@ -27,15 +27,19 @@ const DepartmentsAnalytics = () => {
 
     return (
         <BarChartComponent
-            title={"Departments Analytics"}
+            title={"Departments"}
             toolbar={
                 <div className="w-64 flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end">
                     <DefaultSelect
-                        classNameContainer={"w-28"}
+                        variant="chart"
+                        multi={false}
+                        classNameContainer="w-28"
                         options={[{ id: "", value: "Department" }]}
                     />
                     <DefaultSelect
-                        classNameContainer={"w-32"}
+                        variant="chart"
+                        multi={false}
+                        classNameContainer="w-32"
                         options={[{ id: "", value: "Last 6 months" }]}
                     />
                 </div>

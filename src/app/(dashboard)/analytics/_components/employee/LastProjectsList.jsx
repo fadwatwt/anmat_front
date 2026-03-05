@@ -27,7 +27,7 @@ const LastProjectsList = () => {
             title={"Last 4 Projects"}
             toolbar={
                 <div className="w-32 flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end">
-                    <DefaultSelect placeholder="Performance" options={[{ id: 1, value: "Higher" }]} />
+                    <DefaultSelect variant="chart" multi={false} placeholder="Performance" options={[{ id: 1, value: "Higher" }]} />
                 </div>
             }
             main={
