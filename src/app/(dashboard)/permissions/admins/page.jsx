@@ -18,13 +18,13 @@ function AdminPermissionsPage() {
     const rows = permissionsData.map(permission => [
         // Name Cell
         <div key={`${permission._id}_name`} className="flex items-center justify-start gap-2">
-            <span className="text-md font-medium text-gray-900 dark:text-gray-50">
+            <span className="text-md font-medium text-cell-primary">
                 {permission.name}
             </span>
         </div>,
 
         // Details Cell
-        <div key={`${permission._id}_details`} className="text-sm text-gray-500 dark:text-gray-400">
+        <div key={`${permission._id}_details`} className="text-sm text-cell-secondary">
             {permission.details}
         </div>
     ]);

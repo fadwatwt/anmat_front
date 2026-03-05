@@ -23,24 +23,24 @@ function PermissionsPage() {
 
     const rows = (permissionsData || []).map(permission => [
         <div key="name" className="flex items-center justify-start gap-2">
-            <span className="text-lg text-gray-900 font-medium">
+            <span className="text-lg text-cell-primary font-medium">
                 {permission.name}
             </span>
         </div>,
         <div key="action" className="flex items-center justify-start">
-            <span className="px-2 py-1 bg-blue-50 text-blue-700 rounded-md text-sm border border-blue-100">
+            <span className="px-2 py-1 bg-badge-bg text-badge-text rounded-md text-sm border border-status-border">
                 {permission.action}
             </span>
         </div>,
         <div key="model_type" className="flex items-center justify-start">
-            <span className="px-2 py-1 bg-purple-50 text-purple-700 rounded-md text-sm border border-purple-100">
+            <span className="px-2 py-1 bg-status-bg text-cell-secondary rounded-md text-sm border border-status-border">
                 {permission.model_type}
             </span>
         </div>,
-        <div key="createdAt" className="flex items-center justify-start text-gray-600">
+        <div key="createdAt" className="flex items-center justify-start text-cell-secondary">
             {dayjs(permission.createdAt).format("YYYY-MM-DD HH:mm")}
         </div>,
-        <div key="updatedAt" className="flex items-center justify-start text-gray-600">
+        <div key="updatedAt" className="flex items-center justify-start text-cell-secondary">
             {dayjs(permission.updatedAt).format("YYYY-MM-DD HH:mm")}
         </div>
     ]);
