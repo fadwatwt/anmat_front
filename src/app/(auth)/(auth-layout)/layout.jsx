@@ -61,8 +61,8 @@ function AuthLayout({ children }) {
     }
 
     return (
-        <div className="w-full flex justify-start py-1 bg-white">
-            <div className="flex flex-col w-[40%] h-screen overflow-hidden gap-8 px-9 py-7">
+        <div className="w-full flex justify-start py-1 bg-white dark:bg-[#161922]">
+            <div className="flex flex-col w-[40%] h-screen overflow-hidden gap-8 px-9 py-7 bg-transparent">
                 {/* Logo Section */}
                 <div className="flex items-center justify-start gap-3 mb-8">
                     <Image
@@ -72,8 +72,8 @@ function AuthLayout({ children }) {
                         width={48}
                         height={48}
                     />
-                    <div className="text-sm text-sub-500 text-start dark:text-sub-300">
-                        <h1 className="font-bold text-xl">ANMAT</h1>
+                    <div className="text-sm text-cell-secondary text-start">
+                        <h1 className="font-bold text-xl text-cell-primary">ANMAT</h1>
                         <h3 className="">Organizations Management</h3>
                         {/*<h3 className="font-semibold">Management System</h3>*/}
                     </div>
@@ -86,14 +86,14 @@ function AuthLayout({ children }) {
 
                 <div className="w-full flex flex-wrap gap-4 items-center justify-between">
                     <button className="flex gap-2 items-center bg-transparent">
-                        <RiGlobalLine size={20} />
-                        <span className="text-md text-gray-700">عربي</span>
+                        <RiGlobalLine size={20} className="text-cell-secondary" />
+                        <span className="text-md text-cell-secondary">عربي</span>
                     </button>
                 </div>
             </div>
 
             {/* Right Side Image/Placeholder */}
-            <div className="flex flex-col justify-center flex-1 rounded-xl bg-main-900 relative overflow-hidden m-2">
+            <div className="flex flex-col justify-center flex-1 rounded-xl bg-status-bg relative overflow-hidden m-2">
                 <div className="absolute top-12 left-36 w-full">
                     <img
                         src="/images/LandingPage/dashboardImage.png"
@@ -103,10 +103,10 @@ function AuthLayout({ children }) {
                 </div>
                 <div className="h-[75vh]"></div>
                 <div className="flex flex-col items-center justify-center gap-2 text-center">
-                    <span className="text-2xl text-gray-900">
+                    <span className="text-2xl text-cell-primary">
                         {"The Ultimate Management Dashboard"}
                     </span>
-                    <span className="text-lg text-gray-500">
+                    <span className="text-lg text-cell-secondary">
                         {
                             "Everything you require for teamwork, analysis, and making decisions all in a single location."
                         }
