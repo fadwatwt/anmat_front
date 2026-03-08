@@ -19,10 +19,10 @@ import { useGetSubscriptionPlanQuery } from "@/redux/plans/subscriptionPlansApi"
 import { format } from "date-fns";
 
 const DetailCard = ({ title, icon: Icon, children, className = "" }) => (
-    <div className={`bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden ${className}`}>
-        <div className="flex items-center gap-2 p-4 border-b border-gray-50 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50">
+    <div className={`bg-surface rounded-2xl border border-status-border shadow-sm overflow-hidden ${className}`}>
+        <div className="flex items-center gap-2 p-4 border-b border-status-border bg-status-bg">
             {Icon && <Icon size={20} className="text-primary-500" />}
-            <h3 className="text-sm font-bold text-gray-800 dark:text-gray-100 uppercase tracking-wider">{title}</h3>
+            <h3 className="text-sm font-bold text-cell-primary uppercase tracking-wider">{title}</h3>
         </div>
         <div className="p-5">
             {children}
@@ -30,10 +30,10 @@ const DetailCard = ({ title, icon: Icon, children, className = "" }) => (
     </div>
 );
 
-const InfoRow = ({ label, value, icon: Icon, colorClass = "text-gray-900 dark:text-gray-100" }) => (
-    <div className="flex items-center gap-3 py-2 border-b border-gray-50 dark:border-gray-700 last:border-0">
-        {Icon && <Icon size={18} className="text-gray-400" />}
-        <span className="text-sm text-gray-500 dark:text-gray-400 min-w-[140px]">{label}:</span>
+const InfoRow = ({ label, value, icon: Icon, colorClass = "text-cell-primary" }) => (
+    <div className="flex items-center gap-3 py-2 border-b border-status-border last:border-0">
+        {Icon && <Icon size={18} className="text-cell-secondary" />}
+        <span className="text-sm text-cell-secondary min-w-[140px]">{label}:</span>
         <span className={`text-sm font-medium ${colorClass}`}>{value}</span>
     </div>
 );
@@ -67,7 +67,7 @@ function PlanDetails() {
                     </button>
 
                     <div className="absolute -bottom-10 left-6 md:left-12 flex items-end gap-6">
-                        <div className="relative h-24 w-24 md:h-32 md:w-32 rounded-3xl border-4 border-white dark:border-gray-900 shadow-xl overflow-hidden bg-white">
+                        <div className="relative h-24 w-24 md:h-32 md:w-32 rounded-3xl border-4 shadow-xl overflow-hidden bg-surface" style={{ borderColor: 'var(--bg-surface)' }}>
                             <div className="w-full h-full flex items-center justify-center bg-primary-50">
                                 <RiListCheck size={48} className="text-primary-500" />
                             </div>
@@ -108,16 +108,16 @@ function PlanDetails() {
                         <DetailCard title={t("Pricing Options")} icon={RiCoinLine}>
                             <div className="space-y-4">
                                 {plan.pricing?.map((price, index) => (
-                                    <div key={index} className="p-4 rounded-xl border border-gray-100 dark:border-gray-700 bg-gray-50/30 dark:bg-gray-900/30 flex flex-wrap items-center justify-between gap-4">
+                                    <div key={index} className="p-4 rounded-xl border border-status-border bg-status-bg flex flex-wrap items-center justify-between gap-4">
                                         <div className="flex items-center gap-4">
                                             <div className="h-10 w-10 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center text-primary-600">
                                                 <RiCoinLine size={20} />
                                             </div>
                                             <div>
-                                                <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
-                                                    {price.price} <span className="text-xs font-normal text-gray-500 truncate">per {price.interval_count} {price.interval}(s)</span>
+                                                <p className="text-lg font-bold text-cell-primary">
+                                                    {price.price} <span className="text-xs font-normal text-cell-secondary truncate">per {price.interval_count} {price.interval}(s)</span>
                                                 </p>
-                                                <p className="text-[10px] text-gray-400 uppercase tracking-tighter">Option #{index + 1} - {price.days_number} days</p>
+                                                <p className="text-[10px] text-cell-secondary uppercase tracking-tighter">Option #{index + 1} - {price.days_number} days</p>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-6">
@@ -127,7 +127,7 @@ function PlanDetails() {
                                                     {price.discount}% OFF
                                                 </div>
                                             )}
-                                            <div className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${price.is_active ? 'bg-blue-50 text-blue-600 border border-blue-100' : 'bg-gray-100 text-gray-500 border border-gray-200'}`}>
+                                            <div className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${price.is_active ? 'bg-blue-50 text-blue-600 border border-blue-100' : 'bg-badge-bg text-badge-text border border-status-border'}`}>
                                                 {price.is_active ? t("Active") : t("Inactive")}
                                             </div>
                                         </div>
@@ -140,23 +140,23 @@ function PlanDetails() {
                         <DetailCard title={t("Features & Capabilities")} icon={RiCheckboxCircleFill}>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {plan.features?.map((feature, featureIdx) => (
-                                    <div key={featureIdx} className="p-4 rounded-xl border border-gray-50 dark:border-gray-700 hover:border-primary-100 dark:hover:border-primary-900/30 transition-colors group">
+                                    <div key={featureIdx} className="p-4 rounded-xl border border-status-border hover:border-primary-100 transition-colors group">
                                         <div className="flex items-start gap-3">
                                             <div className="mt-1 bg-primary-50 dark:bg-primary-900/20 p-1 rounded-lg text-primary-500 group-hover:scale-110 transition-transform">
                                                 <RiCheckLine size={16} />
                                             </div>
                                             <div className="flex flex-col gap-1">
-                                                <h4 className="text-sm font-bold text-gray-800 dark:text-gray-100">
+                                                <h4 className="text-sm font-bold text-cell-primary">
                                                     {feature.feature_type?.title || feature.plan_feature?.title || "Feature"}
                                                 </h4>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed italic">
+                                                <p className="text-xs text-cell-secondary leading-relaxed italic">
                                                     {feature.feature_type?.details || feature.plan_feature?.details || "No details provided"}
                                                 </p>
                                                 {feature.properties?.length > 0 && (
                                                     <div className="flex flex-wrap gap-2 mt-2">
                                                         {feature.properties.map((prop, pIdx) => (
-                                                            <div key={pIdx} className="flex items-center gap-1.5 bg-gray-100 dark:bg-gray-700/50 px-2 py-1 rounded-md border border-gray-200 dark:border-gray-600">
-                                                                <span className="text-[10px] text-gray-400 font-medium uppercase tracking-tighter">{prop.key}:</span>
+                                                            <div key={pIdx} className="flex items-center gap-1.5 bg-status-bg px-2 py-1 rounded-md border border-status-border">
+                                                                <span className="text-[10px] text-cell-secondary font-medium uppercase tracking-tighter">{prop.key}:</span>
                                                                 <span className="text-[10px] font-bold text-primary-600">{prop.value}</span>
                                                             </div>
                                                         ))}
@@ -188,7 +188,7 @@ function PlanDetails() {
                                         icon={RiCheckboxCircleLine}
                                         colorClass={plan.trial?.is_active ? "text-green-600" : "text-red-500"}
                                     />
-                                    <p className="text-xs text-gray-400 italic text-center px-4">
+                                    <p className="text-xs text-cell-secondary italic text-center px-4">
                                         {plan.trial?.is_active
                                             ? t("New subscribers will get a free trial period before being charged.")
                                             : t("Free trial is currently disabled for this plan.")}

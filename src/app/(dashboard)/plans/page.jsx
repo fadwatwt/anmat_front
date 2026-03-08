@@ -163,7 +163,7 @@ function PlansPage() {
                     <RiFlashlightLine size={18} className="rounded-full text-primary-500 stroke-[5px]" />
                 </div>
             </div>
-            <span className="text-sm font-medium text-gray-900 dark:text-gray-50 max-w-[150px] truncate" title={plan.name}>
+            <span className="text-sm font-medium text-cell-primary max-w-[150px] truncate" title={plan.name}>
                 {plan.name}
             </span>
         </div>,
@@ -181,7 +181,7 @@ function PlansPage() {
         // Trial Cell
         <div key={`${plan._id}_trial`} className="flex flex-col gap-1">
             <span className="text-sm font-medium">{plan.trial?.trial_days || 0} days</span>
-            <span className={`text-[10px] px-2 py-0.5 rounded-full w-fit ${plan.trial?.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
+            <span className={`text-[10px] px-2 py-0.5 rounded-full w-fit ${plan.trial?.is_active ? 'bg-green-100 text-green-700' : 'bg-badge-bg text-badge-text border border-status-border'}`}>
                 {plan.trial?.is_active ? 'Active' : 'Inactive'}
             </span>
         </div>,
@@ -191,16 +191,16 @@ function PlansPage() {
             {
                 plan.features?.map((feature, idx) => {
                     return (
-                        <div key={idx} className="flex flex-col border-b border-gray-100 last:border-0 pb-1 mb-1">
-                            <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                        <div key={idx} className="flex flex-col border-b border-status-border last:border-0 pb-1 mb-1">
+                            <span className="text-xs font-semibold text-cell-primary">
                                 {feature.plan_feature?.title || feature.feature_type?.title || "Feature"}
                             </span>
-                            <span className="text-[10px] text-gray-500 line-clamp-1" title={feature.plan_feature?.details || feature.feature_type?.details}>
+                            <span className="text-[10px] text-cell-secondary line-clamp-1" title={feature.plan_feature?.details || feature.feature_type?.details}>
                                 {feature.plan_feature?.details || feature.feature_type?.details}
                             </span>
                             <div className="flex flex-wrap gap-1 mt-0.5">
                                 {feature.properties?.map((prop, pIdx) => (
-                                    <span key={pIdx} className="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded text-[9px] text-gray-600 dark:text-gray-400">
+                                    <span key={pIdx} className="bg-status-bg px-1.5 py-0.5 rounded text-[9px] text-cell-secondary">
                                         {prop.key}: {prop.value}
                                     </span>
                                 ))}

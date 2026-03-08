@@ -209,17 +209,17 @@ function CreatePlanModal({ isOpen, onClose }) {
           />
         </div>
 
-        <div className={"w-full p-2 bg-gray-50 px-4 text-gray-800 text-xs font-bold border-y border-gray-100"}>
+        <div className={"w-full p-2 bg-status-bg px-4 text-cell-primary text-xs font-bold border-y border-status-border"}>
           Plan Pricing
         </div>
 
         {formik.values.pricing.map((price, index) => (
-          <div key={index} className="px-4 py-2 border-b border-gray-50 last:border-0 relative">
+          <div key={index} className="px-4 py-2 border-b border-status-border last:border-0 relative">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-[10px] text-gray-400">Price Option #{index + 1}</span>
+              <span className="text-[10px] text-cell-secondary">Price Option #{index + 1}</span>
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-1">
-                  <span className="text-[10px] text-gray-400">Active</span>
+                  <span className="text-[10px] text-cell-secondary">Active</span>
                   <Switch2
                     className={"h-4 w-8"}
                     isOn={formik.values.pricing[index].is_active}
@@ -306,14 +306,14 @@ function CreatePlanModal({ isOpen, onClose }) {
           </button>
         </div>
 
-        <div className={"w-full p-2 bg-gray-50 px-4 text-gray-800 text-xs font-bold border-y border-gray-100 mt-2"}>
+        <div className={"w-full p-2 bg-status-bg px-4 text-cell-primary text-xs font-bold border-y border-status-border mt-2"}>
           Plan Features
         </div>
 
         {formik.values.features.map((feature, index) => {
           const selectedType = featureTypes?.find(ft => ft._id === feature.feature_type_id);
           return (
-            <div key={index} className="px-4 py-3 border-b border-gray-50 last:border-0 bg-white shadow-sm mx-4 rounded-xl border border-gray-100 mb-2">
+            <div key={index} className="px-4 py-3 border-b border-status-border last:border-0 bg-surface shadow-sm mx-4 rounded-xl border border-status-border mb-2">
               <div className="flex justify-between items-center mb-3">
                 <span className="text-xs font-semibold text-primary-600">Feature #{index + 1}</span>
                 {formik.values.features.length > 1 && (
@@ -336,8 +336,8 @@ function CreatePlanModal({ isOpen, onClose }) {
 
               {/* Dynamic Attributes */}
               {selectedType && feature.properties.length > 0 && (
-                <div className="mt-3 grid grid-cols-1 gap-3 p-3 bg-gray-50 rounded-lg">
-                  <p className="text-[10px] text-gray-500 uppercase tracking-wider font-bold">Properties</p>
+                <div className="mt-3 grid grid-cols-1 gap-3 p-3 bg-status-bg rounded-lg">
+                  <p className="text-[10px] text-cell-secondary uppercase tracking-wider font-bold">Properties</p>
                   {feature.properties.map((prop, propIndex) => {
                     const attrDef = selectedType.attributes_definitions.find(a => a.key === prop.key);
                     return (
@@ -370,11 +370,11 @@ function CreatePlanModal({ isOpen, onClose }) {
         </div>
 
         <div className={"flex flex-col gap-3 px-4 pb-4 mt-2"}>
-          <div className="flex flex-col p-3 bg-gray-50 rounded-xl border border-gray-100 gap-3">
+          <div className="flex flex-col p-3 bg-status-bg rounded-xl border border-status-border gap-3">
             <div className="flex items-center justify-between">
               <div className={"flex flex-col"}>
-                <span className={"text-sm font-medium text-gray-900"}>Free Trial enabled</span>
-                <p className={"text-[10px] text-gray-500"}>Activate free trial for this plan</p>
+                <span className={"text-sm font-medium text-cell-primary"}>Free Trial enabled</span>
+                <p className={"text-[10px] text-cell-secondary"}>Activate free trial for this plan</p>
               </div>
               <Switch2
                 className={"h-5 w-10"}
@@ -400,10 +400,10 @@ function CreatePlanModal({ isOpen, onClose }) {
             )}
           </div>
 
-          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100">
+          <div className="flex items-center justify-between p-3 bg-status-bg rounded-xl border border-status-border">
             <div className={"flex flex-col"}>
-              <span className={"text-sm font-medium text-gray-900"}>Active Status</span>
-              <p className={"text-[10px] text-gray-500"}>Make this plan available for subscription</p>
+              <span className={"text-sm font-medium text-cell-primary"}>Active Status</span>
+              <p className={"text-[10px] text-cell-secondary"}>Make this plan available for subscription</p>
             </div>
             <Switch2
               className={"h-5 w-10"}
