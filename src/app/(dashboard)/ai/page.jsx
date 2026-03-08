@@ -708,7 +708,7 @@ const AssistantPage = () => {
       </div>
       {/* Image Modal */}
       {openImageUrl && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70" onClick={() => setOpenImageUrl(null)}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 dark:bg-black/60 backdrop-blur-sm" onClick={() => setOpenImageUrl(null)}>
           <div className="relative" onClick={e => e.stopPropagation()}>
             <img src={openImageUrl} alt="Preview" className="max-h-[80vh] max-w-[90vw] rounded-xl shadow-lg" />
             <button

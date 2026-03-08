@@ -8,7 +8,7 @@ const Modal = ({ isOpen, onClose, children, title, className, isHideCancel, isBt
     if (!isOpen) return null;
     return (
         <div
-            className={`fixed inset-0 bg-gray-900  flex items-center overflow-hidden justify-center z-50 ${classNameOpacity ? classNameOpacity : "bg-opacity-50"}`}
+            className={`fixed inset-0 bg-black/30 dark:bg-black/60 backdrop-blur-sm flex items-center overflow-hidden justify-center z-50 ${classNameOpacity ? classNameOpacity : ""}`}
             onClick={onClose}
         >
             <div
