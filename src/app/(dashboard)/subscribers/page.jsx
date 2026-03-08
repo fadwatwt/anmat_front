@@ -72,13 +72,13 @@ function Subscribers() {
       </div>
       <div className="flex flex-col items-start justify-start gap-0 overflow-hidden">
         <span
-          className="text-sm font-medium text-gray-900 dark:text-gray-50 truncate w-full block max-w-[200px]"
+          className="text-sm font-medium text-cell-primary truncate w-full block max-w-[200px]"
           title={subscriber.name}
         >
           {subscriber.name}
         </span>
         <span
-          className="text-xs text-gray-500 truncate w-full block max-w-[200px]"
+          className="text-xs text-cell-secondary truncate w-full block max-w-[200px]"
           title={subscriber.email}
         >
           {subscriber.email}
@@ -95,13 +95,13 @@ function Subscribers() {
       </div>
       <div className="flex flex-col items-start justify-start gap-0 overflow-hidden">
         <span
-          className="text-sm font-medium text-gray-900 dark:text-gray-50 truncate w-full block max-w-[200px]"
+          className="text-sm font-medium text-cell-primary truncate w-full block max-w-[200px]"
           title={subscriber.organization?.name || "N/A"}
         >
           {subscriber.organization?.name || "N/A"}
         </span>
         <span
-          className="text-xs text-gray-500 truncate w-full block max-w-[200px]"
+          className="text-xs text-cell-secondary truncate w-full block max-w-[200px]"
           title={subscriber.organization?.website || "N/A"}
         >
           {subscriber.organization?.website || "N/A"}
@@ -116,21 +116,21 @@ function Subscribers() {
           <RiFlashlightLine size={18} className="rounded-full text-primary-500 stroke-[5px]" />
         </div>
       </div>
-      <span className="text-sm font-medium text-gray-900 dark:text-gray-50">
+      <span className="text-sm font-medium text-cell-primary">
         {"Standard"}
       </span>
     </div>,
 
     // Industry and Date cell
-    <div key={`${subscriber._id}_industry`} className="text-sm truncate max-w-[120px]" title={subscriber.organization?.industry?.name || "N/A"}>
+    <div key={`${subscriber._id}_industry`} className="text-sm text-cell-secondary truncate max-w-[120px]" title={subscriber.organization?.industry?.name || "N/A"}>
       {subscriber.organization?.industry?.name || "N/A"}
     </div>,
-    <div key={`${subscriber._id}_date`} className="text-sm">
+    <div key={`${subscriber._id}_date`} className="text-sm text-cell-secondary">
       {subscriber.createdAt ? format(new Date(subscriber.createdAt), "MMM dd, yyyy") : "N/A"}
     </div>,
 
     // Users Subscribed cell
-    <div key={`${subscriber._id}_amount`} className="px-2 py-0.5 text-gray-900 text-xs bg-gray-50 text-center rounded-[25px] w-fit mx-auto">
+    <div key={`${subscriber._id}_amount`} className="px-2 py-0.5 text-xs text-badge-text bg-badge-bg border border-status-border text-center rounded-[25px] w-fit mx-auto">
       {"0"}
     </div>,
 
@@ -204,9 +204,9 @@ function Subscribers() {
         title="Cancel Subscription"
         confirmBtnText="Yes, Stop"
         description={
-          <p>
-            Are you sure you want to <span className="font-bold text-black">Delete Subscription</span> of the
-            <span className="font-bold text-black"> this client</span>?
+          <p className="text-cell-secondary">
+            Are you sure you want to <span className="font-bold text-cell-primary">Delete Subscription</span> of the
+            <span className="font-bold text-cell-primary"> this client</span>?
           </p>
         }
         onSubmit={() => { }}
