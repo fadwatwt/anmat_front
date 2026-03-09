@@ -32,18 +32,18 @@ function RegisterForm() {
     return (
         <form onSubmit={handleSubmit} className="loginForm flex flex-col gap-3">
             <div className="flex flex-col items-center gap-6">
-                <div className="flex w-20 h-20 justify-center items-center rounded-full bg-[#F3F3F4]">
-                    <div className="flex w-12 h-12 justify-center items-center rounded-full bg-white shadow-md">
-                        <LiaUser size={30} />
+                <div className="flex w-20 h-20 justify-center items-center rounded-full bg-status-bg">
+                    <div className="flex w-12 h-12 justify-center items-center rounded-full bg-surface shadow-md">
+                        <LiaUser size={30} className="text-cell-primary" />
                     </div>
                 </div>
 
                 {/* Intro Title */}
                 <div className="flex flex-col items-center justify-center gap-2 text-center">
-                    <span className="text-2xl text-gray-900">
+                    <span className="text-2xl text-cell-primary">
                         {`Register Your Email`}
                     </span>
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm text-cell-secondary">
                         {'Enter your email for registration.'}
                     </span>
                 </div>
@@ -55,18 +55,18 @@ function RegisterForm() {
                 )}
 
                 <div className="flex flex-col gap-2 w-full">
-                    <label htmlFor="sign_up_email_input">
+                    <label htmlFor="sign_up_email_input" className="text-cell-primary">
                         {'Email Address'}
                     </label>
-                    <div className="flex bg-white pl-2 px-2 w-full items-center border-2 rounded-xl">
-                        <GoMail className="text-gray-500 w-10" size={18} />
+                    <div className="flex bg-surface pl-2 px-2 w-full items-center border border-status-border rounded-xl">
+                        <GoMail className="text-cell-secondary w-10" size={18} />
                         <input
                             id="sign_up_email_input"
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="Enter your email"
-                            className="w-full py-3 px-2 outline-none disabled:bg-gray-50"
+                            className="w-full py-3 px-2 outline-none disabled:bg-status-bg bg-transparent text-cell-primary"
                             required
                             disabled={isBusy}
                         />
@@ -85,8 +85,8 @@ function RegisterForm() {
                     </button>
 
                     {/*Return to Sign-in*/}
-                    <div className="flex flex-wrap items-center justify-end gap-2">
-                        <span className="text-md text-gray-700 dark:text-gray-300">
+                    <div className="flex flex-wrap items-center justify-end gap-2 mt-4">
+                        <span className="text-md text-cell-secondary">
                             Already have an account?
                         </span>
                         {isBusy ? (

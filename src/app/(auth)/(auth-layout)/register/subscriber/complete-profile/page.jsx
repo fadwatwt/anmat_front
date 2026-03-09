@@ -90,17 +90,17 @@ const SetupSubscriberProfile = () => {
 
             {/* Title */}
             <div className="flex flex-col items-center gap-3">
-                <div className="flex w-20 h-20 justify-center items-center rounded-full bg-[#F3F3F4]">
-                    <div className="flex w-12 h-12 justify-center items-center rounded-full bg-white shadow-md">
-                        <LiaUser size={30} />
+                <div className="flex w-20 h-20 justify-center items-center rounded-full bg-status-bg">
+                    <div className="flex w-12 h-12 justify-center items-center rounded-full bg-surface shadow-md">
+                        <LiaUser size={30} className="text-cell-primary" />
                     </div>
                 </div>
 
                 <div className="flex flex-col items-center justify-center gap-2 text-center">
-                    <span className="text-2xl text-gray-900">
+                    <span className="text-2xl text-cell-primary">
                         {t("Set up your account")}
                     </span>
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm text-cell-secondary">
                         {t("Enter your details to complete registration")}
                     </span>
                 </div>
@@ -179,7 +179,7 @@ const SetupSubscriberProfile = () => {
                 />
 
                 <div className={`relative flex flex-col gap-1 w-full items-start`}>
-                    <label className="text-gray-900 dark:text-gray-200 text-sm">
+                    <label className="text-cell-primary text-sm">
                         {t('Avatar (Optional)')}
                     </label>
                     <FileUpload
@@ -188,7 +188,7 @@ const SetupSubscriberProfile = () => {
                     />
                     {formik.values.avatar && (
                         <div className="mt-4 flex flex-col items-center gap-2">
-                            <span className="text-xs text-gray-500">{t("Avatar Preview:")}</span>
+                            <span className="text-xs text-cell-secondary">{t("Avatar Preview:")}</span>
                             <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-primary-100 shadow-sm relative group">
                                 <img
                                     src={URL.createObjectURL(formik.values.avatar)}

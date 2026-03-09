@@ -112,17 +112,17 @@ const EmployeeRegistration = () => {
 
                 {/* Title */}
                 <div className="flex flex-col items-center gap-3">
-                    <div className="flex w-20 h-20 justify-center items-center rounded-full bg-[#F3F3F4]">
-                        <div className="flex w-12 h-12 justify-center items-center rounded-full bg-white shadow-md">
+                    <div className="flex w-20 h-20 justify-center items-center rounded-full bg-status-bg">
+                        <div className="flex w-12 h-12 justify-center items-center rounded-full bg-surface shadow-md">
                             <LiaUser size={30} className="text-primary-500" />
                         </div>
                     </div>
 
                     <div className="flex flex-col items-center justify-center gap-2 text-center">
-                        <span className="text-2xl font-semibold text-gray-900">
+                        <span className="text-2xl font-semibold text-cell-primary">
                             {t("Set up your account")}
                         </span>
-                        <span className="text-sm text-gray-500">
+                        <span className="text-sm text-cell-secondary">
                             {t("Enter your details to sign up as an employee")}
                         </span>
                     </div>

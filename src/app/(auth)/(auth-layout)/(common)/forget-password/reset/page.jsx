@@ -35,48 +35,48 @@ function ResetPasswordPage() {
     return (
         <form onSubmit={handleSubmit} className="loginForm flex flex-col gap-3">
             <div className="flex flex-col items-center gap-3">
-                <div className="flex w-20 h-20 justify-center items-center rounded-full bg-[#F3F3F4]">
-                    <div className="flex w-12 h-12 justify-center items-center rounded-full bg-white shadow-md">
-                        <RiUserSettingsLine size={30}/>
+                <div className="flex w-20 h-20 justify-center items-center rounded-full bg-status-bg">
+                    <div className="flex w-12 h-12 justify-center items-center rounded-full bg-surface shadow-md">
+                        <RiUserSettingsLine size={30} className="text-cell-primary" />
                     </div>
                 </div>
 
                 <div className="flex flex-col items-center justify-center gap-2 text-center">
-                    <sapn className="text-2xl text-gray-900">
+                    <sapn className="text-2xl text-cell-primary">
                         {`Reset Password`}
                     </sapn>
-                    <span className="text-sm text-gray-500">
-            {'Enter your new password'}
-          </span>
+                    <span className="text-sm text-cell-secondary">
+                        {'Enter your new password'}
+                    </span>
                 </div>
 
                 <div className="w-full">
                     <div className="flex flex-col gap-2 w-full">
 
                         <div className={"flex flex-col gap-2 w-full"}>
-                            <label>New Password</label>
-                            <div className="flex bg-white pl-2 px-2 w-full items-center border-2 rounded-xl">
-                                <IoIosLock className="text-gray-500 w-10" size={18}/>
+                            <label className="text-cell-primary">New Password</label>
+                            <div className="flex bg-surface pl-2 px-2 w-full items-center border border-status-border rounded-xl">
+                                <IoIosLock className="text-cell-secondary w-10" size={18}/>
                                 <input
                                     type="password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="*"
-                                    className="w-full py-3 px-2 outline-none"
+                                    className="w-full py-3 px-2 outline-none bg-transparent text-cell-primary"
                                     required
                                 />
                             </div>
                         </div>
                         <div className={"flex flex-col gap-2 w-full"}>
-                            <label>Confirm New Password</label>
-                            <div className="flex bg-white pl-2 px-2 w-full items-center border-2 rounded-xl">
-                                <IoIosLock className="text-gray-500 w-10" size={18}/>
+                            <label className="text-cell-primary">Confirm New Password</label>
+                            <div className="flex bg-surface pl-2 px-2 w-full items-center border border-status-border rounded-xl">
+                                <IoIosLock className="text-cell-secondary w-10" size={18}/>
                                 <input
                                     type="password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="*"
-                                    className="w-full py-3 px-2 outline-none"
+                                    className="w-full py-3 px-2 outline-none bg-transparent text-cell-primary"
                                     required
                                 />
                             </div>
