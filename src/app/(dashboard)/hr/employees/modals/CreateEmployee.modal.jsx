@@ -159,13 +159,15 @@ function CustomBtnModal({
     const { t } = useTranslation();
     return (
         <div className="w-full flex items-center gap-2 justify-between pt-3">
-            <button
-                onClick={handleSave}
-                disabled={isLoading}
-                className="bg-primary-base text-sm flex flex-1 justify-center items-center h-full text-center dark:bg-primary-200 dark:text-black w-40 text-white p-[10px] rounded-[10px] disabled:opacity-50"
-            >
-                {isLoading ? t("Saving...") : t("Save")}
-            </button>
+            {currentStep === totalSteps && (
+                <button
+                    onClick={handleSave}
+                    disabled={isLoading}
+                    className="bg-primary-base text-sm flex flex-1 justify-center items-center h-full text-center dark:bg-primary-200 dark:text-black w-40 text-white p-[10px] rounded-[10px] disabled:opacity-50"
+                >
+                    {isLoading ? t("Saving...") : t("Save")}
+                </button>
+            )}
             {currentStep < totalSteps && (
                 <button
                     onClick={handleNext}

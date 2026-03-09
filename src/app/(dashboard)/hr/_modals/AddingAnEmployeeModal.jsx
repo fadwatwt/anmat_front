@@ -166,7 +166,7 @@ function EditAnEmployeeModal({ isOpen, onClose, employee }) {
             onChange={(val) => formik.setFieldValue("department", val)} // Sending _id
             options={departments} // Ensure the correct structure
             error={formik.errors.department}
-           onBlur={() => {}}/>
+            onBlur={() => { }} />
 
           <InputAndLabel
             title="Working Hours"
