@@ -83,8 +83,11 @@ function Table({
             setDropdownOpen(null);
         } else {
             const rect = event.currentTarget.getBoundingClientRect();
+            const spaceBelow = window.innerHeight - rect.bottom;
+            const isUpwards = spaceBelow < 200; // if less than 200px below, show above
             setDropdownPosition({
-                top: rect.bottom + window.scrollY,
+                top: isUpwards ? rect.top + window.scrollY : rect.bottom + window.scrollY,
+                isUpwards,
                 left: rect.left + window.scrollX,
                 right: rect.right + window.scrollX,
                 width: rect.width
@@ -276,7 +279,7 @@ function Table({
                                                             // LTR: Align right edge of menu with right edge of button
                                                             // RTL: Align left edge of menu with left edge of button
                                                             left: i18n?.language === "ar" ? dropdownPosition.left : dropdownPosition.right,
-                                                            transform: i18n?.language === "ar" ? "" : "translateX(-100%)",
+                                                            transform: `${i18n?.language === "ar" ? "" : "translateX(-100%)"} ${dropdownPosition.isUpwards ? "translateY(-100%)" : ""}`.trim(),
                                                             zIndex: 9999,
                                                         }}
                                                     >

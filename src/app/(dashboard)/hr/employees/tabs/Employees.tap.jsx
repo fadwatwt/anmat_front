@@ -91,21 +91,20 @@ function EmployeesTap() {
           setIsOpenSendNotifyModal(true);
         }
       },
-      // Conditional assign/unassign department action
-      hasDepartment
-        ? {
-          text: t("Unassign Department"),
-          icon: <RiLogoutBoxLine className="text-orange-500" />,
-          onClick: () => handleUnassignDepartment(employee),
-        }
-        : {
-          text: t("Assign Department"),
-          icon: <RiBuilding2Line className="text-green-500" />,
-          onClick: () => {
-            setSelectedAssignEmployee(employee);
-            setIsOpenAssignDeptModal(true);
-          },
+      {
+        text: t("Assign Department"),
+        icon: <RiBuilding2Line className="text-green-500" />,
+        onClick: () => {
+          setSelectedAssignEmployee(employee);
+          setIsOpenAssignDeptModal(true);
         },
+      },
+      // Conditional unassign department action
+      ...(hasDepartment ? [{
+        text: t("Unassign Department"),
+        icon: <RiLogoutBoxLine className="text-orange-500" />,
+        onClick: () => handleUnassignDepartment(employee),
+      }] : []),
       {
         text: employee.user?.is_active ? t("Deactivate") : t("Activate"),
         icon: employee.user?.is_active ? <RiToggleFill className="text-orange-500" /> : <RiToggleLine className="text-green-500" />,
