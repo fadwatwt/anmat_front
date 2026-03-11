@@ -10,9 +10,11 @@ import {
   useGetAdminPermissionsQuery,
   useUpdateAdminRolePermissionsMutation,
 } from "@/redux/roles/adminRolesAPI";
+import { useProcessing } from "@/app/providers";
 
 function SyncPermissionsModal({ isOpen, onClose, roleId, roleName, currentPermissions = [] }) {
   const [updatePermissions, { isLoading }] = useUpdateAdminRolePermissionsMutation();
+  const { showProcessing, hideProcessing } = useProcessing();
   const [apiResponse, setApiResponse] = useState({
     isOpen: false,
     status: null,
@@ -85,6 +87,7 @@ function SyncPermissionsModal({ isOpen, onClose, roleId, roleName, currentPermis
         return;
       }
 
+      showProcessing("Syncing Permissions...");
       try {
         const payload = {
           admin_permissions_ids: values.admin_permissions_ids.map((tag) => tag.id),
@@ -111,6 +114,8 @@ function SyncPermissionsModal({ isOpen, onClose, roleId, roleName, currentPermis
           status: "error",
           message: errorMessage,
         });
+      } finally {
+        hideProcessing();
       }
     },
   });

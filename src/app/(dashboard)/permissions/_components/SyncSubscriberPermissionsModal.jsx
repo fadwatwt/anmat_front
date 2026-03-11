@@ -10,9 +10,11 @@ import {
     useGetPermissionsQuery,
 } from "@/redux/permissions/subscriberPermissionsApi";
 import { useSyncSubscriberRolePermissionsMutation } from "@/redux/roles/subscriberRolesApi";
+import { useProcessing } from "@/app/providers";
 
 function SyncSubscriberPermissionsModal({ isOpen, onClose, roleId, roleName, currentPermissions = [] }) {
     const [updatePermissions, { isLoading }] = useSyncSubscriberRolePermissionsMutation();
+    const { showProcessing, hideProcessing } = useProcessing();
     const [isApprovalOpen, setIsApprovalOpen] = useState(false);
     const [apiResponse, setApiResponse] = useState({
         isOpen: false,
@@ -71,6 +73,7 @@ function SyncSubscriberPermissionsModal({ isOpen, onClose, roleId, roleName, cur
             return;
         }
 
+        showProcessing("Syncing Permissions...");
         try {
             const payload = {
                 permissions_ids: formik.values.permissions_ids.map((tag) => tag.id),
@@ -97,6 +100,7 @@ function SyncSubscriberPermissionsModal({ isOpen, onClose, roleId, roleName, cur
                 message: errorMessage,
             });
         } finally {
+            hideProcessing();
             setIsApprovalOpen(false);
         }
     };

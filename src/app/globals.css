@@ -295,3 +295,35 @@ div {
         filter: drop-shadow(0 0 8px #fff) drop-shadow(0 0 16px #4F8CFF);
     }
 }
+
+/* Custom Animations for Processing Overlay */
+@keyframes pulse-slow {
+    0%, 100% { 
+        opacity: 0.3; 
+        transform: scale(0.9); 
+    }
+    50% { 
+        opacity: 0.7; 
+        transform: scale(1.1); 
+    }
+}
+
+.animate-pulse-slow {
+    animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes scale-in {
+    0% { 
+        opacity: 0; 
+        transform: scale(0.95); 
+    }
+    100% { 
+        opacity: 1; 
+        transform: scale(1); 
+    }
+}
+
+.animate-scale-in {
+    animation: scale-in 0.3s ease-out forwards;
+}
+

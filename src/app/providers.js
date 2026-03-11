@@ -7,8 +7,10 @@ import { Provider } from "react-redux";
 import { store } from "@/redux/store";
 
 export const ThemeContext = createContext();
+export const ProcessingContext = createContext();
 
 export const useTheme = () => useContext(ThemeContext);
+export const useProcessing = () => useContext(ProcessingContext);
 
 const ThemeProvider = ({ children }) => {
     const [theme, setTheme] = useState(() => {
@@ -56,13 +58,39 @@ const ThemeProvider = ({ children }) => {
     );
 };
 
+import ProcessingOverlay from '@/components/Feedback/ProcessingOverlay';
+
+const ProcessingProvider = ({ children }) => {
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [processingMessage, setProcessingMessage] = useState(null);
+
+    const showProcessing = (message) => {
+        setProcessingMessage(message);
+        setIsProcessing(true);
+    };
+
+    const hideProcessing = () => {
+        setIsProcessing(false);
+        setProcessingMessage(null);
+    };
+
+    return (
+        <ProcessingContext.Provider value={{ showProcessing, hideProcessing, isProcessing }}>
+            {children}
+            <ProcessingOverlay isOpen={isProcessing} message={processingMessage} />
+        </ProcessingContext.Provider>
+    );
+};
+
 const Providers = ({ children }) => {
     return (
         <Provider store={store}>
             <ThemeProvider>
-                <I18nextProvider i18n={i18n}>
-                    {children}
-                </I18nextProvider>
+                <ProcessingProvider>
+                    <I18nextProvider i18n={i18n}>
+                        {children}
+                    </I18nextProvider>
+                </ProcessingProvider>
             </ThemeProvider>
         </Provider>
     );

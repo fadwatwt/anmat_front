@@ -20,9 +20,11 @@ import InviteEmployeeModal from "@/app/(dashboard)/hr/_modals/InviteEmployeeModa
 import SendNotificationModal from "@/app/(dashboard)/hr/employees/modals/SendNotification.modal";
 import AssignDepartmentModal from "@/app/(dashboard)/hr/employees/modals/AssignDepartmentModal";
 import { RiDeleteBin7Line } from "react-icons/ri";
+import { useProcessing } from "@/app/providers";
 
 function EmployeesTap() {
   const { t } = useTranslation();
+  const { showProcessing, hideProcessing } = useProcessing();
   const { data: employees = [], error, isLoading } = useGetEmployeesQuery();
   const [deleteEmployee] = useDeleteEmployeeMutation();
   const [toggleActivity] = useToggleEmployeeActivityMutation();
@@ -169,11 +171,14 @@ function EmployeesTap() {
   const handleDeleteConfirmation = async (isConfirmed) => {
     setIsOpenDeleteAlert(false);
     if (isConfirmed && selectedDeleteEmployee) {
+      showProcessing(t("Deleting Employee..."));
       try {
         await deleteEmployee(selectedDeleteEmployee._id).unwrap();
         setIsOpenSuccessDeleteAlert(true);
       } catch (err) {
         console.error("Delete employee failed:", err);
+      } finally {
+        hideProcessing();
       }
     }
   };
@@ -187,6 +192,7 @@ function EmployeesTap() {
   const handleUnassignConfirmation = async () => {
     if (!selectedUnassignEmployee) return;
 
+    showProcessing(t("Processing..."));
     try {
       const deptId = selectedUnassignEmployee.department?._id || selectedUnassignEmployee.department_id?._id;
       await unassignEmployees({
@@ -205,6 +211,8 @@ function EmployeesTap() {
         status: "error",
         message: error?.data?.message || t("Failed to unassign employee from department")
       });
+    } finally {
+      hideProcessing();
     }
   };
 
@@ -221,6 +229,7 @@ function EmployeesTap() {
   const onConfirmToggle = async () => {
     if (!selectedToggleEmployee) return;
 
+    showProcessing(selectedToggleEmployee.user?.is_active ? t("Deactivating...") : t("Activating..."));
     try {
       await toggleActivity(selectedToggleEmployee.user_id).unwrap();
       setToggleApiResponse({
@@ -238,6 +247,8 @@ function EmployeesTap() {
         message: err?.data?.message || t("Failed to toggle employee status")
       });
       setIsToggleApprovalOpen(false);
+    } finally {
+      hideProcessing();
     }
   };
 

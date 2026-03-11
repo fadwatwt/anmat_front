@@ -18,10 +18,12 @@ import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
 import StatusActions from "@/components/Dropdowns/StatusActions";
 import { useTranslation } from "react-i18next";
 import { RiDeleteBin7Line } from "react-icons/ri";
+import { useProcessing } from "@/app/providers";
 
 function PermissionsPage() {
     const { data: rolesData, isLoading, isError, error } = useGetSubscriberRolesQuery();
     const [deleteRole, { isLoading: isDeleting }] = useDeleteSubscriberRoleMutation();
+    const { showProcessing, hideProcessing } = useProcessing();
 
     const [addRoleModalOpen, setAddRoleModalOpen] = useState(false);
     const [syncPermissionsModalOpen, setSyncPermissionsModalOpen] = useState(false);
@@ -92,6 +94,7 @@ function PermissionsPage() {
 
     const handleConfirmDelete = async () => {
         if (!selectedRole?._id) return;
+        showProcessing("Deleting Role...");
         try {
             const response = await deleteRole(selectedRole._id).unwrap();
             setApiResponse({
@@ -106,6 +109,7 @@ function PermissionsPage() {
                 message: e?.data?.message || "Failed to delete role",
             });
         } finally {
+            hideProcessing();
             setIsDeleteRoleAlert(false);
         }
     };
