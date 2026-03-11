@@ -26,11 +26,27 @@ function ProjectDetailsPage() {
     const [isOpenEditModal, setIsOpenEditModal] = useState(false)
     const [filterTasks, setFilterTasks] = useState([]);
 
+    const mappedTasks = project?.tasks?.map(task => {
+        const assignee = project.assignees?.find(m => m._id === task.assignee_id);
+        return {
+            ...task,
+            name: task.title,
+            delivery: task.status,
+            members: assignee ? [{
+                name: assignee.name,
+                imageProfile: assignee.imageProfile || assignee.avatar
+            }] : [],
+            assignedDate: task.start_date,
+            dueDate: task.due_date,
+            rate: task.ratings?.length ? (task.ratings.reduce((acc, r) => acc + r.value, 0) / task.ratings.length) : 0
+        };
+    }) || [];
+
     useEffect(() => {
-        if (project?.tasks) {
-            setFilterTasks(project.tasks);
+        if (mappedTasks.length > 0) {
+            setFilterTasks(mappedTasks);
         }
-    }, [project?.tasks]);
+    }, [project?.tasks, project?.assignees]);
 
     const breadcrumbItems = [
         { title: t('Projects'), path: '/projects' },
@@ -59,7 +75,7 @@ function ProjectDetailsPage() {
         rule: member.role,
     })) || [];
 
-    const tasks = project.tasks || [];
+    const tasks = mappedTasks;
 
     const comments = [
         // Placeholder for comments if they are not in the project details API yet
@@ -109,7 +125,7 @@ function ProjectDetailsPage() {
                             <p className={"text-lg dark:text-gray-200"}>{t("Project Tasks")} </p>
                             <SelectWithoutLabel onChange={handelChangeFilterTask} options={filterOptions} title={"Filter by"} className={"w-[120px] h-[36px]"} />
                         </div>
-                        <TasksList tasks={filterTasks} />
+                        <TasksList tasks={filterTasks} isAssignedDate={true} />
                     </div>
                     <div className={"bg-white dark:bg-white-0 rounded-2xl w-full flex flex-col gap-3"}>
                         <div className={"p-4 flex flex-col gap-3"}>
