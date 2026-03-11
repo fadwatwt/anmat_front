@@ -10,9 +10,11 @@ import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import AddSalaryModal from "../modals/AddSalaryModal";
 import { GoPlus } from "react-icons/go";
+import { useProcessing } from "@/app/providers";
 
 export default function SalaryTab() {
   const { t } = useTranslation();
+  const { showProcessing, hideProcessing } = useProcessing();
   const { data: transactions = [], isLoading: isTransactionsLoading, error } = useGetSalaryTransactionsQuery();
 
   const [createTransaction] = useCreateSalaryTransactionMutation();
@@ -91,9 +93,9 @@ export default function SalaryTab() {
 
   const confirmDelete = async () => {
     if (selectedTransaction) {
+      showProcessing(t("Deleting Salary Transaction..."));
       try {
         await deleteTransaction(selectedTransaction.id).unwrap();
-        setIsDeleteAlertOpen(false);
         setApiResponse({
           isOpen: true,
           status: "success",
@@ -106,19 +108,23 @@ export default function SalaryTab() {
           status: "error",
           message: err?.data?.message || t("Failed to delete salary transaction")
         });
+      } finally {
+        hideProcessing();
+        setIsDeleteAlertOpen(false);
       }
     }
   };
 
   const handleAddSalary = async (values) => {
+    showProcessing(t("Adding Salary Transaction..."));
     try {
       await createTransaction(values).unwrap();
-      setIsAddModalOpen(false);
       setApiResponse({
         isOpen: true,
         status: "success",
         message: t("Salary transaction added successfully")
       });
+      setIsAddModalOpen(false);
     } catch (err) {
       console.error("Create salary transaction failed:", err);
       setApiResponse({
@@ -127,6 +133,8 @@ export default function SalaryTab() {
         message: err?.data?.message || t("Failed to add salary transaction")
       });
       throw err; // Re-throw to be caught by Formik in AddSalaryModal
+    } finally {
+      hideProcessing();
     }
   };
 

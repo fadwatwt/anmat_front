@@ -15,6 +15,7 @@ import { useGetEmployeesQuery } from "@/redux/employees/employeesApi";
 import { isBefore, isAfter, startOfToday, format as formatDate } from "date-fns";
 import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
+import { useProcessing } from "@/app/providers";
 
 const validationSchema = Yup.object().shape({
     employee_id: Yup.string().required("Employee is required"),
@@ -64,6 +65,7 @@ const validationSchema = Yup.object().shape({
 
 function AddAttendanceModal({ isOpen, onClose }) {
     const { t } = useTranslation();
+    const { showProcessing, hideProcessing } = useProcessing();
     const { data: employeesData } = useGetEmployeesQuery();
     const [createAttendance, { isLoading }] = useCreateAttendanceMutation();
 
@@ -88,6 +90,7 @@ function AddAttendanceModal({ isOpen, onClose }) {
     });
 
     const onConfirmSave = async () => {
+        showProcessing(t("Creating Attendance..."));
         try {
             await createAttendance(formik.values).unwrap();
             setApiResponse({
@@ -102,6 +105,9 @@ function AddAttendanceModal({ isOpen, onClose }) {
                 status: "error",
                 message: error?.data?.message || error.message || t("Failed to create attendance")
             });
+        } finally {
+            hideProcessing();
+            setIsApprovalOpen(false);
         }
     };
 

@@ -17,6 +17,7 @@ import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import EditAttendanceModal from "@/app/(dashboard)/hr/employees/modals/EditAttendanceModal";
 import PropTypes from "prop-types";
 import AddAttendanceModal from "../modals/AddAttendanceModal";
+import { useProcessing } from "@/app/providers";
 
 // Updated StatusBadge to match the premium design
 export const StatusBadge = ({ status }) => {
@@ -52,6 +53,7 @@ export const StatusBadge = ({ status }) => {
 
 function AttendanceTab() {
   const { t } = useTranslation();
+  const { showProcessing, hideProcessing } = useProcessing();
   const { data: attendancesData, isLoading } = useGetAttendancesQuery();
   const [deleteAttendance] = useDeleteAttendanceMutation();
 
@@ -122,6 +124,7 @@ function AttendanceTab() {
   };
 
   const confirmDelete = async () => {
+    showProcessing(t("Deleting Attendance Record..."));
     try {
       await deleteAttendance(selectedAttendance._id).unwrap();
       setDeleteApiResponse({
@@ -135,6 +138,9 @@ function AttendanceTab() {
         status: "error",
         message: error?.data?.message || error.message || t("Failed to delete attendance record")
       });
+    } finally {
+      hideProcessing();
+      setIsDeleteApprovalOpen(false);
     }
   };
 

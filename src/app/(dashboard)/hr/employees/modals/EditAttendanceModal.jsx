@@ -21,9 +21,13 @@ import {
   setMinutes,
   formatISO,
 } from "date-fns";
+import { useProcessing } from "@/app/providers";
+import { useTranslation } from "react-i18next";
 
 function EditAttendanceModal({ isOpen, onClose, attendance }) {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
+  const { showProcessing, hideProcessing } = useProcessing();
   const { loading } = useSelector((state) => state.attendance);
   const [submissionError, setSubmissionError] = useState(null);
   const { employees } = useSelector((state) => state.employees);
@@ -91,6 +95,7 @@ function EditAttendanceModal({ isOpen, onClose, attendance }) {
     },
     validationSchema,
     onSubmit: async (values) => {
+      showProcessing(t("Updating Attendance..."));
       try {
         setSubmissionError(null);
 
@@ -114,11 +119,13 @@ function EditAttendanceModal({ isOpen, onClose, attendance }) {
           onClose();
         } else {
           setSubmissionError(
-            result.error?.message || "Failed to update attendance"
+            result.error?.message || t("Failed to update attendance")
           );
         }
       } catch (error) {
-        setSubmissionError(error.message || "An unexpected error occurred");
+        setSubmissionError(error.message || t("An unexpected error occurred"));
+      } finally {
+        hideProcessing();
       }
     },
   });

@@ -12,9 +12,11 @@ import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import AddLeaveModal from "../modals/AddLeaveModal";
 import PropTypes from "prop-types";
+import { useProcessing } from "@/app/providers";
 
 function LeavesTab() {
     const { t } = useTranslation();
+    const { showProcessing, hideProcessing } = useProcessing();
     const { data: leavesData, isLoading } = useGetLeavesQuery();
     const [deleteLeave] = useDeleteLeaveMutation();
 
@@ -74,6 +76,7 @@ function LeavesTab() {
     };
 
     const confirmDelete = async () => {
+        showProcessing(t("Deleting Leave Record..."));
         try {
             await deleteLeave(selectedLeave._id).unwrap();
             setDeleteApiResponse({
@@ -87,6 +90,9 @@ function LeavesTab() {
                 status: "error",
                 message: error?.data?.message || error.message || t("Failed to delete leave record")
             });
+        } finally {
+            hideProcessing();
+            setIsDeleteApprovalOpen(false);
         }
     };
 

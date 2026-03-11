@@ -13,6 +13,7 @@ import { useGetEmployeesQuery } from "@/redux/employees/employeesApi";
 import { isBefore, isAfter, startOfToday, format as formatDate } from "date-fns";
 import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
+import { useProcessing } from "@/app/providers";
 
 const validationSchema = Yup.object().shape({
     employee_id: Yup.string().required("Employee is required"),
@@ -57,6 +58,7 @@ const validationSchema = Yup.object().shape({
 
 function AddLeaveModal({ isOpen, onClose }) {
     const { t } = useTranslation();
+    const { showProcessing, hideProcessing } = useProcessing();
     const { data: employeesData } = useGetEmployeesQuery();
     const [createLeave, { isLoading }] = useCreateLeaveMutation();
 
@@ -79,6 +81,7 @@ function AddLeaveModal({ isOpen, onClose }) {
     });
 
     const onConfirmSave = async () => {
+        showProcessing(t("Creating Leave..."));
         try {
             await createLeave(formik.values).unwrap();
             setApiResponse({
@@ -93,6 +96,9 @@ function AddLeaveModal({ isOpen, onClose }) {
                 status: "error",
                 message: error?.data?.message || error.message || t("Failed to create leave")
             });
+        } finally {
+            hideProcessing();
+            setIsApprovalOpen(false);
         }
     };
 
