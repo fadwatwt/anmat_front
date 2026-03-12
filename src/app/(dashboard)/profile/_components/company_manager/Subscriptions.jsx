@@ -12,7 +12,7 @@ function Subscriptions() {
         { label: t("Renewal Date"), width: "20%" },
         { label: t("Users Subscribed"), width: "20%" },
         { label: t("Status"), width: "20%" },
-        { label: "", width: "10%" },
+        // { label: "", width: "10%" },
     ];
 
     const data = [
@@ -57,7 +57,7 @@ function Subscriptions() {
                     rows={rows}
                     isTitle={false}
                     isCheckInput={false}
-                    isActions={true}
+                    isActions={false}
                     handelEdit={() => { }}
                     handelDelete={() => { }}
                 // The design implies a simple list, maybe not full table features like pagination/search are needed,

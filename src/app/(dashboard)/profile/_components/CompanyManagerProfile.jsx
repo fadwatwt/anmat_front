@@ -21,10 +21,12 @@ import ChangePasswordModal from "@/app/(dashboard)/profile/_components/modals/Ch
 import { useSelector } from "react-redux";
 import { selectUser } from "@/redux/auth/authSlice";
 import { useUpdateUserAccountMutation } from "@/redux/auth/authAPI";
+import { useGetSubscriberOrganizationQuery } from "@/redux/organizations/organizationsApi";
 
 function CompanyManagerProfile() {
     const { t, i18n } = useTranslation();
     const user = useSelector(selectUser);
+    const { data: organization, isLoading: isOrgLoading } = useGetSubscriberOrganizationQuery();
     const [updateUserAccount, { isLoading: isUpdating }] = useUpdateUserAccountMutation();
     const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
     const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
@@ -138,7 +140,7 @@ function CompanyManagerProfile() {
 
                 {/* Organization Card */}
                 <div className={"w-full px-4 md:px-10 "}>
-                    <OrganizationCard />
+                    <OrganizationCard organization={organization} isLoading={isOrgLoading} />
                 </div>
 
                 {/* Middle Section: To Do List + Work Info */}
