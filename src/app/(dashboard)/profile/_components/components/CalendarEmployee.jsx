@@ -28,8 +28,8 @@ function CalendarEmployee() {
         ...daysOfWeek.map(({ day }) => ({
             label: (
                 <div className="flex flex-col items-center">
-                    <span className="dark:text-gray-400">{day}</span>
-                    <span className="text-start text-sm dark:bg-gray-900 text-gray-400">
+                    <span className="text-cell-secondary">{day}</span>
+                    <span className="text-start text-sm text-cell-secondary">
                     </span>
                 </div>
             ),
@@ -47,7 +47,7 @@ function CalendarEmployee() {
         return daysOfWeek.map(() => {
             const random = Math.random();
             return random > 0.3 ? (
-                <div className="flex flex-col text-sm dark:text-sub-300 text-star">
+                <div className="flex flex-col text-sm text-cell-secondary text-star">
                     <span>10:00 AM to</span>
                     <span>6:00 PM</span>
                 </div>
@@ -66,10 +66,10 @@ function CalendarEmployee() {
     const rows = filteredEmployees.map(() => [
         ...generateShifts().map((shift, index) => (
             <div key={index} className={"relative h-full"}>
-                <div className="text-sm dark:text-sub-300 px-2 py-6 ">
+                <div className="text-sm text-cell-secondary px-2 py-6 ">
                     {shift}
                 </div>
-                <span className={"absolute top-0 right-1 dark:text-gray-200"}>{i++}</span>
+                <span className={"absolute top-0 right-1 text-cell-secondary"}>{i++}</span>
             </div>
         )),
     ]);
@@ -84,7 +84,7 @@ function CalendarEmployee() {
                     isActions={false}
                     isTitle={true}
                     classContainer="w-full"
-                    classNameCell={"border h-10 dark:border-gray-700"}
+                    classNameCell={"border h-10 border-status-border"}
                     viewModalList={viewModalList}
                     // New props for control bar
                     showControlBar={true}

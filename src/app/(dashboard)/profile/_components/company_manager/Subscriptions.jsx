@@ -25,7 +25,7 @@ function Subscriptions() {
 
     const rows = data.map((item) => [
         <div key={item.id} className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-500">
+            <div className="w-8 h-8 rounded-full bg-status-bg flex items-center justify-center text-primary-base">
                 <RiFlashlightFill size={18} />
             </div>
             <span className="text-cell-primary font-medium">{t(item.name)}</span>

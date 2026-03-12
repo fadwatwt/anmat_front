@@ -39,20 +39,20 @@ function CompanyManagerProfile() {
                     </div>
                     <p className={"absolute top-3 right-3 text-sm text-white cursor-pointer hover:underline"}>{t("Change")}</p>
                     <div className={"absolute md:top-1/3 top-[50px] w-full md:px-10 px-2"}>
-                        <div className={"rounded-2xl p-6 border dark:border-gray-700 flex bg-white dark:bg-gray-800 shadow-sm"}>
+                        <div className={"rounded-2xl p-6 border border-status-border flex bg-surface shadow-sm"}>
                             <div className={"flex md:items-center md:flex-row md:justify-center flex-col justify-between gap-6 flex-1"}>
 
                                 {/* Avatar and Name/Role mobile view? No, standard view */}
                                 <div className={"flex justify-between items-start"}>
                                     <div className={"relative h-[80px] w-[80px]"}>
-                                        <img className={"rounded-full h-[80px] w-[80px] object-cover border-4 border-white dark:border-gray-800"}
+                                        <img className={"rounded-full h-[80px] w-[80px] object-cover border-4 border-surface"}
                                             src={user?.avatar || "/images/userProfile.dark.png"} alt={"image-user"} />
                                         <RiCheckboxCircleFill size="24"
-                                            className="absolute top-0 right-0 bg-white dark:bg-gray-800 rounded-full text-blue-500" />
+                                            className="absolute top-0 right-0 bg-surface rounded-full text-blue-500" />
                                     </div>
                                     <button
                                         onClick={() => setIsEditProfileOpen(true)}
-                                        className={"p-2 rounded-lg md:hidden text-nowrap bg-none border text-sm dark:border-gray-700 dark:text-gray-200 self-start"}>
+                                        className={"p-2 rounded-lg md:hidden text-nowrap bg-none border text-sm border-status-border text-cell-primary self-start"}>
                                         {t("Edit profile")}
                                     </button>
                                 </div>
@@ -61,26 +61,26 @@ function CompanyManagerProfile() {
                                 <div className={"w-full grid grid-cols-1 md:grid-cols-3 gap-6"}>
 
                                     {/* Col 1 */}
-                                    <div className={`flex flex-col gap-3 ${i18n.language === "ar" ? "md:border-l md:pl-6" : "md:border-r md:pr-6"} border-gray-200 dark:border-gray-700`}>
+                                    <div className={`flex flex-col gap-3 ${i18n.language === "ar" ? "md:border-l md:pl-6" : "md:border-r md:pr-6"} border-status-border`}>
                                         <div className={"flex items-center gap-2"}>
-                                            <RiUserLine size={18} className={"text-gray-400"} />
-                                            <span className={"text-gray-400 text-sm"}>{t("Name")}:</span>
-                                            <p className={"text-gray-900 dark:text-white text-sm font-medium"}>{user?.name || "N/A"}</p>
+                                            <RiUserLine size={18} className={"text-cell-secondary"} />
+                                            <span className={"text-cell-secondary text-sm"}>{t("Name")}:</span>
+                                            <p className={"text-cell-primary text-sm font-medium"}>{user?.name || "N/A"}</p>
                                         </div>
                                         <div className={"flex items-center gap-2"}>
-                                            <RiCake2Line size={18} className={"text-gray-400"} />
-                                            <span className={"text-gray-400 text-sm"}>{t("Age")}:</span>
-                                            <p className={"text-gray-900 dark:text-white text-sm font-medium"}>{user?.age || "N/A"}</p>
+                                            <RiCake2Line size={18} className={"text-cell-secondary"} />
+                                            <span className={"text-cell-secondary text-sm"}>{t("Age")}:</span>
+                                            <p className={"text-cell-primary text-sm font-medium"}>{user?.age || "N/A"}</p>
                                         </div>
                                         <div className={"flex items-center gap-2"}>
-                                            <RiGraduationCapLine size={18} className={"text-gray-400"} />
-                                            <span className={"text-gray-400 text-sm"}>{t("Education")}:</span>
-                                            <p className={"text-gray-900 dark:text-white text-sm font-medium truncate"}>{user?.education || "N/A"}</p>
+                                            <RiGraduationCapLine size={18} className={"text-cell-secondary"} />
+                                            <span className={"text-cell-secondary text-sm"}>{t("Education")}:</span>
+                                            <p className={"text-cell-primary text-sm font-medium truncate"}>{user?.education || "N/A"}</p>
                                         </div>
                                         <div className={"flex items-center gap-2"}>
-                                            <RiBuilding2Line size={18} className={"text-gray-400"} />
-                                            <span className={"text-gray-400 text-sm"}>{t("Department")}:</span>
-                                            <p className={"text-gray-900 dark:text-white text-sm font-medium"}>{user?.department?.name || t("N/A")}</p>
+                                            <RiBuilding2Line size={18} className={"text-cell-secondary"} />
+                                            <span className={"text-cell-secondary text-sm"}>{t("Department")}:</span>
+                                            <p className={"text-cell-primary text-sm font-medium"}>{user?.department?.name || t("N/A")}</p>
                                         </div>
                                     </div>
 
@@ -88,20 +88,20 @@ function CompanyManagerProfile() {
                                     <div className={`flex flex-col gap-3 md:px-2`}>
 
                                         <div className={"flex items-center gap-2"}>
-                                            <RiBriefcaseLine size={18} className={"text-gray-400"} />
-                                            <span className={"text-gray-400 text-sm"}>{t("Role")}:</span>
-                                            <p className={"text-gray-900 dark:text-white text-sm font-medium"}>{user?.type || t("N/A")}</p>
+                                            <RiBriefcaseLine size={18} className={"text-cell-secondary"} />
+                                            <span className={"text-cell-secondary text-sm"}>{t("Role")}:</span>
+                                            <p className={"text-cell-primary text-sm font-medium"}>{user?.type || t("N/A")}</p>
                                         </div>
                                         <div className={"flex items-center gap-2"}>
-                                            <RiMailLine size={18} className={"text-gray-400"} />
-                                            <span className={"text-gray-400 text-sm"}>{t("Email")}:</span>
-                                            <p className={"text-gray-900 dark:text-white text-sm font-medium"}>{user?.email || "N/A"}</p>
+                                            <RiMailLine size={18} className={"text-cell-secondary"} />
+                                            <span className={"text-cell-secondary text-sm"}>{t("Email")}:</span>
+                                            <p className={"text-cell-primary text-sm font-medium"}>{user?.email || "N/A"}</p>
                                         </div>
                                         <div className={"flex items-center gap-2"}>
-                                            <RiPhoneLine size={18} className={"text-gray-400"} />
-                                            <span className={"text-gray-400 text-sm"}>{t("Phone Number")}:</span>
+                                            <RiPhoneLine size={18} className={"text-cell-secondary"} />
+                                            <span className={"text-cell-secondary text-sm"}>{t("Phone Number")}:</span>
                                             <div className="flex items-center gap-2">
-                                                <p className={"text-gray-900 dark:text-white text-sm font-medium"}>{user?.phone || user?.phoneNumber || "N/A"}</p>
+                                                <p className={"text-cell-primary text-sm font-medium"}>{user?.phone || user?.phoneNumber || "N/A"}</p>
                                                 {user?.is_verified && (
                                                     <span className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full flex items-center gap-1">
                                                         <RiCheckboxCircleFill size={10} /> {t("Verified")}
@@ -119,13 +119,13 @@ function CompanyManagerProfile() {
                                             </button>
                                             <button
                                                 onClick={() => setIsEditProfileOpen(true)}
-                                                className="hidden md:block border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium px-4 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors whitespace-nowrap">
+                                                className="hidden md:block border border-status-border text-cell-primary text-sm font-medium px-4 py-2 rounded-lg hover:bg-status-bg transition-colors whitespace-nowrap">
                                                 {t("Edit profile")}
                                             </button>
                                         </div>
                                         <button
                                             onClick={() => setIsChangePasswordOpen(true)}
-                                            className="w-full md:w-auto bg-blue-50 text-blue-600 dark:bg-gray-700 dark:text-blue-400 text-sm font-medium px-4 py-2 rounded-lg hover:bg-blue-100 dark:hover:bg-gray-600 transition-colors whitespace-nowrap">
+                                            className="w-full md:w-auto bg-badge-bg text-badge-text border border-status-border text-sm font-medium px-4 py-2 rounded-lg transition-colors whitespace-nowrap">
                                             {t("Change password")}
                                         </button>
                                     </div>

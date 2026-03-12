@@ -14,7 +14,7 @@ function OrganizationCard({ organization }) {
     const { t } = useTranslation();
 
     return (
-        <div className="w-full bg-status-bg border border-status-border rounded-2xl p-6 flex flex-col gap-6 mt-12">
+        <div className="w-full bg-surface border border-status-border rounded-2xl p-6 flex flex-col gap-6 mt-12">
             <div className="flex justify-between items-start">
                 <div className="flex items-center gap-4">
                     <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-primary-500 font-bold text-2xl">
@@ -34,52 +34,52 @@ function OrganizationCard({ organization }) {
                 {/* Column 1 */}
                 <div className="flex flex-col gap-4">
                     <div className="flex items-center gap-2">
-                        <RiBuilding2Line size={18} className="text-gray-400" />
+                        <RiBuilding2Line size={18} className="text-cell-secondary" />
                         <span className="text-cell-secondary text-sm">{t("Company")}:</span>
-                        <span className="text-table-title text-sm font-medium">{organization?.name || "Catalog"}</span>
+                        <span className="text-cell-primary text-sm font-medium">{organization?.name || "Catalog"}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <RiGlobalLine size={18} className="text-gray-400" />
+                        <RiGlobalLine size={18} className="text-cell-secondary" />
                         <span className="text-cell-secondary text-sm">{t("Website")}:</span>
-                        <span className="text-table-title text-sm font-medium">{organization?.website || "catalogapp.io"}</span>
+                        <span className="text-cell-primary text-sm font-medium">{organization?.website || "catalogapp.io"}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <RiBriefcaseLine size={18} className="text-gray-400" />
+                        <RiBriefcaseLine size={18} className="text-cell-secondary" />
                         <span className="text-cell-secondary text-sm">{t("Industry")}:</span>
-                        <span className="text-table-title text-sm font-medium">{organization?.industry || "E-Commerce"}</span>
+                        <span className="text-cell-primary text-sm font-medium">{organization?.industry || "E-Commerce"}</span>
                     </div>
                 </div>
 
                 {/* Column 2 */}
                 <div className="flex flex-col gap-4">
                     <div className="flex items-center gap-2">
-                        <RiMapPinLine size={18} className="text-gray-400" />
+                        <RiMapPinLine size={18} className="text-cell-secondary" />
                         <span className="text-cell-secondary text-sm">{t("Country")}:</span>
-                        <span className="text-table-title text-sm font-medium">{organization?.country || "Egypt"}</span>
+                        <span className="text-cell-primary text-sm font-medium">{organization?.country || "Egypt"}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <RiHomeOfficeLine size={18} className="text-gray-400" />
+                        <RiHomeOfficeLine size={18} className="text-cell-secondary" />
                         <span className="text-cell-secondary text-sm">{t("City")}:</span>
-                        <span className="text-table-title text-sm font-medium">{organization?.city || "Cairo"}</span>
+                        <span className="text-cell-primary text-sm font-medium">{organization?.city || "Cairo"}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <RiMapPin2Line size={18} className="text-gray-400" />
+                        <RiMapPin2Line size={18} className="text-cell-secondary" />
                         <span className="text-cell-secondary text-sm">{t("Address")}:</span>
-                        <span className="text-table-title text-sm font-medium">{organization?.address || "45 Cairo st., Cairo, Egypt"}</span>
+                        <span className="text-cell-primary text-sm font-medium">{organization?.address || "45 Cairo st., Cairo, Egypt"}</span>
                     </div>
                 </div>
 
                 {/* Column 3 */}
                 <div className="flex flex-col gap-4">
                     <div className="flex items-center gap-2">
-                        <RiOrganizationChart size={18} className="text-gray-400" />
+                        <RiOrganizationChart size={18} className="text-cell-secondary" />
                         <span className="text-cell-secondary text-sm">{t("Departments")}:</span>
-                        <span className="text-table-title text-sm font-medium">{organization?.departments || "88"}</span>
+                        <span className="text-cell-primary text-sm font-medium">{organization?.departments || "88"}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <RiUserStarLine size={18} className="text-gray-400" />
+                        <RiUserStarLine size={18} className="text-cell-secondary" />
                         <span className="text-cell-secondary text-sm">{t("Positions")}:</span>
-                        <span className="text-table-title text-sm font-medium">{organization?.positions || "88"}</span>
+                        <span className="text-cell-primary text-sm font-medium">{organization?.positions || "88"}</span>
                     </div>
                 </div>
             </div>

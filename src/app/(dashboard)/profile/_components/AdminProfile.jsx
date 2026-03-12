@@ -41,7 +41,7 @@ function AdminProfile() {
                     </div>
                     <p className={"absolute top-3 right-3 text-sm text-white"}>{t("Change")}</p>
                     <div className={"absolute md:top-1/3 top-[50px] w-full md:px-10 px-2"}>
-                        <div className={" rounded-2xl p-4 border dark:border-gray-700 flex bg-white dark:bg-gray-800"}>
+                        <div className={" rounded-2xl p-4 border border-status-border flex bg-surface"}>
                             <div
                                 className={"flex md:items-center md:flex-row md:justify-center flex-col justify-between gap-3 flex-1"}>
                                 <div className={"flex justify-between items-center"}>
@@ -49,18 +49,18 @@ function AdminProfile() {
                                         <img className={"rounded-full h-[72px] w-[72px] max-w-full"}
                                             src={user?.avatar || "/images/userProfile.dark.png"} alt={"image-user"} />
                                         <RiCheckboxCircleFill size="23"
-                                            className="absolute top-0 right-0 bg-white dark:bg-gray-800 rounded-full text-cyan-500" />
+                                            className="absolute top-0 right-0 bg-surface rounded-full text-cyan-500" />
                                     </div>
                                     <button
-                                        className={"p-1.5 rounded-lg md:hidden text-nowrap bg-none border text-sm dark:border-gray-700 dark:text-gray-200 self-start"}>{t("Edit profile")}
+                                        className={"p-1.5 rounded-lg md:hidden text-nowrap bg-none border text-sm border-status-border text-cell-primary self-start"}>{t("Edit profile")}
                                     </button>
                                 </div>
                                 <div className={"w-full flex md:flex-row flex-col gap-4 "}>
-                                    <div className={`flex flex-col gap-4 flex-1  ${i18n.language === "ar" ? "md:border-l-2 " : "md:border-r-2 "}`}>
+                                    <div className={`flex flex-col gap-4 flex-1 border-status-border ${i18n.language === "ar" ? "md:border-l-2 " : "md:border-r-2 "}`}>
                                         <div className={"name-profile flex items-center gap-1"}>
-                                            <RiUserLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
-                                            <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Name")}:</span>
-                                            <p className={"text-black text-sm dark:text-gray-100 font-medium "}>{user?.name || "N/A"}</p>
+                                            <RiUserLine size={18} className={"text-cell-secondary"} />
+                                            <span className={"text-cell-secondary text-sm"}>{t("Name")}:</span>
+                                            <p className={"text-cell-primary text-sm font-medium "}>{user?.name || "N/A"}</p>
                                         </div>
                                         {/* <div className={"name-profile flex items-center gap-1"}>
                                             <RiCake2Line size={18} className={"text-soft-400 dark:text-gray-300"} />
@@ -68,21 +68,21 @@ function AdminProfile() {
                                             <p className={"text-black text-sm dark:text-gray-100 font-medium"}>21</p>
                                         </div> */}
                                         <div className={"name-profile flex items-center gap-1"}>
-                                            <RiBriefcaseLine size="18" className="text-soft-400 dark:text-gray-300" />
-                                            <p className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Role")}:</p>
-                                            <p className={"text-black text-sm dark:text-gray-100 font-medium"}>{user?.type || t("Content Editor")}</p>
+                                            <RiBriefcaseLine size="18" className="text-cell-secondary" />
+                                            <p className={"text-cell-secondary text-sm"}>{t("Role")}:</p>
+                                            <p className={"text-cell-primary text-sm font-medium"}>{user?.type || t("Content Editor")}</p>
                                         </div>
                                     </div>
                                     <div className={"flex flex-col gap-4 flex-1"}>
                                         <div className={"name-profile flex items-center gap-1"}>
-                                            <RiMailLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
-                                            <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Email")}:</span>
-                                            <p className={"text-black text-sm dark:text-gray-100 font-medium"}>{user?.email || "N/A"}</p>
+                                            <RiMailLine size={18} className={"text-cell-secondary"} />
+                                            <span className={"text-cell-secondary text-sm"}>{t("Email")}:</span>
+                                            <p className={"text-cell-primary text-sm font-medium"}>{user?.email || "N/A"}</p>
                                         </div>
                                         <div className={"name-profile flex items-center gap-1"}>
-                                            <RiPhoneLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
-                                            <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Phone Number")}:</span>
-                                            <p className={"text-black text-sm dark:text-gray-100 font-medium"}>{user?.phoneNumber || user?.phone || "N/A"}</p>
+                                            <RiPhoneLine size={18} className={"text-cell-secondary"} />
+                                            <span className={"text-cell-secondary text-sm"}>{t("Phone Number")}:</span>
+                                            <p className={"text-cell-primary text-sm font-medium"}>{user?.phoneNumber || user?.phone || "N/A"}</p>
                                             {/* Unverified & Verified */}
                                             <Status type={"Unverified"} />
                                         </div>
@@ -90,12 +90,12 @@ function AdminProfile() {
                                 </div>
                                 <button
                                     onClick={handelChangePasswordModal}
-                                    className={"p-1.5 rounded-lg hidden md:block text-nowrap bg-blue-100 text-blue-500 border text-sm self-start dark:text-gray-200 dark:border-gray-700"}>
+                                    className={"p-1.5 rounded-lg hidden md:block text-nowrap bg-badge-bg text-badge-text border border-status-border text-sm self-start"}>
                                     {t("Change password")}
                                 </button>
                                 <button
                                     onClick={handelEditAdminProfileModal}
-                                    className={"p-1.5 rounded-lg hidden md:block text-nowrap bg-none border text-sm self-start dark:text-gray-200 dark:border-gray-700"}>
+                                    className={"p-1.5 rounded-lg hidden md:block text-nowrap bg-none border border-status-border text-sm text-cell-primary self-start"}>
                                     {t("Edit profile")}
                                 </button>
                             </div>

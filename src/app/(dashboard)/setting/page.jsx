@@ -69,30 +69,6 @@ function SettingPage() {
               </p>
             </div>
           </div>
-          <div
-            className={
-              "w-full flex md:justify-end justify-center items-center bg-none px-2"
-            }
-          >
-            <div className={"flex flex-wrap gap-2 md:w-auto w-full"}>
-              <button
-                className={
-                  "bg-none p-1.5 md:w-48 flex-1 justify-center  rounded-[10px] flex gap-1 items-center dark:text-primary-200 dark:border-primary-200  border border-primary-500 text-primary-500"
-                }
-              >
-                <FiPlus size={20} />
-                <span className={"text-base"}>{t("Add Department")} </span>
-              </button>
-              <button
-                className={
-                  "bg-none p-1.5 md:w-48 flex-1 flex gap-1 justify-center rounded-[10px] items-center border border-primary-500 dark:text-primary-200 dark:border-primary-200 text-primary-500"
-                }
-              >
-                <FiPlus size={20} />
-                <span className={"text-base"}>{t("Add Employee")} </span>
-              </button>
-            </div>
-          </div>
         </div>
         <div className="max-h-screen md:px-10 px-5  box-border flex flex-col gap-4">
           <Tabs tabs={tabsData} />

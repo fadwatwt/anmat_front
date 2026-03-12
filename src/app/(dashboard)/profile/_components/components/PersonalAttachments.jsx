@@ -41,27 +41,27 @@ function PersonalAttachments({ className }) {
     const getIcon = (type) => {
         switch (type) {
             case "pdf":
-                return <RiFilePdfLine size={20} className="text-gray-500" />;
+                return <RiFilePdfLine size={20} className="text-cell-secondary" />;
             case "image":
-                return <RiImageLine size={20} className="text-gray-500" />;
+                return <RiImageLine size={20} className="text-cell-secondary" />;
             default:
-                return <RiFileLine size={20} className="text-gray-500" />;
+                return <RiFileLine size={20} className="text-cell-secondary" />;
         }
     };
 
     return (
-        <div className={`bg-white dark:bg-gray-800 rounded-2xl p-6 h-full flex flex-col gap-6 ${className}`}>
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">{t("Personal Attachments")}</h3>
+        <div className={`bg-surface rounded-2xl p-6 h-full flex flex-col gap-6 ${className}`}>
+            <h3 className="text-lg font-medium text-cell-primary">{t("Personal Attachments")}</h3>
             <div className="flex flex-col gap-4">
                 {files.map((file, index) => (
                     <div key={index} className="flex justify-between items-center group">
                         <div className="flex items-center gap-3">
-                            <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                            <div className="p-2 bg-status-bg rounded-lg">
                                 {getIcon(file.type)}
                             </div>
                             <div className="flex flex-col">
-                                <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{file.name}</span>
-                                <span className="text-xs text-gray-400">{file.size}</span>
+                                <span className="text-sm font-medium text-cell-primary">{file.name}</span>
+                                <span className="text-xs text-cell-secondary">{file.size}</span>
                             </div>
                         </div>
                         <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">

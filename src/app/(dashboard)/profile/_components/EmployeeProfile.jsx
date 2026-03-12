@@ -65,7 +65,7 @@ function EmployeeProfile() {
                 t("Day Off"),
                 <div key={req._id} className="flex flex-col gap-1">
                     <Status type={req.status} title={req.status} />
-                    <span className="text-[10px] text-gray-500">{req.vacation_date ? translateDate(req.vacation_date) : "-"}</span>
+                    <span className="text-[10px] text-cell-secondary">{req.vacation_date ? translateDate(req.vacation_date) : "-"}</span>
                 </div>
             ]);
     };
@@ -78,7 +78,7 @@ function EmployeeProfile() {
                 t("Delay Request"),
                 <div key={req._id} className="flex flex-col gap-1">
                     <Status type={req.status} title={req.status} />
-                    <span className="text-[10px] text-gray-500">{req.work_due_at ? translateDate(req.work_due_at) : "-"}</span>
+                    <span className="text-[10px] text-cell-secondary">{req.work_due_at ? translateDate(req.work_due_at) : "-"}</span>
                 </div>
             ]);
     };
@@ -91,7 +91,7 @@ function EmployeeProfile() {
                 t("Salary Advance"),
                 <div key={req._id} className="flex flex-col gap-1">
                     <Status type={req.status} title={req.status} />
-                    <span className="text-[10px] text-gray-500">{req.advance_salary_by || "-"}</span>
+                    <span className="text-[10px] text-cell-secondary">{req.advance_salary_by || "-"}</span>
                 </div>
             ]);
     };
@@ -173,7 +173,7 @@ function EmployeeProfile() {
         rating.task_name || "-",
         rating.date ? translateDate(rating.date) : "-",
         <Rating value={rating.value || 0} />,
-        <p className={"text-wrap dark:text-gray-300"}>{rating.comment || "-"}</p>
+        <p className={"text-wrap text-cell-secondary"}>{rating.comment || "-"}</p>
     ]) || [];
     return (
         <Page isTitle={false} className={"w-full"}>
@@ -185,7 +185,7 @@ function EmployeeProfile() {
                     </div>
                     <p className={"absolute top-3 right-3 text-sm text-white"}>{t("Change")}</p>
                     <div className={"absolute md:top-1/3 top-[50px] w-full md:px-10 px-2"}>
-                        <div className={" rounded-2xl p-4 border dark:border-gray-700 flex bg-white dark:bg-gray-800"}>
+                        <div className={" rounded-2xl p-4 border border-status-border flex bg-surface"}>
                             <div
                                 className={"flex md:items-center md:flex-row md:justify-center flex-col justify-between gap-6 flex-1"}>
                                 <div className={"flex justify-between items-center"}>
@@ -194,30 +194,30 @@ function EmployeeProfile() {
                                             src={user?.imageProfile || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || "U")}&background=random`} alt={"image-user"} />
                                         {user?.is_active && (
                                             <RiCheckboxCircleFill size="23"
-                                                className="absolute top-0 right-0 bg-white dark:bg-gray-800 rounded-full text-cyan-500" />
+                                                className="absolute top-0 right-0 bg-surface rounded-full text-cyan-500" />
                                         )}
                                     </div>
                                     <button
                                         onClick={handelEditProfileModal}
-                                        className={"p-1.5 rounded-lg md:hidden text-nowrap bg-none border text-sm dark:border-gray-700 dark:text-gray-200 self-start"}>{t("Edit profile")}
+                                        className={"p-1.5 rounded-lg md:hidden text-nowrap bg-none border text-sm border-status-border text-cell-primary self-start"}>{t("Edit profile")}
                                     </button>
                                 </div>
                                 <div className={"w-full flex md:flex-row flex-col gap-4 "}>
-                                    <div className={`flex flex-col gap-4 flex-1  ${i18n.language === "ar" ? "md:border-l-2 " : "md:border-r-2 "}`}>
+                                    <div className={`flex flex-col gap-4 flex-1 border-status-border ${i18n.language === "ar" ? "md:border-l-2 " : "md:border-r-2 "}`}>
                                         <div className={"name-profile flex items-center gap-1"}>
-                                            <RiUserLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
-                                            <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Name")}:</span>
-                                            <p className={"text-black text-sm dark:text-gray-100 font-medium"}>{user?.name}</p>
+                                            <RiUserLine size={18} className={"text-cell-secondary"} />
+                                            <span className={"text-cell-secondary text-sm"}>{t("Name")}:</span>
+                                            <p className={"text-cell-primary text-sm font-medium"}>{user?.name}</p>
                                         </div>
                                         <div className={"name-profile flex items-center gap-1"}>
-                                            <RiCake2Line size={18} className={"text-soft-400 dark:text-gray-300"} />
-                                            <p className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Age")}:</p>
-                                            <p className={"text-black text-sm dark:text-gray-100 font-medium"}>{calculateAge(user?.employee_detail?.date_of_birth)}</p>
+                                            <RiCake2Line size={18} className={"text-cell-secondary"} />
+                                            <p className={"text-cell-secondary text-sm"}>{t("Age")}:</p>
+                                            <p className={"text-cell-primary text-sm font-medium"}>{calculateAge(user?.employee_detail?.date_of_birth)}</p>
                                         </div>
                                         <div className={"name-profile flex items-center gap-1"}>
-                                            <RiGraduationCapLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
-                                            <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Location")}:</span>
-                                            <p className={"text-black text-sm dark:text-gray-100 font-medium"}>
+                                            <RiGraduationCapLine size={18} className={"text-cell-secondary"} />
+                                            <span className={"text-cell-secondary text-sm"}>{t("Location")}:</span>
+                                            <p className={"text-cell-primary text-sm font-medium"}>
                                                 {user?.employee_detail?.city && user?.employee_detail?.country
                                                     ? `${user.employee_detail.city}, ${user.employee_detail.country}`
                                                     : user?.employee_detail?.country || user?.employee_detail?.city || "-"}
@@ -226,14 +226,14 @@ function EmployeeProfile() {
                                     </div>
                                     <div className={"flex flex-col gap-4 flex-1"}>
                                         <div className={"name-profile flex items-center gap-1"}>
-                                            <RiMailLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
-                                            <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Email")}:</span>
-                                            <p className={"text-black text-sm dark:text-gray-100 font-medium"}>{user?.email}</p>
+                                            <RiMailLine size={18} className={"text-cell-secondary"} />
+                                            <span className={"text-cell-secondary text-sm"}>{t("Email")}:</span>
+                                            <p className={"text-cell-primary text-sm font-medium"}>{user?.email}</p>
                                         </div>
                                         <div className={"name-profile flex items-center gap-1"}>
-                                            <RiPhoneLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
-                                            <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Phone")}:</span>
-                                            <p className={"text-black text-sm dark:text-gray-100 font-medium"}>{user?.phone || "-"}</p>
+                                            <RiPhoneLine size={18} className={"text-cell-secondary"} />
+                                            <span className={"text-cell-secondary text-sm"}>{t("Phone")}:</span>
+                                            <p className={"text-cell-primary text-sm font-medium"}>{user?.phone || "-"}</p>
                                         </div>
                                     </div>
                                     <div className={"flex flex-col gap-4 flex-1"}>
@@ -243,12 +243,12 @@ function EmployeeProfile() {
 
                                 <button
                                     onClick={handelChangePasswordModal}
-                                    className={"p-1.5 rounded-lg hidden md:block text-nowrap bg-blue-100 text-blue-500 border text-sm self-start dark:text-gray-200 dark:border-gray-700"}>
+                                    className={"p-1.5 rounded-lg hidden md:block text-nowrap bg-badge-bg text-badge-text border border-status-border text-sm self-start"}>
                                     {t("Change password")}
                                 </button>
                                 <button
                                     onClick={handelEditProfileModal}
-                                    className={"p-1.5 rounded-lg hidden md:block text-nowrap bg-none border text-sm self-start dark:text-gray-200 dark:border-gray-700"}>
+                                    className={"p-1.5 rounded-lg hidden md:block text-nowrap bg-none border border-status-border text-sm text-cell-primary self-start"}>
                                     {t("Edit profile")}
                                 </button>
                             </div>
@@ -257,9 +257,9 @@ function EmployeeProfile() {
                 </div>
                 <div className={"flex gap-6 md:flex-row flex-col items-start w-full md:px-10 px-2 justify-between"}>
                     <div className={"md:w-8/12 w-full flex flex-col gap-4 items-center h-full"}>
-                        <div className={"bg-white rounded-2xl p-4 gap-6 md:flex-1 flex flex-col dark:bg-gray-800 items-center w-full"}>
+                        <div className={"bg-surface rounded-2xl p-4 gap-6 md:flex-1 flex flex-col items-center w-full"}>
                             <div className={"flex justify-between items-center w-full"}>
-                                <p className={"text-lg dark:text-gray-200"}>{t("Requests")}</p>
+                                <p className={"text-lg text-cell-primary"}>{t("Requests")}</p>
                                 {/* <button
                                     onClick={handelAddRequestModal}
                                     className={" bg-none p-1.5 border-2 border-primary-base dark:border-primary-200 rounded-xl flex items-center gap-2"}>
@@ -274,7 +274,7 @@ function EmployeeProfile() {
                                 <div className={"flex gap-2"}>
                                     <SelectWithoutLabel title={"Filter by"} className={"w-[94px] h-[36px]"} />
                                     <button
-                                        className={"flex dark:text-gray-400 text-sm items-baseline p-2  gap-2 rounded-lg border border-gray-200 dark:border-gray-600"}>
+                                        className={"flex text-cell-secondary text-sm items-baseline p-2  gap-2 rounded-lg border border-status-border"}>
                                         <RiDownload2Line size={15} />
                                         {t("Export")}
                                     </button>
@@ -287,13 +287,13 @@ function EmployeeProfile() {
                                 )}
                             </div>
                         </div>
-                        <div className={"bg-white rounded-2xl p-4 gap-6 md:flex-1 flex flex-col items-center w-full dark:bg-gray-800"}>
+                        <div className={"bg-surface rounded-2xl p-4 gap-6 md:flex-1 flex flex-col items-center w-full"}>
                             <div className={"flex justify-between items-center w-full"}>
-                                <p className={"text-lg dark:text-gray-200"}>{t("Tasks Rating")}</p>
+                                <p className={"text-lg text-cell-primary"}>{t("Tasks Rating")}</p>
                                 <div className={"flex gap-2"}>
                                     <SelectWithoutLabel title={"Filter by"} className={"w-[94px] h-[36px]"} />
                                     <button
-                                        className={"flex dark:text-gray-400 text-sm items-baseline p-2  gap-2 rounded-lg border border-gray-200 dark:border-gray-600"}>
+                                        className={"flex text-cell-secondary text-sm items-baseline p-2  gap-2 rounded-lg border border-status-border"}>
                                         <RiDownload2Line size={"18"} />
                                         {t("Export")}
                                     </button>
@@ -306,38 +306,38 @@ function EmployeeProfile() {
                         </div>
                     </div>
                     <div className={"w-full flex h-full flex-col gap-3"}>
-                        <div className={"bg-white rounded-2xl p-4 md:flex-1 w-full gap-4 flex flex-col dark:bg-gray-800"}>
-                            <p className={"text-lg text-start dark:text-gray-200"}>{t("Work Information")}</p>
+                        <div className={"bg-surface rounded-2xl p-4 md:flex-1 w-full gap-4 flex flex-col"}>
+                            <p className={"text-lg text-start text-cell-primary"}>{t("Work Information")}</p>
                             <div className={"flex flex-col w-full gap-6"}>
                                 <div className={"name-profile flex items-center gap-1"}>
-                                    <RiBuilding2Line size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
-                                    <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Department")}:</span>
-                                    <p className={"text-black text-sm dark:text-gray-100 font-medium"}>{user?.employee_detail?.department?.name || "-"}</p>
+                                    <RiBuilding2Line size={18} className={"text-cell-secondary"} />
+                                    <span className={"text-cell-secondary text-sm"}>{t("Department")}:</span>
+                                    <p className={"text-cell-primary text-sm font-medium"}>{user?.employee_detail?.department?.name || "-"}</p>
                                 </div>
                                 <div className={"name-profile flex items-center gap-1"}>
-                                    <RiBriefcaseLine size={18} className={"text-soft-400 text-sm dark:text-gray-300"} />
-                                    <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Role")}:</span>
-                                    <p className={"text-black text-sm dark:text-gray-100 font-medium"}>{user?.employee_detail?.position?.name || "-"}</p>
+                                    <RiBriefcaseLine size={18} className={"text-cell-secondary"} />
+                                    <span className={"text-cell-secondary text-sm"}>{t("Role")}:</span>
+                                    <p className={"text-cell-primary text-sm font-medium"}>{user?.employee_detail?.position?.name || "-"}</p>
                                 </div>
                                 <div className={"name-profile flex items-center gap-1"}>
-                                    <RiMoneyDollarCircleLine size={"18"} className={"text-soft-400 text-sm dark:text-gray-300"} />
-                                    <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Salary")}:</span>
-                                    <p className={"text-black text-sm dark:text-gray-200"}>${user?.employee_detail?.salary || "0"}/{t("month")}</p>
+                                    <RiMoneyDollarCircleLine size={"18"} className={"text-cell-secondary"} />
+                                    <span className={"text-cell-secondary text-sm"}>{t("Salary")}:</span>
+                                    <p className={"text-cell-primary text-sm font-medium"}>${user?.employee_detail?.salary || "0"}/{t("month")}</p>
                                 </div>
                                 <div className={"name-profile flex items-center gap-1"}>
-                                    <RiTimeLine size={"18"} className={"text-soft-400 text-sm dark:text-gray-300"} />
-                                    <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Working Hours")}:</span>
-                                    <p className={"text-black text-sm dark:text-gray-200"}> {user?.employee_detail?.work_hours || "0"} {t("hours")}/{t("day")}</p>
+                                    <RiTimeLine size={"18"} className={"text-cell-secondary"} />
+                                    <span className={"text-cell-secondary text-sm"}>{t("Working Hours")}:</span>
+                                    <p className={"text-cell-primary text-sm font-medium"}> {user?.employee_detail?.work_hours || "0"} {t("hours")}/{t("day")}</p>
                                 </div>
                                 <div className={"name-profile flex items-center gap-1"}>
-                                    <RiCalendarLine size={"18"} className={"text-soft-400 text-sm dark:text-gray-300"} />
-                                    <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Annual Leave Days")}:</span>
-                                    <p className={"text-black text-sm dark:text-gray-200"}> {user?.employee_detail?.yearly_day_offs || "0"} {t("days")}/{t("year")}</p>
+                                    <RiCalendarLine size={"18"} className={"text-cell-secondary"} />
+                                    <span className={"text-cell-secondary text-sm"}>{t("Annual Leave Days")}:</span>
+                                    <p className={"text-cell-primary text-sm font-medium"}> {user?.employee_detail?.yearly_day_offs || "0"} {t("days")}/{t("year")}</p>
                                 </div>
                                 <div className={"name-profile flex items-center gap-1"}>
-                                    <RiCalendarEventLine size={"18"} className={"text-soft-400 text-sm dark:text-gray-300"} />
-                                    <span className={"text-soft-400 text-sm dark:text-gray-300"}>{t("Weekend Days")}:</span>
-                                    <p className={"text-black text-sm dark:text-gray-200"}> {user?.employee_detail?.weekend_days?.join(" - ") || "-"}</p>
+                                    <RiCalendarEventLine size={"18"} className={"text-cell-secondary"} />
+                                    <span className={"text-cell-secondary text-sm"}>{t("Weekend Days")}:</span>
+                                    <p className={"text-cell-primary text-sm font-medium"}> {user?.employee_detail?.weekend_days?.join(" - ") || "-"}</p>
                                 </div>
                             </div>
                         </div>
