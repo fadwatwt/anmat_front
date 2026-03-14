@@ -1,4 +1,4 @@
-
+import { useTheme } from "@/app/providers";
 import WordTheMiddleAndLine from "@/components/Subcomponents/WordTheMiddleAndLine.jsx";
 import {Form, Formik} from "formik";
 import InputAndLabel from "@/components/Form/InputAndLabel.jsx";
@@ -10,6 +10,7 @@ import {useTranslation} from "react-i18next";
 function PersonalInformation() {
     const uploadFileInput = useRef(null);
     const {t} = useTranslation()
+    const [theme] = useTheme();
     const initialValues = {
         name: "Rawan Ahmed", age: "28", education: "Bachelor’s Degree in Journalism", email: "Rawan@email.com"
     }
@@ -20,8 +21,7 @@ function PersonalInformation() {
         <div className={"w-full flex flex-col justify-start items-center gap-2"}>
             <div className={"w-full flex justify-start items-start gap-4 "}>
                 {
-
-                    typeof window !== "undefined" && localStorage.getItem("theme") === "dark" ?
+                    theme === "dark" ?
                     <img className="rounded-full w-16 h-16"
                          src="/images/userProfile.dark.png"
                          alt="user-profile-image"/>

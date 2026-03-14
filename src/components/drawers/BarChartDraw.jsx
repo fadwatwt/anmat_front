@@ -1,5 +1,6 @@
 "use client";
 import React from 'react'
+import { useTheme } from "@/app/providers";
 import { Bar } from "recharts/es6/cartesian/Bar"
 import { BarChart } from "recharts/es6/chart/BarChart";
 import { CartesianGrid } from "recharts/es6/cartesian/CartesianGrid";
@@ -15,7 +16,7 @@ const BarChartDraw = ({
     domain = [0, 125],
     ticks = [0, 25, 50, 75, 100, 125]
 }) => {
-    const theme = typeof window !== "undefined" ? localStorage.getItem("theme") : null;
+    const [theme] = useTheme();
 
     return (
         <div className="flex flex-col items-start justify-start gap-0 w-full">

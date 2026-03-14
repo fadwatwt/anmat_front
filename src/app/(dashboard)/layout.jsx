@@ -15,10 +15,15 @@ import useDarkMode from "@/Hooks/useDarkMode";
 
 const MainLayout = ({ children }) => {
     const [isSlidebarOpen, setSlidebarOpen] = useState(false);
+    const [mounted, setMounted] = useState(false);
     useDarkMode();
     const router = useRouter();
     const pathname = usePathname();
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const { isAuthenticated, token, user } = useSelector(selectAuth);
     const [getUser, { isLoading: isFetchingUser }] = useLazyGetUserQuery();
@@ -135,8 +140,21 @@ const MainLayout = ({ children }) => {
     );
 
     // Show loading while fetching user or if state is being initialized or redirection is pending
+    if (!mounted) {
+        return (
+            <div className="h-screen w-screen flex items-center justify-center bg-status-bg">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-base"></div>
+                    <p className="text-cell-secondary font-medium">
+                        Loading session...
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
     if (isFetchingUser || !user || shouldRedirect) {
-        if (token || (typeof window !== "undefined" && localStorage.getItem("token"))) {
+        if (token || localStorage.getItem("token")) {
             return (
                 <div className="h-screen w-screen flex items-center justify-center bg-status-bg">
                     <div className="flex flex-col items-center gap-4">
