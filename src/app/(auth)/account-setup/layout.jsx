@@ -84,7 +84,6 @@ function AccountSetupLayout({ children }) {
                 dispatch(loginSuccess(payload));
                 setIsLoading(false);
             } catch (error) {
-                console.error("Auth check failed", error);
                 dispatch(logoutAction());
                 router.push("/sign-in");
             }

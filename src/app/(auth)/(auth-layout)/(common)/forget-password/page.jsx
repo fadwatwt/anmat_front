@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useLoginMutation } from "@/redux/auth/authAPI";
 import { useDispatch, useSelector } from "react-redux";
 import { loginSuccess, loginFailure } from "@/redux/auth/authSlice";
-import {RiUserSettingsLine} from "@remixicon/react";
+import { RiUserSettingsLine } from "@remixicon/react";
 import Link from "next/link";
 
 function ForgetPasswordPage() {
@@ -41,9 +41,9 @@ function ForgetPasswordPage() {
                 </div>
 
                 <div className="flex flex-col items-center justify-center gap-2 text-center">
-                    <sapn className="text-2xl text-cell-primary">
+                    <span className="text-2xl text-cell-primary">
                         {`Forget Password`}
-                    </sapn>
+                    </span>
                     <span className="text-sm text-cell-secondary">
                         {'Enter your email to got a reset link.'}
                     </span>

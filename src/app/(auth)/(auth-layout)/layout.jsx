@@ -34,7 +34,6 @@ function AuthLayout({ children }) {
                 dispatch(loginSuccess(payload));
                 router.push("/dashboard");
             } catch (error) {
-                console.error("Auth check failed", error);
                 localStorage.removeItem("token");
                 setIsLoading(false);
             }

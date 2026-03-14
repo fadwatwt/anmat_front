@@ -211,9 +211,9 @@ function SignIn() {
                 </div>
 
                 <div className="flex flex-col items-center justify-center gap-2 text-center">
-                    <sapn className="text-2xl text-cell-primary">
+                    <span className="text-2xl text-cell-primary">
                         {`Sign in to your account`}
-                    </sapn>
+                    </span>
                     <span className="text-sm text-cell-secondary">
                         {'Enter your credentials to sign in'}
                     </span>
