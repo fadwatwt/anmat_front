@@ -11,6 +11,7 @@ import {
     useGetPermissionsQuery,
 } from "@/redux/permissions/subscriberPermissionsApi";
 import { useCreateSubscriberRoleMutation } from "@/redux/roles/subscriberRolesApi";
+import { useProcessing } from "@/app/providers";
 
 function AddSubscriberRoleModal({ isOpen, onClose }) {
     const [createRole, { isLoading }] = useCreateSubscriberRoleMutation();
@@ -20,6 +21,7 @@ function AddSubscriberRoleModal({ isOpen, onClose }) {
         status: null,
         message: "",
     });
+    const { showProcessing, hideProcessing } = useProcessing();
 
     const { data: permissionsResponse, isLoading: isLoadingPermissions } =
         useGetPermissionsQuery(undefined, {
@@ -47,6 +49,8 @@ function AddSubscriberRoleModal({ isOpen, onClose }) {
     });
 
     const handleConfirmCreate = async () => {
+        setIsApprovalOpen(false);
+        showProcessing("Creating Role...");
         try {
             const payload = {
                 name: formik.values.name,
@@ -74,7 +78,7 @@ function AddSubscriberRoleModal({ isOpen, onClose }) {
                 message: errorMessage,
             });
         } finally {
-            setIsApprovalOpen(false);
+            hideProcessing();
         }
     };
 

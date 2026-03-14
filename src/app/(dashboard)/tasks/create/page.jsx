@@ -8,6 +8,7 @@ import { Formik, Form } from "formik";
 import { useCreateSubscriberTaskMutation } from "@/redux/tasks/subscriberTasksApi";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
+import { useProcessing } from "@/app/providers";
 
 function CreateTask() {
     const { t } = useTranslation();
@@ -16,6 +17,7 @@ function CreateTask() {
     const [apiResponse, setApiResponse] = useState({ isOpen: false, status: null, message: "" });
     const [isApprovalOpen, setIsApprovalOpen] = useState(false);
     const [pendingValues, setPendingValues] = useState(null);
+    const { showProcessing, hideProcessing } = useProcessing();
 
     const breadcrumbItems = [
         { title: t('Tasks'), path: '/tasks' },
@@ -46,6 +48,7 @@ function CreateTask() {
     const handleConfirmCreate = async () => {
         setIsApprovalOpen(false);
         if (!pendingValues) return;
+        showProcessing(t("Creating Task..."));
 
         try {
             const payload = {
@@ -83,6 +86,8 @@ function CreateTask() {
                 status: "error",
                 message: error?.data?.message || t("Failed to create task"),
             });
+        } finally {
+            hideProcessing();
         }
     };
 
@@ -92,7 +97,7 @@ function CreateTask() {
 
     return (
         <Page title={t("Create a Task")} isBreadcrumbs={true} breadcrumbs={breadcrumbItems}>
-            <div className={"max-w-4xl flex flex-col gap-4 w-full mx-auto bg-white dark:bg-white-0 p-5 rounded-2xl"}>
+            <div className={"max-w-4xl flex flex-col gap-4 w-full mx-auto bg-surface border border-status-border p-5 rounded-2xl"}>
                 <Formik initialValues={initialValues} onSubmit={onSubmit}>
                     {({ values, handleChange, setFieldValue }) => (
                         <Form className="flex flex-col gap-4">
@@ -107,7 +112,7 @@ function CreateTask() {
                                     <button
                                         type="submit"
                                         disabled={isLoading}
-                                        className="bg-primary-base dark:bg-primary-200 dark:text-black min-w-[140px] text-white p-[10px] rounded-[10px] disabled:opacity-50"
+                                        className="bg-primary-500 hover:bg-primary-600 font-medium min-w-[140px] text-white p-[10px] rounded-[10px] disabled:opacity-50 transition-colors"
                                     >
                                         {t("Create Task")}
                                     </button>
@@ -115,7 +120,7 @@ function CreateTask() {
                                 <button
                                     type="button"
                                     onClick={() => router.back()}
-                                    className="border border-gray-300 text-gray-600 dark:border-gray-600 dark:text-gray-300 min-w-[140px] p-[10px] rounded-[10px]"
+                                    className="bg-status-bg hover:bg-gray-50 border border-status-border dark:hover:bg-gray-700 text-cell-secondary font-medium min-w-[140px] p-[10px] rounded-[10px] transition-colors"
                                 >
                                     {t("Back")}
                                 </button>

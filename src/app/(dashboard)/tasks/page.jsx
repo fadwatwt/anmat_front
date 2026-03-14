@@ -18,6 +18,7 @@ import {
 } from "@/redux/tasks/subscriberTasksApi";
 import { useGetEmployeeTasksQuery, useUpdateTaskStatusMutation } from "@/redux/tasks/employeeTasksApi";
 import Modal from "@/components/Modal/Modal.jsx";
+import { useProcessing } from "@/app/providers";
 
 // ✅ Lazy-loaded components
 const NameAndDescription = dynamic(() => import("@/app/(dashboard)/projects/_components/TableInfo/NameAndDescription"), { ssr: false });
@@ -44,6 +45,7 @@ function TasksPage() {
 
   const [deleteSubscriberTask] = useDeleteSubscriberTaskMutation();
   const [updateTaskStatus] = useUpdateTaskStatusMutation();
+  const { showProcessing, hideProcessing } = useProcessing();
 
   const [isOpenDeleteAlert, setIsOpenDeleteAlert] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState(null);
@@ -84,6 +86,8 @@ function TasksPage() {
       return;
     }
     if (taskToDelete) {
+      setIsOpenDeleteAlert(false);
+      showProcessing(t("Deleting Task..."));
       try {
         const res = await deleteSubscriberTask(taskToDelete._id).unwrap();
         setApiResponse({
@@ -91,7 +95,6 @@ function TasksPage() {
           status: "success",
           message: res?.message || t("Task deleted successfully"),
         });
-        setIsOpenDeleteAlert(false);
         setTaskToDelete(null);
       } catch (err) {
         setApiResponse({
@@ -99,7 +102,8 @@ function TasksPage() {
           status: "error",
           message: err?.data?.message || t("Failed to delete task"),
         });
-        setIsOpenDeleteAlert(false);
+      } finally {
+        hideProcessing();
       }
     }
   };

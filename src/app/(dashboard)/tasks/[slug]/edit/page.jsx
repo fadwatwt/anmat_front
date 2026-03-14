@@ -8,6 +8,7 @@ import { Formik, Form } from "formik";
 import { useGetSubscriberTaskDetailsQuery, useUpdateSubscriberTaskMutation } from "@/redux/tasks/subscriberTasksApi";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
+import { useProcessing } from "@/app/providers";
 
 function EditTask({ params }) {
     const { t } = useTranslation();
@@ -23,6 +24,7 @@ function EditTask({ params }) {
     const [apiResponse, setApiResponse] = useState({ isOpen: false, status: null, message: "" });
     const [isApprovalOpen, setIsApprovalOpen] = useState(false);
     const [pendingValues, setPendingValues] = useState(null);
+    const { showProcessing, hideProcessing } = useProcessing();
 
     const breadcrumbItems = [
         { title: t('Tasks'), path: '/tasks' },
@@ -66,6 +68,7 @@ function EditTask({ params }) {
     const handleConfirmUpdate = async () => {
         setIsApprovalOpen(false);
         if (!pendingValues) return;
+        showProcessing(t("Updating Task..."));
 
         try {
             const payload = {
@@ -109,6 +112,8 @@ function EditTask({ params }) {
                 status: "error",
                 message: error?.data?.message || t("Failed to update task"),
             });
+        } finally {
+            hideProcessing();
         }
     };
 
@@ -138,7 +143,7 @@ function EditTask({ params }) {
 
     return (
         <Page title={t("Edit Task")} isBreadcrumbs={true} breadcrumbs={breadcrumbItems}>
-            <div className={"max-w-4xl flex flex-col gap-4 w-full mx-auto bg-white dark:bg-white-0 p-5 rounded-2xl"}>
+            <div className={"max-w-4xl flex flex-col gap-4 w-full mx-auto bg-surface border border-status-border p-5 rounded-2xl"}>
                 <Formik initialValues={initialValues} onSubmit={onSubmit} enableReinitialize>
                     {({ values, handleChange, setFieldValue }) => (
                         <Form className="flex flex-col gap-4">
@@ -153,7 +158,7 @@ function EditTask({ params }) {
                                     <button
                                         type="submit"
                                         disabled={isUpdating}
-                                        className="bg-primary-base dark:bg-primary-200 dark:text-black min-w-[140px] text-white p-[10px] rounded-[10px] disabled:opacity-50"
+                                        className="bg-primary-500 hover:bg-primary-600 font-medium min-w-[140px] text-white p-[10px] rounded-[10px] disabled:opacity-50 transition-colors"
                                     >
                                         {isUpdating ? t("Updating...") : t("Update Task")}
                                     </button>
@@ -161,7 +166,7 @@ function EditTask({ params }) {
                                 <button
                                     type="button"
                                     onClick={() => router.back()}
-                                    className="border border-gray-300 text-gray-600 dark:border-gray-600 dark:text-gray-300 min-w-[140px] p-[10px] rounded-[10px]"
+                                    className="bg-status-bg hover:bg-gray-50 border border-status-border dark:hover:bg-gray-700 text-cell-secondary font-medium min-w-[140px] p-[10px] rounded-[10px] transition-colors"
                                 >
                                     {t("Back")}
                                 </button>

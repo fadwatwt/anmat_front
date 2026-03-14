@@ -94,7 +94,7 @@ function TaskMainInfo({ task, type = "project", values, handleChange, setFieldVa
 
   return (
     <div className={"flex flex-col gap-4 max-h-full"}>
-      <p className={"w-full py-[6px] bg-weak-100 text-start text-xs dark:bg-weak-800 text-weak-800 dark:text-weak-100"}>
+      <p className={"w-full py-[6px] bg-weak-100 text-start text-xs dark:bg-weak-800 text-cell-secondary"}>
         {type === "project" ? t("Project Main Info") : t("Task Main Info")}:
       </p>
 
