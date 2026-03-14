@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import ElementsSelect from "@/components/Form/ElementsSelect.jsx";
 import { useUpdateEmployeeRequestStatusMutation } from "@/redux/employees/employeeRequestsApi";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
+import ProcessingOverlay from "@/components/Feedback/ProcessingOverlay";
 
 function ViewRequestModal({ isOpen, onClose, request }) {
     const { t } = useTranslation();
@@ -56,6 +57,7 @@ function ViewRequestModal({ isOpen, onClose, request }) {
 
     return (
         <>
+            <ProcessingOverlay isOpen={isUpdating} message="Updating Status..." />
             <Modal
                 isOpen={isOpen}
                 onClose={onClose}
@@ -65,9 +67,9 @@ function ViewRequestModal({ isOpen, onClose, request }) {
             >
                 <div className="flex flex-col gap-6 py-2">
                     <div className="flex flex-col gap-1">
-                        <span className="text-sm text-gray-500">{t("Update status for")}</span>
-                        <span className="font-medium text-gray-900 dark:text-gray-100">{request.employee?.name}</span>
-                        <span className="text-xs text-gray-400 capitalize">{request.type.replace(/_/g, ' ')} Request</span>
+                        <span className="text-sm text-cell-secondary">{t("Update status for")}</span>
+                        <span className="font-medium text-table-title">{request.employee?.name}</span>
+                        <span className="text-xs text-cell-secondary capitalize">{request.type.replace(/_/g, ' ')} Request</span>
                     </div>
 
                     <ElementsSelect
@@ -78,17 +80,17 @@ function ViewRequestModal({ isOpen, onClose, request }) {
                         placeholder={t("Choose status...")}
                     />
 
-                    <div className="flex justify-end gap-2 pt-4 border-t dark:border-gray-700">
+                    <div className="flex justify-end gap-2 pt-4 border-t border-status-border">
                         <button
                             onClick={onClose}
-                            className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm"
+                            className="px-4 py-2 text-cell-secondary bg-status-bg rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-sm"
                         >
                             {t("Cancel")}
                         </button>
                         <button
                             onClick={handleSave}
                             disabled={isUpdating || !status || status === request.status}
-                            className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors text-sm font-medium"
+                            className="px-4 py-2 text-white bg-primary-500 rounded-lg hover:bg-primary-600 disabled:opacity-50 transition-colors text-sm font-medium"
                         >
                             {isUpdating ? t("Updating...") : t("Update Status")}
                         </button>

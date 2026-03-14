@@ -12,6 +12,7 @@ import Page from "@/components/Page";
 import AnalyticsCard from "../../analytics/_components/AnalyticsCard";
 import DynamicDoughnut from "../../analytics/_components/charts/SummaryDoughnut.";
 import DefaultSelect from "@/components/Form/DefaultSelect";
+import ProcessingOverlay from "@/components/Feedback/ProcessingOverlay";
 import DepartmentsPerformanceChat from "../../analytics/_components/employee/DepartmentsPerformanceChat";
 import { useGetDepartmentsQuery } from "@/redux/departments/departmentsApi";
 import EmployeeRequests from "./employee/EmployeeRequests";
@@ -22,9 +23,11 @@ const AdminDashboard = () => {
   const { t } = useTranslation("common");
   const [isConfirmApprovalAlert, setIsConfirmApprovalAlert] = useState(false);
 
-  const { data: statsData } = useGetSubscriberTaskStatisticsStatusQuery();
-  const { data: projects = [] } = useGetSubscriberProjectsQuery();
-  const { data: departments = [] } = useGetDepartmentsQuery();
+  const { data: statsData, isLoading: isStatsLoading } = useGetSubscriberTaskStatisticsStatusQuery();
+  const { data: projects = [], isLoading: isProjectsLoading } = useGetSubscriberProjectsQuery();
+  const { data: departments = [], isLoading: isDepartmentsLoading } = useGetDepartmentsQuery();
+
+  const isPageLoading = isStatsLoading || isProjectsLoading || isDepartmentsLoading;
 
   const statusColorMap = {
     active: "#375DFB", // Blue
@@ -150,6 +153,7 @@ const AdminDashboard = () => {
 
   return (
     <Page isTitle={false}>
+      <ProcessingOverlay isOpen={isPageLoading} message="Loading Dashboard..." />
       <div className="flex flex-col md:flex-row items-stretch gap-4 justify-between w-full">
         {/* Tasks Summary Card */}
         <div className="w-full md:w-1/2">

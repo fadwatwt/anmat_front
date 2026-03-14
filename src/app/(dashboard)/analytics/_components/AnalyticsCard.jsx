@@ -3,7 +3,7 @@ import { RiMoreFill, RiArrowDownSLine } from '@remixicon/react';
 
 const AnalyticsCard = ({ title, children, showDropdowns = false, dropdown1Label = "Filter" }) => {
     return (
-        <div className="bg-status-bg px-6 pt-6 pb-10 rounded-[24px] shadow-sm border border-status-border flex flex-col min-h-[400px]">
+        <div className="bg-surface px-6 pt-6 pb-10 rounded-[24px] shadow-sm border border-status-border flex flex-col min-h-[400px]">
             <div className="flex justify-between items-center mb-6">
                 <h3 className="font-bold text-table-title text-lg">{title}</h3>
                 <div className="flex items-center gap-2">

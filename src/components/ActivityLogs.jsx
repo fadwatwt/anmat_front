@@ -43,7 +43,7 @@ function ActivityLogs({ activityLogs, className }) {
         }
     };
     return (
-        <div className={"flex flex-col w-full p-4 rounded-2xl items-start gap-3 bg-status-bg border border-status-border"}>
+        <div className={"flex flex-col w-full p-4 rounded-2xl items-start gap-3 bg-surface border border-status-border"}>
             <p className={"text-lg text-table-title"}>{t("Activity Logs")}</p>
             <div className={"flex flex-col w-full overflow-hidden overflow-y-auto custom-scroll " + className}>
                 {

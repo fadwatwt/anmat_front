@@ -14,6 +14,7 @@ import StatusActions from '@/components/Dropdowns/StatusActions';
 import { RiEditLine, RiCloseCircleLine } from '@remixicon/react';
 import ApprovalAlert from '@/components/Alerts/ApprovalAlert';
 import ApiResponseAlert from '@/components/Alerts/ApiResponseAlert';
+import ProcessingOverlay from '@/components/Feedback/ProcessingOverlay';
 
 export default function EmployeeRequests() {
   const { t } = useTranslation();
@@ -193,6 +194,7 @@ export default function EmployeeRequests() {
 
   return (
     <>
+      <ProcessingOverlay isOpen={isLoading || isCancelling} message="Processing Requests..." />
       <Table
         title={t("Employee Requests")}
         headers={getHeaders()}
