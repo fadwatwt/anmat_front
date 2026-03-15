@@ -6,6 +6,7 @@ import { useGetDepartmentsQuery, useAssignEmployeesToDepartmentMutation } from "
 import { useGetEmployeesQuery } from "@/redux/employees/employeesApi";
 import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
+import SelectAndLabel from "@/components/Form/SelectAndLabel";
 
 function AssignDepartmentModal({ isOpen, onClose, initialSelectedEmployee }) {
     const { t } = useTranslation();
@@ -129,23 +130,16 @@ function AssignDepartmentModal({ isOpen, onClose, initialSelectedEmployee }) {
             >
                 <div className="flex flex-col gap-6">
                     {/* Department Select */}
-                    <div className="flex flex-col gap-2">
-                        <label className="text-sm font-medium dark:text-gray-200">
-                            {t("Select Department")} <span className="text-red-500">*</span>
-                        </label>
-                        <select
-                            value={selectedDepartment}
-                            onChange={(e) => setSelectedDepartment(e.target.value)}
-                            className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-base/20"
-                        >
-                            <option value="">{t("Choose a department")}</option>
-                            {departments.map((dept) => (
-                                <option key={dept._id} value={dept._id}>
-                                    {dept.name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                    <SelectAndLabel
+                        title={t("Select Department")}
+                        name="department"
+                        value={selectedDepartment}
+                        options={departments}
+                        onChange={setSelectedDepartment}
+                        onBlur={() => { }}
+                        placeholder={t("Choose a department")}
+                        isRequired={true}
+                    />
 
                     {/* Employees Multi-Select */}
                     <div className="flex flex-col gap-2">

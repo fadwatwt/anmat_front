@@ -9,6 +9,7 @@ import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
+import { useProcessing } from "@/app/providers";
 import { Formik, Form } from 'formik';
 import { FaCheckCircle, FaProjectDiagram } from 'react-icons/fa';
 import { translateDate } from "@/functions/Days";
@@ -16,6 +17,7 @@ import { translateDate } from "@/functions/Days";
 function CreateProjectPage() {
     const router = useRouter();
     const { t } = useTranslation();
+    const { showProcessing, hideProcessing } = useProcessing();
     const [createProject, { isLoading: isCreatingProject }] = useCreateSubscriberProjectMutation();
     const [createTask, { isLoading: isCreatingTask }] = useCreateSubscriberTaskMutation();
     const [apiResponse, setApiResponse] = useState({ isOpen: false, status: null, message: "" });
@@ -94,7 +96,9 @@ function CreateProjectPage() {
                 status: pendingValues.status || "open",
             };
 
+            showProcessing(t("Creating project..."));
             const response = await createProject(payload).unwrap();
+            hideProcessing();
             const projectData = response?.data || response;
             setCreatedProject(projectData);
             setIsProjectCreated(true);
@@ -105,6 +109,7 @@ function CreateProjectPage() {
                 message: response?.message || t("Project created successfully!"),
             });
         } catch (error) {
+            hideProcessing();
             setApiResponse({
                 isOpen: true,
                 status: "error",
@@ -146,7 +151,9 @@ function CreateProjectPage() {
                 })),
             };
 
+            showProcessing(t("Creating task..."));
             const response = await createTask(payload).unwrap();
+            hideProcessing();
             setTaskCount(prev => prev + 1);
             setShowTaskForm(false); // Hide form after successful creation
 
@@ -156,6 +163,7 @@ function CreateProjectPage() {
                 message: response?.message || t("Task created successfully! You can add another task or finish."),
             });
         } catch (error) {
+            hideProcessing();
             setApiResponse({
                 isOpen: true,
                 status: "error",
@@ -193,7 +201,7 @@ function CreateProjectPage() {
             <div className={"max-w-4xl w-full mx-auto flex flex-col gap-6"}>
                 {/* Project Details Header (shown after project creation) */}
                 {isProjectCreated && createdProject && (
-                    <div className="bg-white dark:bg-white-0 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                    <div className="bg-surface p-6 rounded-2xl border border-status-border shadow-sm">
                         <div className="flex items-start gap-4">
                             <div className="p-3 bg-primary-100 dark:bg-primary-900/30 rounded-xl">
                                 <FaProjectDiagram size={28} className="text-primary-500 dark:text-primary-300" />
@@ -203,7 +211,7 @@ function CreateProjectPage() {
                                     <FaCheckCircle className="text-green-500" size={18} />
                                     <span className="text-sm font-medium text-green-600 dark:text-green-400">{t("Project Created Successfully")}</span>
                                 </div>
-                                <h2 className="text-2xl font-bold mb-2 text-gray-900 dark:text-gray-100">{createdProject.name}</h2>
+                                <h2 className="text-2xl font-bold mb-2 text-table-title">{createdProject.name}</h2>
                                 {createdProject.description && (
                                     <p className="text-gray-500 dark:text-gray-400 text-sm mb-3">{createdProject.description}</p>
                                 )}
@@ -232,7 +240,7 @@ function CreateProjectPage() {
                 )}
 
                 {/* Main Form Container */}
-                <div className="bg-white dark:bg-white-0 p-5 rounded-2xl">
+                <div className="bg-surface p-5 rounded-2xl shadow-sm border border-status-border">
                     {/* Step 1: Project Info Form */}
                     {!isProjectCreated && (
                         <Formik initialValues={projectInitialValues} onSubmit={handleProjectSubmit}>

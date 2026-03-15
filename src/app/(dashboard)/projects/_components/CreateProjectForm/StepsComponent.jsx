@@ -45,7 +45,7 @@ const StepsComponent = ({
           <React.Fragment key={index}>
             <div className="flex items-center">
               <div
-                className={`flex items-center cursor-pointer ${currentStep >= index + 1 ? "text-blue-500" : "text-gray-400"
+                className={`flex items-center cursor-pointer ${currentStep >= index + 1 ? "text-primary-base dark:text-primary-200" : "text-secondary"
                   }`}
                 onClick={() =>
                   currentStep >= index + 1 && setCurrentStep(index + 1)
@@ -57,7 +57,7 @@ const StepsComponent = ({
                       ? "p-0"
                       : currentStep === index + 1
                         ? "bg-primary-base dark:bg-primary-200 dark:text-black text-white"
-                        : "border border-gray-300 dark:border-gray-700 dark:text-white"
+                        : "border border-status-border"
                       }`}
                   >
                     {currentStep > index + 1 ? (
@@ -76,7 +76,7 @@ const StepsComponent = ({
               </div>
             </div>
             {index < steps.length - 1 && (
-              <IoIosArrowForward className={`text-lg text-gray-400`} />
+              <IoIosArrowForward className={`text-lg text-secondary`} />
             )}
           </React.Fragment>
         ))}
@@ -135,7 +135,7 @@ const StepsComponent = ({
                                 type={"button"}
                                 onClick={backStep}
                                 disabled={disabled}
-                                className=" bg-white dark:bg-white-0 dark:border-gray-700 dark:text-gray-300 w-40 p-[10px] text-md rounded-[10px] border border-gray-400 disabled:opacity-50"
+                                className=" bg-surface border-status-border text-cell-primary w-40 p-[10px] text-md rounded-[10px] border disabled:opacity-50"
                               >
                                 {t("Back")}
                               </button>

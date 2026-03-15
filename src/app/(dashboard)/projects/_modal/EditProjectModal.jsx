@@ -8,9 +8,11 @@ import { useTranslation } from "react-i18next";
 import { useUpdateSubscriberProjectMutation } from "@/redux/projects/subscriberProjectsApi";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
+import { useProcessing } from "@/app/providers";
 
 function EditProjectModal({ isOpen, onClose, project }) {
   const { t } = useTranslation();
+  const { showProcessing, hideProcessing } = useProcessing();
   const [updateProject, { isLoading }] = useUpdateSubscriberProjectMutation();
   const [currentStep, setCurrentStep] = useState(1);
   const formikRef = useRef(null);
@@ -65,7 +67,9 @@ function EditProjectModal({ isOpen, onClose, project }) {
         status: pendingValues.status || "open",
       };
 
+      showProcessing(t("Updating project..."));
       const response = await updateProject({ id: project?._id || project?.id, data: payload }).unwrap();
+      hideProcessing();
       setApiResponse({
         isOpen: true,
         status: "success",
@@ -76,6 +80,7 @@ function EditProjectModal({ isOpen, onClose, project }) {
         setPendingValues(null);
       }, 1500);
     } catch (error) {
+      hideProcessing();
       setApiResponse({
         isOpen: true,
         status: "error",
@@ -124,7 +129,7 @@ function EditProjectModal({ isOpen, onClose, project }) {
         }
         title={t("Edit project")}
       >
-        <div className="p-4">
+        <div className="p-6 bg-surface">
           <StepsComponent
             type="edit"
             steps={steps}

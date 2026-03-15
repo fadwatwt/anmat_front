@@ -102,11 +102,11 @@ function TaskMainInfo({ task, type = "project", values, handleChange, setFieldVa
       {type === "task" && (
         lockedProjectId ? (
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label className="text-sm font-medium text-cell-primary">
               {t("Project")} <span className="text-red-500">*</span>
             </label>
-            <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-              <span className="text-gray-700 dark:text-gray-300">{lockedProjectName || t("Selected Project")}</span>
+            <div className="p-3 bg-surface rounded-lg border border-status-border">
+              <span className="text-cell-primary">{lockedProjectName || t("Selected Project")}</span>
             </div>
           </div>
         ) : (
@@ -286,7 +286,7 @@ function TaskMainInfo({ task, type = "project", values, handleChange, setFieldVa
             onChange={(e) => setFieldValue("is_template", e.target.checked)}
             className="w-4 h-4 text-primary-base border-gray-300 rounded focus:ring-primary-500"
           />
-          <label htmlFor="is_template" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label htmlFor="is_template" className="text-sm font-medium text-cell-primary">
             {t("Is Template")}
           </label>
         </div>
