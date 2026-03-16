@@ -29,27 +29,27 @@ export default function EmployeeSalaryPage() {
                     className="w-10 h-10 rounded-full object-cover"
                 />
                 <div className="flex flex-col">
-                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    <span className="text-sm font-medium text-cell-primary">
                         {transaction.employee?.name || t("Unknown")}
                     </span>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                    <span className="text-xs text-cell-secondary">
                         {transaction.employee?.email || "N/A"}
                     </span>
                 </div>
             </div>,
-            <span key={`salary-${transaction._id || index}`} className="text-sm text-gray-700 dark:text-gray-300 font-bold">
+            <span key={`salary-${transaction._id || index}`} className="text-sm text-cell-primary font-bold">
                 {transaction.amount?.toLocaleString()}$
             </span>,
-            <span key={`bonus-${transaction._id || index}`} className="text-sm text-green-600 dark:text-green-400">
+            <span key={`bonus-${transaction._id || index}`} className="text-sm text-green-success">
                 +{transaction.bonus?.toLocaleString()}$
             </span>,
-            <span key={`deduction-${transaction._id || index}`} className="text-sm text-red-600 dark:text-red-400">
+            <span key={`deduction-${transaction._id || index}`} className="text-sm text-red-error font-medium">
                 -{transaction.discount?.toLocaleString()}$
             </span>,
-            <span key={`comment-${transaction._id || index}`} className="text-sm text-gray-500 dark:text-gray-400 truncate max-w-[180px]" title={transaction.comment}>
+            <span key={`comment-${transaction._id || index}`} className="text-sm text-cell-secondary truncate max-w-[180px]" title={transaction.comment}>
                 {transaction.comment || "-"}
             </span>,
-            <p key={`date-${transaction._id || index}`} className="text-sm dark:text-sub-300 text-nowrap">
+            <p key={`date-${transaction._id || index}`} className="text-sm text-cell-primary text-nowrap">
                 {transaction.created_at ? translateDate(transaction.created_at) : "-"}
             </p>,
         ]);
@@ -58,7 +58,7 @@ export default function EmployeeSalaryPage() {
     if (isError) {
         return (
             <Page title={t("Salary Transactions")}>
-                <div className="text-center text-red-500 mt-8">
+                <div className="text-center text-red-error mt-8 font-medium">
                     {t("Failed to load salary transactions. Please try again later.")}
                 </div>
             </Page>
@@ -70,7 +70,12 @@ export default function EmployeeSalaryPage() {
             <div className="flex flex-col gap-6">
                 <div className="flex flex-col gap-2 h-full">
                     {isLoading ? (
-                        <div className="text-center py-6">{t("Loading...")}</div>
+                        <div className="flex items-center justify-center h-64 bg-surface rounded-2xl border border-status-border">
+                            <div className="text-primary-base animate-pulse font-bold text-lg flex items-center gap-3">
+                                <div className="w-3 h-3 bg-primary-base rounded-full animate-bounce"></div>
+                                {t("Loading salary transactions...")}
+                            </div>
+                        </div>
                     ) : (
                         <Table
                             title={t("My Salary Transactions")}

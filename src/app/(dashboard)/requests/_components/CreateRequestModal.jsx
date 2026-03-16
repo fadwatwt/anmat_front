@@ -14,9 +14,11 @@ import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
 import { useSelector } from "react-redux";
 import { selectUserId } from "@/redux/auth/authSlice";
+import { useProcessing } from "@/app/providers";
 
 function CreateRequestModal({ isOpen, onClose }) {
     const { t } = useTranslation();
+    const { showProcessing, hideProcessing } = useProcessing();
     const userId = useSelector(selectUserId);
     const [createRequest, { isLoading }] = useCreateEmployeeRequestMutation();
     const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
@@ -98,7 +100,9 @@ function CreateRequestModal({ isOpen, onClose }) {
                             payload.vacation_date = values.vacation_date;
                         }
 
+                        showProcessing(t("Submitting request..."));
                         await createRequest(payload).unwrap();
+                        hideProcessing();
                         setApiResponse({
                             isOpen: true,
                             status: "success",
@@ -109,6 +113,7 @@ function CreateRequestModal({ isOpen, onClose }) {
                             onClose();
                         }, 1500);
                     } catch (error) {
+                        hideProcessing();
                         setApiResponse({
                             isOpen: true,
                             status: "error",
@@ -135,11 +140,11 @@ function CreateRequestModal({ isOpen, onClose }) {
                 className="lg:w-[40%] md:w-[60%] w-[90%]"
                 isBtns={false}
                 customBtns={
-                    <div className="flex gap-2 justify-end w-full px-4 pb-4">
+                    <div className="flex gap-4 justify-end w-full px-6 pb-6">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-6 py-2 rounded-xl border-2 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                            className="px-8 py-2.5 rounded-xl border-2 border-status-border text-cell-secondary hover:bg-status-bg hover:text-cell-primary transition-all font-semibold"
                         >
                             {t("Cancel")}
                         </button>
@@ -147,12 +152,12 @@ function CreateRequestModal({ isOpen, onClose }) {
                             title={isLoading ? t("Submitting...") : t("Submit Request")}
                             onClick={formik.handleSubmit}
                             disabled={isLoading || !formik.isValid}
-                            className="bg-primary-500 text-white dark:bg-primary-200 dark:text-black font-medium"
+                            className="bg-primary-base text-white dark:bg-primary-200 dark:text-black font-bold px-8 py-2.5 rounded-xl shadow-lg shadow-primary-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
                         />
                     </div>
                 }
             >
-                <div className="flex flex-col gap-4 p-4 max-h-[70vh] overflow-y-auto">
+                <div className="flex flex-col gap-6 p-6 max-h-[70vh] overflow-y-auto bg-surface">
                     <ElementsSelect
                         title={t("Request Type")}
                         options={requestTypes}
