@@ -192,7 +192,7 @@ function PermissionsPage() {
                         }
                         isFilter={true} />
                 </div>
-                <div className={"flex md:w-[37.5%] w-screen"}>
+                <div className={"flex md:w-[37.5%] w-full"}>
                     {/* <TimeLine /> */}
                 </div>
             </div>

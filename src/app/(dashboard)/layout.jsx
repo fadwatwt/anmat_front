@@ -173,12 +173,19 @@ const MainLayout = ({ children }) => {
     }
 
     return (
-        <div className="flex max-w-full w-screen h-screen">
+        <div className="flex w-full h-screen overflow-hidden bg-main">
             <DashboardSideMenu
                 isSlidebarOpen={isSlidebarOpen}
                 toggleSlidebarOpen={toggleSlidebarOpen}
             />
-            <div className="h-full w-screen flex-col">
+            {/* Overlay for mobile when sidebar is open */}
+            {isSlidebarOpen && (
+                <div 
+                    className="fixed inset-0 bg-black/50 z-30 md:hidden"
+                    onClick={toggleSlidebarOpen}
+                />
+            )}
+            <div className="flex flex-col flex-1 h-full min-w-0 overflow-hidden">
                 {!isSubscriptionPage && (
                     !isSettingsPage ? (
                         <Header taggleSlidebarOpen={toggleSlidebarOpen} />
@@ -190,7 +197,7 @@ const MainLayout = ({ children }) => {
                     )
                 )}
 
-                <main className="h-[calc(100vh-72px)] overflow-auto max-w-[100vw] tab-content bg-main">
+                <main className="flex-1 overflow-auto bg-main p-4 md:p-6">
                     {children}
                 </main>
             </div>
