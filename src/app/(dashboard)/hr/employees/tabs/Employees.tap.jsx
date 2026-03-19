@@ -94,7 +94,7 @@ function EmployeesTap() {
         }
       },
       {
-        text: t("Assign Department"),
+        text: hasDepartment ? t("Change Department") : t("Assign Department"),
         icon: <RiBuilding2Line className="text-green-500" />,
         onClick: () => {
           setSelectedAssignEmployee(employee);
