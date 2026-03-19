@@ -50,11 +50,11 @@ const MessagesDropdown = ({ messages }) => {
       <div
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className={`icon-message flex items-center h-10 ${
-          isMenuOpen
-            ? "bg-blue-100 text-blue-500 dark:bg-blue-900 dark:text-blue-300"
-            : "bg-gray-100 dark:bg-gray-900"
-        } rounded-lg py-1 px-3 text-center cursor-pointer`}
+        onClick={() => setIsMenuOpen(!isMenuOpen)}
+        className={`icon-message flex items-center h-10 ${isMenuOpen
+          ? "bg-blue-100 text-blue-500 dark:bg-blue-900 dark:text-blue-300"
+          : "bg-gray-100 dark:bg-gray-900"
+          } rounded-lg py-1 px-3 text-center cursor-pointer`}
       >
         <div className="relative">
           <RiChat3Line className="dark:text-gray-100 text-gray-600" size={20} />
@@ -66,11 +66,14 @@ const MessagesDropdown = ({ messages }) => {
 
       {isMenuOpen && (
         <>
-          <div className="fixed inset-0 right-3 bg-black/50 sm:hidden z-40"></div>
+          <div
+            onClick={() => setIsMenuOpen(false)}
+            className="fixed inset-0 bg-black/50 sm:hidden z-[90]"
+          ></div>
           <div
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            className={`fixed sm:absolute inset-0 sm:inset-auto top-1/2 ${i18n.language === "ar" ? "sm:-right-0" : "sm:right-0"} sm:mt-2 sm:w-[343px] w-full max-w-[343px] mx-auto sm:mx-0 transform -translate-y-1/6 sm:translate-y-0 h-[686px] sm:h-auto sm:max-h-[70vh] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-[20px] shadow-lg z-50`}
+            className={`fixed sm:absolute top-[72px] sm:top-full left-0 right-0 sm:left-auto sm:right-0 sm:mt-2 w-full sm:w-[480px] max-w-[300px] mx-auto sm:mx-0 h-auto max-h-[calc(100vh-80px)] sm:max-h-[75vh] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-b-[20px] sm:rounded-[20px] shadow-xl z-[100] flex flex-col overflow-hidden`}
             style={{ borderWidth: "0.5px" }}
           >
             <div className="flex justify-between items-center px-4 py-3 border-b dark:border-gray-700">

@@ -185,7 +185,7 @@ const MainLayout = ({ children }) => {
                     onClick={toggleSlidebarOpen}
                 />
             )}
-            <div className="flex flex-col flex-1 h-full min-w-0 overflow-hidden">
+            <div className="flex flex-col flex-1 h-full min-w-0 overflow-hidden relative z-50">
                 {!isSubscriptionPage && (
                     !isSettingsPage ? (
                         <Header taggleSlidebarOpen={toggleSlidebarOpen} />
