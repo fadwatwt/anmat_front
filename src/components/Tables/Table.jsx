@@ -227,7 +227,7 @@ function Table({
                                 {headers?.map((header, index) => (
                                     header && <th
                                         key={index}
-                                        className="p-2 text-start text-sm font-normal text-cell-primary"
+                                        className="p-2 md:p-4 text-start text-sm font-semibold text-cell-primary whitespace-nowrap"
                                         style={{
                                             width: header.width || "auto",
                                             borderTopRightRadius: index === headers.length - 1 ? "8px" : "0px",
@@ -257,14 +257,14 @@ function Table({
                                         {row.map((cell, cellIndex) => (
                                             cell && <td
                                                 key={cellIndex}
-                                                className={"text-sm text-start max-w-10 sm:max-w-24 text-nowrap text-cell-primary " + (classNameCell ? classNameCell : "px-2 py-6")}
+                                                className={"text-sm text-start whitespace-nowrap text-cell-primary " + (classNameCell ? classNameCell : "px-4 py-4 md:py-6")}
                                                 style={{ borderBottomRightRadius: cellIndex === row.length - 1 ? "8px" : "" }}
                                             >
                                                 {cell}
                                             </td>
                                         ))}
                                         {(isActions || customActions) && (
-                                            <td className={"dropdown-container"}>
+                                            <td className={"dropdown-container px-2 py-4 md:py-6"}>
                                                 <PiDotsThreeVerticalBold
                                                     className="cursor-pointer"
                                                     onClick={(e) => handleDropdownToggle(actualRowIndex, e)}
@@ -306,29 +306,40 @@ function Table({
                     </table>
                 </div>
 
-                <div className={"pagination flex items-center justify-between"}>
-                    <p className={"dark:text-gray-400 text-sm"}>
+                <div className={"pagination flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t dark:border-gray-700"}>
+                    <p className={"dark:text-gray-400 text-sm order-2 sm:order-1"}>
                         {t("Page")} {currentPage} {t("of")} {totalPages}
                     </p>
-                    <div className={"flex gap-5 items-center"}>
-                        <MdOutlineKeyboardDoubleArrowLeft onClick={() => handlePageChange(1)} className="cursor-pointer text-cell-secondary" />
-                        <MdOutlineKeyboardArrowLeft onClick={() => handlePageChange(currentPage - 1)} className="cursor-pointer text-cell-secondary" />
-                        <div className={"flex pages-numbers gap-1 text-sm"}>
-                            {Array.from({ length: totalPages }).map((_, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => handlePageChange(index + 1)}
-                                    className={`px-3 py-1 border rounded-lg border-status-border text-cell-secondary ${currentPage === index + 1 ? "bg-primary-100 dark:bg-primary-900/30 font-bold" : ""}`}
-                                >
-                                    {index + 1}
-                                </button>
-                            ))}
+                    <div className={"flex flex-wrap gap-3 sm:gap-5 items-center justify-center order-1 sm:order-2"}>
+                        <div className="flex gap-2 items-center">
+                            <MdOutlineKeyboardDoubleArrowLeft onClick={() => handlePageChange(1)} className="cursor-pointer text-cell-secondary hover:text-primary-base transition-colors" />
+                            <MdOutlineKeyboardArrowLeft onClick={() => handlePageChange(currentPage - 1)} className="cursor-pointer text-cell-secondary hover:text-primary-base transition-colors" />
                         </div>
-                        <MdOutlineKeyboardArrowRight onClick={() => handlePageChange(currentPage + 1)} className="cursor-pointer text-cell-secondary" />
-                        <MdOutlineKeyboardDoubleArrowRight onClick={() => handlePageChange(totalPages)} className="cursor-pointer text-cell-secondary" />
+                        <div className={"flex pages-numbers gap-1 text-sm"}>
+                            {Array.from({ length: totalPages }).map((_, index) => {
+                                // Only show limited page numbers on very small screens
+                                if (totalPages > 5 && Math.abs(currentPage - (index + 1)) > 1 && index !== 0 && index !== totalPages - 1) {
+                                    if (index === 1 || index === totalPages - 2) return <span key={index} className="text-gray-400">...</span>;
+                                    return null;
+                                }
+                                return (
+                                    <button
+                                        key={index}
+                                        onClick={() => handlePageChange(index + 1)}
+                                        className={`px-3 py-1 border rounded-lg border-status-border text-cell-secondary transition-all ${currentPage === index + 1 ? "bg-primary-base text-white font-bold border-primary-base shadow-sm" : "hover:border-primary-300"}`}
+                                    >
+                                        {index + 1}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        <div className="flex gap-2 items-center">
+                            <MdOutlineKeyboardArrowRight onClick={() => handlePageChange(currentPage + 1)} className="cursor-pointer text-cell-secondary hover:text-primary-base transition-colors" />
+                            <MdOutlineKeyboardDoubleArrowRight onClick={() => handlePageChange(totalPages)} className="cursor-pointer text-cell-secondary hover:text-primary-base transition-colors" />
+                        </div>
                     </div>
-                    <div className={"flex rounded-lg border border-status-border text-cell-secondary px-2 py-1 items-center"}>
-                        <select value={rowsPerPage} onChange={handleRowsPerPageChange} className="bg-transparent outline-none cursor-pointer">
+                    <div className={"flex rounded-lg border border-status-border text-cell-secondary px-2 py-1 items-center order-3"}>
+                        <select value={rowsPerPage} onChange={handleRowsPerPageChange} className="bg-transparent outline-none cursor-pointer text-sm font-medium">
                             {[5, 10, 15, 20].map((value) => (
                                 <option className={"bg-surface text-cell-secondary text-sm"} key={value} value={value}>
                                     {value}/{t("page")}
