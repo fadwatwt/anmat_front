@@ -51,17 +51,49 @@ function PermissionsPage() {
                 {role.name}
             </span>
         </div>,
-        <div key="permissions" className="flex items-center justify-start gap-2 px-4">
-            <div className={"grid grid-cols-3 gap-2 w-full"}>
-                {role.permissions.map((permission, index) => (
+        <div key="permissions" className="group relative flex items-center justify-start gap-2 px-4 h-full">
+            {/* Desktop/Tablet: Grid View with Hover Title */}
+            <div className="hidden min-[1100px]:grid grid-cols-2 xl:grid-cols-3 gap-2 w-full max-w-[420px] whitespace-normal">
+                {role.permissions.slice(0, 6).map((permission, index) => (
                     <span
                         key={index}
                         title={permission?.name}
-                        className="bg-badge-bg text-badge-text text-xs text-center px-3 py-1 rounded-2xl max-w-[140px] truncate border border-status-border"
+                        className="bg-badge-bg text-badge-text text-[10px] xl:text-[11px] text-center px-2 py-1 rounded-2xl truncate border border-status-border hover:bg-primary-base/10 hover:border-primary-base/30 transition-all cursor-help block max-w-[120px]"
                     >
                         {permission?.name}
                     </span>
                 ))}
+                {role.permissions.length > 6 && (
+                    <span className="text-[11px] text-primary-base font-bold flex items-center justify-center bg-badge-bg px-2 py-1 rounded-full border border-status-border">
+                        +{role.permissions.length - 6}
+                    </span>
+                )}
+            </div>
+
+            {/* Mobile/Small Tablet: Compact List Trigger and Hover Panel */}
+            <div className="min-[1100px]:hidden">
+                <div className="text-xs text-primary-base bg-badge-bg hover:bg-primary-base/10 px-3 py-1.5 rounded-lg border border-status-border cursor-pointer flex items-center gap-2 transition-all">
+                    <RiEyeLine size={14} className="flex-shrink-0 text-primary-base" />
+                    <span className="whitespace-nowrap font-medium">{role.permissions.length} {t("Permissions")}</span>
+                </div>
+            </div>
+
+            {/* Premium Hover List Design (appears for both on trigger hover) */}
+            <div className="invisible group-hover:visible absolute top-1/2 left-0 -translate-y-1/2 ml-full lg:ml-0 lg:top-full lg:left-1/2 lg:-translate-x-1/2 lg:mt-2 z-[60] w-64 p-4 bg-surface rounded-2xl shadow-2xl border border-status-border scale-95 group-hover:scale-100 opacity-0 group-hover:opacity-100 transition-all duration-200 origin-left lg:origin-top pointer-events-none group-hover:pointer-events-auto">
+                <div className="flex items-center justify-between border-b border-status-border pb-2 mb-3">
+                    <h4 className="text-[11px] font-bold text-cell-primary uppercase tracking-wider">{t("Full Permissions List")}</h4>
+                    <span className="text-[10px] bg-badge-bg px-2 py-0.5 rounded-full text-badge-text font-bold">{role.permissions.length}</span>
+                </div>
+                <div className="max-h-[300px] overflow-y-auto custom-scroll pr-2 flex flex-col gap-2 bg-transparent">
+                    {role.permissions.map((p, i) => (
+                        <div key={i} className="flex items-start gap-2.5 group/item py-0.5">
+                            <div className="w-1.5 h-1.5 rounded-full bg-primary-base mt-1.5 flex-shrink-0 group-hover/item:scale-125 transition-transform shadow-[0_0_8px_rgba(55,93,251,0.4)]"></div>
+                            <span className="text-xs text-cell-secondary group-hover/item:text-cell-primary transition-colors leading-relaxed">
+                                {p.name}
+                            </span>
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     ]);
