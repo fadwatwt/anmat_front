@@ -21,8 +21,10 @@ const RevenuesChart = () => {
         <ContentCard
             title={"Revenues"}
             toolbar={
-                <div className="w-32 flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end">
-                    <DefaultSelect options={[{ id: 1, value: "Last 6 Months" }]} />
+                <div className="flex flex-wrap sm:flex-nowrap gap-2 items-center justify-end w-full sm:w-auto">
+                    <div className="w-full sm:w-32">
+                        <DefaultSelect options={[{ id: 1, value: "Last 6 Months" }]} />
+                    </div>
                 </div>
             }
             main={

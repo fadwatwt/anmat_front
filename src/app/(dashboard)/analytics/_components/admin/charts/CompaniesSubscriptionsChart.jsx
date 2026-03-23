@@ -54,13 +54,15 @@ const CompaniesSubscriptionsChart = () => {
         <BarChartComponent
             title={"Monthly Subscriptions"}
             toolbar={
-                <div className="w-40 flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end">
-                    <DefaultSelect
-                        placeholder="Year"
-                        options={[{ id: 1, value: format(new Date(), "yyyy") }]}
-                        value={[{ id: 1, value: format(new Date(), "yyyy") }]}
-                        multi={false}
-                    />
+                <div className="flex flex-wrap sm:flex-nowrap gap-2 items-center justify-end w-full sm:w-auto">
+                    <div className="w-full sm:w-32">
+                        <DefaultSelect
+                            placeholder="Year"
+                            options={[{ id: 1, value: format(new Date(), "yyyy") }]}
+                            value={[{ id: 1, value: format(new Date(), "yyyy") }]}
+                            multi={false}
+                        />
+                    </div>
                 </div>
             }
             barGab={4}

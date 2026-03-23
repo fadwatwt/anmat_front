@@ -34,8 +34,10 @@ const IndustriesChart = () => {
         <DonutChartComponent
             title={"Industries Organizations"}
             toolbar={
-                <div className="w-32">
-                    <DefaultSelect options={[{ id: 1, value: "All Time" }]} />
+                <div className="flex flex-wrap sm:flex-nowrap gap-2 items-center justify-end w-full sm:w-auto">
+                    <div className="w-full sm:w-32">
+                        <DefaultSelect options={[{ id: 1, value: "All Time" }]} />
+                    </div>
                 </div>
             }
             subtitle={"ORGANIZATIONS"}
