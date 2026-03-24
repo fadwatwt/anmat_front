@@ -78,7 +78,7 @@ function PlanDetails() {
                         </div>
                         <div className="mb-2 sm:mb-6 text-white drop-shadow-lg flex-1 overflow-x-auto overflow-y-hidden custom-scrollbar pr-4">
                             <h1 className="text-xl sm:text-2xl md:text-3xl font-black whitespace-nowrap" title={plan.name}>{plan.name}</h1>
-                            <p className="text-[10px] sm:text-xs md:text-sm text-black/90 max-w-md line-clamp-1 sm:line-clamp-2 italic">{plan.description}</p>
+                            <p className="text-[10px] sm:text-xs md:text-sm text-cell-secondary/90 max-w-md line-clamp-1 sm:line-clamp-2 italic">{plan.description}</p>
                         </div>
                     </div>
                 </div>
