@@ -1,9 +1,9 @@
 "use client";
 
-const ContentCard = ({ title, subtitle, toolbar, main, footer }) => {
+const ContentCard = ({ title, subtitle, toolbar, main, footer, className = "" }) => {
     return (
         // Card Container
-        <div className="flex flex-col items-start gap-4 justify-between p-4 bg-white dark:bg-gray-800 border border-status-border rounded-2xl w-full h-full">
+        <div className={`flex flex-col items-start gap-4 justify-between p-4 bg-white dark:bg-gray-800 border border-status-border rounded-2xl w-full h-full ${className}`}>
             <div className="flex flex-col gap-4 justify-start w-full">
                 {/* Card Header */}
                 <div className="flex flex-wrap items-center gap-4 justify-between w-full border-b border-status-border p-4">

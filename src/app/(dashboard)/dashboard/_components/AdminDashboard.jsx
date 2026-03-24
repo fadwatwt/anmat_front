@@ -8,6 +8,7 @@ import CompaniesSubscriptionsChart from "@/app/(dashboard)/analytics/_components
 import Table from "@/components/Tables/Table";
 import EmployeeRequests from "@/app/(dashboard)/dashboard/_components/employee/EmployeeRequests";
 
+import { useTranslation } from "react-i18next";
 import { useState, useMemo } from "react";
 import { format } from "date-fns";
 import { useGetSubscriptionsBasicDetailsQuery } from "@/redux/subscriptions/subscriptionsApi";
@@ -16,6 +17,7 @@ import { useGetOrganizationsQuery } from "@/redux/organizations/organizationsApi
 import { statusCell } from "@/components/StatusCell";
 
 const AdminDashboard = () => {
+    const { t } = useTranslation();
     const [selectedIndustry, setSelectedIndustry] = useState([]);
     const industryId = selectedIndustry[0]?.id;
 
@@ -91,31 +93,39 @@ const AdminDashboard = () => {
             isBtn={false}
         >
             {/* Companies Analytics */}
-            <div className="flex flex-col items-start justify-start gap-4">
-                <div className="flex flex-col md:flex-row items-stretch gap-4 justify-between w-full">
-                    <div className="w-full md:w-1/2">
+            <div className="flex flex-col items-start justify-start gap-8">
+                <div className="flex items-center justify-between w-full">
+                    <h2 className="text-xl font-bold text-cell-primary">
+                        {t("Companies Analytics")}
+                    </h2>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+                    <div className="w-full">
                         <IndustriesChart />
                     </div>
-                    <div className="w-full md:w-1/2">
+                    <div className="w-full">
                         <CompaniesSubscriptionsChart />
                     </div>
                 </div>
-                <div className="flex flex-col md:flex-row items-stretch gap-4 justify-between w-full">
-                    <div className="w-full md:w-2/3">
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full">
+                    <div className="w-full lg:col-span-2">
                         <Table
                             title="Subscriptions"
                             headers={headers}
                             rows={rows}
                             isCheckInput={false}
                             isTitle={true}
-                            classContainer={"h-full"}
+                            classContainer={"h-full border border-status-border rounded-2xl"}
                         />
                     </div>
-                    <div className="w-full md:w-1/3">
+                    <div className="w-full">
                         <ContentCard
                             title={"Companies Joined"}
+                            className="h-full"
                             toolbar={
-                                <div className="w-40 flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end">
+                                <div className="w-full sm:w-40 md:w-48 flex items-center justify-end">
                                     <DefaultSelect
                                         placeholder="Industry"
                                         options={industryOptions}
@@ -126,34 +136,32 @@ const AdminDashboard = () => {
                                 </div>
                             }
                             main={
-                                <div className="flex flex-col items-start justify-start gap-4 w-full">
+                                <div className="flex flex-col items-start justify-start gap-4 w-full h-[600px] overflow-y-auto pr-2 custom-scrollbar">
                                     {orgsLoading ? (
                                         <div className="text-sm text-cell-secondary py-4 w-full text-center">Loading...</div>
                                     ) : organizations?.length > 0 ? (
-                                        organizations.map((org, index) => {
-                                            return (
-                                                <div key={org._id || index} className="flex gap-2 items-start justify-start w-full overflow-hidden">
-                                                    <div className="w-12 h-12 rounded-full overflow-hidden bg-status-bg border border-status-border flex-shrink-0">
-                                                        <img
-                                                            src={org.logo || `https://ui-avatars.com/api/?name=${org.name}&background=random`}
-                                                            alt={org.name}
-                                                            className="w-full h-full object-cover"
-                                                        />
-                                                    </div>
-                                                    <div className="flex flex-col items-start justify-start gap-1 overflow-hidden">
-                                                        <span className="text-sm font-medium text-table-title truncate w-full" title={org.name}>
-                                                            {org.name}
-                                                        </span>
-                                                        <span className="text-xs text-cell-secondary truncate w-full" title={org.website || org.email}>
-                                                            {org.website || org.email}
-                                                        </span>
-                                                    </div>
-                                                </div>)
-                                        })
+                                        organizations.map((org, index) => (
+                                            <div key={org._id || index} className="flex gap-4 items-center justify-start w-full p-2 hover:bg-page-bg rounded-xl transition-colors shrink-0">
+                                                <div className="w-12 h-12 rounded-full overflow-hidden bg-status-bg border border-status-border flex-shrink-0">
+                                                    <img
+                                                        src={org.logo || `https://ui-avatars.com/api/?name=${org.name}&background=random`}
+                                                        alt={org.name}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                </div>
+                                                <div className="flex flex-col items-start justify-start gap-1 overflow-hidden">
+                                                    <span className="text-sm font-semibold text-table-title truncate w-full" title={org.name}>
+                                                        {org.name}
+                                                    </span>
+                                                    <span className="text-xs text-cell-secondary truncate w-full" title={org.website || org.email}>
+                                                        {org.website || org.email}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        ))
                                     ) : (
                                         <div className="text-sm text-cell-secondary py-4 w-full text-center">No organizations found.</div>
-                                    )
-                                    }
+                                    )}
                                 </div>
                             }
                         />
