@@ -56,6 +56,14 @@ export const employeesApi = apiSlice.injectEndpoints({
             transformResponse: (response) => response.data,
             providesTags: ["Employees"],
         }),
+        getEmployeeProfile: builder.query({
+            query: (id) => ({
+                url: `api/subscriber/organization/employees/${id}`,
+                method: "GET",
+            }),
+            transformResponse: (response) => response.data,
+            providesTags: (result, error, id) => [{ type: "Employees", id }],
+        }),
         createEmployeeDetail: builder.mutation({
             query: (data) => ({
                 url: "api/subscriber/organization/employees/detail",
@@ -76,4 +84,5 @@ export const {
     useInviteEmployeeMutation,
     useGetNewEmployeesQuery,
     useCreateEmployeeDetailMutation,
+    useGetEmployeeProfileQuery,
 } = employeesApi;

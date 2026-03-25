@@ -130,7 +130,7 @@ function EmployeesTap() {
       return [
         <AccountDetails
           key={`account-details-${index}`}
-          path={`/employee-profile/${employee._id}-${encodeURIComponent(userData.name || "")}`}
+          path={`/hr/employees/${employee._id}/profile`}
           account={{
             name: userData.name || t("Unknown"),
             rule: employee.position_id?.title || (userData.is_active ? t("Active") : t("Inactive")),
