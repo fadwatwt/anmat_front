@@ -1,203 +1,288 @@
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState, useMemo } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import PropTypes from "prop-types";
 import Modal from "@/components/Modal/Modal.jsx";
 import InputAndLabel from "@/components/Form/InputAndLabel.jsx";
-// import SelectWithoutLabel from "@/components/Form/SelectWithoutLabel.jsx";
-import {
-  useUpdateEmployeeMutation,
-} from "@/redux/employees/employeesApi.js";
-import { fetchRoles } from "@/redux/roles/rolesSlice.js";
-import { fetchDepartments } from "@/redux/departments/departmentAPI.js";
-import SelectAndLabel from "@/components/Form/SelectAndLabel";
+import MultiSelect from "@/components/Form/MultiSelect";
+import ElementsSelect from "@/components/Form/ElementsSelect";
+import { useUpdateEmployeeMutation } from "@/redux/employees/employeesApi.js";
+import { useGetDepartmentsQuery } from "@/redux/departments/departmentsApi";
+import { useGetSubscriberRolesQuery } from "@/redux/roles/subscriberRolesApi";
+import { useTranslation } from "react-i18next";
+import { useProcessing } from "@/app/providers";
+import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 
-function EditAnEmployeeModal({ isOpen, onClose, employee }) {
-  const [updateEmployee, { isLoading }] = useUpdateEmployeeMutation();
-  const dispatch = useDispatch();
-  const [apiError, setApiError] = useState("");
-  const [roles, setRoles] = useState([]);
-  const [departments, setDepartments] = useState([]);
+const daysOfWeek = [
+  { id: "Monday", value: "Monday" },
+  { id: "Tuesday", value: "Tuesday" },
+  { id: "Wednesday", value: "Wednesday" },
+  { id: "Thursday", value: "Thursday" },
+  { id: "Friday", value: "Friday" },
+  { id: "Saturday", value: "Saturday" },
+  { id: "Sunday", value: "Sunday" },
+];
 
-  useEffect(() => {
-    if (isOpen) {
-      setApiError("");
-      dispatch(fetchRoles())
-        ?.then((res) => {
-          setRoles(
-            res.payload.data.map((role) => ({
-              value: role._id,
-              label: role.name,
-            }))
-          );
-        })
-        .catch(() => setApiError("Failed to fetch roles. Please try again."));
+function EditAnEmployeeModal({ isOpen, onClose, employeeData }) {
+  const { t } = useTranslation();
+  const { showProcessing, hideProcessing } = useProcessing();
+  const [updateEmployee] = useUpdateEmployeeMutation();
+  const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
-      dispatch(fetchDepartments())
-        ?.then((res) => {
-          setDepartments(
-            res.payload.map((dept) => ({
-              value: dept._id,
-              label: dept.name,
-            }))
-          );
-        })
-        .catch(() =>
-          setApiError("Failed to fetch departments. Please try again.")
-        );
-    }
-  }, [isOpen, dispatch]);
+  const { data: departmentsData = [] } = useGetDepartmentsQuery({}, { skip: !isOpen });
+  const { data: rolesData = [] } = useGetSubscriberRolesQuery({}, { skip: !isOpen });
+
+  const countryOptions = [
+    { id: "Egypt", element: t("Egypt") },
+    { id: "Palestine", element: t("Palestine") },
+    { id: "Jordan", element: t("Jordan") },
+    { id: "Saudi Arabia", element: t("Saudi Arabia") },
+  ];
+
+  const cityOptions = [
+    { id: "Cairo", element: t("Cairo") },
+    { id: "Alexandria", element: t("Alexandria") },
+    { id: "Gaza", element: t("Gaza") },
+    { id: "Amman", element: t("Amman") },
+    { id: "Riyadh", element: t("Riyadh") },
+  ];
+
+  const departmentOptions = useMemo(() => {
+    return departmentsData?.map(dept => ({ id: dept._id, element: dept.name })) || [];
+  }, [departmentsData]);
 
   const formik = useFormik({
     initialValues: {
-      name: employee?.name || "",
-      email: employee?.email || "",
-      workingHours: employee?.workingHours || "",
-      holidays: employee?.holidays || "",
-      department: employee?.department?._id || "",
+      name: employeeData?.user?.name || "",
+      phone: employeeData?.user?.phone || "",
+      department_id: employeeData?.department_id?._id || employeeData?.department_id || "",
+      position_id: employeeData?.position_id?._id || employeeData?.position_id || "",
+      roles_ids: employeeData?.roles_ids || [],
+      country: employeeData?.country || "",
+      city: employeeData?.city || "",
+      work_hours: employeeData?.work_hours || 0,
+      salary: employeeData?.salary || 0,
+      yearly_day_offs: employeeData?.yearly_day_offs || 0,
+      weekend_days: employeeData?.weekend_days || [],
+      date_of_birth: employeeData?.date_of_birth ? new Date(employeeData.date_of_birth).toISOString().split('T')[0] : "",
     },
     validationSchema: Yup.object({
-      name: Yup.string().required("Name is required"),
-      email: Yup.string()
-        .email("Invalid email address")
-        .required("Email is required"),
-      workingHours: Yup.number().required("Working hours are required"),
-      holidays: Yup.number().required("Holidays are required"),
-      department: Yup.string().required("Department is required"),
+      name: Yup.string().required(t("Name is required")),
+      phone: Yup.string().required(t("Phone is required")),
+      country: Yup.string().required(t("Country is required")),
+      city: Yup.string().required(t("City is required")),
+      work_hours: Yup.number().min(1).required(t("Work hours are required")),
+      salary: Yup.number().min(0).required(t("Salary is required")),
+      yearly_day_offs: Yup.number().min(0).required(t("Yearly day offs are required")),
     }),
     onSubmit: async (values, { setSubmitting }) => {
       try {
-        setApiError("");
-        await updateEmployee({ id: employee._id, ...values }).unwrap();
-        onClose();
+        setApiResponse({ ...apiResponse, isOpen: false });
+        showProcessing(t("Updating Employee..."));
+        const payload = {
+          name: values.name,
+          phone: values.phone,
+          employee_details: {
+            department_id: values.department_id || undefined,
+            position_id: values.position_id || undefined,
+            roles_ids: values.roles_ids,
+            country: values.country,
+            city: values.city,
+            work_hours: Number(values.work_hours),
+            salary: Number(values.salary),
+            yearly_day_offs: Number(values.yearly_day_offs),
+            weekend_days: values.weekend_days,
+            date_of_birth: values.date_of_birth || undefined,
+          }
+        };
+
+        if (!payload.employee_details.department_id) delete payload.employee_details.department_id;
+        if (!payload.employee_details.position_id) delete payload.employee_details.position_id;
+        if (!payload.employee_details.date_of_birth) delete payload.employee_details.date_of_birth;
+
+        await updateEmployee({ id: employeeData.user_id, ...payload }).unwrap();
+        
+        setApiResponse({
+          isOpen: true,
+          status: "success",
+          message: t("Employee updated successfully")
+        });
       } catch (error) {
-        setApiError(
-          error?.data?.message || "Failed to update employee. Please try again."
-        );
+        setApiResponse({
+          isOpen: true,
+          status: "error",
+          message: error?.data?.message || t("Failed to update employee")
+        });
       } finally {
+        hideProcessing();
         setSubmitting(false);
       }
     },
     enableReinitialize: true,
   });
 
+  const positionOptions = useMemo(() => {
+    if (!formik.values.department_id) return [];
+    const selectedDept = departmentsData?.find(d => d._id === formik.values.department_id);
+    return selectedDept?.positions_ids?.map(pos => ({ id: pos._id, element: pos.title })) || [];
+  }, [departmentsData, formik.values.department_id]);
+
+  const roles = (Array.isArray(rolesData) ? rolesData : rolesData?.data || [])?.map(r => ({ id: r._id, value: r.name })) || [];
+
   useEffect(() => {
     if (isOpen) {
-      setApiError("");
-
-      dispatch(fetchDepartments())
-        ?.then((res) => {
-          setDepartments(
-            res.payload.map((dept) => ({
-              _id: dept._id, // Ensure the correct property names
-              name: dept.name,
-            }))
-          );
-        })
-        .catch(() =>
-          setApiError("Failed to fetch departments. Please try again.")
-        );
+      setApiResponse({ isOpen: false, status: "", message: "" });
     }
-  }, [isOpen, dispatch]);
+  }, [isOpen]);
+
+  const handleCloseResponse = () => {
+    setApiResponse(prev => ({ ...prev, isOpen: false }));
+    if (apiResponse.status === "success") {
+      onClose();
+    }
+  };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      isBtns={true}
-      btnApplyTitle={formik.isSubmitting ? "Saving..." : "Edit Employee"}
-      onClick={formik.handleSubmit}
-      className={"lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12 p-3"}
-      title={"Editing an Employee"}
-      disableSubmit={formik.isSubmitting || !formik.isValid}
-    >
-      <div className="px-1">
-        {apiError && (
-          <div className="mb-4 text-red-500 text-sm">{apiError}</div>
-        )}
+    <>
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        isBtns={true}
+        btnApplyTitle={formik.isSubmitting ? t("Saving...") : t("Edit Employee")}
+        onClick={formik.handleSubmit}
+        className={"lg:w-7/12 md:w-9/12 w-11/12 p-3"}
+        title={t("Editing an Employee")}
+        disableSubmit={formik.isSubmitting}
+      >
+        <div className="px-1 max-h-[75vh] overflow-y-auto custom-scrollbar">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <InputAndLabel
+              title="Name"
+              name="name"
+              {...formik.getFieldProps("name")}
+              error={formik.touched.name && formik.errors.name}
+            />
 
-        <div className="flex flex-col gap-4">
-          <InputAndLabel
-            title="Email"
-            name="email"
-            {...formik.getFieldProps("email")}
-            error={formik.errors.email}
-          />
+            <InputAndLabel
+              title="Phone"
+              name="phone"
+              {...formik.getFieldProps("phone")}
+              error={formik.touched.phone && formik.errors.phone}
+            />
 
-          <InputAndLabel
-            title="Role"
-            name="role"
-            {...formik.getFieldProps("role")}
-            error={formik.errors.role}
-          />
+            <ElementsSelect
+              title={t("Department")}
+              options={departmentOptions}
+              placeholder={t("Select Department")}
+              defaultValue={departmentOptions.find(opt => opt.id === formik.values.department_id)}
+              onChange={(val) => {
+                formik.setFieldValue("department_id", val[0]?.id || "");
+                formik.setFieldValue("position_id", ""); 
+              }}
+              name="department_id"
+              classNameContainer={"w-full"}
+            />
 
-          <InputAndLabel
-            title="Job Type"
-            name="jobType"
-            {...formik.getFieldProps("jobType")}
-            error={formik.errors.jobType}
-          />
+            <ElementsSelect
+              title={t("Position")}
+              options={positionOptions}
+              placeholder={!formik.values.department_id ? t("Select department first") : t("Select Position")}
+              defaultValue={positionOptions.find(opt => opt.id === formik.values.position_id)}
+              onChange={(val) => formik.setFieldValue("position_id", val[0]?.id || "")}
+              name="position_id"
+              classNameContainer={"w-full"}
+            />
 
-          <InputAndLabel
-            title="Salary"
-            name="salary"
-            type="number"
-            {...formik.getFieldProps("salary")}
-            error={formik.errors.salary}
-          />
+            <MultiSelect
+              title={t("Roles")}
+              multi={true}
+              options={roles}
+              value={formik.values.roles_ids}
+              onChange={(val) => formik.setFieldValue("roles_ids", val)}
+              placeholder={t("Select Roles")}
+              error={formik.touched.roles_ids && formik.errors.roles_ids}
+            />
 
-          <InputAndLabel
-            title="Salary"
-            name="salary"
-            type="number"
-            {...formik.getFieldProps("salary")}
-            error={formik.errors.salary}
-          />
+            <ElementsSelect
+              title={t("Country")}
+              options={countryOptions}
+              placeholder={t("Select Country")}
+              defaultValue={countryOptions.find(opt => opt.id === formik.values.country)}
+              onChange={(val) => formik.setFieldValue("country", val[0]?.id || "")}
+              name="country"
+              classNameContainer={"w-full"}
+            />
 
-          <SelectAndLabel
-            title="Department"
-            name="department"
-            value={formik.values.department}
-            onChange={(val) => formik.setFieldValue("department", val)} // Sending _id
-            options={departments} // Ensure the correct structure
-            error={formik.errors.department}
-            onBlur={() => { }} />
+            <ElementsSelect
+              title={t("City")}
+              options={cityOptions}
+              placeholder={t("Select City")}
+              defaultValue={cityOptions.find(opt => opt.id === formik.values.city)}
+              onChange={(val) => formik.setFieldValue("city", val[0]?.id || "")}
+              name="city"
+              classNameContainer={"w-full"}
+            />
 
-          <InputAndLabel
-            title="Working Hours"
-            name="workingHours"
-            type="number"
-            {...formik.getFieldProps("workingHours")}
-            error={formik.errors.workingHours}
-          />
+            <InputAndLabel
+              title="Work Hours"
+              name="work_hours"
+              type="number"
+              {...formik.getFieldProps("work_hours")}
+              error={formik.touched.work_hours && formik.errors.work_hours}
+            />
 
-          <InputAndLabel
-            title="Working Days"
-            name="workingDays"
-            type="number"
-            {...formik.getFieldProps("workingDays")}
-            error={formik.errors.workingDays}
-          />
+            <InputAndLabel
+              title="Salary"
+              name="salary"
+              type="number"
+              {...formik.getFieldProps("salary")}
+              error={formik.touched.salary && formik.errors.salary}
+            />
 
-          <InputAndLabel
-            title="Annual Leave Days"
-            name="annualLeaveDays"
-            type="number"
-            {...formik.getFieldProps("annualLeaveDays")}
-            error={formik.errors.annualLeaveDays}
-          />
+            <InputAndLabel
+              title="Yearly Day Offs"
+              name="yearly_day_offs"
+              type="number"
+              {...formik.getFieldProps("yearly_day_offs")}
+              error={formik.touched.yearly_day_offs && formik.errors.yearly_day_offs}
+            />
 
+            <MultiSelect
+              title={t("Weekend Days")}
+              multi={true}
+              options={daysOfWeek}
+              value={formik.values.weekend_days}
+              onChange={(val) => formik.setFieldValue("weekend_days", val)}
+              placeholder={t("Select Days")}
+              error={formik.touched.weekend_days && formik.errors.weekend_days}
+            />
+
+            <InputAndLabel
+              title="Date of Birth"
+              name="date_of_birth"
+              type="date"
+              {...formik.getFieldProps("date_of_birth")}
+              error={formik.touched.date_of_birth && formik.errors.date_of_birth}
+            />
+          </div>
         </div>
-      </div>
-    </Modal>
+      </Modal>
+
+      <ApiResponseAlert
+        isOpen={apiResponse.isOpen}
+        status={apiResponse.status}
+        message={apiResponse.message}
+        onClose={handleCloseResponse}
+      />
+    </>
   );
 }
 
 EditAnEmployeeModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
-  employee: PropTypes.object.isRequired,
+  employeeData: PropTypes.object,
 };
 
 export default EditAnEmployeeModal;

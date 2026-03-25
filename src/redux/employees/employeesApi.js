@@ -22,7 +22,7 @@ export const employeesApi = apiSlice.injectEndpoints({
         updateEmployee: builder.mutation({
             query: ({ id, ...updatedEmployee }) => ({
                 url: `api/subscriber/organization/employees/${id}`,
-                method: "PATCH",
+                method: "PUT",
                 body: updatedEmployee,
             }),
             invalidatesTags: ["Employees"],
