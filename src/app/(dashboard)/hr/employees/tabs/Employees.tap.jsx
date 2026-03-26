@@ -40,7 +40,7 @@ function EmployeesTap() {
   const [selectedAssignEmployee, setSelectedAssignEmployee] = useState(null);
   const [selectedDeleteEmployee, setSelectedDeleteEmployee] = useState(null);
   const [isOpenDeleteAlert, setIsOpenDeleteAlert] = useState(false);
-  const [isOpenSuccessDeleteAlert, setIsOpenSuccessDeleteAlert] = useState(false);
+  const [deleteApiResponse, setDeleteApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
   // Unassign department states
   const [selectedUnassignEmployee, setSelectedUnassignEmployee] = useState(null);
@@ -168,18 +168,27 @@ function EmployeesTap() {
     setIsOpenDeleteAlert(true);
   };
 
-  const handleDeleteConfirmation = async (isConfirmed) => {
-    setIsOpenDeleteAlert(false);
-    if (isConfirmed && selectedDeleteEmployee) {
-      showProcessing(t("Deleting Employee..."));
-      try {
-        await deleteEmployee(selectedDeleteEmployee._id).unwrap();
-        setIsOpenSuccessDeleteAlert(true);
-      } catch (err) {
-        console.error("Delete employee failed:", err);
-      } finally {
-        hideProcessing();
-      }
+  const onConfirmDelete = async () => {
+    if (!selectedDeleteEmployee) return;
+
+    showProcessing(t("Deleting Employee..."));
+    try {
+      await deleteEmployee(selectedDeleteEmployee.user_id).unwrap();
+      setDeleteApiResponse({
+        isOpen: true,
+        status: "success",
+        message: t("Employee deleted successfully")
+      });
+      setIsOpenDeleteAlert(false);
+    } catch (err) {
+      setDeleteApiResponse({
+        isOpen: true,
+        status: "error",
+        message: err?.data?.message || t("Failed to delete employee")
+      });
+      setIsOpenDeleteAlert(false);
+    } finally {
+      hideProcessing();
     }
   };
 
@@ -322,26 +331,23 @@ function EmployeesTap() {
 
 
       {/* Delete Confirmation Alert */}
-      <Alert
-        type="warning"
-        title="Delete Employee?"
-        message="Are you sure you want to delete this employee?"
-        onSubmit={handleDeleteConfirmation}
-        titleCancelBtn="Cancel"
-        titleSubmitBtn="Delete"
+      <ApprovalAlert
         isOpen={isOpenDeleteAlert}
-        onClose={() => setIsOpenDeleteAlert(false)}
-        isBtns={1}
+        onClose={() => {
+          setIsOpenDeleteAlert(false);
+          setSelectedDeleteEmployee(null);
+        }}
+        onConfirm={onConfirmDelete}
+        title={t("Delete Employee")}
+        message={t("Are you sure you want to delete this employee? This action cannot be undone.")}
       />
 
-      {/* Success Delete Alert */}
-      <Alert
-        type="success"
-        title="Employee Deleted"
-        isBtns={false}
-        message={`The employee ${selectedDeleteEmployee?.name} and all associated data have been successfully deleted.`}
-        isOpen={isOpenSuccessDeleteAlert}
-        onClose={() => setIsOpenSuccessDeleteAlert(false)}
+      {/* Delete Response Alert */}
+      <ApiResponseAlert
+        isOpen={deleteApiResponse.isOpen}
+        status={deleteApiResponse.status}
+        message={deleteApiResponse.message}
+        onClose={() => setDeleteApiResponse(prev => ({ ...prev, isOpen: false }))}
       />
 
       {/* Assign Department Modal */}
