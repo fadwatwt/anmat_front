@@ -115,21 +115,22 @@ function TaskDetailsPage({ params }) {
                             </div>
                             <TasksList isAssignedDate={true} tasks={mappedStages} />
                         </div>
-                        <div className={"bg-white dark:bg-white-0 rounded-2xl w-full flex flex-col gap-3"}>
+                        {false && <div className={"bg-white dark:bg-white-0 rounded-2xl w-full flex flex-col gap-3"}>
                             <div className={"p-4 flex flex-col gap-3"}>
                                 <div className={"title-header w-full flex items-center justify-between"}>
                                     <p className={"text-lg dark:text-gray-200 "}>{t("Comments")}</p>
                                 </div>
-                                <TaskComments comments={task.comments || comments} />
+                                <TaskComments comments={task.comments} />
                             </div>
                             <CommentInput />
-                        </div>
+                        </div>}
                     </div>
                     <div className={"flex-1 flex flex-col gap-6"}>
-                        <ProjectMembers members={assigneeMember.length > 0 ? assigneeMember : defaultMembers} title="Assignee Employee" />
-                        <AttachmentsList attachments={attachments} />
-                        <ActivityLogs activityLogs={activityLogs} className={"h-72"} />
-                        <TimeLine />
+                        <ProjectMembers members={assigneeMember} title="Assignee Employee" />
+                        {/* Hiding components not yet linked to backend data */}
+                        {false && <AttachmentsList attachments={attachments} />}
+                        {false && <ActivityLogs activityLogs={activityLogs} className={"h-72"} />}
+                        {false && <TimeLine />}
                     </div>
                 </div>
             </Page>
