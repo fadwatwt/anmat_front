@@ -71,21 +71,21 @@ function CompanyManagerProfile() {
                                             <span className={"text-cell-secondary text-sm"}>{t("Name")}:</span>
                                             <p className={"text-cell-primary text-sm font-medium"}>{user?.name || "N/A"}</p>
                                         </div>
-                                        <div className={"flex items-center gap-2"}>
+                                        {false && <div className={"flex items-center gap-2"}>
                                             <RiCake2Line size={18} className={"text-cell-secondary"} />
                                             <span className={"text-cell-secondary text-sm"}>{t("Age")}:</span>
                                             <p className={"text-cell-primary text-sm font-medium"}>{user?.age || "N/A"}</p>
-                                        </div>
-                                        <div className={"flex items-center gap-2"}>
+                                        </div>}
+                                        {false && <div className={"flex items-center gap-2"}>
                                             <RiGraduationCapLine size={18} className={"text-cell-secondary"} />
                                             <span className={"text-cell-secondary text-sm"}>{t("Education")}:</span>
                                             <p className={"text-cell-primary text-sm font-medium truncate"}>{user?.education || "N/A"}</p>
-                                        </div>
-                                        <div className={"flex items-center gap-2"}>
+                                        </div>}
+                                        {false && <div className={"flex items-center gap-2"}>
                                             <RiBuilding2Line size={18} className={"text-cell-secondary"} />
                                             <span className={"text-cell-secondary text-sm"}>{t("Department")}:</span>
                                             <p className={"text-cell-primary text-sm font-medium"}>{user?.department?.name || t("N/A")}</p>
-                                        </div>
+                                        </div>}
                                     </div>
 
                                     {/* Col 2 */}
@@ -142,15 +142,15 @@ function CompanyManagerProfile() {
 
                 {/* Organization Card */}
                 <div className={"w-full px-4 md:px-10 "}>
-                    <OrganizationCard 
-                        organization={organization} 
-                        isLoading={isOrgLoading} 
+                    <OrganizationCard
+                        organization={organization}
+                        isLoading={isOrgLoading}
                         onEdit={() => setIsEditOrgOpen(true)}
                     />
                 </div>
 
                 {/* Middle Section: To Do List + Work Info */}
-                <div className={"w-full px-4 md:px-10 flex flex-col lg:flex-row gap-6"}>
+                {false && <div className={"w-full px-4 md:px-10 flex flex-col lg:flex-row gap-6"}>
                     {/* To Do List */}
                     <div className={"flex-[1.5]"}>
                         <ToDoList
@@ -170,12 +170,12 @@ function CompanyManagerProfile() {
                     <div className={"flex-1"}>
                         <WorkInformation />
                     </div>
-                </div>
+                </div>}
 
                 {/* Subscriptions */}
-                <div className={"w-full px-4 md:px-10 pb-16"}>
+                {false && <div className={"w-full px-4 md:px-10 pb-16"}>
                     <Subscriptions />
-                </div>
+                </div>}
             </div>
 
             <EditProfileModal
