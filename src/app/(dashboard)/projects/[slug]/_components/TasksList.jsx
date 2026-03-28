@@ -25,10 +25,10 @@ function TasksList({ tasks = [], isAssignedDate = false }) {
         <div className={"max-h-[500px] flex flex-col w-full overflow-hidden overflow-y-auto custom-scroll"}>
             {
                 tasks.map((task, index) => (
-                    <div key={task._id || index} className={"p-3 flex flex-col gap-3 hover:bg-slate-50 dark:hover:bg-slate-900/40 transition-colors border-b border-gray-100 dark:border-white/5 last:border-0"}>
+                    <div key={task._id || index} className={"p-3 flex flex-col gap-3 hover:bg-status-bg transition-colors border-b border-status-border last:border-0"}>
                         <div className={"header-task-project flex justify-between items-start"}>
                             <div className="flex flex-col gap-1">
-                                <p className={"text-sm font-medium text-gray-900 dark:text-gray-100"}>{task.name || task.title}</p>
+                                <p className={"text-sm font-semibold text-cell-primary"}>{task.name || task.title}</p>
                                 <div className={"delivery flex gap-1 items-center"}>
                                     <StateOfTask type={task.delivery || task.status} timeLate={task.timeLate} />
                                     {task.priority && (
@@ -47,7 +47,7 @@ function TasksList({ tasks = [], isAssignedDate = false }) {
                         
                         <div className="flex flex-wrap justify-between items-center gap-2">
                             <div className={"members flex gap-2 items-center"}>
-                                <p className={"text-soft-400 text-xs dark:text-gray-400"}>{t("Assigned to")}:</p>
+                                <p className={"text-cell-secondary text-xs"}>{t("Assigned to")}:</p>
                                 <MembersListXLine members={task.members} maxVisible={3} />
                             </div>
 
@@ -56,14 +56,14 @@ function TasksList({ tasks = [], isAssignedDate = false }) {
                                 <div className={"flex gap-4 items-center"}>
                                     {task.assignedDate && (
                                         <div className="flex flex-col">
-                                            <span className={"text-soft-400 text-[10px] uppercase tracking-wider dark:text-gray-500"}>{t("Assigned")}:</span>
-                                            <span className="text-xs text-gray-700 dark:text-gray-300">{translateDate(task.assignedDate)}</span>
+                                            <span className={"text-cell-secondary text-[10px] uppercase tracking-wider"}>{t("Assigned")}:</span>
+                                            <span className="text-xs text-cell-primary">{translateDate(task.assignedDate)}</span>
                                         </div>
                                     )}
                                     {task.dueDate && (
                                         <div className="flex flex-col">
-                                            <span className={"text-soft-400 text-[10px] uppercase tracking-wider dark:text-gray-500"}>{t("Due")}:</span>
-                                            <span className="text-xs text-gray-700 dark:text-gray-300">{translateDate(task.dueDate)}</span>
+                                            <span className={"text-cell-secondary text-[10px] uppercase tracking-wider"}>{t("Due")}:</span>
+                                            <span className="text-xs text-cell-primary">{translateDate(task.dueDate)}</span>
                                         </div>
                                     )}
                                 </div>
