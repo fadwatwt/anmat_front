@@ -27,6 +27,14 @@ export const organizationsApi = apiSlice.injectEndpoints({
             transformResponse: (response) => response.data,
             providesTags: ["Organizations"],
         }),
+        updateSubscriberOrganization: builder.mutation({
+            query: (updatedOrg) => ({
+                url: "api/subscriber/organization",
+                method: "PUT",
+                body: updatedOrg,
+            }),
+            invalidatesTags: ["Organizations"],
+        }),
     }),
 });
 
@@ -34,4 +42,5 @@ export const {
     useGetOrganizationsQuery,
     useCreateOrganizationForSubscriberMutation,
     useGetSubscriberOrganizationQuery,
+    useUpdateSubscriberOrganizationMutation,
 } = organizationsApi;

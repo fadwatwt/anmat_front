@@ -18,6 +18,7 @@ import { RiCake2Line } from "react-icons/ri";
 import { useState } from "react";
 import EditProfileModal from "@/app/(dashboard)/profile/_components/modals/EditProfile.modal.jsx";
 import ChangePasswordModal from "@/app/(dashboard)/profile/_components/modals/ChangePassword.modal.jsx";
+import EditOrganizationModal from "@/app/(dashboard)/profile/_components/modals/EditOrganization.modal.jsx";
 import { useSelector } from "react-redux";
 import { selectUser } from "@/redux/auth/authSlice";
 import { useUpdateUserAccountMutation } from "@/redux/auth/authAPI";
@@ -30,6 +31,7 @@ function CompanyManagerProfile() {
     const [updateUserAccount, { isLoading: isUpdating }] = useUpdateUserAccountMutation();
     const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
     const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+    const [isEditOrgOpen, setIsEditOrgOpen] = useState(false);
 
     return (
         <Page isTitle={false} className={"w-full"}>
@@ -140,7 +142,11 @@ function CompanyManagerProfile() {
 
                 {/* Organization Card */}
                 <div className={"w-full px-4 md:px-10 "}>
-                    <OrganizationCard organization={organization} isLoading={isOrgLoading} />
+                    <OrganizationCard 
+                        organization={organization} 
+                        isLoading={isOrgLoading} 
+                        onEdit={() => setIsEditOrgOpen(true)}
+                    />
                 </div>
 
                 {/* Middle Section: To Do List + Work Info */}
@@ -182,6 +188,11 @@ function CompanyManagerProfile() {
             <ChangePasswordModal
                 isOpen={isChangePasswordOpen}
                 onClose={() => setIsChangePasswordOpen(false)}
+            />
+            <EditOrganizationModal
+                isOpen={isEditOrgOpen}
+                onClose={() => setIsEditOrgOpen(false)}
+                organization={organization}
             />
         </Page>
     );

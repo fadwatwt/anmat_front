@@ -12,7 +12,7 @@ import {
     RiUserStarLine
 } from "@remixicon/react";
 
-function OrganizationCard({ organization, isLoading }) {
+function OrganizationCard({ organization, isLoading, onEdit }) {
     const { t } = useTranslation();
 
     if (isLoading) {
@@ -40,7 +40,9 @@ function OrganizationCard({ organization, isLoading }) {
                         )}
                     </div>
                 </div>
-                <button className="px-4 py-2 text-sm border border-status-border rounded-lg text-cell-secondary hover:bg-gray-50 dark:hover:bg-gray-700">
+                <button 
+                  onClick={onEdit}
+                  className="px-4 py-2 text-sm border border-status-border rounded-lg text-cell-secondary hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                     {t("Edit Organization")}
                 </button>
             </div>
@@ -64,6 +66,11 @@ function OrganizationCard({ organization, isLoading }) {
                         <RiMailLine size={18} className="text-cell-secondary" />
                         <span className="text-cell-secondary text-sm">{t("Email")}:</span>
                         <span className="text-cell-primary text-sm font-medium">{organization?.email || "N/A"}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <RiBriefcaseLine size={18} className="text-cell-secondary" />
+                        <span className="text-cell-secondary text-sm">{t("Industry")}:</span>
+                        <span className="text-cell-primary text-sm font-medium">{organization?.industry?.name || organization?.industry || "N/A"}</span>
                     </div>
                 </div>
 
