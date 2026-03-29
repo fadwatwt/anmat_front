@@ -27,6 +27,13 @@ export const positionsApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["Positions"],
         }),
+        deletePosition: builder.mutation({
+            query: (id) => ({
+                url: `api/subscriber/organization/positions/${id}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: ["Positions"],
+        }),
     }),
 });
 
@@ -34,4 +41,5 @@ export const {
     useGetPositionsQuery,
     useCreatePositionMutation,
     useUpdatePositionMutation,
+    useDeletePositionMutation,
 } = positionsApi;
