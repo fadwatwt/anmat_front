@@ -12,6 +12,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLazyGetUserQuery } from "@/redux/auth/authAPI";
 import { setUser, selectAuth } from "@/redux/auth/authSlice";
+import { useProcessing } from "@/app/providers";
 
 function EditProfileModal({ isOpen, onClose, user, updateProfile, isLoading }) {
     const { t } = useTranslation();
@@ -71,7 +72,11 @@ function EditProfileModal({ isOpen, onClose, user, updateProfile, isLoading }) {
         },
     });
 
+    const { showProcessing, hideProcessing } = useProcessing();
+
     const handleConfirmUpdate = async () => {
+        setShowApproval(false);
+        showProcessing(t("Updating profile..."));
         try {
             let payload = {
                 name: formik.values.name,
@@ -94,15 +99,14 @@ function EditProfileModal({ isOpen, onClose, user, updateProfile, isLoading }) {
                 dispatch(setUser(refreshedUser?.data || refreshedUser));
             }
 
+            hideProcessing();
             setApiResponse({
                 isOpen: true,
                 status: "success",
                 message: t("Profile updated successfully")
             });
-            setShowApproval(false);
-            onClose();
         } catch (error) {
-            setShowApproval(false);
+            hideProcessing();
             setApiResponse({
                 isOpen: true,
                 status: "error",
@@ -206,7 +210,10 @@ function EditProfileModal({ isOpen, onClose, user, updateProfile, isLoading }) {
                 isOpen={apiResponse.isOpen}
                 status={apiResponse.status}
                 message={apiResponse.message}
-                onClose={() => setApiResponse({ ...apiResponse, isOpen: false })}
+                onClose={() => {
+                    if (apiResponse.status === "success") onClose();
+                    setApiResponse({ ...apiResponse, isOpen: false });
+                }}
             />
         </>
     );

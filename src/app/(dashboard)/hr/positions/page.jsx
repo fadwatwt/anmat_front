@@ -47,16 +47,16 @@ function PositionsPage() {
     };
 
     const rows = positions.map((pos) => [
-        <span key={`name-${pos._id}`} className="text-sm font-medium text-gray-900 dark:text-gray-100">
+        <span key={`name-${pos._id}`} className="text-sm font-semibold text-cell-primary">
             {pos.title}
         </span>,
-        <span key={`desc-${pos._id}`} className="text-sm text-gray-500 dark:text-gray-400">
+        <span key={`desc-${pos._id}`} className="text-sm text-cell-secondary whitespace-normal">
             {pos.description}
         </span>,
     ]);
 
     const headerActions = (
-        <button onClick={handleCreatePosition} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all text-sm font-medium shadow-sm">
+        <button onClick={handleCreatePosition} className="flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg transition-all text-sm font-semibold shadow-sm">
             <GoPlus size={18} />
             {t("Create a Position")}
         </button>

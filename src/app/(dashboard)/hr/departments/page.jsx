@@ -13,12 +13,14 @@ import Alert from "@/components/Alerts/Alert";
 import Table from "@/components/Tables/Table"
 import Page from "@/components/Page";
 import Rating from "@/app/(dashboard)/hr/Rating.jsx";
+import ProcessingOverlay from "@/components/Feedback/ProcessingOverlay.jsx";
 
-import { useGetDepartmentsQuery } from "@/redux/departments/departmentsApi";
+import { useGetDepartmentsQuery, useDeleteDepartmentMutation } from "@/redux/departments/departmentsApi";
 
 function DepartmentsPage() {
     const { t } = useTranslation();
-    const { data: departments = [], isLoading } = useGetDepartmentsQuery();
+    const { data: departments = [], isLoading: isDepartmentsLoading } = useGetDepartmentsQuery();
+    const [deleteDepartment, { isLoading: isDeleting }] = useDeleteDepartmentMutation();
 
     const [isOpenEditModal, setIsOpenEditModal] = useState(false);
     const [isOpenCreateModal, setIsOpenCreateModal] = useState(false);
@@ -97,15 +99,15 @@ function DepartmentsPage() {
                     imageProfile: dept.icon || "/images/department/departmentBrand1.png",
                 }}
             />,
-            <div key={`stats-${dept._id}`} className="flex flex-col text-sm text-gray-500 py-2">
-                <span className="font-medium text-gray-600">
+            <div key={`stats-${dept._id}`} className="flex flex-col text-sm text-cell-secondary py-2">
+                <span className="font-semibold text-cell-primary">
                     {t("Projects")}: {dept.stats?.projects_count ?? 0}
                 </span>
-                <span className="text-gray-400">
+                <span className="text-cell-secondary opacity-70">
                     {t("Tasks")}: {dept.stats?.tasks_count ?? 0}
                 </span>
             </div>,
-            <p key={`emp-count-${dept._id}`} className="text-sm font-medium text-gray-700">
+            <p key={`emp-count-${dept._id}`} className="text-sm font-semibold text-cell-primary">
                 {dept.stats?.employees_count ?? 0}
             </p>,
             <div key={`rating-${dept._id}`} className="flex items-center">
@@ -115,13 +117,13 @@ function DepartmentsPage() {
                 {dept.positions_ids?.map((pos) => (
                     <span
                         key={pos._id}
-                        className="bg-blue-50 text-blue-600 text-[10px] font-medium px-2 py-0.5 rounded-full border border-blue-100"
+                        className="bg-badge-bg text-badge text-[10px] font-semibold px-2 py-0.5 rounded-full border border-status-border"
                     >
                         {pos.title}
                     </span>
                 ))}
                 {(!dept.positions_ids || dept.positions_ids.length === 0) && (
-                    <span className="text-gray-400 text-xs italic">{t("No Positions")}</span>
+                    <span className="text-cell-secondary text-xs italic opacity-60">{t("No Positions")}</span>
                 )}
             </div>,
         ]);
@@ -135,9 +137,12 @@ function DepartmentsPage() {
     const handleDeleteConfirmation = async (isConfirmed) => {
         setIsOpenDeleteAlert(false);
         if (isConfirmed && selectedDeleteDepartment) {
-            // TODO: Implement delete API
-            console.log("Deleting department:", selectedDeleteDepartment._id);
-            setIsOpenSuccessDeleteAlert(true);
+            try {
+                await deleteDepartment(selectedDeleteDepartment._id).unwrap();
+                setIsOpenSuccessDeleteAlert(true);
+            } catch (error) {
+                console.error("Failed to delete department:", error);
+            }
         }
     };
 
@@ -157,12 +162,12 @@ function DepartmentsPage() {
                             <div className="flex gap-2">
                                 <button
                                     onClick={() => setIsOpenSendNotifyModal(true)}
-                                    className="bg-[#EEF2FF] text-[#375DFB] px-4 py-2 rounded-lg text-sm font-medium">
+                                    className="bg-badge-bg text-primary-500 hover:bg-opacity-80 px-4 py-2 rounded-lg text-sm font-semibold transition-all">
                                     {t("Send Notification")}
                                 </button>
                                 <button
                                     onClick={() => setIsOpenCreateModal(true)}
-                                    className="bg-[#375DFB] text-white px-4 py-2 rounded-lg text-sm font-medium">
+                                    className="bg-primary-500 text-white hover:bg-primary-600 px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm">
                                     {t("Create a Department")}
                                 </button>
                             </div>
@@ -170,6 +175,8 @@ function DepartmentsPage() {
                     />
                 </div>
             </div>
+
+            <ProcessingOverlay isOpen={isDeleting} message={t("Deleting Department...")} />
 
             <CreateDepartmentModal
                 isOpen={isOpenCreateModal}

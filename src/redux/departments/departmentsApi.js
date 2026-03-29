@@ -43,6 +43,13 @@ export const departmentsApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["Departments", "Employees"],
         }),
+        deleteDepartment: builder.mutation({
+            query: (id) => ({
+                url: `api/subscriber/organization/departments/${id}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: ["Departments"],
+        }),
     }),
 });
 
@@ -52,4 +59,5 @@ export const {
     useUpdateDepartmentMutation,
     useAssignEmployeesToDepartmentMutation,
     useUnassignEmployeesFromDepartmentMutation,
+    useDeleteDepartmentMutation,
 } = departmentsApi;

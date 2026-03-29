@@ -8,6 +8,7 @@ import * as Yup from "yup";
 import PropTypes from "prop-types";
 import ApprovalAlert from "@/components/Alerts/ApprovalAlert.jsx";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert.jsx";
+import ProcessingOverlay from "@/components/Feedback/ProcessingOverlay.jsx";
 
 import { useCreatePositionMutation } from "@/redux/positions/positionsApi";
 
@@ -129,6 +130,8 @@ function CreatePositionModal({ isOpen, onClose }) {
                 message={responseAlert.message}
                 onClose={handleResponseClose}
             />
+
+            <ProcessingOverlay isOpen={isLoading} message={t("Creating Position...")} />
         </>
     );
 }

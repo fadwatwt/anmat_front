@@ -118,9 +118,9 @@ function CompanyManagerProfile() {
                                     {/* Col 3: Actions */}
                                     <div className="flex flex-col gap-3 items-end justify-between">
                                         <div className="flex gap-3 w-full md:w-auto">
-                                            <button className="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors shadow-sm whitespace-nowrap">
+                                            {false && <button className="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors shadow-sm whitespace-nowrap">
                                                 {t("Plans & Subscription")}
-                                            </button>
+                                            </button>}
                                             <button
                                                 onClick={() => setIsEditProfileOpen(true)}
                                                 className="hidden md:block border border-status-border text-cell-primary text-sm font-medium px-4 py-2 rounded-lg hover:bg-status-bg transition-colors whitespace-nowrap">
