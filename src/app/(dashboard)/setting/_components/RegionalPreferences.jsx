@@ -1,4 +1,4 @@
-import DefaultSelect from "@/components/Form/DefaultSelect.jsx";
+import ElementsSelect from "@/components/Form/ElementsSelect.jsx";
 import DefaultButton from "@/components/Form/DefaultButton.jsx";
 import i18n from "i18next";
 import {useState} from "react";
@@ -7,27 +7,31 @@ import {useTranslation} from "react-i18next";
 function RegionalPreferences() {
     const {t} = useTranslation()
     const [selectedLanguage, setSelectedLanguage] = useState("en");
+    const [selectedTimezone, setSelectedTimezone] = useState("utc");
+    const [selectedTimeFormat, setSelectedTimeFormat] = useState("12hr");
+    const [selectedDateFormat, setSelectedDateFormat] = useState("mm-dd-yyyy");
+
     const langugeOptions = [
-        {id: "en", value: "English"},
-        {id: "ar", value: "Arabic"},
+        {id: "en", element: "English"},
+        {id: "ar", element: "Arabic"},
     ]
     const timeFormatOptions = [
-        {id: "12hr", value: "12-hour format (AM/PM)"},
-        {id: "24hr", value: "24-hour format"},
+        {id: "12hr", element: "12-hour format (AM/PM)"},
+        {id: "24hr", element: "24-hour format"},
     ];
     const timezoneOptions = [
-        {id: "utc", value: "UTC (Coordinated Universal Time)"},
-        {id: "est", value: "EST (Eastern Standard Time)"},
-        {id: "pst", value: "PST (Pacific Standard Time)"},
-        {id: "cst", value: "CST (Central Standard Time)"},
-        {id: "gmt", value: "GMT (Greenwich Mean Time)"},
+        {id: "utc", element: "UTC (Coordinated Universal Time)"},
+        {id: "est", element: "EST (Eastern Standard Time)"},
+        {id: "pst", element: "PST (Pacific Standard Time)"},
+        {id: "cst", element: "CST (Central Standard Time)"},
+        {id: "gmt", element: "GMT (Greenwich Mean Time)"},
     ];
     const dateFormatOptions = [
-        {id: "mm-dd-yyyy", value: "MM/DD/YYYY"}, // مثال: 12/31/2024
-        {id: "dd-mm-yyyy", value: "DD/MM/YYYY"}, // مثال: 31/12/2024
-        {id: "yyyy-mm-dd", value: "YYYY-MM-DD"}, // مثال: 2024-12-31
-        {id: "dd-month-yyyy", value: "DD Month YYYY"}, // مثال: 31 December 2024
-        {id: "month-dd-yyyy", value: "Month DD, YYYY"}, // مثال: December 31, 2024
+        {id: "mm-dd-yyyy", element: "MM/DD/YYYY"}, // مثال: 12/31/2024
+        {id: "dd-mm-yyyy", element: "DD/MM/YYYY"}, // مثال: 31/12/2024
+        {id: "yyyy-mm-dd", element: "YYYY-MM-DD"}, // مثال: 2024-12-31
+        {id: "dd-month-yyyy", element: "DD Month YYYY"}, // مثال: 31 December 2024
+        {id: "month-dd-yyyy", element: "Month DD, YYYY"}, // مثال: December 31, 2024
     ];
     const handelSetLanguage = (language) => {
         console.log("language", language);
@@ -50,12 +54,34 @@ function RegionalPreferences() {
                     <p className={"text-sm dark:text-gray-200"}>{t("Select your preferences for your region")}</p>
                 </div>
                 <div className={"flex flex-col gap-2"}>
-                    <DefaultSelect title={"Language"} value={selectedLanguage} options={langugeOptions}
-                                   onChange={handelSetLanguage}
+                    <ElementsSelect
+                        title={"Language"}
+                        defaultValue={langugeOptions.find(opt => opt.id === selectedLanguage)}
+                        options={langugeOptions}
+                        onChange={(vals) => handelSetLanguage(vals[0]?.id)}
+                        isMultiple={false}
                     />
-                    <DefaultSelect title={"Timezone"} options={timezoneOptions} onChange={()=> {}}/>
-                    <DefaultSelect title={"Time Format"} options={timeFormatOptions} onChange={()=> {}}/>
-                    <DefaultSelect title={"Date Format"} options={dateFormatOptions} onChange={()=> {}}/>
+                    <ElementsSelect
+                        title={"Timezone"}
+                        defaultValue={timezoneOptions.find(opt => opt.id === selectedTimezone)}
+                        options={timezoneOptions}
+                        onChange={(vals)=> setSelectedTimezone(vals[0]?.id)}
+                        isMultiple={false}
+                    />
+                    <ElementsSelect
+                        title={"Time Format"}
+                        defaultValue={timeFormatOptions.find(opt => opt.id === selectedTimeFormat)}
+                        options={timeFormatOptions}
+                        onChange={(vals)=> setSelectedTimeFormat(vals[0]?.id)}
+                        isMultiple={false}
+                    />
+                    <ElementsSelect
+                        title={"Date Format"}
+                        defaultValue={dateFormatOptions.find(opt => opt.id === selectedDateFormat)}
+                        options={dateFormatOptions}
+                        onChange={(vals)=> setSelectedDateFormat(vals[0]?.id)}
+                        isMultiple={false}
+                    />
                 </div>
             </div>
             <div className={"flex gap-2"}>
