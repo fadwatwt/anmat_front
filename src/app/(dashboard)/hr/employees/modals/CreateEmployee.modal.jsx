@@ -7,6 +7,7 @@ import WorkAndRatingInfoForm from "@/app/(dashboard)/hr/employees/components/Wor
 import { useCreateEmployeeMutation } from "@/redux/employees/employeesApi";
 import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
+import ProcessingOverlay from "@/components/Feedback/ProcessingOverlay";
 import { useTranslation } from "react-i18next";
 
 function CreateEmployeeModal({ isOpen, onClose }) {
@@ -31,7 +32,8 @@ function CreateEmployeeModal({ isOpen, onClose }) {
             salary: 0,
             yearly_day_offs: 0,
             weekend_days: [],
-            date_of_birth: ""
+            date_of_birth: "",
+            roles_ids: []
         }
     });
 
@@ -86,13 +88,13 @@ function CreateEmployeeModal({ isOpen, onClose }) {
         {
             title: t("Employee Info"),
             content: (
-                <EmployeeInfoForm formData={formData} updateFormData={updateFormData} />
+                <EmployeeInfoForm formData={formData} updateFormData={updateFormData} isEdit={false} />
             ),
         },
         {
             title: t("Work Info"),
             content: (
-                <WorkAndRatingInfoForm formData={formData} updateFormData={updateFormData} />
+                <WorkAndRatingInfoForm formData={formData} updateFormData={updateFormData} isEdit={false} />
             )
         }
     ];
@@ -145,6 +147,8 @@ function CreateEmployeeModal({ isOpen, onClose }) {
                 message={apiResponse.message}
                 onClose={handleCloseApiResponse}
             />
+
+            <ProcessingOverlay isOpen={isCreating} message={t("Creating Employee...")} />
         </>
     );
 }
@@ -163,7 +167,7 @@ function CustomBtnModal({
                 <button
                     onClick={handleSave}
                     disabled={isLoading}
-                    className="bg-primary-base text-sm flex flex-1 justify-center items-center h-full text-center dark:bg-primary-200 dark:text-black w-40 text-white p-[10px] rounded-[10px] disabled:opacity-50"
+                    className="bg-primary-500 hover:bg-primary-600 transition-colors text-sm flex flex-1 justify-center items-center h-full text-center text-white py-2.5 rounded-xl disabled:opacity-50 font-semibold"
                 >
                     {isLoading ? t("Saving...") : t("Save")}
                 </button>
@@ -171,7 +175,7 @@ function CustomBtnModal({
             {currentStep < totalSteps && (
                 <button
                     onClick={handleNext}
-                    className="bg-none text-sm border flex-1 border-primary-base flex justify-center items-center text-primary-base dark:border-soft-400 dark:text-soft-400 h-full text-center w-40 p-[10px] rounded-[10px]"
+                    className="bg-badge-bg text-sm border flex-1 border-status-border flex justify-center items-center text-primary-500 hover:bg-opacity-80 h-full text-center py-2.5 rounded-xl transition-all font-semibold"
                 >
                     {t("Next")}
                 </button>

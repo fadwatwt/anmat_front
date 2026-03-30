@@ -2,12 +2,20 @@ import InputAndLabel from "@/components/Form/InputAndLabel";
 import ElementsSelect from "@/components/Form/ElementsSelect";
 import { useTranslation } from "react-i18next";
 import { useGetDepartmentsQuery } from "@/redux/departments/departmentsApi";
+import { useGetSubscriberRolesQuery } from "@/redux/roles/subscriberRolesApi";
+import MultiSelect from "@/components/Form/MultiSelect";
 import { useMemo } from "react";
 
-function WorkAndRatingInfoForm({ formData, updateFormData }) {
+function WorkAndRatingInfoForm({ formData, updateFormData, isEdit = false }) {
     const { t } = useTranslation();
 
     const { data: departmentsData, isLoading: isDeptsLoading } = useGetDepartmentsQuery();
+    const { data: rolesData, isLoading: isRolesLoading } = useGetSubscriberRolesQuery();
+
+    const roleOptions = useMemo(() => {
+        const roles = (Array.isArray(rolesData) ? rolesData : rolesData?.data || []) || [];
+        return roles.map(role => ({ id: role._id, value: role.name }));
+    }, [rolesData]);
 
     const departmentOptions = useMemo(() => {
         const depts = departmentsData?.map(dept => ({ id: dept._id, element: dept.name })) || [];
@@ -34,8 +42,8 @@ function WorkAndRatingInfoForm({ formData, updateFormData }) {
 
     return (
         <div className={"flex flex-col gap-6 max-h-full pb-3"}>
-            <div className="bg-gray-50 dark:bg-zinc-800/50 p-4 rounded-xl border border-gray-100 dark:border-zinc-700/50 flex flex-col gap-4">
-                <h3 className="text-sm font-bold text-gray-800 dark:text-gray-100 mb-1 border-l-4 border-primary-base pl-2">{t("Employment Details")}</h3>
+            <div className="bg-surface p-4 rounded-xl border border-status-border shadow-sm flex flex-col gap-4">
+                <h3 className="text-sm font-bold text-cell-primary mb-1 border-l-4 border-primary-base pl-2">{t("Employment Details")}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <ElementsSelect
                         title={t("Department")}
@@ -59,11 +67,20 @@ function WorkAndRatingInfoForm({ formData, updateFormData }) {
                         name="position"
                         classNameContainer={"w-full"}
                     />
+                    <MultiSelect
+                        title={t("Roles")}
+                        multi={true}
+                        options={roleOptions}
+                        value={formData.employee_detail.roles_ids || []}
+                        onChange={(val) => updateFormData("roles_ids", val, true)}
+                        placeholder={isRolesLoading ? t("Loading...") : t("Select Roles")}
+                        classNameContainer={"w-full"}
+                    />
                 </div>
             </div>
 
-            <div className="bg-gray-50 dark:bg-zinc-800/50 p-4 rounded-xl border border-gray-100 dark:border-zinc-700/50 flex flex-col gap-4">
-                <h3 className="text-sm font-bold text-gray-800 dark:text-gray-100 mb-1 border-l-4 border-primary-base pl-2">{t("Financial & Schedule")}</h3>
+            <div className="bg-surface p-4 rounded-xl border border-status-border shadow-sm flex flex-col gap-4">
+                <h3 className="text-sm font-bold text-cell-primary mb-1 border-l-4 border-primary-base pl-2">{t("Financial & Schedule")}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <InputAndLabel
                         type="number"
