@@ -106,11 +106,11 @@ function PositionsPage() {
                         customActions={(index) => (
                             <StatusActions
                                 states={[
-                                    {
-                                        text: t("Edit"),
-                                        icon: <RiEditLine className="text-primary-base" />,
-                                        onClick: () => handleEdit(index),
-                                    },
+                                    // {
+                                    //     text: t("Edit"),
+                                    //     icon: <RiEditLine className="text-primary-base" />,
+                                    //     onClick: () => handleEdit(index),
+                                    // },
                                     {
                                         text: t("Delete"),
                                         icon: <RiDeleteBin7Line className="text-red-500" />,
