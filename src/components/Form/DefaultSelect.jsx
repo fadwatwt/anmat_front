@@ -30,9 +30,10 @@ function CustomSelect({
     const [dropdownHeight, setDropdownHeight] = useState(250);
 
     // Sync internal state with prop value
-    useEffect(() => {
-        setSelectedOptions(Array.isArray(value) ? value : []);
-    }, [value]);
+    // This made the problem of navigation in Employee Dashboard
+    // useEffect(() => {
+    //     setSelectedOptions(Array.isArray(value) ? value : []);
+    // }, [value]);
 
     // منطق إضافة/حذف الـ Tag
     const toggleOption = (option) => {

@@ -180,7 +180,7 @@ const MainLayout = ({ children }) => {
             />
             {/* Overlay for mobile when sidebar is open */}
             {isSlidebarOpen && (
-                <div 
+                <div
                     className="fixed inset-0 bg-black/50 z-30 md:hidden"
                     onClick={toggleSlidebarOpen}
                 />
