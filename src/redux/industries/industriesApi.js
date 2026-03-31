@@ -37,6 +37,7 @@ export const industriesApi = apiSlice.injectEndpoints({
                 url: "api/subscriber/industries",
                 method: "GET",
             }),
+            transformResponse: (response) => response.data,
             providesTags: ["Industries"],
         }),
     }),

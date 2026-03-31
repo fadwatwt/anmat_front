@@ -4,7 +4,7 @@ import DateInput from "@/components/Form/DateInput";
 
 import { useTranslation } from "react-i18next";
 
-function EmployeeInfoForm({ formData, updateFormData }) {
+function EmployeeInfoForm({ formData, updateFormData, isEdit = false }) {
     const { t } = useTranslation();
 
     const countryOptions = [
@@ -16,6 +16,7 @@ function EmployeeInfoForm({ formData, updateFormData }) {
 
     const cityOptions = [
         { id: "Cairo", element: t("Cairo") },
+        { id: "Alexandria", element: t("Alexandria") },
         { id: "Gaza", element: t("Gaza") },
         { id: "Amman", element: t("Amman") },
         { id: "Riyadh", element: t("Riyadh") },
@@ -23,8 +24,8 @@ function EmployeeInfoForm({ formData, updateFormData }) {
 
     return (
         <div className={"flex flex-col gap-6 max-h-full pb-3"}>
-            <div className="bg-gray-50 dark:bg-zinc-800/50 p-4 rounded-xl border border-gray-100 dark:border-zinc-700/50 flex flex-col gap-4">
-                <h3 className="text-sm font-bold text-gray-800 dark:text-gray-100 mb-1 border-l-4 border-primary-base pl-2">{t("Personal Information")}</h3>
+            <div className="bg-surface p-4 rounded-xl border border-status-border shadow-sm flex flex-col gap-4">
+                <h3 className="text-sm font-bold text-cell-primary mb-1 border-l-4 border-primary-base pl-2">{t("Personal Information")}</h3>
                 <InputAndLabel
                     type="text"
                     title={t("Full Name")}
@@ -37,7 +38,8 @@ function EmployeeInfoForm({ formData, updateFormData }) {
                     <InputAndLabel
                         type="email"
                         title={t("Email")}
-                        isRequired={true}
+                        isRequired={!isEdit}
+                        disabled={isEdit}
                         placeholder={t("Enter email")}
                         value={formData.email}
                         onChange={(e) => updateFormData("email", e.target.value)}
@@ -59,8 +61,8 @@ function EmployeeInfoForm({ formData, updateFormData }) {
                 />
             </div>
 
-            <div className="bg-gray-50 dark:bg-zinc-800/50 p-4 rounded-xl border border-gray-100 dark:border-zinc-700/50 flex flex-col gap-4">
-                <h3 className="text-sm font-bold text-gray-800 dark:text-gray-100 mb-1 border-l-4 border-primary-base pl-2">{t("Location")}</h3>
+            <div className="bg-surface p-4 rounded-xl border border-status-border shadow-sm flex flex-col gap-4">
+                <h3 className="text-sm font-bold text-cell-primary mb-1 border-l-4 border-primary-base pl-2">{t("Location")}</h3>
                 <div className="grid grid-cols-2 gap-4">
                     <ElementsSelect
                         title={t("Country")}

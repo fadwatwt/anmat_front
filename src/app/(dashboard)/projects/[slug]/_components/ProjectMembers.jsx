@@ -50,10 +50,10 @@ function ProjectMembers({ teams = [], members = [], title = "Project Members" })
                     </div>
                     <div className={"nameAndWork flex flex-col gap-1 items-start"}>
                         <div className={"nameAndRule flex gap-1 items-center"}>
-                            <p className={"text-sm dark:text-gray-200"}>{member.name}</p>
+                            <p className={"text-sm text-cell-primary"}>{member.name}</p>
                             {getBadge(member.rule || member.role)}
                         </div>
-                        <p className={"text-xs text-sub-500 dark:text-sub-300"}>{member.work || member.email}</p>
+                        <p className={"text-xs text-cell-secondary"}>{member.work || member.email}</p>
                     </div>
                 </div>
                 <div className="relative cursor-pointer flex-1 flex justify-end dropdown-container"
@@ -67,9 +67,9 @@ function ProjectMembers({ teams = [], members = [], title = "Project Members" })
 
     return (
         <>
-            <div className={"flex flex-col w-full p-4 rounded-2xl items-start gap-4 bg-white dark:bg-white-0"}>
+            <div className={"flex flex-col w-full p-4 rounded-2xl items-start gap-4 bg-surface shadow-sm"}>
                 <div className="flex justify-between items-center w-full">
-                    <p className={"text-lg dark:text-gray-200"}>{t(title)}</p>
+                    <p className={"text-lg text-table-title"}>{t(title)}</p>
                     <div className="w-fit">
                         <BtnAddOutline onClick={() => setCreateTeamModal(true)} title={"Create a team"} />
                     </div>
@@ -84,7 +84,7 @@ function ProjectMembers({ teams = [], members = [], title = "Project Members" })
                     ) : (
                         teams.map((team, teamIndex) => (
                             <div key={teamIndex} className="flex flex-col gap-3 w-full">
-                                <p className="text-md font-medium text-gray-600 dark:text-gray-300">{team.name}</p>
+                                <p className="text-md font-bold text-cell-primary">{team.name}</p>
                                 <div className="flex flex-col gap-3 w-full pl-2">
                                     {team.members.map((member, memberIndex) => renderMember(member, memberIndex, teamIndex))}
                                     <BtnAddOutline onClick={() => handleAddMember(teamIndex)} title={"Add a member"} />

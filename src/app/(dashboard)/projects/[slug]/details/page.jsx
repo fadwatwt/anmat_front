@@ -120,17 +120,17 @@ function ProjectDetailsPage() {
             <div className={"w-full flex items-start  gap-8 flex-col md:flex-row"}>
                 <div className={"flex flex-col gap-6 md:w-[60%] w-full "}>
                     <InfoCard type={"project"} data={projectInfoData} handelEditAction={handelEditModal} />
-                    <div className={"p-4 bg-white dark:bg-white-0 rounded-2xl w-full flex flex-col gap-3"}>
+                    <div className={"p-4 bg-surface rounded-2xl w-full flex flex-col gap-3"}>
                         <div className={"title-header pb-3 w-full flex items-center justify-between "}>
-                            <p className={"text-lg dark:text-gray-200"}>{t("Project Tasks")} </p>
+                            <p className={"text-lg text-table-title"}>{t("Project Tasks")} </p>
                             <SelectWithoutLabel onChange={handelChangeFilterTask} options={filterOptions} title={"Filter by"} className={"w-[120px] h-[36px]"} />
                         </div>
                         <TasksList tasks={filterTasks} isAssignedDate={true} />
                     </div>
-                    {false && <div className={"bg-white dark:bg-white-0 rounded-2xl w-full flex flex-col gap-3"}>
+                    {false && <div className={"bg-surface rounded-2xl w-full flex flex-col gap-3"}>
                         <div className={"p-4 flex flex-col gap-3"}>
                             <div className={"title-header w-full flex items-center justify-between"}>
-                                <p className={"text-lg dark:text-gray-200 "}>{t("Comments")}</p>
+                                <p className={"text-lg text-table-title"}>{t("Comments")}</p>
                             </div>
                             <TaskComments comments={comments} />
                         </div>

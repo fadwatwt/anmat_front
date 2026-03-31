@@ -35,39 +35,39 @@ function Alert({
     const config = {
         success: {
             icon: <RiCheckboxCircleFill size={35} className="text-green-500" />,
-            bg: "bg-green-100",
+            bg: "bg-green-100 dark:bg-green-900/20",
             modalSize: "lg:w-1/4 md:w-7/12 sm:w-6/12",
-            submitBtnClass: "bg-green-600 text-white hover:bg-green-700",
+            submitBtnClass: "bg-green-600 text-white hover:bg-green-700 shadow-green-600/20",
         },
         warning: {
             icon: (
-                <div className="rounded-full p-1 bg-blue-100">
-                    <div className="rounded-full p-2 bg-blue-200">
+                <div className="rounded-full p-1 bg-blue-100 dark:bg-blue-900/20">
+                    <div className="rounded-full p-2 bg-blue-200 dark:bg-blue-800/30">
                         <RiFlashlightLine size={25} className="text-blue-600 stroke-[3px]" />
                     </div>
                 </div>
             ),
-            bg: "bg-blue-50",
+            bg: "bg-blue-50 dark:bg-blue-900/10",
             modalSize: "lg:w-1/3 md:w-8/12 sm:w-7/12",
-            submitBtnClass: "bg-blue-600 text-white dark:bg-primary-200 dark:text-black hover:opacity-90",
+            submitBtnClass: "bg-blue-600 text-white dark:bg-primary-500 dark:text-white hover:opacity-90 shadow-blue-600/20",
         },
         delete: {
             icon: (
-                <div className="rounded-full p-2 bg-red-100">
-                    <div className="rounded-full p-2 bg-red-200/50">
+                <div className="rounded-full p-2 bg-red-100 dark:bg-red-900/20">
+                    <div className="rounded-full p-2 bg-red-200/50 dark:bg-red-800/30">
                         <RiDeleteBin7Fill size={25} className="text-red-500" />
                     </div>
                 </div>
             ),
-            bg: "bg-red-50",
+            bg: "bg-red-50 dark:bg-red-900/10",
             modalSize: "lg:w-[28%] md:w-6/12 sm:w-5/12",
-            submitBtnClass: "bg-[#E92043] text-white hover:bg-red-700", // نفس لون زر "Yes, Delete" في الصورة
+            submitBtnClass: "bg-[#E92043] text-white hover:bg-red-700 shadow-red-500/20", // نفس لون زر "Yes, Delete" في الصورة
         },
         error: {
             icon: <RiCloseCircleFill size={35} className="text-red-500" />,
-            bg: "bg-red-100",
+            bg: "bg-red-100 dark:bg-red-900/20",
             modalSize: "lg:w-1/4 md:w-7/12 sm:w-6/12",
-            submitBtnClass: "bg-red-600 text-white hover:bg-red-700",
+            submitBtnClass: "bg-red-600 text-white hover:bg-red-700 shadow-red-600/20",
         }
     };
 
@@ -86,18 +86,18 @@ function Alert({
                 </div>
 
                 <div className="flex flex-col justify-center items-center gap-2">
-                    <div className="text-center text-wrap text-md dark:text-sub-300 text-gray-900 leading-relaxed px-4">
+                    <div className="text-center text-wrap text-md text-cell-secondary leading-relaxed px-4">
                         {typeof message === "string" ? t(message) : message}
                     </div>
                 </div>
             </div>
 
             {isBtns && (
-                <div className="w-full pb-6 pt-4 flex px-6 items-center gap-3 border-t dark:border-gray-700">
+                <div className="w-full pb-6 pt-4 flex px-6 items-center gap-3 border-t border-status-border">
                     {!hideCancelBtn && (
                         <button
                             onClick={handleCancel}
-                            className="bg-white text-sm border border-gray-300 text-gray-700 py-3 flex-1 rounded-xl hover:bg-gray-50 transition-all font-medium"
+                            className="bg-surface text-sm border border-status-border text-cell-secondary py-3 flex-1 rounded-xl hover:bg-status-bg transition-all font-medium"
                         >
                             {t(titleCancelBtn || "Cancel")}
                         </button>

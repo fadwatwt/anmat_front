@@ -18,6 +18,7 @@ import { RiCake2Line } from "react-icons/ri";
 import { useState } from "react";
 import EditProfileModal from "@/app/(dashboard)/profile/_components/modals/EditProfile.modal.jsx";
 import ChangePasswordModal from "@/app/(dashboard)/profile/_components/modals/ChangePassword.modal.jsx";
+import EditOrganizationModal from "@/app/(dashboard)/profile/_components/modals/EditOrganization.modal.jsx";
 import { useSelector } from "react-redux";
 import { selectUser } from "@/redux/auth/authSlice";
 import { useUpdateUserAccountMutation } from "@/redux/auth/authAPI";
@@ -30,6 +31,7 @@ function CompanyManagerProfile() {
     const [updateUserAccount, { isLoading: isUpdating }] = useUpdateUserAccountMutation();
     const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
     const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+    const [isEditOrgOpen, setIsEditOrgOpen] = useState(false);
 
     return (
         <Page isTitle={false} className={"w-full"}>
@@ -69,21 +71,21 @@ function CompanyManagerProfile() {
                                             <span className={"text-cell-secondary text-sm"}>{t("Name")}:</span>
                                             <p className={"text-cell-primary text-sm font-medium"}>{user?.name || "N/A"}</p>
                                         </div>
-                                        <div className={"flex items-center gap-2"}>
+                                        {false && <div className={"flex items-center gap-2"}>
                                             <RiCake2Line size={18} className={"text-cell-secondary"} />
                                             <span className={"text-cell-secondary text-sm"}>{t("Age")}:</span>
                                             <p className={"text-cell-primary text-sm font-medium"}>{user?.age || "N/A"}</p>
-                                        </div>
-                                        <div className={"flex items-center gap-2"}>
+                                        </div>}
+                                        {false && <div className={"flex items-center gap-2"}>
                                             <RiGraduationCapLine size={18} className={"text-cell-secondary"} />
                                             <span className={"text-cell-secondary text-sm"}>{t("Education")}:</span>
                                             <p className={"text-cell-primary text-sm font-medium truncate"}>{user?.education || "N/A"}</p>
-                                        </div>
-                                        <div className={"flex items-center gap-2"}>
+                                        </div>}
+                                        {false && <div className={"flex items-center gap-2"}>
                                             <RiBuilding2Line size={18} className={"text-cell-secondary"} />
                                             <span className={"text-cell-secondary text-sm"}>{t("Department")}:</span>
                                             <p className={"text-cell-primary text-sm font-medium"}>{user?.department?.name || t("N/A")}</p>
-                                        </div>
+                                        </div>}
                                     </div>
 
                                     {/* Col 2 */}
@@ -116,9 +118,9 @@ function CompanyManagerProfile() {
                                     {/* Col 3: Actions */}
                                     <div className="flex flex-col gap-3 items-end justify-between">
                                         <div className="flex gap-3 w-full md:w-auto">
-                                            <button className="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors shadow-sm whitespace-nowrap">
+                                            {false && <button className="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors shadow-sm whitespace-nowrap">
                                                 {t("Plans & Subscription")}
-                                            </button>
+                                            </button>}
                                             <button
                                                 onClick={() => setIsEditProfileOpen(true)}
                                                 className="hidden md:block border border-status-border text-cell-primary text-sm font-medium px-4 py-2 rounded-lg hover:bg-status-bg transition-colors whitespace-nowrap">
@@ -140,11 +142,15 @@ function CompanyManagerProfile() {
 
                 {/* Organization Card */}
                 <div className={"w-full px-4 md:px-10 "}>
-                    <OrganizationCard organization={organization} isLoading={isOrgLoading} />
+                    <OrganizationCard
+                        organization={organization}
+                        isLoading={isOrgLoading}
+                        onEdit={() => setIsEditOrgOpen(true)}
+                    />
                 </div>
 
                 {/* Middle Section: To Do List + Work Info */}
-                <div className={"w-full px-4 md:px-10 flex flex-col lg:flex-row gap-6"}>
+                {false && <div className={"w-full px-4 md:px-10 flex flex-col lg:flex-row gap-6"}>
                     {/* To Do List */}
                     <div className={"flex-[1.5]"}>
                         <ToDoList
@@ -164,12 +170,12 @@ function CompanyManagerProfile() {
                     <div className={"flex-1"}>
                         <WorkInformation />
                     </div>
-                </div>
+                </div>}
 
                 {/* Subscriptions */}
-                <div className={"w-full px-4 md:px-10 pb-16"}>
+                {false && <div className={"w-full px-4 md:px-10 pb-16"}>
                     <Subscriptions />
-                </div>
+                </div>}
             </div>
 
             <EditProfileModal
@@ -182,6 +188,11 @@ function CompanyManagerProfile() {
             <ChangePasswordModal
                 isOpen={isChangePasswordOpen}
                 onClose={() => setIsChangePasswordOpen(false)}
+            />
+            <EditOrganizationModal
+                isOpen={isEditOrgOpen}
+                onClose={() => setIsEditOrgOpen(false)}
+                organization={organization}
             />
         </Page>
     );

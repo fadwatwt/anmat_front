@@ -18,18 +18,18 @@ function ApprovalAlert({
     const configs = {
         warning: {
             icon: <RiErrorWarningLine size={35} className="text-yellow-500" />,
-            iconBg: "bg-yellow-50",
-            confirmBtnClass: "bg-yellow-500 hover:bg-yellow-600 text-white",
+            iconBg: "bg-yellow-50 dark:bg-yellow-900/20",
+            confirmBtnClass: "bg-yellow-500 hover:bg-yellow-600 text-white shadow-yellow-500/20",
         },
         danger: {
             icon: <RiDeleteBin7Fill size={35} className="text-red-500" />,
-            iconBg: "bg-red-50",
-            confirmBtnClass: "bg-red-500 hover:bg-red-600 text-white",
+            iconBg: "bg-red-50 dark:bg-red-900/20",
+            confirmBtnClass: "bg-red-500 hover:bg-red-600 text-white shadow-red-500/20",
         },
         info: {
             icon: <RiInformationLine size={35} className="text-blue-500" />,
-            iconBg: "bg-blue-50",
-            confirmBtnClass: "bg-blue-500 hover:bg-blue-600 text-white",
+            iconBg: "bg-blue-50 dark:bg-blue-900/20",
+            confirmBtnClass: "bg-blue-500 hover:bg-blue-600 text-white shadow-blue-500/20",
         }
     };
 
@@ -48,16 +48,16 @@ function ApprovalAlert({
                 </div>
 
                 <div className="flex flex-col justify-center items-center text-center mt-4 mb-6">
-                    <p className="px-8 text-gray-700 dark:text-gray-300 text-md leading-relaxed">
+                    <p className="px-8 text-cell-secondary text-md leading-relaxed">
                         {t(message)}
                     </p>
                 </div>
             </div>
 
-            <div className="w-full pb-6 pt-4 flex px-6 items-center gap-3 border-t dark:border-gray-700">
+            <div className="w-full pb-6 pt-4 flex px-6 items-center gap-3 border-t border-status-border">
                 <button
                     onClick={onClose}
-                    className="bg-white text-sm border border-gray-300 text-gray-700 h-11 flex-1 rounded-xl hover:bg-gray-50 transition-all font-medium"
+                    className="bg-surface text-sm border border-status-border text-cell-secondary h-11 flex-1 rounded-xl hover:bg-status-bg transition-all font-medium"
                 >
                     {t(cancelBtnText)}
                 </button>
