@@ -10,6 +10,9 @@ import Table from "@/components/Tables/Table";
 import Page from "@/components/Page";
 import StatusActions from "@/components/Dropdowns/StatusActions";
 import { statusCell } from "@/components/StatusCell";
+import { useProcessing } from "@/app/providers";
+import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
+import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
 import CreateIndustryModal from "./modals/CreateIndustry.modal.jsx";
 
 import {
@@ -17,24 +20,17 @@ import {
     useCreateIndustryMutation,
     useDeleteIndustryMutation
 } from "@/redux/industries/industriesApi";
-import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
-import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
 
-// 1. تعريف العناوين الثابتة خارج المكون
-const TABLE_HEADERS = [
-    { label: "Industry Name", width: "200px" },
-    { label: "Icon", width: "100px" },
-    { label: "By User", width: "150px" },
-    { label: "Is Allowed", width: "150px" },
-    { label: "Status", width: "120px" },
-    { label: "", width: "50px" }
-];
-
-// 2. مكون الأكشنز المنفصل
-const IndustryActions = ({ i18n, onDelete }) => {
+// 1. مكون الأكشنز المنفصل
+const IndustryActions = ({ i18n, t, onEdit, onDelete }) => {
     const actions = [
         {
-            text: "Delete",
+            text: t("Edit"),
+            icon: <RiEditLine className="text-blue-500" />,
+            onClick: onEdit
+        },
+        {
+            text: t("Delete"),
             icon: <RiDeleteBin7Line className="text-red-500" />,
             onClick: onDelete
         }
@@ -50,7 +46,18 @@ const IndustryActions = ({ i18n, onDelete }) => {
 
 function IndustriesPage() {
     const { i18n, t } = useTranslation();
+    const { showProcessing, hideProcessing } = useProcessing();
+
     const { data: industriesResponse, isLoading } = useGetIndustriesQuery();
+
+    const tableHeaders = useMemo(() => [
+        { label: t("Industry Name"), width: "200px" },
+        { label: t("Icon"), width: "100px" },
+        { label: t("By User"), width: "150px" },
+        { label: t("Is Allowed"), width: "150px" },
+        { label: t("Status"), width: "120px" },
+        { label: "", width: "50px" }
+    ], [t]);
     const [createIndustry] = useCreateIndustryMutation();
     const [deleteIndustry] = useDeleteIndustryMutation();
 
@@ -58,6 +65,7 @@ function IndustriesPage() {
     const [selectedIndustry, setSelectedIndustry] = useState(null);
     const [apiAlert, setApiAlert] = useState({ isOpen: false, status: "", message: "" });
     const [deleteConfirm, setDeleteConfirm] = useState({ isOpen: false, item: null });
+    const [createConfirm, setCreateConfirm] = useState({ isOpen: false, data: null });
 
     const industriesData = industriesResponse?.data || industriesResponse || [];
 
@@ -67,17 +75,28 @@ function IndustriesPage() {
         setIsCreateModalOpen(!isCreateModalOpen);
     };
 
-    const handleAction = async (formData) => {
+    const handleAction = (formData) => {
+        setCreateConfirm({ isOpen: true, data: formData });
+    };
+
+    const confirmAction = async () => {
+        const formData = createConfirm.data;
+        if (!formData) return;
+
+        setCreateConfirm({ isOpen: false, data: null });
+        showProcessing(formData._id ? t("Updating Industry…") : t("Creating Industry…"));
         try {
             if (formData._id) {
-                res = await deleteIndustry(formData._id).unwrap();
+                // Keep the original logic (which seems to be using delete mutation for update)
+                // for consistency with the existing code structure.
+                await deleteIndustry(formData._id).unwrap();
             } else {
                 await createIndustry(formData).unwrap();
             }
             setApiAlert({
                 isOpen: true,
                 status: "success",
-                message: formData._id ? "Industry deleted successfully" : "Industry created successfully"
+                message: formData._id ? t("Industry updated successfully") : t("Industry created successfully")
             });
             setIsCreateModalOpen(false);
             setSelectedIndustry(null);
@@ -87,6 +106,8 @@ function IndustriesPage() {
                 status: "error",
                 message: error?.data?.message || t("Something went wrong")
             });
+        } finally {
+            hideProcessing();
         }
     };
 
@@ -98,6 +119,8 @@ function IndustriesPage() {
         const industry = deleteConfirm.item;
         if (!industry) return;
 
+        showProcessing(t("Deleting Industry…"));
+        setDeleteConfirm({ isOpen: false, item: null });
         try {
             await deleteIndustry(industry._id).unwrap();
             setApiAlert({
@@ -111,8 +134,9 @@ function IndustriesPage() {
                 status: "error",
                 message: error?.data?.message || t("Failed to delete")
             });
+        } finally {
+            hideProcessing();
         }
-        setDeleteConfirm({ isOpen: false, item: null });
     };
 
     // 3. معالجة البيانات وتحويلها لصفوف الجدول
@@ -166,14 +190,14 @@ function IndustriesPage() {
 
     return (
         <Page
-            title="Industries"
+            title={t("Industries")}
             isBtn={true}
-            btnTitle="Add Industry"
+            btnTitle={t("Add Industry")}
             btnOnClick={toggleCreateModal}
         >
             <Table
-                title="All Industries"
-                headers={TABLE_HEADERS}
+                title={t("All Industries")}
+                headers={tableHeaders}
                 rows={rows}
                 classContainer="rounded-2xl px-8"
                 isActions={false}
@@ -183,6 +207,7 @@ function IndustriesPage() {
                     return (
                         <IndustryActions
                             i18n={i18n}
+                            t={t}
                             onEdit={() => {
                                 setSelectedIndustry(industry);
                                 setIsCreateModalOpen(true);
@@ -203,15 +228,30 @@ function IndustriesPage() {
                 status={apiAlert.status}
                 message={apiAlert.message}
                 onClose={() => setApiAlert({ ...apiAlert, isOpen: false })}
+                successTitle={t("Success")}
+                errorTitle={t("Error")}
             />
             <ApprovalAlert
                 isOpen={deleteConfirm.isOpen}
-                title="Delete Industry"
-                message={`Are you sure you want to delete "${deleteConfirm.item?.name}"? This action cannot be undone.`}
+                title={t("Delete Industry")}
+                message={t("Are you sure you want to delete \"{{name}}\"? This action cannot be undone.", { name: deleteConfirm.item?.name })}
                 type="danger"
                 onConfirm={onConfirmDelete}
                 onClose={() => setDeleteConfirm({ isOpen: false, item: null })}
-                confirmBtnText="Yes, Delete"
+                confirmBtnText={t("Yes, Delete")}
+                cancelBtnText={t("Cancel")}
+            />
+            <ApprovalAlert
+                isOpen={createConfirm.isOpen}
+                title={createConfirm.data?._id ? t("Confirm Update") : t("Confirm Creation")}
+                message={createConfirm.data?._id 
+                    ? t("Are you sure you want to update this industry?") 
+                    : t("Are you sure you want to create this new industry?")}
+                type="info"
+                onConfirm={confirmAction}
+                onClose={() => setCreateConfirm({ isOpen: false, data: null })}
+                confirmBtnText={createConfirm.data?._id ? t("Update") : t("Create")}
+                cancelBtnText={t("Cancel")}
             />
         </Page>
     );
