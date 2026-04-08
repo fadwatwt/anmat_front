@@ -48,24 +48,24 @@ function LeavesTab() {
             <img
                 src={defaultAvatar}
                 alt={record.employee?.name}
-                className="w-10 h-10 rounded-full object-cover"
+                className="w-10 h-10 rounded-full object-cover border border-status-border"
             />
             <div className="flex flex-col">
-                <span className="text-sm font-medium text-gray-900 dark:text-gray-100 whitespace-normal leading-tight">
+                <span className="text-sm font-semibold text-cell-primary whitespace-normal leading-tight">
                     {record.employee?.name || "N/A"}
                 </span>
-                <span className="text-gray-500 text-[11px] whitespace-normal leading-tight mt-0.5">
+                <span className="text-cell-secondary text-[11px] whitespace-normal leading-tight mt-0.5">
                     {record.employee?.email || "N/A"}
                 </span>
             </div>
         </div>,
-        <span key={`date-${record._id}`} className="text-sm text-gray-700 dark:text-sub-300">
+        <span key={`date-${record._id}`} className="text-sm text-cell-secondary">
             {record.date ? format(parse(record.date, "yyyy-MM-dd", new Date()), "dd MMM, yyyy") : "N/A"}
         </span>,
-        <span key={`start-${record._id}`} className="text-sm text-gray-700 dark:text-sub-300">
+        <span key={`start-${record._id}`} className="text-sm text-cell-secondary">
             {record.start_time || "-"}
         </span>,
-        <span key={`end-${record._id}`} className="text-sm text-gray-700 dark:text-sub-300">
+        <span key={`end-${record._id}`} className="text-sm text-cell-secondary">
             {record.end_time || "-"}
         </span>,
     ]);
@@ -101,8 +101,8 @@ function LeavesTab() {
     };
 
     const headerActions = (
-        <button onClick={handleAddLeave} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all text-sm font-medium shadow-sm">
-            <GoPlus size={18} />
+        <button onClick={handleAddLeave} className="flex items-center gap-2 bg-primary-base hover:opacity-90 text-white px-5 py-2.5 rounded-xl transition-all text-sm font-bold shadow-lg shadow-primary-500/20 active:scale-[0.98]">
+            <GoPlus size={20} />
             {t("Add Leave")}
         </button>
     );

@@ -78,7 +78,7 @@ function EditLeaveModal({ isOpen, onClose, leave, onSubmit }) {
             <div className="px-1 overflow-visible">
                 <div className="flex flex-col gap-4">
                     {submissionError && (
-                        <div className="text-red-500 text-sm mb-2">{submissionError}</div>
+                        <div className="text-red-error text-[11px] font-medium mb-1 p-2 bg-red-error/10 rounded-lg">{submissionError}</div>
                     )}
 
                     <ElementsSelect
@@ -100,7 +100,7 @@ function EditLeaveModal({ isOpen, onClose, leave, onSubmit }) {
                         onBlur={formik.handleBlur}
                     />
                     {formik.touched.date && formik.errors.date && (
-                        <p className="text-red-500 text-xs mt-[-10px]">{formik.errors.date}</p>
+                        <p className="text-red-error text-[11px] font-medium mt-[-12px] ml-1">{formik.errors.date}</p>
                     )}
 
                     <TimeInput

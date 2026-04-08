@@ -138,7 +138,7 @@ function AddLeaveModal({ isOpen, onClose }) {
                             isMultiple={false}
                         />
                         {formik.touched.employee_id && formik.errors.employee_id && (
-                            <p className="text-red-500 text-xs mt-[-10px]">{formik.errors.employee_id}</p>
+                            <p className="text-red-error text-[11px] font-medium mt-[-12px] ml-1">{formik.errors.employee_id}</p>
                         )}
 
                         <DateInput
@@ -150,7 +150,7 @@ function AddLeaveModal({ isOpen, onClose }) {
                             onBlur={formik.handleBlur}
                         />
                         {formik.touched.date && formik.errors.date && (
-                            <p className="text-red-500 text-xs mt-[-10px]">{formik.errors.date}</p>
+                            <p className="text-red-error text-[11px] font-medium mt-[-12px] ml-1">{formik.errors.date}</p>
                         )}
 
                         <div className="grid grid-cols-2 gap-4">
