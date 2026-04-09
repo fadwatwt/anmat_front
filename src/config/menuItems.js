@@ -76,7 +76,7 @@ export const dashboardSideMenuItems = [
     //     icon: <Chart2 />
     // },
     {
-        allowed_to: ['Admin'],
+        allowed_to: ['Admin', 'Employee'],
         title: 'Analytics',
         path: '/analytics',
         icon: <Chart2 />
@@ -130,9 +130,15 @@ export const dashboardSideMenuItems = [
         icon: <Stickynote />
     },
     {
-        allowed_to: ['Subscriber'], //, 'Employee'
+        allowed_to: ['Subscriber'],
         title: 'Projects',
         path: '/projects',
+        icon: <NoteText />
+    },
+    {
+        allowed_to: ['Employee'],
+        title: 'Projects',
+        path: '/employee/projects',
         icon: <NoteText />
     },
     // {
