@@ -1,5 +1,5 @@
 // dashboardSideMenuItems.js
-import { Setting, Edit, Share, Messages1, Category, Profile2User, TaskSquare, NoteText, Chart2, Cpu, PercentageCircle, Buildings, Stickynote, Setting4, Setting5, ReceiptText, Category2, Tag, EmptyWallet } from 'iconsax-react';
+import { Setting, Edit, Share, Messages1, Category, Profile2User, TaskSquare, NoteText, Chart2, Cpu, PercentageCircle, Buildings, Stickynote, Setting4, Setting5, ReceiptText, Category2, Tag, EmptyWallet, Calendar } from 'iconsax-react';
 
 // ['Admin', 'Subscriber', 'Employee']
 
@@ -110,6 +110,12 @@ export const dashboardSideMenuItems = [
         title: 'Salary',
         path: '/salary',
         icon: <EmptyWallet />
+    },
+    {
+        allowed_to: ['Employee'],
+        title: 'Attendance',
+        path: '/attendance',
+        icon: <Calendar />
     },
     {
         allowed_to: ['Employee'],
