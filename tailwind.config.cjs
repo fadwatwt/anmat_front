@@ -26,7 +26,7 @@ module.exports = {
         },
         gray: {
           800: "var(--bg-surface)",
-          900: "var(--bg-main)",
+          900: "#212529",
         },
         soft: {
           200: "var(--menu-icon)",

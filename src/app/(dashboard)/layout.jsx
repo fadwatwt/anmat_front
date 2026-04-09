@@ -181,11 +181,11 @@ const MainLayout = ({ children }) => {
             {/* Overlay for mobile when sidebar is open */}
             {isSlidebarOpen && (
                 <div
-                    className="fixed inset-0 bg-black/50 z-30 md:hidden"
+                    className="fixed inset-0 bg-black/50 z-[55] md:hidden"
                     onClick={toggleSlidebarOpen}
                 />
             )}
-            <div className="flex flex-col flex-1 h-full min-w-0 overflow-hidden relative z-10">
+            <div className="flex flex-col flex-1 h-full min-w-0 overflow-hidden ">
                 {!isSubscriptionPage && (
                     !isSettingsPage ? (
                         <Header taggleSlidebarOpen={toggleSlidebarOpen} />

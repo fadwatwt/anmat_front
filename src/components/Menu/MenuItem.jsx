@@ -69,8 +69,8 @@ function MenuItem({ path, icon, title, children }) {
                                     href={child.path}
                                     className={`block p-2 text-sm rounded-md transition-colors
                                         ${isSubActive
-                                            ? 'bg-surface text-primary-600 shadow-sm'
-                                            : 'text-gray-500 hover:bg-primary-100'}`}
+                                            ? 'bg-surface text-primary-600 dark:text-primary-200 shadow-sm'
+                                            : 'text-gray-500 hover:bg-primary-100 dark:text-gray-100'}`}
                                 >
                                     {t(child.title)}
                                 </Link>

@@ -67,10 +67,6 @@ const MessagesDropdown = ({ messages }) => {
       {isMenuOpen && (
         <>
           <div
-            onClick={() => setIsMenuOpen(false)}
-            className="fixed inset-0 bg-black/50 sm:hidden z-[90]"
-          ></div>
-          <div
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             className={`fixed sm:absolute top-[72px] sm:top-full left-0 right-0 sm:left-auto sm:right-0 sm:mt-2 w-full sm:w-[480px] max-w-[300px] mx-auto sm:mx-0 h-auto max-h-[calc(100vh-80px)] sm:max-h-[75vh] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-b-[20px] sm:rounded-[20px] shadow-xl z-[100] flex flex-col overflow-hidden`}

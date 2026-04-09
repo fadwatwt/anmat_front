@@ -66,11 +66,6 @@ const NotificationsDropdown = ({ notifications }) => {
 
       {isMenuOpen && (
         <>
-          {/* Overlay for mobile */}
-          <div
-            onClick={() => setIsMenuOpen(false)}
-            className="fixed inset-0 bg-black/50 sm:hidden z-[90]"
-          ></div>
 
           {/* Dropdown container */}
           <div
