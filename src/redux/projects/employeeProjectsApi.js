@@ -11,9 +11,18 @@ export const employeeProjectsApi = apiSlice.injectEndpoints({
             transformResponse: (response) => response.data,
             providesTags: ["Projects"],
         }),
+        getEmployeeProjectDetails: builder.query({
+            query: (id) => ({
+                url: `api/employee/projects/${id}`,
+                method: "GET",
+            }),
+            transformResponse: (response) => response.data,
+            providesTags: (result, error, id) => [{ type: "Projects", id }],
+        }),
     }),
 });
 
 export const {
     useGetMyProjectsQuery,
+    useGetEmployeeProjectDetailsQuery,
 } = employeeProjectsApi;

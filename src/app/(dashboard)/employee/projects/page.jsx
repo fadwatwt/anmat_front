@@ -8,6 +8,7 @@ import PropTypes from "prop-types";
 import { GoCheckCircleFill, GoClockFill, GoAlertFill } from "react-icons/go";
 import { User, Calendar } from "iconsax-react";
 import { useGetMyProjectsQuery } from "@/redux/projects/employeeProjectsApi";
+import Link from "next/link";
 
 // Dynamic imports
 const Table = dynamic(() => import("@/components/Tables/Table"), { ssr: false });
@@ -116,14 +117,14 @@ const EmployeeProjectsPage = () => {
   const rows = useMemo(() => {
     if (!projects) return [];
     return projects.map((project) => [
-      <div key={`name-${project._id}`} className="flex flex-col">
+      <Link href={`/employee/projects/${project._id}/details`} key={`name-${project._id}`} className="flex flex-col">
         <span className="text-sm font-bold text-cell-primary leading-tight">
           {project.name}
         </span>
         <span className="text-xs text-cell-secondary mt-0.5 line-clamp-1 max-w-[200px]">
           {project.description}
         </span>
-      </div>,
+      </Link>,
       <div key={`manager-${project._id}`} className="flex items-center gap-2">
         <div className="w-7 h-7 rounded-lg bg-status-bg flex items-center justify-center shadow-sm">
           <User size={14} className="text-cell-secondary" variant="Bold" />
@@ -169,7 +170,7 @@ const EmployeeProjectsPage = () => {
   return (
     <Page title={t("My Projects")}>
       {isLoading && <ProcessingOverlay message={t("Loading your projects...")} />}
-      
+
       <div className="flex flex-col gap-6">
         <Table
           title={t("Projects List")}
