@@ -91,11 +91,11 @@ function RequestsTab() {
             <div key={req.id + "_name"} className="flex items-center gap-3">
                 <img src={`https://ui-avatars.com/api/?name=${req.employee?.name || "User"}`} className="w-8 h-8 rounded-full" alt="" />
                 <div className="flex flex-col text-left">
-                    <span className="text-sm font-medium dark:text-gray-200">{req.employee?.name || "N/A"}</span>
-                    <span className="text-xs text-gray-500">{req.employee?.email || "N/A"}</span>
+                    <span className="text-sm font-semibold text-cell-primary">{req.employee?.name || "N/A"}</span>
+                    <span className="text-xs text-cell-secondary font-medium">{req.employee?.email || "N/A"}</span>
                 </div>
             </div>,
-            <div key={req.id + "_created_at"} className="text-gray-600 dark:text-gray-400">
+            <div key={req.id + "_created_at"} className="text-cell-secondary font-medium">
                 {req.created_at ? format(new Date(req.created_at), "dd MMM yyyy") : "N/A"}
             </div>
         ];
@@ -103,23 +103,23 @@ function RequestsTab() {
         let specificCells = [];
         if (activeTab === "DAY_OFF") {
             specificCells = [
-                <div key={req.id + "_vacation"} className="text-gray-600 dark:text-gray-400">
+                <div key={req.id + "_vacation"} className="text-cell-secondary font-medium">
                     {req.vacation_date ? format(new Date(req.vacation_date), "dd MMM yyyy") : "N/A"}
                 </div>,
-                <div key={req.id + "_reason"} className="text-gray-600 dark:text-gray-400 truncate max-w-[250px]">{req.reason || "N/A"}</div>
+                <div key={req.id + "_reason"} className="text-cell-secondary font-medium truncate max-w-[250px]">{req.reason || "N/A"}</div>
             ];
         } else if (activeTab === "SALARY_ADVANCE") {
             specificCells = [
-                <div key={req.id + "_advance"} className="text-gray-600 dark:text-gray-400">{req.advance_salary_by || "N/A"}</div>,
-                <div key={req.id + "_old_salary"} className="text-gray-600 dark:text-gray-400">{req.old_salary_amount || "N/A"}</div>,
-                <div key={req.id + "_reason"} className="text-gray-600 dark:text-gray-400 truncate max-w-[200px]">{req.reason || "N/A"}</div>
+                <div key={req.id + "_advance"} className="text-cell-secondary font-medium">{req.advance_salary_by || "N/A"}</div>,
+                <div key={req.id + "_old_salary"} className="text-cell-secondary font-medium">{req.old_salary_amount || "N/A"}</div>,
+                <div key={req.id + "_reason"} className="text-cell-secondary font-medium truncate max-w-[200px]">{req.reason || "N/A"}</div>
             ];
         } else { // WORK_DELAY
             specificCells = [
-                <div key={req.id + "_due"} className="text-gray-600 dark:text-gray-400">
+                <div key={req.id + "_due"} className="text-cell-secondary font-medium">
                     {req.work_due_at ? format(new Date(req.work_due_at), "dd MMM yyyy HH:mm") : "N/A"}
                 </div>,
-                <div key={req.id + "_reason"} className="text-gray-600 dark:text-gray-400 truncate max-w-[250px]">{req.reason || "N/A"}</div>
+                <div key={req.id + "_reason"} className="text-cell-secondary font-medium truncate max-w-[250px]">{req.reason || "N/A"}</div>
             ];
         }
 
@@ -141,18 +141,18 @@ function RequestsTab() {
         const isLocked = ["accepted", "rejected", "cancelled"].includes(request.status);
 
         return (
-            <div className="flex flex-col bg-white dark:bg-gray-800 shadow-lg rounded-lg border border-gray-200 dark:border-gray-700 min-w-32 overflow-hidden">
+            <div className="flex flex-col bg-surface shadow-xl rounded-xl border border-status-border min-w-40 overflow-hidden py-1">
                 {!isLocked && (
                     <button
                         onClick={() => handleEdit(rowIndex)}
-                        className="w-full px-3 py-2 text-sm border-b dark:border-gray-700 dark:text-gray-200 flex gap-2 items-center text-left text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900"
+                        className="w-full px-4 py-2 text-sm text-cell-primary flex gap-3 items-center text-left hover:bg-status-bg transition-colors font-medium"
                     >
                         {t("Edit")}
                     </button>
                 )}
                 <button
                     onClick={() => handleDelete(rowIndex)}
-                    className="w-full px-3 py-2 text-sm text-left flex items-center text-red-600 gap-2 hover:bg-gray-100 dark:hover:bg-gray-900"
+                    className="w-full px-4 py-2 text-sm text-left flex items-center text-red-500 gap-3 hover:bg-status-bg transition-colors font-medium"
                 >
                     {t("Delete")}
                 </button>
@@ -161,14 +161,16 @@ function RequestsTab() {
     };
 
     const headerActions = (
-        <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+        <div className="flex bg-status-bg rounded-xl p-1.5 border border-status-border shadow-inner">
             {Object.keys(labels).map(tab => (
                 <button
                     key={tab}
                     onClick={() => handleTabChange(tab)}
-                    className={`px-4 py-1 text-sm rounded-md transition-colors ${activeTab === tab ? "bg-white dark:bg-gray-700 shadow-sm text-gray-900 dark:text-gray-100" : "text-gray-500 dark:text-gray-400 hover:text-gray-700"}`}
+                    className={`px-5 py-1.5 text-xs font-bold rounded-lg transition-all transform active:scale-95 ${activeTab === tab 
+                        ? "bg-surface shadow-md text-primary-500" 
+                        : "text-cell-secondary hover:text-cell-primary"}`}
                 >
-                    {t(labels[tab])}
+                    {t(labels[tab]).toUpperCase()}
                 </button>
             ))}
         </div>
