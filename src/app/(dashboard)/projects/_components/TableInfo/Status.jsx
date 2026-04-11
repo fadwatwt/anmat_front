@@ -26,6 +26,10 @@ function Status({ type }) {
       icon: <IoTime className="text-blue-500" />,
       border: "border-blue-300 dark:border-blue-500",
     },
+    "in-progress": {
+      icon: <IoTime className="text-blue-500" />,
+      border: "border-blue-300 dark:border-blue-500",
+    },
     inactive: {
       icon: <TbForbidFilled className="text-gray-500" />,
       border: "border-gray-300 dark:border-gray-500",
@@ -38,6 +42,26 @@ function Status({ type }) {
       icon: <FaCircleCheck className="text-purple-500" />,
       border: "border-purple-300 dark:border-purple-500",
     },
+    open: {
+      icon: <IoTime className="text-blue-500" />,
+      border: "border-blue-300 dark:border-blue-500",
+    },
+    completed: {
+      icon: <FaCircleCheck className="text-green-500" />,
+      border: "border-green-300 dark:border-green-500",
+    },
+    rejected: {
+      icon: <RiCloseCircleFill size={15} className="text-red-500" />,
+      border: "border-red-300 dark:border-red-500",
+    },
+    cancelled: {
+      icon: <RiCloseCircleLine size={15} className="text-gray-500" />,
+      border: "border-gray-300 dark:border-gray-500",
+    },
+    pending: {
+      icon: <IoTime className="text-yellow-500" />,
+      border: "border-yellow-300 dark:border-yellow-500",
+    },
   };
 
   const normalizedType = type?.toLowerCase() || "inactive";
@@ -45,17 +69,28 @@ function Status({ type }) {
 
   return (
     <div
-      className={`rounded-md text-nowrap text-xs border inline-flex py-1 px-2 gap-1 items-center ${status.border}`}
+      className={`rounded-md text-nowrap text-xs border inline-flex py-1 px-2 gap-1 items-center bg-status-bg border-status-border`}
     >
       {status.icon}
-      <span className="text-sub-500 dark:text-sub-300">{t(capitalize(type))}</span>
+      <span className="text-cell-primary">{t(capitalize(type))}</span>
     </div>
   );
 }
 
 Status.propTypes = {
-  type: PropTypes.oneOf(["Active", "Inactive", "Delayed", "Scheduled"])
-    .isRequired,
+  type: PropTypes.oneOf([
+    "Active",
+    "Inactive",
+    "Delayed",
+    "Scheduled",
+    "Open",
+    "Pending",
+    "In Progress",
+    "In-Progress",
+    "Completed",
+    "Rejected",
+    "Cancelled",
+  ]).isRequired,
 };
 
 export default Status;

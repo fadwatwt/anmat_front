@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 function InputAndLabel({
   title,
   placeholder,
-    disabled = false,
+  disabled = false,
   type,
   className,
   value,
@@ -13,13 +13,14 @@ function InputAndLabel({
   onChange,
   onBlur,
   error,
-    isRequired
+  isRequired,
+  ...rest
 }) {
   const { t } = useTranslation();
 
   return (
     <div className={`flex flex-col gap-1 w-full items-start ${className}`}>
-      <label className="text-gray-900 dark:text-gray-200 text-sm">
+      <label className="text-cell-primary text-sm font-medium">
         {t(title)}{isRequired && <span className={"text-red-500"}>*</span>}
       </label>
       <input
@@ -30,9 +31,9 @@ function InputAndLabel({
         onBlur={onBlur}
         value={value}
         placeholder={`${t(placeholder)}...`}
-        className={`py-3 px-2 text-sm dark:bg-white-0 dark:border-gray-700 border-2 rounded-xl w-full focus:outline-none focus:border-blue-500 dark:text-gray-200 ${
-          error ? "border-red-500" : ""
-        }`}
+        className={`py-3 px-2 text-sm bg-status-bg border-status-border border-2 rounded-xl w-full focus:outline-none focus:border-primary-400 text-cell-primary placeholder:text-cell-secondary/50 ${error ? "border-red-500" : ""
+          }`}
+        {...rest}
       />
       {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
     </div>
@@ -40,15 +41,15 @@ function InputAndLabel({
 }
 
 InputAndLabel.propTypes = {
-    title: PropTypes.string,
-    placeholder: PropTypes.string,
-    type: PropTypes.string,
-    className: PropTypes.string,
-    value:PropTypes.string,
-    disabled:PropTypes.bool,
-    name:PropTypes.string,
-    onChange: PropTypes.func,
-    isRequired: PropTypes.bool,
+  title: PropTypes.string,
+  placeholder: PropTypes.string,
+  type: PropTypes.string,
+  className: PropTypes.string,
+  value: PropTypes.string,
+  disabled: PropTypes.bool,
+  name: PropTypes.string,
+  onChange: PropTypes.func,
+  isRequired: PropTypes.bool,
   onBlur: PropTypes.func,
   error: PropTypes.string,
 

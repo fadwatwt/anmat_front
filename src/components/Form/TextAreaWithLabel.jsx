@@ -6,9 +6,9 @@ function TextAreaWithLabel({ title, placeholder, className, value, name, onChang
 
     return (
         <div className={`flex flex-col gap-1 w-full items-start  ${className}`}>
-            <label className={"text-gray-900 dark:text-gray-200 text-sm font-medium"}>
+            <label className={"text-cell-primary text-sm font-medium"}>
                 {t(title)}
-                {isOptional && <span className="text-gray-400 font-normal mx-1">({t("Optional")})</span>}
+                {isOptional && <span className="text-secondary font-normal mx-1">({t("Optional")})</span>}
             </label>
             <textarea
                 name={name}
@@ -18,7 +18,7 @@ function TextAreaWithLabel({ title, placeholder, className, value, name, onChang
                 rows={rows}
                 maxLength={maxLength}
                 placeholder={`${t(placeholder)}...`}
-                className={`py-3 px-2 text-sm dark:bg-white-0 dark:border-gray-700 border-2 rounded-xl w-full focus:outline-none focus:border-blue-500 dark:text-gray-200 resize-none ${error ? 'border-red-500' : ''}`}
+                className={`py-3 px-2 text-sm bg-status-bg border-status-border border-2 rounded-xl w-full focus:outline-none focus:border-primary-400 text-cell-primary placeholder:text-cell-secondary/50 resize-none ${error ? 'border-red-500' : ''}`}
             >
             </textarea>
             <div className="w-full flex justify-between items-center">

@@ -24,6 +24,7 @@ export const authApi = apiSlice.injectEndpoints({
           Authorization: `Bearer ${token}`,
         },
       }),
+      providesTags: ["User"],
     }),
     logout: builder.query({
       query: (token) => ({
@@ -34,7 +35,76 @@ export const authApi = apiSlice.injectEndpoints({
         },
       }),
     }),
+    registerSubscriberEmail: builder.mutation({
+      query: (data) => ({
+        url: "api/user/auth/register/subscriber/email",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    completeSubscriberProfile: builder.mutation({
+      query: (data) => ({
+        url: "api/user/auth/register/subscriber/account",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    registerEmployeeAccount: builder.mutation({
+      query: (data) => ({
+        url: "api/user/auth/register/employee",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    updatePassword: builder.mutation({
+      query: (data) => ({
+        url: "api/user/account/update-password",
+        method: "PUT",
+        body: data,
+      }),
+    }),
+    adminUpdatePassword: builder.mutation({
+      query: (data) => ({
+        url: "api/admin/account/update-password",
+        method: "PUT",
+        body: data,
+      }),
+    }),
+    updateAdminAccount: builder.mutation({
+      query: (data) => ({
+        url: "api/admin/account",
+        method: "PUT",
+        body: data,
+      }),
+    }),
+    updateUserAccount: builder.mutation({
+      query: (data) => ({
+        url: "api/user/account",
+        method: "PUT",
+        body: data,
+      }),
+    }),
+    requestVerification: builder.mutation({
+      query: () => ({
+        url: "api/user/auth/request-verification",
+        method: "POST",
+      }),
+      invalidatesTags: ["User"],
+    }),
   }),
 });
 
-export const { useLoginMutation, useLazyGetUserQuery, useLazyLogoutQuery, useAdminLoginMutation } = authApi;
+export const {
+  useLoginMutation,
+  useLazyGetUserQuery,
+  useLazyLogoutQuery,
+  useAdminLoginMutation,
+  useRegisterSubscriberEmailMutation,
+  useCompleteSubscriberProfileMutation,
+  useRegisterEmployeeAccountMutation,
+  useUpdatePasswordMutation,
+  useAdminUpdatePasswordMutation,
+  useUpdateAdminAccountMutation,
+  useUpdateUserAccountMutation,
+  useRequestVerificationMutation,
+} = authApi;

@@ -1,165 +1,243 @@
 "use client";
-import { FaBell, FaClock, FaExclamationTriangle } from 'react-icons/fa';
+import { useState } from "react";
 import Page from "@/components/Page.jsx";
+import Table from "@/components/Tables/Table.jsx";
+import { useTranslation } from "react-i18next";
+import { RiEyeLine, RiDeleteBin7Line } from "react-icons/ri";
+import CreateNotificationModal from "@/app/(dashboard)/notifications/_components/modals/CreateNotification.modal.jsx";
+import NotificationDetailsModal from "@/app/(dashboard)/notifications/_components/modals/NotificationDetails.modal.jsx";
+import { FiPlus } from "react-icons/fi";
+
+const StatusBadge = ({ status }) => {
+  const { t } = useTranslation();
+
+  const statusStyles = {
+    "Read": "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400 border-green-200 dark:border-green-800",
+    "Delivered": "bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400 border-orange-200 dark:border-orange-800",
+    "Deleted": "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 border-red-200 dark:border-red-800",
+    "Pending": "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 border-gray-200 dark:border-gray-700"
+  };
+
+  const style = statusStyles[status] || statusStyles["Pending"];
+
+  return (
+    <span className={`px-2 py-1 rounded-lg text-xs font-medium border ${style}`}>
+      {t(status)}
+    </span>
+  );
+};
 
 const NotificationsPage = () => {
+  const { t } = useTranslation();
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [selectedNotification, setSelectedNotification] = useState(null);
+
   const path = [
-    {title:"Dashboard",path:"/"},
-      {title:"Notifications",path:"/notifications"}
-  ]
+    { title: "Dashboard", path: "/" },
+    { title: "Notifications", path: "/notifications" }
+  ];
+
+  // Mock data for notifications
   const notifications = [
     {
       id: 1,
-      user: "Ibn Sina",
-      avatar: "/path-to-ibn-avatar.jpg",
-      avatarImage: true,
-      action: "made an action",
-      content: "Lorem Ipsum is simply dummy text of the",
-      time: "2 hours ago"
+      title: "Name 1",
+      subTitle: "Developing a dashboard for...",
+      message: "Lorem ipsum dolor sit amet...",
+      deliveredAt: "15 Nov, 2024",
+      readAt: "16 Jan, 2025",
+      createdAt: "16 Jan, 2025",
+      sentTo: {
+        name: "Fatma Ahmed",
+        role: "Product Manager",
+        avatar: "https://randomuser.me/api/portraits/women/44.jpg"
+      },
+      modelName: "Lorem",
+      modelType: "Lorem",
+      status: "Delivered"
     },
     {
       id: 2,
-      user: "Sarah Ahmed",
-      avatar: "S",
-      avatarColor: "bg-blue-100 text-blue-500",
-      action: "scheduled a team meeting",
-      content: "Sprint Planning",
-      additionalText: "on Today at 3:00 PM",
-      time: "2 hours ago",
-      actionButton: "Join the meeting",
-      icon: "calendar"
+      title: "Name 1",
+      subTitle: "Developing a dashboard for...",
+      message: "Lorem ipsum dolor sit amet...",
+      deliveredAt: "15 Nov, 2024",
+      readAt: "16 Jan, 2025",
+      createdAt: "16 Jan, 2025",
+      sentTo: {
+        name: "Fatma Ahmed",
+        role: "Product Manager",
+        avatar: "https://randomuser.me/api/portraits/women/44.jpg"
+      },
+      modelName: "Lorem",
+      modelType: "Lorem",
+      status: "Read"
     },
     {
       id: 3,
-      user: "Alpha Team",
-      avatar: "A",
-      avatarColor: "bg-green-100 text-green-500",
-      action: "completed the task",
-      content: "Website QA Testing",
-      time: "2 weeks ago",
-      icon: "check"
+      title: "Name 1",
+      subTitle: "Developing a dashboard for...",
+      message: "Lorem ipsum dolor sit amet...",
+      deliveredAt: "15 Nov, 2024",
+      readAt: "16 Jan, 2025",
+      createdAt: "16 Jan, 2025",
+      sentTo: {
+        name: "Fatma Ahmed",
+        role: "Product Manager",
+        avatar: "https://randomuser.me/api/portraits/women/44.jpg"
+      },
+      modelName: "Lorem",
+      modelType: "Lorem",
+      status: "Deleted"
     },
     {
       id: 4,
-      content: "A new task 'Client Proposal Review' was added by Project Manager Sara Ahmed",
-      time: "30 mins ago",
-      icon: "bell"
+      title: "Name 1",
+      subTitle: "Developing a dashboard for...",
+      message: "Lorem ipsum dolor sit amet...",
+      deliveredAt: "15 Nov, 2024",
+      readAt: "16 Jan, 2025",
+      createdAt: "16 Jan, 2025",
+      sentTo: {
+        name: "Fatma Ahmed",
+        role: "Product Manager",
+        avatar: "https://randomuser.me/api/portraits/women/44.jpg"
+      },
+      modelName: "Lorem",
+      modelType: "Lorem",
+      status: "Delivered"
     },
     {
       id: 5,
-      content: "Project 'Q4 Marketing Campaign' deadline is in 7 days. Ensure all tasks are completed",
-      time: "1 week ago",
-      icon: "alert"
-    },
-    {
-      id: 5,
-      content: "Project 'Q4 Marketing Campaign' deadline is in 7 days. Ensure all tasks are completed",
-      time: "1 week ago",
-      icon: "alert"
-    },
-    {
-      id: 6,
-      user: "Ali Hassan",
-      action: "submitted a leave request for",
-      content: "20th Nov - 23rd Nov",
-      additionalText: "Pending your approval",
-      time: "2 hours ago",
-      hasApprovalActions: true,
-      icon: "clock"
+      title: "Name 1",
+      subTitle: "Developing a dashboard for...",
+      message: "Lorem ipsum dolor sit amet...",
+      deliveredAt: "15 Nov, 2024",
+      readAt: "16 Jan, 2025",
+      createdAt: "16 Jan, 2025",
+      sentTo: {
+        name: "Fatma Ahmed",
+        role: "Product Manager",
+        avatar: "https://randomuser.me/api/portraits/women/44.jpg"
+      },
+      modelName: "Lorem",
+      modelType: "Lorem",
+      status: "Read"
     }
   ];
 
-  const NotificationIcon = ({ type }) => {
-    const iconClasses = "w-5 h-5";
-    switch (type) {
-      case 'alert':
-        return <FaExclamationTriangle className={`${iconClasses} text-amber-500`} />;
-      case 'clock':
-        return <FaClock className={`${iconClasses} text-gray-400`} />;
-      default:
-        return <FaBell className={`${iconClasses} text-blue-500`} />;
-    }
+  const headers = [
+    { label: "Title", width: "15%" },
+    { label: "Message", width: "20%" },
+    { label: "Delivered - Read at Date", width: "15%" },
+    { label: "Created At", width: "10%" },
+    { label: "Sent To", width: "13%" },
+    { label: "Model Name", width: "10%" },
+    { label: "Model Type", width: "10%" },
+    { label: "Status", width: "5%" },
+    { label: "", width: "50px" },
+  ];
+
+  const rows = notifications.map((notification) => [
+    <div key="title" className="flex flex-col">
+      <span className="font-medium dark:text-gray-200">{notification.title}</span>
+      <span className="text-xs text-gray-500 dark:text-gray-400 truncate w-32">{notification.subTitle}</span>
+    </div>,
+    <span key="message" className="text-gray-600 dark:text-gray-400 truncate block w-40">{notification.message}</span>,
+    <div key="dates" className="flex flex-col">
+      <span className="text-gray-900 dark:text-gray-200">{notification.deliveredAt} -</span>
+      <span className="text-gray-900 dark:text-gray-200">{notification.readAt}</span>
+    </div>,
+    <span key="createdAt" className="text-gray-900 dark:text-gray-200">{notification.createdAt}</span>,
+    <div key="sentTo" className="flex items-center gap-2">
+      <img
+        src={notification.sentTo.avatar}
+        alt={notification.sentTo.name}
+        className="w-8 h-8 rounded-full object-cover"
+      />
+      <div className="flex flex-col">
+        <span className="text-sm font-medium dark:text-gray-200">{notification.sentTo.name}</span>
+        <span className="text-xs text-gray-500 dark:text-gray-400">{notification.sentTo.role}</span>
+      </div>
+    </div>,
+    <span key="modelName" className="text-gray-900 dark:text-gray-200">{notification.modelName}</span>,
+    <span key="modelType" className="text-gray-900 dark:text-gray-200">{notification.modelType}</span>,
+    <StatusBadge key="status" status={notification.status} />
+  ]);
+
+  const handleView = (index) => {
+    setSelectedNotification(notifications[index]);
+    setIsDetailsModalOpen(true);
   };
 
+  const handleDelete = (index) => {
+    console.log("Delete notification at index:", index);
+    // Implement delete logic here
+  };
+
+  const CustomActions = (index) => (
+    <div className="flex flex-col w-32 bg-white dark:bg-gray-800 shadow-lg rounded-lg border border-gray-200 dark:border-gray-700 py-1">
+      <button
+        onClick={() => handleView(index)}
+        className="w-full px-3 py-2 text-sm text-left flex items-center gap-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-900"
+      >
+        <RiEyeLine className="text-blue-500" />
+        {t("View")}
+      </button>
+      <button
+        onClick={() => handleDelete(index)}
+        className="w-full px-3 py-2 text-sm text-left flex items-center gap-2 text-red-500 hover:bg-gray-100 dark:hover:bg-gray-900"
+      >
+        <RiDeleteBin7Line />
+        {t("Delete")}
+      </button>
+    </div>
+  );
+
+  const HeaderActions = (
+    <button
+      onClick={() => setIsCreateModalOpen(true)}
+      className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition-colors"
+    >
+      <FiPlus size={16} />
+      {t("Create Notification")}
+    </button>
+  );
+
   return (
-    <Page title={"Notifications"} isBreadcrumbs={true} breadcrumbs={path} >
-      <div className={"max-w-xl mx-auto flex flex-col gap-4"}>
-        {notifications.map(notification => (
-            <div
-                key={notification.id}
-                className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700"
-            >
-              <div className="flex items-start gap-3 flex-row-reverse">
-                <div className="flex-shrink-0">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
-                </div>
-
-                <div className="flex-1 min-w-0 text-left">
-                  <div className="text-sm text-gray-900 dark:text-gray-100">
-                    {notification.user && (
-                        <span className="font-medium">{notification.user} </span>
-                    )}
-                    <span className="text-gray-600 dark:text-gray-300">
-                  {notification.action}
-                </span>
-                    {notification.content && (
-                        <span className="font-medium">{notification.content}</span>
-                    )}
-                    {notification.additionalText && (
-                        <span className="text-gray-600 dark:text-gray-300">
-                    . {notification.additionalText}
-                  </span>
-                    )}
-                  </div>
-
-                  <div className="mt-2 space-y-2">
-                    <div className="text-xs text-gray-500 dark:text-gray-400">
-                      {notification.time}
-                    </div>
-
-                    {notification.actionButton && (
-                        <button className="px-4 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors">
-                          {notification.actionButton}
-                        </button>
-                    )}
-
-                    {notification.hasApprovalActions && (
-                        <div className="flex space-x-2">
-                          {/* add bgcolor */}
-                          <button className="px-4 py-1.5 text-red-500 text-sm font-medium hover:text-red-600 transition-colors bg-red-100 ">
-                            Reject
-                          </button>
-                          <button className="px-4 py-1.5 text-green-500 text-sm font-medium hover:text-green-600 transition-colors bg-green-100">
-                            Approve
-                          </button>
-                        </div>
-                    )}
-                  </div>
-                </div>
-
-
-                <div className="flex-shrink-0">
-                  {notification.avatarImage ? (
-                      <img
-                          src={notification.avatar}
-                          alt={notification.user}
-                          className="w-8 h-8 rounded-full"
-                      />
-                  ) : (
-                      <div className="w-8 h-8 rounded-full flex items-center justify-center bg-gray-100">
-                        <NotificationIcon type={notification.icon} />
-                      </div>
-                  )}
-                </div>
-              </div>
-            </div>
-        ))}
-
-        <div className="flex justify-center py-4">
-          <div className="w-6 h-6 border-2 border-gray-200 border-t-blue-600 rounded-full animate-spin"></div>
-        </div>
+    <Page title={"Notifications"} isBreadcrumbs={true} breadcrumbs={path}>
+      <div className="w-full">
+        <Table
+          isTitle={true}
+          title="All Notifications"
+          headers={headers}
+          rows={rows}
+          isActions={false}
+          customActions={CustomActions}
+          isCheckInput={true}
+          classContainer="w-full"
+          headerActions={HeaderActions}
+          showStatusFilter={true}
+          statusOptions={[
+            { name: "Delivered", value: "Delivered" },
+            { name: "Read", value: "Read" },
+          ]}
+        />
       </div>
 
+      <CreateNotificationModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onClick={() => { }}
+      />
+
+      <NotificationDetailsModal
+        isOpen={isDetailsModalOpen}
+        onClose={() => setIsDetailsModalOpen(false)}
+        notification={selectedNotification}
+        onUpdate={() => { }}
+      />
     </Page>
   );
 };

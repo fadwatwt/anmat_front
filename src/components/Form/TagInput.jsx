@@ -77,13 +77,13 @@ const TagInput = ({ suggestions, apparent, placeholder, title, isRequired, value
     const dropdownContent = (
         <div
             style={dropdownStyle}
-            className="fixed z-[9999] border dark:border-gray-700 dark:bg-gray-900 rounded-lg shadow bg-white mt-0 max-h-60 overflow-y-auto"
+            className="fixed z-[9999] border border-status-border bg-surface rounded-lg shadow-lg mt-0 max-h-60 overflow-y-auto"
         >
             {filteredSuggestions().map((person) => (
                 <div
                     key={person.id}
                     onMouseDown={() => addTag(person)}
-                    className="flex items-center gap-2 dark:bg-gray-900 p-2 hover:bg-gray-100 cursor-pointer"
+                    className="flex items-center gap-2 p-2 hover:bg-status-bg cursor-pointer transition-colors"
                 >
                     {person.image && <img
                         src={person.image}
@@ -91,10 +91,10 @@ const TagInput = ({ suggestions, apparent, placeholder, title, isRequired, value
                         className="w-6 h-6 rounded-full mr-2"
                     />}
                     <div className="flex flex-col">
-                        <span className="text-sm text-gray-700 dark:text-gray-400">{person.name}</span>
+                        <span className="text-sm text-cell-primary">{person.name}</span>
                         {
                             person.email &&
-                            <span className="text-xs text-gray-500 dark:text-gray-400">{person.email}</span>
+                            <span className="text-xs text-cell-secondary">{person.email}</span>
                         }
                     </div>
                 </div>
@@ -105,18 +105,18 @@ const TagInput = ({ suggestions, apparent, placeholder, title, isRequired, value
     return (
         <div className="w-full max-w-lg">
             <div className={`relative flex flex-col gap-1 w-full items-start`}>
-                {title && <label className="text-gray-900 dark:text-gray-200 text-sm">
+                {title && <label className="text-cell-primary font-medium text-sm">
                     {title}{isRequired && <span className={"text-red-500 ms-1"}>*</span>}
                 </label>}
 
                 <div
                     ref={inputContainerRef}
-                    className="relative flex crsor-pointer flex-wrap dark:bg-gray-900 gap-1 px-1 items-center border dark:border-none py-2 rounded-lg w-full"
+                    className="relative flex cursor-pointer flex-wrap bg-status-bg gap-1 px-1 items-center border border-status-border py-2 rounded-lg w-full"
                 >
                     {tags.map((tag) => (
                         <div
                             key={tag.id}
-                            className="flex items-center z-25 space-x-2 bg-primary-100 dark:border-primary-800 dark:bg-primary-800 gap-2 border rounded-full px-3 py-1"
+                            className="flex items-center z-25 space-x-2 bg-badge-bg border border-status-border gap-2 rounded-full px-3 py-1"
                         >
                             {tag.image && <img
                                 src={tag.image}
@@ -125,15 +125,15 @@ const TagInput = ({ suggestions, apparent, placeholder, title, isRequired, value
                             />}
                             {
                                 apparent ?
-                                    <span className="text-sm text-primary-700 dark:text-primary-400">
+                                    <span className="text-sm text-badge-text">
                                         {tag[apparent]}
                                     </span>
-                                    : <span className="text-sm text-primary-700 dark:text-primary-400">{tag.name}</span>
+                                    : <span className="text-sm text-badge-text">{tag.name}</span>
                             }
 
                             <button
                                 onClick={() => removeTag(tag.id)}
-                                className="text-primary-500 hover:text-red-500"
+                                className="text-badge-text hover:text-red-500 transition-colors"
                             >
                                 &times;
                             </button>
@@ -149,7 +149,7 @@ const TagInput = ({ suggestions, apparent, placeholder, title, isRequired, value
                             calculateDropdownPosition();
                         }}
                         onBlur={handleBlur}
-                        className="flex-grow bg-transparent focus:outline-none text-sm p-1 min-w-[150px]"
+                        className="flex-grow bg-transparent focus:outline-none text-sm p-1 min-w-[150px] text-cell-primary placeholder:text-cell-secondary/50"
                     />
                 </div>
             </div>

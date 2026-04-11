@@ -15,12 +15,12 @@ function Priority({ type }) {
       text: "text-red-500",
     },
     Medium: {
-      bg: "bg-[#EBF1FF]",
-      text: "text-[#375DFB]",
+      bg: "bg-badge-bg",
+      text: "text-badge-text",
     },
     Low: {
-      bg: "bg-gray-200 dark:bg-[#161922]",
-      text: "text-sub-500 dark:text-[#CDD0D5]",
+      bg: "bg-status-bg",
+      text: "text-cell-secondary",
     },
   };
 

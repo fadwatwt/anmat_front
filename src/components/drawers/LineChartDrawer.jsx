@@ -1,5 +1,6 @@
 "use client";
 import React from 'react'
+import { useTheme } from "@/app/providers";
 import { Line } from "recharts/es6/cartesian/Line"
 import { LineChart } from "recharts/es6/chart/LineChart";
 import { YAxis } from "recharts/es6/cartesian/YAxis";
@@ -9,7 +10,7 @@ const LineChartDrawer = ({
     lines,
     yaxisTitle = ''
 }) => {
-    const theme = typeof window !== "undefined" ? localStorage.getItem("theme") : null;
+    const [theme] = useTheme();
 
     return (
         <div className="w-full">

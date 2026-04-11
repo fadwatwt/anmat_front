@@ -19,24 +19,24 @@ function CheckAlert({
     const designConfigs = {
         cancel: {
             icon: <RiCloseCircleFill size={35} className="text-red-500" />,
-            iconBg: "bg-red-50",
-            submitBtnClass: "bg-red-500 text-white hover:bg-red-600",
+            iconBg: "bg-red-50 dark:bg-red-900/10",
+            submitBtnClass: "bg-red-500 text-white hover:bg-red-600 shadow-red-500/20",
         },
         warning: {
 
             icon: (
-                <div className="rounded-full p-2 bg-blue-100">
-                    <div className="rounded-full p-2 bg-blue-200">
+                <div className="rounded-full p-2 bg-blue-100 dark:bg-blue-900/20">
+                    <div className="rounded-full p-2 bg-blue-200 dark:bg-blue-800/30">
                         <RiFlashlightLine size={25} className="text-blue-600 stroke-[3px]" />
                     </div>
                 </div>
             ),
-            iconBg: "bg-blue-50",
-            submitBtnClass: "bg-blue-600 text-white dark:bg-primary-200 dark:text-black hover:opacity-90",
+            iconBg: "bg-blue-50 dark:bg-blue-900/10",
+            submitBtnClass: "bg-blue-600 text-white dark:bg-primary-500 dark:text-white hover:opacity-90 shadow-blue-600/20",
         },
         success: {
             icon: <RiCheckboxCircleFill size={35} className="text-green-500" />,
-            iconBg: "bg-green-100",
+            iconBg: "bg-green-100 dark:bg-green-900/20",
         }
     };
 
@@ -55,17 +55,17 @@ function CheckAlert({
                 </div>
 
                 <div className="flex flex-col justify-center items-center text-center mt-4">
-                    <div className="px-8 pb-4 dark:text-gray-300 text-gray-700 text-md leading-relaxed">
+                    <div className="px-8 pb-4 text-cell-secondary text-md leading-relaxed">
                         {description}
                     </div>
                 </div>
             </div>
 
-            <div className="w-full pb-6 pt-4 flex px-6 items-center gap-3 border-t dark:border-gray-700">
+            <div className="w-full pb-6 pt-4 flex px-6 items-center gap-3 border-t border-status-border">
                 {!hideCancelBtn && (
                     <button
                         onClick={onClose}
-                        className="bg-white text-sm border border-gray-300 text-gray-700 h-10 flex-1 rounded-xl hover:bg-gray-50 transition-all"
+                        className="bg-surface text-sm border border-status-border text-cell-secondary h-10 flex-1 rounded-xl hover:bg-status-bg transition-all"
                     >
                         {t(cancelBtnText)}
                     </button>

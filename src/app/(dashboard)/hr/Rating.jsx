@@ -19,7 +19,7 @@ const Rating = ({ value, showPercentage = true }) => {
     <div className="flex items-center space-x-1">
       {stars}
       {showPercentage && (
-        <span className="ml-2 text-gray-700 dark:text-gray-200">
+        <span className="ml-2 text-cell-primary">
           {roundedValue.toFixed(1)}
         </span>
       )}

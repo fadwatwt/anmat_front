@@ -83,8 +83,11 @@ function Table({
             setDropdownOpen(null);
         } else {
             const rect = event.currentTarget.getBoundingClientRect();
+            const spaceBelow = window.innerHeight - rect.bottom;
+            const isUpwards = spaceBelow < 200; // if less than 200px below, show above
             setDropdownPosition({
-                top: rect.bottom + window.scrollY,
+                top: isUpwards ? rect.top + window.scrollY : rect.bottom + window.scrollY,
+                isUpwards,
                 left: rect.left + window.scrollX,
                 right: rect.right + window.scrollX,
                 width: rect.width
@@ -116,11 +119,11 @@ function Table({
     const currentRows = rows.slice(startIndex, startIndex + rowsPerPage);
 
     return (
-        <div className={"rounded-2xl md:w-full pb-10 tab-content dark:bg-gray-800 border border-gary-200 dark:border-gray-700 p-3 flex flex-col gap-4 bg-white " + (classContainer ? classContainer : "")}>
+        <div className={"rounded-2xl md:w-full pb-10 tab-content bg-surface border border-status-border p-3 flex flex-col gap-4 " + (classContainer ? classContainer : "")}>
             {isTitle && (
                 <div className={"flex flex-wrap justify-between items-center gap-4 mb-2"}>
                     <div className="flex flex-wrap items-center gap-4">
-                        {customTitle || <p className={"text-gray-800 text-start text-lg dark:text-gray-400"}>{t(title)}</p>}
+                        {customTitle || <p className={"text-table-title text-start text-lg"}>{t(title)}</p>}
 
                         {headerActions && (
                             <div className="flex items-center gap-2">
@@ -206,13 +209,13 @@ function Table({
                 </div>
             )}
 
-            <div className={"flex flex-col gap-5 justify-center dark:bg-gray-800 w-full dark:text-gray-400"}>
+            <div className={"flex flex-col gap-5 justify-center bg-surface w-full text-cell-primary"}>
                 <div className="w-full overflow-x-auto">
                     <table className={"relative table-auto w-full " + className} style={{ borderSpacing: "0 1px" }}>
                         <thead>
-                            <tr className="bg-weak-100 dark:bg-gray-800">
+                            <tr className="bg-status-bg">
                                 {isCheckInput && (
-                                    <th className="px-1 pt-1 w-5 rounded-tl-lg rounded-bl-lg dark:bg-gray-900">
+                                    <th className="px-1 pt-1 w-5 rounded-tl-lg rounded-bl-lg">
                                         <input
                                             className="checkbox-custom"
                                             type="checkbox"
@@ -224,7 +227,7 @@ function Table({
                                 {headers?.map((header, index) => (
                                     header && <th
                                         key={index}
-                                        className="p-2 text-start text-sm font-normal dark:bg-gray-900 dark:text-gray-300 "
+                                        className="p-2 md:p-4 text-start text-sm font-semibold text-cell-primary whitespace-nowrap"
                                         style={{
                                             width: header.width || "auto",
                                             borderTopRightRadius: index === headers.length - 1 ? "8px" : "0px",
@@ -240,7 +243,7 @@ function Table({
                             {currentRows?.map((row, rowIndex) => {
                                 const actualRowIndex = rowIndex + startIndex;
                                 return (
-                                    <tr key={actualRowIndex} className="hover:bg-gray-100 w-full dark:hover:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+                                    <tr key={actualRowIndex} className="hover:bg-gray-50 dark:hover:bg-status-bg w-full border-b border-status-border transition-colors">
                                         {isCheckInput && (
                                             <td className="px- py-6 text-center" style={{ borderBottomLeftRadius: "8px" }}>
                                                 <input
@@ -254,14 +257,14 @@ function Table({
                                         {row.map((cell, cellIndex) => (
                                             cell && <td
                                                 key={cellIndex}
-                                                className={"text-sm text-start max-w-10 sm:max-w-24 text-nowrap dark:text-gray-300 " + (classNameCell ? classNameCell : "px-2 py-6")}
+                                                className={"text-sm text-start whitespace-nowrap text-cell-primary " + (classNameCell ? classNameCell : "px-4 py-4 md:py-6")}
                                                 style={{ borderBottomRightRadius: cellIndex === row.length - 1 ? "8px" : "" }}
                                             >
                                                 {cell}
                                             </td>
                                         ))}
                                         {(isActions || customActions) && (
-                                            <td className={"dropdown-container"}>
+                                            <td className={"dropdown-container px-2 py-4 md:py-6"}>
                                                 <PiDotsThreeVerticalBold
                                                     className="cursor-pointer"
                                                     onClick={(e) => handleDropdownToggle(actualRowIndex, e)}
@@ -276,7 +279,7 @@ function Table({
                                                             // LTR: Align right edge of menu with right edge of button
                                                             // RTL: Align left edge of menu with left edge of button
                                                             left: i18n?.language === "ar" ? dropdownPosition.left : dropdownPosition.right,
-                                                            transform: i18n?.language === "ar" ? "" : "translateX(-100%)",
+                                                            transform: `${i18n?.language === "ar" ? "" : "translateX(-100%)"} ${dropdownPosition.isUpwards ? "translateY(-100%)" : ""}`.trim(),
                                                             zIndex: 9999,
                                                         }}
                                                     >
@@ -303,31 +306,42 @@ function Table({
                     </table>
                 </div>
 
-                <div className={"pagination flex items-center justify-between"}>
-                    <p className={"dark:text-gray-400 text-sm"}>
+                <div className={"pagination flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t dark:border-gray-700"}>
+                    <p className={"dark:text-gray-400 text-sm order-2 sm:order-1"}>
                         {t("Page")} {currentPage} {t("of")} {totalPages}
                     </p>
-                    <div className={"flex gap-5 items-center"}>
-                        <MdOutlineKeyboardDoubleArrowLeft onClick={() => handlePageChange(1)} className="cursor-pointer dark:text-gray-400" />
-                        <MdOutlineKeyboardArrowLeft onClick={() => handlePageChange(currentPage - 1)} className="cursor-pointer dark:text-gray-400" />
-                        <div className={"flex pages-numbers gap-1 text-sm"}>
-                            {Array.from({ length: totalPages }).map((_, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => handlePageChange(index + 1)}
-                                    className={`px-3 py-1 border rounded-lg dark:border-gray-700 dark:text-gray-400 ${currentPage === index + 1 ? "bg-primary-100 dark:text-gray-800" : ""}`}
-                                >
-                                    {index + 1}
-                                </button>
-                            ))}
+                    <div className={"flex flex-wrap gap-3 sm:gap-5 items-center justify-center order-1 sm:order-2"}>
+                        <div className="flex gap-2 items-center">
+                            <MdOutlineKeyboardDoubleArrowLeft onClick={() => handlePageChange(1)} className="cursor-pointer text-cell-secondary hover:text-primary-base transition-colors" />
+                            <MdOutlineKeyboardArrowLeft onClick={() => handlePageChange(currentPage - 1)} className="cursor-pointer text-cell-secondary hover:text-primary-base transition-colors" />
                         </div>
-                        <MdOutlineKeyboardArrowRight onClick={() => handlePageChange(currentPage + 1)} className="cursor-pointer dark:text-gray-400" />
-                        <MdOutlineKeyboardDoubleArrowRight onClick={() => handlePageChange(totalPages)} className="cursor-pointer dark:text-gray-400" />
+                        <div className={"flex pages-numbers gap-1 text-sm"}>
+                            {Array.from({ length: totalPages }).map((_, index) => {
+                                // Only show limited page numbers on very small screens
+                                if (totalPages > 5 && Math.abs(currentPage - (index + 1)) > 1 && index !== 0 && index !== totalPages - 1) {
+                                    if (index === 1 || index === totalPages - 2) return <span key={index} className="text-gray-400">...</span>;
+                                    return null;
+                                }
+                                return (
+                                    <button
+                                        key={index}
+                                        onClick={() => handlePageChange(index + 1)}
+                                        className={`px-3 py-1 border rounded-lg border-status-border text-cell-secondary transition-all ${currentPage === index + 1 ? "bg-primary-base text-white font-bold border-primary-base shadow-sm" : "hover:border-primary-300"}`}
+                                    >
+                                        {index + 1}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        <div className="flex gap-2 items-center">
+                            <MdOutlineKeyboardArrowRight onClick={() => handlePageChange(currentPage + 1)} className="cursor-pointer text-cell-secondary hover:text-primary-base transition-colors" />
+                            <MdOutlineKeyboardDoubleArrowRight onClick={() => handlePageChange(totalPages)} className="cursor-pointer text-cell-secondary hover:text-primary-base transition-colors" />
+                        </div>
                     </div>
-                    <div className={"flex rounded-lg border border-gray-300 dark:border-gray-700 dark:text-gray-400 px-2 py-1 items-center"}>
-                        <select value={rowsPerPage} onChange={handleRowsPerPageChange} className="bg-transparent outline-none cursor-pointer">
+                    <div className={"flex rounded-lg border border-status-border text-cell-secondary px-2 py-1 items-center order-3"}>
+                        <select value={rowsPerPage} onChange={handleRowsPerPageChange} className="bg-transparent outline-none cursor-pointer text-sm font-medium">
                             {[5, 10, 15, 20].map((value) => (
-                                <option className={"dark:bg-gray-800 dark:text-gray-400 text-sm"} key={value} value={value}>
+                                <option className={"bg-surface text-cell-secondary text-sm"} key={value} value={value}>
                                     {value}/{t("page")}
                                 </option>
                             ))}

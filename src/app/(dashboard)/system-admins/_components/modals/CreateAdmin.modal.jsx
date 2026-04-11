@@ -111,7 +111,7 @@ function CreateAdminModal({ isOpen, onClose, onShowSuccess }) {
                 />
 
                 <div className="flex items-center gap-2">
-                    <span className="text-sm dark:text-gray-200 text-gray-900">Active Status</span>
+                    <span className="text-sm text-cell-primary">Active Status</span>
                     <Switch2
                         isOn={formData.is_active}
                         handleToggle={() => setFormData(prev => ({ ...prev, is_active: !prev.is_active }))}

@@ -1,19 +1,19 @@
 
 import PropTypes from "prop-types";
-import {useTranslation} from "react-i18next";
+import { useTranslation } from "react-i18next";
 import React from "react";
 
-function StatusActions({states,className}) {
-    const {t} = useTranslation()
+function StatusActions({ states, className }) {
+    const { t } = useTranslation()
     return (
         <div
-            className={`absolute z-100 flex flex-col  mt-2 bg-white dark:bg-white-0 shadow-lg rounded-lg border border-gray-200 dark:border-gray-700 ${className}`}>
+            className={`absolute z-100 flex flex-col mt-2 bg-surface shadow-lg rounded-lg border border-status-border ${className}`}>
             {
-                states?.map((status,index) => (
+                states?.map((status, index) => (
                     <button
                         key={index}
                         onClick={status.onClick}
-                        className="p-3 text-sm border-b dark:border-gray-700 dark:text-gray-200 flex items-basline text-left text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900"
+                        className="p-3 text-sm border-b border-status-border text-cell-primary flex items-center text-left hover:bg-status-bg transition-colors"
                     >
                         {
                             status?.icon && React.cloneElement(status.icon, {

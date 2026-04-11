@@ -64,9 +64,15 @@ const ConversationPage = () => {
   const [isCreateChatOpen, setIsCreateChatOpen] = useState(false);
   const [socket, setSocket] = useState(null);
 
-  // Get current user ID from localStorage or auth state
-  const currentUserId = typeof window !== "undefined" ? localStorage.getItem("userId") : null;
-  const userName = typeof window !== "undefined" ? localStorage.getItem("userName") : null;
+  const [currentUserId, setCurrentUserId] = useState(null);
+  const [userName, setUserName] = useState(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setCurrentUserId(localStorage.getItem("userId"));
+      setUserName(localStorage.getItem("userName"));
+    }
+  }, []);
 
   // Merged messages (API + temp)
   const messages = messagesData?.messages || [];

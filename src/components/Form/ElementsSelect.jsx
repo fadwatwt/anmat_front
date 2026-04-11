@@ -20,9 +20,11 @@ function ElementsSelect({
     dropDownClassName,
     renderOption,
 }) {
-    const [selectedOptions, setSelectedOptions] = useState(
-        Array.isArray(defaultValue) ? defaultValue : []
-    );
+    const [selectedOptions, setSelectedOptions] = useState(() => {
+        if (Array.isArray(defaultValue)) return defaultValue;
+        if (defaultValue && typeof defaultValue === 'object') return [defaultValue];
+        return [];
+    });
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const { t } = useTranslation();
     const dropdownRef = useRef(null);
@@ -32,16 +34,16 @@ function ElementsSelect({
 
     // مزامنة selectedOptions مع defaultValue عند تغييره من الخارج
     useEffect(() => {
-        if (!Array.isArray(defaultValue)) return;
+        const normalizedDefault = Array.isArray(defaultValue) ? defaultValue : (defaultValue ? [defaultValue] : []);
 
         // Create a string representation of the IDs for comparison
-        const currentIds = defaultValue.map(opt => opt.id).sort().join(',');
+        const currentIds = normalizedDefault.map(opt => opt.id).sort().join(',');
         const prevIds = prevDefaultValueIdsRef.current;
 
         // Only update if the IDs actually changed
         if (currentIds !== prevIds) {
             prevDefaultValueIdsRef.current = currentIds;
-            setSelectedOptions(defaultValue);
+            setSelectedOptions(normalizedDefault);
         }
     }, [defaultValue]);
     const toggleOptions = (option) => {
@@ -92,11 +94,26 @@ function ElementsSelect({
     const calculateDropdownPosition = () => {
         if (selectTriggerRef.current) {
             const rect = selectTriggerRef.current.getBoundingClientRect();
-            setDropdownStyle({
-                top: rect.bottom + window.scrollY + 4,
-                left: rect.left + window.scrollX,
-                width: rect.width,
-            });
+            const viewportHeight = window.innerHeight;
+            const dropdownMaxHeight = 256; // Matching max-h-64 (16rem = 256px)
+            const spaceBelow = viewportHeight - rect.bottom;
+            const spaceAbove = rect.top;
+
+            if (spaceBelow < dropdownMaxHeight && spaceAbove > spaceBelow) {
+                // Open Upwards
+                setDropdownStyle({
+                    bottom: viewportHeight - rect.top + 4,
+                    left: rect.left,
+                    width: rect.width,
+                });
+            } else {
+                // Open Downwards
+                setDropdownStyle({
+                    top: rect.bottom + 4,
+                    left: rect.left,
+                    width: rect.width,
+                });
+            }
         }
     };
 
@@ -129,11 +146,11 @@ function ElementsSelect({
 
     return (
         <div className={classNameContainer}>
-            <label className="text-sm text-start text-gray-700 flex items-center gap-1 mb-2 dark:text-gray-200">
+            <label className="text-sm text-start text-cell-primary flex items-center gap-1 mb-2 font-medium">
                 <span>{t(title)}</span>
                 {isOption && (
-                    <span className="text-xs text-gray-500 flex items-center gap-1">
-                        ({t("Option")}) <FaCircleInfo className="text-gray-400" size={14} />
+                    <span className="text-xs text-cell-secondary flex items-center gap-1">
+                        ({t("Option")}) <FaCircleInfo className="text-cell-secondary" size={14} />
                     </span>
                 )}
             </label>
@@ -145,7 +162,7 @@ function ElementsSelect({
                         calculateDropdownPosition();
                     }}
                     ref={selectTriggerRef}
-                    className="flex items-center gap-2 min-h-[40px] dark:bg-white-0 border border-gray-300 dark:border-gray-500 rounded-[10px] p-[10px] box-border text-xs cursor-pointer focus-within:ring-2 focus-within:ring-blue-500"
+                    className="flex items-center gap-2 min-h-[40px] bg-status-bg border border-status-border rounded-[10px] p-[10px] box-border text-xs cursor-pointer focus-within:ring-2 focus-within:ring-primary-500 transition-colors"
                 >
                     <div className="flex-1 flex gap-1 overflow-x-auto whitespace-nowrap overflow-y-hidden custom-scrollbar">
                         {selectedOptions.length > 0 ? (
@@ -157,9 +174,9 @@ function ElementsSelect({
                                         key={option.id}
                                         className={
                                             isMultiple
-                                                ? `text-gray-800 bg-gray-100 rounded-md py-1 px-2 flex gap-1 items-center ${classNameItemSelected || "border border-gray-200"
+                                                ? `text-cell-primary bg-badge-bg rounded-md py-1 px-2 flex gap-1 items-center border border-status-border ${classNameItemSelected || ""
                                                 }`
-                                                : "text-gray-800 dark:text-gray-200"
+                                                : "text-cell-primary font-medium"
                                         }
                                     >
                                         {option.element}
@@ -175,7 +192,7 @@ function ElementsSelect({
                                     </div>
                                 ))
                         ) : (
-                            <span className="text-gray-400 dark:text-gray-500">
+                            <span className="text-cell-secondary">
                                 {t(placeholder)}...
                             </span>
                         )}
@@ -183,7 +200,7 @@ function ElementsSelect({
                             <span className="text-blue-600 ml-1 flex items-center">+{selectedOptions.length - 1}</span>
                         )}
                     </div>
-                    <IoIosArrowDown className="text-gray-500 shrink-0" size={16} />
+                    <IoIosArrowDown className="text-cell-secondary shrink-0" size={16} />
                 </div>
 
                 {isDropdownOpen &&
@@ -191,12 +208,12 @@ function ElementsSelect({
                         <div
                             ref={dropdownRef}
                             style={dropdownStyle}
-                            className={`fixed z-[9999] bg-white dark:bg-zinc-900 border border-gray-300 dark:border-gray-700 rounded-xl shadow-2xl mt-1 max-h-64 overflow-y-auto ${dropDownClassName}`}
+                            className={`fixed z-[9999] bg-surface border border-status-border rounded-xl shadow-2xl mt-1 max-h-64 overflow-y-auto ${dropDownClassName || ""}`}
                         >
                             {options.map((option) => (
                                 <div
                                     key={option.id}
-                                    className="flex items-center p-3 hover:bg-gray-50 dark:hover:bg-zinc-800 cursor-pointer border-b last:border-none border-gray-100 dark:border-zinc-800"
+                                    className="flex items-center p-3 hover:bg-status-bg cursor-pointer border-b last:border-none border-status-border transition-colors"
                                     onClick={() => toggleOptions(option)}
                                 >
                                     {isMultiple && (
@@ -204,7 +221,7 @@ function ElementsSelect({
                                             type="checkbox"
                                             checked={selectedOptions.some((u) => u.id === option.id)}
                                             readOnly
-                                            className="mr-3 w-4 h-4 rounded border-gray-300 accent-blue-600 shrink-0 pointer-events-none"
+                                            className="mr-3 w-4 h-4 rounded border-status-border accent-primary-500 shrink-0 pointer-events-none"
                                         />
                                     )}
 
@@ -212,7 +229,7 @@ function ElementsSelect({
                                         {renderOption ? (
                                             renderOption(option)
                                         ) : (
-                                            <span className={`text-sm ${option.isSelectAll ? 'font-bold text-blue-600' : 'text-gray-700 dark:text-gray-200'}`}>
+                                            <span className={`text-sm ${option.isSelectAll ? 'font-bold text-primary-500' : 'text-cell-primary'}`}>
                                                 {option.element}
                                             </span>
                                         )}

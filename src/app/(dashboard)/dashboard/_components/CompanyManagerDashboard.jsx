@@ -7,26 +7,86 @@ import dynamic from "next/dynamic";
 // Dynamic imports
 const Table = dynamic(() => import("@/components/Tables/Table"), { ssr: false });
 const ActivityLogs = dynamic(() => import("@/components/ActivityLogs"), { ssr: false });
-const ProjectRatingModal = dynamic(() => import("@/app/(dashboard)/projects/_modal/ProjectRatingModal"), { ssr: false });
 const Alert = dynamic(() => import("@/components/Alerts/Alert"), { ssr: false });
-const Page = dynamic(() => import("@/components/Page"));
-import TasksSummaryChart from "../../analytics/_components/employee/TasksSummaryChart";
-import DepartmentsAnalytics from "../../analytics/_components/company_manager/departments/DepartmentsAnalytics";
+import Page from "@/components/Page";
+import AnalyticsCard from "../../analytics/_components/AnalyticsCard";
+import DynamicDoughnut from "../../analytics/_components/charts/SummaryDoughnut.";
+import DefaultSelect from "@/components/Form/DefaultSelect";
+import ProcessingOverlay from "@/components/Feedback/ProcessingOverlay";
+import DepartmentsPerformanceChat from "../../analytics/_components/employee/DepartmentsPerformanceChat";
+import { useGetDepartmentsQuery } from "@/redux/departments/departmentsApi";
 import EmployeeRequests from "./employee/EmployeeRequests";
+import { useGetSubscriberTaskStatisticsStatusQuery } from "@/redux/tasks/subscriberTasksApi";
+import { useGetSubscriberProjectsQuery } from "@/redux/projects/subscriberProjectsApi";
 
 const AdminDashboard = () => {
   const { t } = useTranslation("common");
-  // const [theme, setTheme] = useState("light");
-  const [isRatingModal, setIsModalSetting] = useState(false);
   const [isConfirmApprovalAlert, setIsConfirmApprovalAlert] = useState(false);
+
+  const { data: statsData, isLoading: isStatsLoading } = useGetSubscriberTaskStatisticsStatusQuery();
+  const { data: projects = [], isLoading: isProjectsLoading } = useGetSubscriberProjectsQuery();
+  const { data: departments = [], isLoading: isDepartmentsLoading } = useGetDepartmentsQuery();
+
+  const isPageLoading = isStatsLoading || isProjectsLoading || isDepartmentsLoading;
+
+  const statusColorMap = {
+    active: "#375DFB", // Blue
+    open: "#375DFB", // Blue
+    in_progress: "#375DFB", // Blue
+    completed: "#38C793", // Green
+    completed_before_due_date: "#38C793", // Green
+    late_completed: "#F17B2C", // Orange
+    cancelled: "#DF1C41", // Red
+    overdue: "#DF1C41", // Red
+    on_hold: "#6B7280", // Gray
+    pending: "#FACC15", // Yellow
+  };
+
+  const extraColors = ["#8B5CF6", "#EC4899", "#06B6D4", "#10B981", "#F59E0B"];
+
+  const getStatusColor = (status, index) => {
+    const key = status.toLowerCase().replace(/\s+/g, '_');
+    return statusColorMap[key] || extraColors[index % extraColors.length];
+  };
+
+  const getStatusLabel = (status) => {
+    const key = status.toLowerCase().replace(/\s+/g, '_');
+    const labelMap = {
+      open: "Active",
+      in_progress: "Active",
+      active: "Active",
+      completed: "Completed before due date",
+      completed_before_due_date: "Completed before due date",
+      late_completed: "Late Completed",
+      cancelled: "Cancelled",
+      overdue: "Overdue",
+      on_hold: "On Hold",
+      pending: "Pending",
+    };
+    return labelMap[key] || status.charAt(0).toUpperCase() + status.slice(1).replace(/_/g, " ");
+  };
+
+  const chartData = statsData?.data ? {
+    total: statsData.data.total,
+    records: Object.entries(statsData.data.status_counts).map(([status, count], index) => ({
+      title: getStatusLabel(status),
+      name: getStatusLabel(status),
+      value: count,
+      color: getStatusColor(status, index),
+    })),
+  } : {
+    total: 0,
+    records: []
+  };
+
+  const departmentsData = departments.map(dept => ({
+    name: dept.name,
+    rate: parseFloat(((dept.rate || 0) * 5).toFixed(2))
+  }));
 
   useEffect(() => {
     // const storedTheme = typeof window !== "undefined" && localStorage.getItem("theme");
     // if (storedTheme) setTheme(storedTheme);
-  }, []);
-
-  const handelRatingModal = useCallback(() => {
-    setIsModalSetting((prev) => !prev);
   }, []);
 
   const handelConfirmApprovalAlert = useCallback(() => {
@@ -42,91 +102,72 @@ const AdminDashboard = () => {
     },
   ];
 
-  const taskList = [
-    {
-      id: 1,
-      name: "Project Omega",
-      department: "Publishing",
-      assignees: ["/api/placeholder/32/32", "/api/placeholder/32/32"],
-      date: "15 Nov, 2024",
-      rating: 4.5,
-    },
-    {
-      id: 2,
-      name: "Task Echo",
-      department: "Sales",
-      assignees: ["/api/placeholder/32/32"],
-      date: "15 Nov, 2024",
-      rating: 0,
-    },
-  ];
-
   const headers = [
-    { label: "Project/Task Name", width: "200px" },
+    { label: "Project Name", width: "180px" },
     { label: "Department", width: "120px" },
+    { label: "Status", width: "100px" },
+    { label: "Progress", width: "120px" },
     { label: "Assigned Employee(s)", width: "180px" },
     { label: "Delivery Date", width: "120px" },
-    { label: "Rating", width: "120px" },
   ];
 
-  const stars = Array.from({ length: 5 }, (_, index) => index + 1);
-
-  const rows = taskList.map((task, index) => [
-    task.name,
-    task.department,
-    <div key={index} className="flex">
-      {task.assignees.map((assignee, idx) => (
-        <img
-          key={idx}
-          src={assignee}
-          loading="lazy"
-          alt="assignee"
-          className="w-6 h-6 rounded-full border-2 border-white -ml-2 first:ml-0"
-        />
-      ))}
-    </div>,
-    task.date,
-    task.rating ? (
-      <div className="flex items-center gap-1">
-        {stars.map((star) => (
-          <svg
-            key={star}
-            className={`w-6 h-6 cursor-pointer ${star <= task.rating ? 'text-yellow-500' : 'text-gray-300'}`}
-            fill="currentColor"
-            viewBox="0 0 24 24"
-            onClick={() => setRating(star)}
-          >
-            <path d="M12 .587l3.668 7.431 8.332 1.151-6.001 5.822 1.417 8.273L12 18.856l-7.416 3.408 1.417-8.273-6.001-5.822 8.332-1.151z" />
-          </svg>
+  const rows = projects.map((project, index) => {
+    return [
+      project.name,
+      project.department_id?.name || t("No Department"),
+      <div key={`status-${index}`}>
+        <span className={`px-2 py-1 rounded-full text-[10px] font-medium ${project.status === 'completed' ? 'bg-green-100 text-green-700' :
+          project.status === 'in_progress' ? 'bg-blue-100 text-blue-700' :
+            project.status === 'on_hold' ? 'bg-orange-100 text-orange-700' :
+              'bg-status-bg text-cell-secondary border border-status-border'
+          }`}>
+          {project.status ? project.status.charAt(0).toUpperCase() + project.status.slice(1).replace(/_/g, " ") : t("Pending")}
+        </span>
+      </div>,
+      <div key={`progress-${index}`} className="flex items-center gap-2 w-full">
+        <div className="flex-1 h-1.5 bg-status-bg border border-status-border rounded-full overflow-hidden">
+          <div
+            className="h-full bg-primary-400"
+            style={{ width: `${project.progress || 0}%` }}
+          />
+        </div>
+        <span className="text-[10px] text-cell-secondary whitespace-nowrap">{project.progress || 0}%</span>
+      </div>,
+      <div key={`assignees-${index}`} className="flex">
+        {project.assignees?.map((assignee, idx) => (
+          <img
+            key={idx}
+            src={assignee.image || "/api/placeholder/32/32"}
+            loading="lazy"
+            alt="assignee"
+            className="w-6 h-6 rounded-full border-2 border-white -ml-2 first:ml-0"
+          />
         ))}
-        <span className="ml-2 text-sm font-medium text-gray-700">{task.rating}</span>
-      </div>
-    ) : (
-      <button
-        onClick={handelRatingModal}
-        className="border border-gray-200 bg-white hover:bg-gray-50 rounded-md px-4 py-1 flex items-center justify-center gap-2"
-      >
-        <svg
-          className={`w-3 h-3 cursor-pointer text-white stroke-2 stroke-yellow-500`}
-          fill="currentColor"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path d="M12 .587l3.668 7.431 8.332 1.151-6.001 5.822 1.417 8.273L12 18.856l-7.416 3.408 1.417-8.273-6.001-5.822 8.332-1.151z" />
-        </svg>
-        {t("Rate")}
-      </button>
-    ),
-  ]);
+        {(!project.assignees || project.assignees.length === 0) && (
+          <span className="text-cell-secondary text-xs italic">{t("No Assignees")}</span>
+        )}
+      </div>,
+      project.due_date ? new Date(project.due_date).toLocaleDateString() : t("No Date"),
+    ];
+  });
 
   return (
     <Page isTitle={false}>
+      <ProcessingOverlay isOpen={isPageLoading} message="Loading Dashboard..." />
       <div className="flex flex-col md:flex-row items-stretch gap-4 justify-between w-full">
+        {/* Tasks Summary Card */}
         <div className="w-full md:w-1/2">
-          <TasksSummaryChart />
+          <AnalyticsCard title="Tasks Summary">
+            <DynamicDoughnut data={chartData.records} centerTitle="TASKS" centerValue={chartData.total} />
+          </AnalyticsCard>
         </div>
+
         <div className="w-full md:w-1/2">
-          <DepartmentsAnalytics />
+          <AnalyticsCard title="Departments" showDropdowns={true} dropdown1Label="Last 6 months">
+            <div className="w-full h-[300px]">
+              <DepartmentsPerformanceChat data={departmentsData} />
+            </div>
+          </AnalyticsCard>
         </div>
       </div>
 
@@ -135,7 +176,7 @@ const AdminDashboard = () => {
         {/* Task/Project Evaluation Section (2/3 of the width) */}
         <div className="lg:col-span-2">
           <Table
-            title="Task/Project Evaluation"
+            title="Projects Overview"
             headers={headers}
             rows={rows}
             isCheckInput={false}
@@ -144,7 +185,7 @@ const AdminDashboard = () => {
             hideSearchInput={true}
             showStatusFilter={true}
             toolbarCustomContent={
-              <button className="bg-white text-gray-700 hover:bg-gray-50 px-4 py-2flex dark:text-gray-400 text-sm items-baseline p-2 gap-2 rounded-lg border border-gray-200 dark:border-gray-600">
+              <button className="bg-status-bg text-cell-secondary hover:bg-gray-50 px-4 py-2flex dark:text-gray-400 text-sm items-baseline p-2 gap-2 rounded-lg border border-status-border dark:border-gray-600">
                 See All
               </button>
             }
@@ -160,11 +201,6 @@ const AdminDashboard = () => {
         <EmployeeRequests />
       </div>
 
-      <ProjectRatingModal
-        isOpen={isRatingModal}
-        onClose={handelRatingModal}
-        project={1}
-      />
       <Alert
         title={"Confirm Approval"}
         message={

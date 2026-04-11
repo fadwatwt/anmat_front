@@ -29,13 +29,13 @@ const DynamicDoughnut = ({ data, centerTitle, centerValue }) => {
                             <Label
                                 value={totalValue}
                                 position="center"
-                                className="text-3xl font-bold fill-gray-800"
+                                className="text-3xl font-bold fill-table-title"
                             />
                             <Label
                                 value={centerTitle}
                                 position="center"
                                 dy={25}
-                                className="text-xs uppercase font-semibold fill-gray-400"
+                                className="text-xs uppercase font-semibold fill-cell-secondary"
                             />
                         </Pie>
                     </PieChart>
@@ -49,9 +49,9 @@ const DynamicDoughnut = ({ data, centerTitle, centerValue }) => {
                     <div key={`legend-${index}`} className="flex flex-col items-center">
                         <div className="flex items-center gap-2 mb-1">
                             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
-                            <span className="text-sm text-gray-500">{item.name}</span>
+                            <span className="text-sm text-cell-secondary">{item.name}</span>
                         </div>
-                        <span className="text-lg font-bold text-gray-700">{item.value}</span>
+                        <span className="text-lg font-bold text-cell-primary">{item.value}</span>
                     </div>
                 ))}
             </div>

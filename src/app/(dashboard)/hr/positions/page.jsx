@@ -3,57 +3,33 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import Table from "@/components/Tables/Table";
 import { GoPlus } from "react-icons/go";
-import Alert from "@/components/Alerts/Alert.jsx";
+import { useProcessing } from "@/app/providers";
+import ApprovalAlert from "@/components/Alerts/ApprovalAlert.jsx";
+import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert.jsx";
+import StatusActions from "@/components/Dropdowns/StatusActions";
+import { RiEditLine, RiDeleteBin7Line } from "@remixicon/react";
+
 import Page from "@/components/Page.jsx";
 import CreatePositionModal from "./modals/CreatePositionModal.jsx";
 import EditPositionModal from "./modals/EditPositionModal.jsx";
 
+import { useGetPositionsQuery, useDeletePositionMutation } from "@/redux/positions/positionsApi";
+
 function PositionsPage() {
     const { t } = useTranslation();
-
-    // Mock Data
-    const [positions, setPositions] = useState([
-        {
-            id: "1",
-            name: "Senior Project Manager",
-            description: "Lorem ipsum dummy text, Lorem ipsum dummy text...",
-            noOfDepartments: 7,
-            noOfEmployees: 35
-        },
-        {
-            id: "2",
-            name: "Senior Project Manager",
-            description: "Lorem ipsum dummy text, Lorem ipsum dummy text...",
-            noOfDepartments: 7,
-            noOfEmployees: 35
-        },
-        {
-            id: "3",
-            name: "Senior Project Manager",
-            description: "Lorem ipsum dummy text, Lorem ipsum dummy text...",
-            noOfDepartments: 7,
-            noOfEmployees: 35
-        },
-        {
-            id: "4",
-            name: "Senior Project Manager",
-            description: "Lorem ipsum dummy text, Lorem ipsum dummy text...",
-            noOfDepartments: 7,
-            noOfEmployees: 35
-        },
-        {
-            id: "5",
-            name: "Senior Project Manager",
-            description: "Lorem ipsum dummy text, Lorem ipsum dummy text...",
-            noOfDepartments: 7,
-            noOfEmployees: 35
-        }
-    ]);
+    const { showProcessing, hideProcessing } = useProcessing();
+    const { data: positions = [], isLoading } = useGetPositionsQuery();
+    const [deletePosition] = useDeletePositionMutation();
 
     const [selectedPosition, setSelectedPosition] = useState(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
-    const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
+
+    const [apiResponse, setApiResponse] = useState({
+        isOpen: false,
+        status: "",
+        message: "",
+    });
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
     const headers = [
@@ -76,38 +52,40 @@ function PositionsPage() {
         setIsDeleteAlertOpen(true);
     };
 
-    const confirmDelete = () => {
-        setPositions(positions.filter(p => p.id !== selectedPosition.id));
+    const confirmDelete = async () => {
+        if (!selectedPosition) return;
         setIsDeleteAlertOpen(false);
-        setIsSuccessAlertOpen(true);
-    };
+        showProcessing(t("Deleting position..."));
 
-    const handleCreateSubmit = (values) => {
-        const newPosition = {
-            id: Math.random().toString(),
-            name: values.name,
-            description: values.description,
-            noOfDepartments: 0,
-            noOfEmployees: 0
-        };
-        setPositions([...positions, newPosition]);
-    };
-
-    const handleEditSubmit = (values) => {
-        setPositions(positions.map(p => p.id === values.id ? values : p));
+        try {
+            const response = await deletePosition(selectedPosition._id).unwrap();
+            setApiResponse({
+                isOpen: true,
+                status: "success",
+                message: response?.message || t("Position deleted successfully"),
+            });
+        } catch (error) {
+            setApiResponse({
+                isOpen: true,
+                status: "error",
+                message: error?.data?.message || t("Failed to delete position"),
+            });
+        } finally {
+            hideProcessing();
+        }
     };
 
     const rows = positions.map((pos) => [
-        <span key={`name-${pos.id}`} className="text-sm font-medium text-gray-900 dark:text-gray-100">
-            {pos.name}
+        <span key={`name-${pos._id}`} className="text-sm font-semibold text-cell-primary">
+            {pos.title}
         </span>,
-        <span key={`desc-${pos.id}`} className="text-sm text-gray-500 dark:text-gray-400">
+        <span key={`desc-${pos._id}`} className="text-sm text-cell-secondary whitespace-normal">
             {pos.description}
         </span>,
     ]);
 
     const headerActions = (
-        <button onClick={handleCreatePosition} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all text-sm font-medium shadow-sm">
+        <button onClick={handleCreatePosition} className="flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg transition-all text-sm font-semibold shadow-sm">
             <GoPlus size={18} />
             {t("Create a Position")}
         </button>
@@ -124,9 +102,23 @@ function PositionsPage() {
                         isCheckInput={true}
                         isTitle={true}
                         classContainer="w-full"
-                        isActions={true}
-                        handelEdit={handleEdit}
-                        handelDelete={handleDelete}
+                        isActions={false}
+                        customActions={(index) => (
+                            <StatusActions
+                                states={[
+                                    // {
+                                    //     text: t("Edit"),
+                                    //     icon: <RiEditLine className="text-primary-base" />,
+                                    //     onClick: () => handleEdit(index),
+                                    // },
+                                    {
+                                        text: t("Delete"),
+                                        icon: <RiDeleteBin7Line className="text-red-500" />,
+                                        onClick: () => handleDelete(index),
+                                    },
+                                ]}
+                            />
+                        )}
                         headerActions={headerActions}
                         showControlBar={false}
                         hideSearchInput={false}
@@ -136,35 +128,30 @@ function PositionsPage() {
                 <CreatePositionModal
                     isOpen={isCreateModalOpen}
                     onClose={() => setIsCreateModalOpen(false)}
-                    onSubmit={handleCreateSubmit}
                 />
 
                 <EditPositionModal
                     isOpen={isEditModalOpen}
                     onClose={() => setIsEditModalOpen(false)}
                     position={selectedPosition}
-                    onSubmit={handleEditSubmit}
                 />
 
-                <Alert
-                    type="delete"
+                <ApprovalAlert
+                    type="danger"
                     title="Delete Position?"
-                    message={(<div>Are you sure you want to <span className="font-bold">Delete {selectedPosition?.name}</span> position</div>)}
+                    message={`Are you sure you want to Delete ${selectedPosition?.title} position?`}
                     isOpen={isDeleteAlertOpen}
                     onClose={() => setIsDeleteAlertOpen(false)}
-                    onSubmit={confirmDelete}
-                    titleCancelBtn="Cancel"
-                    titleSubmitBtn="Yes, Delete"
-                    isBtns={true}
+                    onConfirm={confirmDelete}
+                    cancelBtnText="Cancel"
+                    confirmBtnText="Yes, Delete"
                 />
 
-                <Alert
-                    type="success"
-                    title="Position Deleted"
-                    message="The position has been successfully deleted."
-                    isOpen={isSuccessAlertOpen}
-                    onClose={() => setIsSuccessAlertOpen(false)}
-                    isBtns={false}
+                <ApiResponseAlert
+                    isOpen={apiResponse.isOpen}
+                    status={apiResponse.status}
+                    message={apiResponse.message}
+                    onClose={() => setApiResponse((prev) => ({ ...prev, isOpen: false }))}
                 />
             </div>
         </Page>

@@ -14,7 +14,7 @@ function Page({
   isBreadcrumbs,
   breadcrumbs,
   isNavs,
-  otherHeaderActions=null
+  otherHeaderActions = null
 }) {
   const { t } = useTranslation();
   return (
@@ -28,7 +28,7 @@ function Page({
     >
       {isTitle && (
         <div className="flex justify-between items-center w-full">
-          <div className="title-page dark:text-white text-start w-full py-4 text-base sm:text-lg md:text-xl text-gray-600">
+          <div className="title-page text-page-title text-start w-full py-4 text-base sm:text-lg md:text-xl">
             {t(title)}
           </div>
 

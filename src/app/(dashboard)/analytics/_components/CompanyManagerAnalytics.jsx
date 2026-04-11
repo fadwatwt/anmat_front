@@ -60,16 +60,16 @@ function CompanyManagerAnalytics() {
 
     return (
         <Page className={"p-0"}>
-            <div className="p-8 bg-[#F9FAFB] min-h-screen space-y-9">
+            <div className="p-8 bg-surface min-h-screen space-y-9">
 
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
-                    <h1 className="text-2xl font-bold text-gray-800">All Analytics Overview</h1>
+                    <h1 className="text-2xl font-bold text-page-title">All Analytics Overview</h1>
                     <div className="flex gap-3">
-                        <select className="bg-white border border-gray-200 rounded-xl px-4 py-2 text-sm shadow-sm outline-none text-gray-600 font-medium">
+                        <select className="bg-status-bg border border-status-border rounded-xl px-4 py-2 text-sm shadow-sm outline-none text-cell-secondary font-medium">
                             <option>All Charts</option>
                         </select>
-                        <select className="bg-white border border-gray-200 rounded-xl px-4 py-2 text-sm shadow-sm outline-none text-gray-600 font-medium">
+                        <select className="bg-status-bg border border-status-border rounded-xl px-4 py-2 text-sm shadow-sm outline-none text-cell-secondary font-medium">
                             <option>All Sections</option>
                         </select>
                     </div>
@@ -77,7 +77,7 @@ function CompanyManagerAnalytics() {
 
                 {/* SECTION 1: Tasks Analytics (صورة 1) */}
                 <section>
-                    <h2 className="text-sm font-bold text-gray-400 mb-6 uppercase tracking-widest px-1">Tasks Analytics</h2>
+                    <h2 className="text-sm font-bold text-cell-secondary mb-6 uppercase tracking-widest px-1">Tasks Analytics</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <AnalyticsCard title="Tasks Summary">
                             <DynamicDoughnut data={tasksSummaryData} centerTitle="TASKS" centerValue="200" />
@@ -96,7 +96,7 @@ function CompanyManagerAnalytics() {
 
                 {/* SECTION 2: Projects Analytics (صورة 1) */}
                 <section>
-                    <h2 className="text-sm font-bold text-gray-400 mb-6 uppercase tracking-widest px-1">Projects Analytics</h2>
+                    <h2 className="text-sm font-bold text-cell-secondary mb-6 uppercase tracking-widest px-1">Projects Analytics</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <AnalyticsCard title="Projects Performance" showDropdowns={true} dropdown1Label="Last 6 months">
                             <PerformanceBar />
@@ -122,11 +122,11 @@ function CompanyManagerAnalytics() {
 
                 {/* SECTION 3: Employees Analytics (صورة 2) */}
                 <section>
-                    <h2 className="text-sm font-bold text-gray-400 mb-6 uppercase tracking-widest px-1">Employees Analytics</h2>
+                    <h2 className="text-sm font-bold text-cell-secondary mb-6 uppercase tracking-widest px-1">Employees Analytics</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                         <AnalyticsCard title="Employee Attendance" showDropdowns={true} dropdown1Label="Employee Name">
                             <DynamicDoughnut
-                                data={[{name: 'Attended', value: 25, color: '#4F46E5'}, {name: 'Absent', value: 5, color: '#FBBF24'}]}
+                                data={[{ name: 'Attended', value: 25, color: '#4F46E5' }, { name: 'Absent', value: 5, color: '#FBBF24' }]}
                                 centerTitle="DAYS" centerValue="30"
                             />
                         </AnalyticsCard>
@@ -141,7 +141,7 @@ function CompanyManagerAnalytics() {
 
                         <AnalyticsCard title="Employee Adherence" showDropdowns={true} dropdown1Label="Employee Name">
                             <DynamicDoughnut
-                                data={[{name: 'On Time', value: 20, color: '#10B981'}, {name: 'Late', value: 10, color: '#F59E0B'}]}
+                                data={[{ name: 'On Time', value: 20, color: '#10B981' }, { name: 'Late', value: 10, color: '#F59E0B' }]}
                                 centerTitle="DAYS" centerValue="30"
                             />
                         </AnalyticsCard>
@@ -158,27 +158,27 @@ function CompanyManagerAnalytics() {
 
                 {/* SECTION 4: Department Analytics (صورة 2) */}
                 <section className="pb-10">
-                    <h2 className="text-sm font-bold text-gray-400 mb-6 uppercase tracking-widest px-1">Department Analytics</h2>
+                    <h2 className="text-sm font-bold text-cell-secondary mb-6 uppercase tracking-widest px-1">Department Analytics</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <AnalyticsCard title="Department Adherence" showDropdowns={true} dropdown1Label="Department Name">
                             <DynamicDoughnut
-                                data={[{name: 'On Time', value: 80, color: '#4F46E5'}, {name: 'Late', value: 20, color: '#FBBF24'}]}
+                                data={[{ name: 'On Time', value: 80, color: '#4F46E5' }, { name: 'Late', value: 20, color: '#FBBF24' }]}
                                 centerTitle="Tasks" centerValue="100"
                             />
                         </AnalyticsCard>
                         <AnalyticsCard title="Department Performance" showDropdowns={true} dropdown1Label="Department Name">
                             <DynamicDoughnut
-                                data={[{name: 'Completed on time', value: 75, color: '#10B981'}, {name: 'Overdue', value: 25, color: '#EF4444'}]}
+                                data={[{ name: 'Completed on time', value: 75, color: '#10B981' }, { name: 'Overdue', value: 25, color: '#EF4444' }]}
                                 centerTitle="TASKS" centerValue="100"
                             />
                         </AnalyticsCard>
                     </div>
                 </section>
-                    <div className="flex pt- flex-col md:flex-row items-stretch gap-4 justify-between w-full">
-                        <div className="w-full md:w-full">
-                            <DepartmentsRankingTable />
-                        </div>
+                <div className="flex pt- flex-col md:flex-row items-stretch gap-4 justify-between w-full">
+                    <div className="w-full md:w-full">
+                        <DepartmentsRankingTable />
                     </div>
+                </div>
             </div>
         </Page>
     );

@@ -20,46 +20,50 @@ const AdminAnalytics = () => {
             title="All Analytics Overview"
             isBtn={false}
             otherHeaderActions={
-                <div className="w-72 flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end">
-                    <DefaultSelect placeholder="charts" options={[{ id: 1, value: "All Charts" }]} />
-                    <DefaultSelect placeholder="sections" options={[{ id: 1, value: "All Sections" }]} />
+                <div className="w-full md:w-auto flex flex-col sm:flex-row gap-3 items-center justify-end">
+                    <div className="w-full sm:w-40 md:w-48">
+                        <DefaultSelect placeholder="charts" options={[{ id: 1, value: "All Charts" }]} />
+                    </div>
+                    <div className="w-full sm:w-40 md:w-48">
+                        <DefaultSelect placeholder="sections" options={[{ id: 1, value: "All Sections" }]} />
+                    </div>
                 </div>
             }
         >
             <div className="flex flex-col gap-12">
                 {/* Companies Analytics */}
-                <div className="flex flex-col items-start justify-start gap-4">
-                    <span className="text-lg text-gray-500">
-                        Companies
-                    </span>
-                    <div className="flex flex-col md:flex-row items-stretch gap-4 justify-between w-full">
-                        <div className="w-full md:w-1/2">
+                {/* Companies Analytics Section */}
+                <div className="flex flex-col items-start justify-start gap-6">
+                    <h2 className="text-xl font-bold text-cell-primary">
+                        Companies Analytics
+                    </h2>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+                        <div className="w-full h-full min-h-[400px]">
                             <IndustriesChart />
                         </div>
-                        <div className="w-full md:w-1/2">
+                        <div className="w-full h-full min-h-[400px]">
                             <SubscriptionsChart />
                         </div>
-                    </div>
-                    <div className="flex flex-col md:flex-row items-stretch gap-4 justify-between w-full">
-                        <div className="w-full md:w-1/2">
+                        <div className="w-full h-full min-h-[400px]">
                             <CompaniesSubscriptionsChart />
                         </div>
-                        <div className="w-full md:w-1/2">
+                        <div className="w-full h-full min-h-[400px]">
                             <TopCompaniesList />
                         </div>
                     </div>
                 </div>
 
                 {/* Other Analytics */}
-                <div className="flex flex-col items-start justify-start gap-4 w-full">
-                    <span className="text-lg text-gray-500">
-                        Other Analytics
-                    </span>
-                    <div className="flex flex-col md:flex-row items-stretch gap-4 justify-between w-full">
-                        <div className="w-full md:w-1/2">
+                {/* Revenues & Engagement Section */}
+                <div className="flex flex-col items-start justify-start gap-6 w-full pb-8">
+                    <h2 className="text-xl font-bold text-cell-primary">
+                        Revenues & Engagement
+                    </h2>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+                        <div className="w-full h-full min-h-[400px]">
                             <CompaniesContactedChart />
                         </div>
-                        <div className="w-full md:w-1/2">
+                        <div className="w-full h-full min-h-[400px]">
                             <RevenuesChart />
                         </div>
                     </div>

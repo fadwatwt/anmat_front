@@ -4,37 +4,52 @@ import TaskStage from "./SubComponents/TaskStage.jsx";
 import { useTranslation } from "react-i18next";
 import PropTypes from "prop-types";
 
-function CreateTaskForm({ task, values, handleChange, setFieldValue }) {
-  const [taskStageNumber, setTaskStageNumber] = useState([1]);
+function CreateTaskForm({ task, type = "project", values, handleChange, setFieldValue, lockedProjectId, lockedProjectName }) {
   const { t } = useTranslation();
 
-  const incrementTaskStage = () => {
-    const nextStage = Math.max(...taskStageNumber) + 1;
-    setTaskStageNumber([...taskStageNumber, nextStage]);
+  const handleAddStage = () => {
+    const currentStages = values?.stages || [];
+    setFieldValue("stages", [...currentStages, { name: "", description: "", status: "pending", start_date: "", due_date: "" }]);
   };
 
-  const decrementTaskStage = (stage) => {
-    const updatedStages = taskStageNumber.filter((number) => number !== stage);
-    const reorderedStages = updatedStages.map((_, index) => index + 1);
-    setTaskStageNumber(reorderedStages);
+  const handleDeleteStage = (index) => {
+    const currentStages = values?.stages || [];
+    const updatedStages = currentStages.filter((_, i) => i !== index);
+    setFieldValue("stages", updatedStages);
   };
+
+  const stages = values?.stages || [];
+
   return (
     <div className={"flex flex-col gap-1"}>
-      <TaskMainInfo task={task} values={values} handleChange={handleChange} setFieldValue={setFieldValue} />
+      <TaskMainInfo
+        task={task}
+        type={type}
+        values={values}
+        handleChange={handleChange}
+        setFieldValue={setFieldValue}
+        lockedProjectId={lockedProjectId}
+        lockedProjectName={lockedProjectName}
+      />
       <div className={"flex flex-col gap-4"}>
-        {taskStageNumber.map((taskStageNumber) => (
+        {stages.map((stage, index) => (
           <TaskStage
-            key={taskStageNumber}
-            handelDelete={decrementTaskStage}
-            stageNumber={taskStageNumber}
+            key={index}
+            index={index}
+            stageNumber={index + 1}
+            values={values}
+            handleChange={handleChange}
+            setFieldValue={setFieldValue}
+            handelDelete={handleDeleteStage}
           />
         ))}
 
         <button
+          type="button"
           className={
-            "w-full bg-none text-primary-base text-sm dark:text-primary-200"
+            "w-full bg-none text-primary-base text-sm dark:text-primary-200 mt-2"
           }
-          onClick={incrementTaskStage}
+          onClick={handleAddStage}
         >
           {t("Add Task Stage")}
         </button>
@@ -45,6 +60,13 @@ function CreateTaskForm({ task, values, handleChange, setFieldValue }) {
 
 CreateTaskForm.propTypes = {
   task: PropTypes.object,
+  type: PropTypes.string,
+  values: PropTypes.object,
+  handleChange: PropTypes.func,
+  setFieldValue: PropTypes.func,
+  lockedProjectId: PropTypes.string,
+  lockedProjectName: PropTypes.string,
 };
 
 export default CreateTaskForm;
+

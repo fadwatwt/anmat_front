@@ -26,9 +26,13 @@ const CompaniesContactedChart = () => {
         <DonutChartComponent
             title={"Companies Contacted"}
             toolbar={
-                <div className="w-72 flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end">
-                    <DefaultSelect options={[{ id: 1, value: "Employee" }]} />
-                    <DefaultSelect options={[{ id: 1, value: "Last Month" }]} />
+                <div className="flex flex-wrap sm:flex-nowrap gap-2 items-center justify-end w-full sm:w-auto">
+                    <div className="w-full sm:w-32">
+                        <DefaultSelect options={[{ id: 1, value: "Employee" }]} />
+                    </div>
+                    <div className="w-full sm:w-36">
+                        <DefaultSelect options={[{ id: 1, value: "Last Month" }]} />
+                    </div>
                 </div>
             }
             subtitle={"COMPANIES"}

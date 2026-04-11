@@ -11,12 +11,19 @@ import DashboardSideMenu from "@/components/DashboardSideMenu";
 import { useSelector, useDispatch } from "react-redux";
 import { selectAuth, loadAuthState, logout, setUser } from "@/redux/auth/authSlice";
 import { useLazyGetUserQuery } from "@/redux/auth/authAPI";
+import useDarkMode from "@/Hooks/useDarkMode";
 
 const MainLayout = ({ children }) => {
     const [isSlidebarOpen, setSlidebarOpen] = useState(false);
+    const [mounted, setMounted] = useState(false);
+    useDarkMode();
     const router = useRouter();
     const pathname = usePathname();
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const { isAuthenticated, token, user } = useSelector(selectAuth);
     const [getUser, { isLoading: isFetchingUser }] = useLazyGetUserQuery();
@@ -41,8 +48,29 @@ const MainLayout = ({ children }) => {
             if (storedToken && !user) {
                 try {
                     const result = await getUser(storedToken).unwrap();
-                    if (result?.data) {
-                        dispatch(setUser(result.data));
+                    const userData = result?.data || result;
+                    if (userData) {
+                        dispatch(setUser(userData));
+                        // Specific redirects
+                        if (userData.type === "Subscriber") {
+                            if (!userData.is_organization_registered) {
+                                router.push("/account-setup/subscriber/business-selection");
+                                return;
+                            }
+                            if (!userData.active_subscription_id) {
+                                router.push("/account-setup/subscriber/plans");
+                                return;
+                            }
+                        } else if (userData.type === "Employee") {
+                            if (!userData.email_verification?.is_verified) {
+                                router.push("/account-setup/employee/email/verification");
+                                return;
+                            }
+                            if (!userData.employee_detail || !userData.is_active) {
+                                router.push("/account-setup/employee");
+                                return;
+                            }
+                        }
                     } else {
                         // If result doesn't have data, consider it invalid
                         dispatch(logout());
@@ -52,6 +80,27 @@ const MainLayout = ({ children }) => {
                     console.error("Failed to fetch user:", error);
                     dispatch(logout());
                     router.push("/sign-in");
+                }
+            } else if (user) {
+                // Check status even if user is already in state
+                if (user.type === "Subscriber") {
+                    if (!user.is_organization_registered) {
+                        router.push("/account-setup/subscriber/business-selection");
+                        return;
+                    }
+                    if (!user.active_subscription_id) {
+                        router.push("/account-setup/subscriber/plans");
+                        return;
+                    }
+                } else if (user.type === "Employee") {
+                    if (!user.email_verification?.is_verified) {
+                        router.push("/account-setup/employee/email/verification");
+                        return;
+                    }
+                    if (!user.employee_detail || !user.is_active) {
+                        router.push("/account-setup/employee");
+                        return;
+                    }
                 }
             } else if (!storedToken) {
                 router.push("/sign-in");
@@ -84,16 +133,39 @@ const MainLayout = ({ children }) => {
         setLanguage(i18n.language);
     }, [i18n.language]);
 
-    // Show loading while fetching user or if state is being initialized
-    if ((isFetchingUser || !user) && (token || (typeof window !== "undefined" && localStorage.getItem("token")))) {
+    // Check if redirection is needed
+    const shouldRedirect = user && (
+        (user.type === "Subscriber" && (!user.is_organization_registered || !user.active_subscription_id)) ||
+        (user.type === "Employee" && (!user.email_verification?.is_verified || !user.employee_detail || !user.is_active))
+    );
+
+    // Show loading while fetching user or if state is being initialized or redirection is pending
+    if (!mounted) {
         return (
-            <div className="h-screen w-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+            <div className="h-screen w-screen flex items-center justify-center bg-status-bg">
                 <div className="flex flex-col items-center gap-4">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-                    <p className="text-gray-600 dark:text-gray-400 font-medium">Loading session...</p>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-base"></div>
+                    <p className="text-cell-secondary font-medium">
+                        Loading session...
+                    </p>
                 </div>
             </div>
         );
+    }
+
+    if (isFetchingUser || !user || shouldRedirect) {
+        if (token || localStorage.getItem("token")) {
+            return (
+                <div className="h-screen w-screen flex items-center justify-center bg-status-bg">
+                    <div className="flex flex-col items-center gap-4">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-base"></div>
+                        <p className="text-cell-secondary font-medium">
+                            {shouldRedirect ? "Redirecting to setup..." : "Loading session..."}
+                        </p>
+                    </div>
+                </div>
+            );
+        }
     }
 
     if (!user) {
@@ -101,12 +173,19 @@ const MainLayout = ({ children }) => {
     }
 
     return (
-        <div className="flex max-w-full w-screen h-screen">
+        <div className="flex w-full h-screen overflow-hidden bg-main">
             <DashboardSideMenu
                 isSlidebarOpen={isSlidebarOpen}
                 toggleSlidebarOpen={toggleSlidebarOpen}
             />
-            <div className="h-full w-screen flex-col">
+            {/* Overlay for mobile when sidebar is open */}
+            {isSlidebarOpen && (
+                <div
+                    className="fixed inset-0 bg-black/50 z-[55] md:hidden"
+                    onClick={toggleSlidebarOpen}
+                />
+            )}
+            <div className="flex flex-col flex-1 h-full min-w-0 overflow-hidden ">
                 {!isSubscriptionPage && (
                     !isSettingsPage ? (
                         <Header taggleSlidebarOpen={toggleSlidebarOpen} />
@@ -118,7 +197,7 @@ const MainLayout = ({ children }) => {
                     )
                 )}
 
-                <main className="h-[calc(100vh-72px)] overflow-auto max-w-[100vw] tab-content dark:bg-gray-900">
+                <main className="flex-1 overflow-auto bg-main p-4 md:p-6">
                     {children}
                 </main>
             </div>

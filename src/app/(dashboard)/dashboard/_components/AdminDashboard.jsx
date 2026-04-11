@@ -8,74 +8,84 @@ import CompaniesSubscriptionsChart from "@/app/(dashboard)/analytics/_components
 import Table from "@/components/Tables/Table";
 import EmployeeRequests from "@/app/(dashboard)/dashboard/_components/employee/EmployeeRequests";
 
-const CompanyManagerDashboard = () => {
+import { useTranslation } from "react-i18next";
+import { useState, useMemo } from "react";
+import { format } from "date-fns";
+import { useGetSubscriptionsBasicDetailsQuery } from "@/redux/subscriptions/subscriptionsApi";
+import { useGetIndustriesQuery } from "@/redux/industries/industriesApi";
+import { useGetOrganizationsQuery } from "@/redux/organizations/organizationsApi";
+import { statusCell } from "@/components/StatusCell";
+
+const AdminDashboard = () => {
+    const { t } = useTranslation();
+    const [selectedIndustry, setSelectedIndustry] = useState([]);
+    const industryId = selectedIndustry[0]?.id;
+
+    const { data: subscriptions, isLoading: subsLoading, error: subsError } = useGetSubscriptionsBasicDetailsQuery();
+    const { data: industriesResponse } = useGetIndustriesQuery();
+    const { data: organizations, isLoading: orgsLoading } = useGetOrganizationsQuery(
+        industryId ? { industry_id: industryId } : {}
+    );
+
+    const industries = industriesResponse?.data || industriesResponse || [];
+    const industryOptions = useMemo(() => [
+        { id: null, value: "All" },
+        ...industries.map(ind => ({ id: ind._id, value: ind.name }))
+    ], [industries]);
 
     const headers = [
-        { label: "Company Name", width: "200px" },
-        { label: "Industry", width: "150px" },
-        { label: "Subscription Date", width: "150px" },
-        { label: "Plan", width: "100px" },
+        { label: "Subscriber", width: "180px" },
+        { label: "Company", width: "220px" },
+        { label: "Phone", width: "130px" },
+        { label: "Status", width: "120px" },
+        { label: "Start Date", width: "130px" },
+        { label: "Expiration Date", width: "130px" },
     ];
 
-    const companiesList = [
-        {
-            id: "1",
-            companyName: "Tech Innovations",
-            industry: "Technology",
-            subscriptionDate: "2025-07-01",
-            plan: "Premium",
-            avatar: "https://ui-avatars.com/api/?name=Tech+Innovations",
-        },
-        {
-            id: "2",
-            companyName: "Green Solutions",
-            industry: "Renewable Energy",
-            subscriptionDate: "2025-06-15",
-            plan: "Basic",
-            avatar: "https://ui-avatars.com/api/?name=Green+Solutions",
-        },
-        {
-            id: "3",
-            companyName: "HealthCare Inc",
-            industry: "Healthcare",
-            subscriptionDate: "2025-07-10",
-            plan: "Pro",
-            avatar: "https://ui-avatars.com/api/?name=HealthCare+Inc",
-        },
-    ];
-
-    const rows = companiesList.map((item) => [
-        <div key={`name-${item.id}`} className="flex items-center space-x-2">
-            <img src={item.avatar} alt={item.companyName} className="w-8 h-8 rounded-full" />
-            <span className="text-sm">{item.companyName}</span>
+    const rows = subscriptions?.map((item) => [
+        <div key={`sub-${item.subscription?._id}`} className="flex flex-col items-start justify-start gap-0.5 overflow-hidden w-full">
+            <span
+                className="text-sm text-cell-primary truncate w-full block max-w-[150px]"
+                title={item.subscriber?.name}
+            >
+                {item.subscriber?.name || "N/A"}
+            </span>
+            <span
+                className="text-xs text-cell-secondary truncate w-full block max-w-[150px]"
+                title={item.subscriber?.email}
+            >
+                {item.subscriber?.email || ""}
+            </span>
         </div>,
-        <span key={`industry-${item.id}`} className="text-sm">{item.industry}</span>,
-        <span key={`date-${item.id}`} className="text-sm">{item.subscriptionDate}</span>,
-        <span key={`plan-${item.id}`} className="text-sm capitalize">{item.plan}</span>,
-    ]);
+        <div key={`org-${item.subscription?._id}`} className="flex flex-col items-start justify-start gap-1 overflow-hidden w-full">
+            <span
+                className="text-sm font-medium text-table-title truncate w-full block max-w-[200px]"
+                title={item.organization?.name}
+            >
+                {item.organization?.name || "N/A"}
+            </span>
+            <span
+                className="text-xs text-cell-secondary truncate w-full block max-w-[200px]"
+                title={item.organization?.website || item.organization?.email}
+            >
+                {item.organization?.website || item.organization?.email || ""}
+            </span>
+        </div>,
+        <span key={`phone-${item.subscription?._id}`} className="text-sm text-cell-secondary truncate max-w-[120px]" title={item.organization?.phone || item.subscriber?.phone}>
+            {item.organization?.phone || item.subscriber?.phone || "N/A"}
+        </span>,
+        statusCell(item.subscription?.status, item.subscription?._id),
+        <span key={`start-${item.subscription?._id}`} className="text-sm text-cell-secondary">
+            {item.subscription?.starts_at ? format(new Date(item.subscription.starts_at), "MMM dd, yyyy") : "N/A"}
+        </span>,
+        <span key={`expires-${item.subscription?._id}`} className="text-sm text-cell-secondary">
+            {item.subscription?.expires_at ? format(new Date(item.subscription.expires_at), "MMM dd, yyyy") : "N/A"}
+        </span>,
+    ]) || [];
 
-    const lastCompaniesJoined = [
-        {
-            logo: "/images/logo.png",
-            name: "Company Name",
-            url: "company.io"
-        },
-        {
-            logo: "/images/logo.png",
-            name: "Company Name",
-            url: "company.io"
-        },
-        {
-            logo: "/images/logo.png",
-            name: "Company Name",
-            url: "company.io"
-        },
-        {
-            logo: "/images/logo.png",
-            name: "Company Name",
-            url: "company.io"
-        }
-    ];
+
+    if (subsLoading) return <div className="flex justify-center items-center h-full p-10">Loading dashboard...</div>;
+    if (subsError) return <div className="flex justify-center items-center h-full p-10 text-red-500">Error loading dashboard data.</div>;
 
     return (
         <Page
@@ -83,53 +93,75 @@ const CompanyManagerDashboard = () => {
             isBtn={false}
         >
             {/* Companies Analytics */}
-            <div className="flex flex-col items-start justify-start gap-4">
-                <div className="flex flex-col md:flex-row items-stretch gap-4 justify-between w-full">
-                    <div className="w-full md:w-1/2">
+            <div className="flex flex-col items-start justify-start gap-8">
+                <div className="flex items-center justify-between w-full">
+                    <h2 className="text-xl font-bold text-cell-primary">
+                        {t("Companies Analytics")}
+                    </h2>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+                    <div className="w-full">
                         <IndustriesChart />
                     </div>
-                    <div className="w-full md:w-1/2">
+                    <div className="w-full">
                         <CompaniesSubscriptionsChart />
                     </div>
                 </div>
-                <div className="flex flex-col md:flex-row items-stretch gap-4 justify-between w-full">
-                    <div className="w-full md:w-2/3">
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full">
+                    <div className="w-full lg:col-span-2">
                         <Table
-                            title="Companies Subscriptions"
+                            title="Subscriptions"
                             headers={headers}
                             rows={rows}
                             isCheckInput={false}
                             isTitle={true}
-                            classContainer={"h-full"}
+                            classContainer={"h-full border border-status-border rounded-2xl"}
                         />
                     </div>
-                    <div className="w-full md:w-1/3">
+                    <div className="w-full">
                         <ContentCard
-                            title={"Last Companies Joined"}
+                            title={"Companies Joined"}
+                            className="h-full"
                             toolbar={
-                                <div className="w-32 flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end">
-                                    <DefaultSelect placeholder="Industry" options={[{ id: 1, value: "Design" }]} />
+                                <div className="w-full sm:w-40 md:w-48 flex items-center justify-end">
+                                    <DefaultSelect
+                                        placeholder="Industry"
+                                        options={industryOptions}
+                                        value={selectedIndustry}
+                                        onChange={setSelectedIndustry}
+                                        multi={false}
+                                    />
                                 </div>
                             }
                             main={
-                                <div className="flex flex-col items-start justify-start gap-4 w-full">
-                                    {lastCompaniesJoined.map(company => {
-                                        return (
-                                            <div className="flex gap-2 items-start justify-start w-full">
-                                                <div className="w-12 h-12 rounded-full overflow-hidden">
-                                                    <img src={company.logo} alt="Logo" className="w-full" />
+                                <div className="flex flex-col items-start justify-start gap-4 w-full h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                                    {orgsLoading ? (
+                                        <div className="text-sm text-cell-secondary py-4 w-full text-center">Loading...</div>
+                                    ) : organizations?.length > 0 ? (
+                                        organizations.map((org, index) => (
+                                            <div key={org._id || index} className="flex gap-4 items-center justify-start w-full p-2 hover:bg-page-bg rounded-xl transition-colors shrink-0">
+                                                <div className="w-12 h-12 rounded-full overflow-hidden bg-status-bg border border-status-border flex-shrink-0">
+                                                    <img
+                                                        src={org.logo || `https://ui-avatars.com/api/?name=${org.name}&background=random`}
+                                                        alt={org.name}
+                                                        className="w-full h-full object-cover"
+                                                    />
                                                 </div>
-                                                <div className="flex flex-col items-start justify-start gap-1">
-                                                    <span className="text-md text-gray-900">
-                                                        {company.name}
+                                                <div className="flex flex-col items-start justify-start gap-1 overflow-hidden">
+                                                    <span className="text-sm font-semibold text-table-title truncate w-full" title={org.name}>
+                                                        {org.name}
                                                     </span>
-                                                    <span className="text-sm text-gray-500">
-                                                        {company.url}
+                                                    <span className="text-xs text-cell-secondary truncate w-full" title={org.website || org.email}>
+                                                        {org.website || org.email}
                                                     </span>
                                                 </div>
-                                            </div>)
-                                    })
-                                    }
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="text-sm text-cell-secondary py-4 w-full text-center">No organizations found.</div>
+                                    )}
                                 </div>
                             }
                         />
@@ -141,4 +173,5 @@ const CompanyManagerDashboard = () => {
     );
 }
 
-export default CompanyManagerDashboard;
+export default AdminDashboard;
+

@@ -1,9 +1,11 @@
 import Modal from "@/components/Modal/Modal.jsx";
-import UserSelect from "@/components/Form/UserSelect.jsx";
 import PropTypes from "prop-types";
 import WordTheMiddleAndLine from "@/components/Subcomponents/WordTheMiddleAndLine.jsx";
+import ElementsSelect from "@/components/Form/ElementsSelect";
+import { useTranslation } from "react-i18next";
 
 function AddMember({ isOpen, onClose, teamName }) {
+    const { t } = useTranslation();
     const users = [
         {
             id: 1,

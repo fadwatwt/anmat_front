@@ -21,10 +21,10 @@ const Menu = React.memo(({ isSlidebarOpen, toggleSlidebarOpen }) => {
 
     return (
         <div
-            className={`md:relative md:translate-x-0 min-h--[100vh] bg-white dark:bg-gray-800 w-[272px] max-w-[272px] 
-        h-screen fixed flex flex-col gap-5 top-0 z-40 transition-transform 
+            className={`fixed md:relative top-0 bottom-0 z-[60] md:z-[20] flex flex-col w-[272px] max-w-[272px] h-screen bg-white dark:bg-gray-800 border-e dark:border-gray-700 transition-transform duration-300 ease-in-out gap-5
         ${i18n.language === "ar" ? "right-0" : "left-0"} 
-        ${isSlidebarOpen ? "translate-x-0" : (i18n.language === "ar" ? "translate-x-full" : "-translate-x-full")}`}
+        ${isSlidebarOpen ? "translate-x-0" : (i18n.language === "ar" ? "translate-x-full" : "-translate-x-full")} 
+        md:translate-x-0`}
         >
             <div className={" h-32 flex p-5 gap-2 border-b-2 dark:border-gray-600 items-center"}>
                 <div className={"profile-image"}>

@@ -5,7 +5,7 @@ import Link from "next/link";
 const VerifyEmail = () => {
     return (
         <>
-            <div className="relative rounded-xl px-12 py-16 border">
+            <div className="relative rounded-xl px-12 py-16 border border-status-border bg-surface">
                 <div className="absolute top-0 left-0 w-full">
                     <img src="/images/patterns/pattern_rec_top.png" className="w-full h-[120px]" alt="" />
                 </div>
@@ -22,12 +22,12 @@ const VerifyEmail = () => {
 
                     <div className="flex flex-col items-center justify-start gap-8 text-center w-[30rem]">
                         <div className="flex flex-col gap-1 text-2xl w-full">
-                            <span className="text-gray-900 dark:text-gray-50">
+                            <span className="text-cell-primary">
                                 {"Reset Password Link Sent"}
                             </span>
                         </div>
 
-                        <span className="block text-gray-500 text-lg text-wrap px-4">
+                        <span className="block text-cell-secondary text-lg text-wrap px-4">
                             We have sent you a reset link to your email, check your email and complete password resetting.
                         </span>
 

@@ -19,7 +19,7 @@ const Header = React.memo(({ taggleSlidebarOpen, className }) => {
   return (
     <div
       className={
-        "header dark:bg-gray-800 max-w-full bg-white h-[72px] flex px-8 items-center justify-between relative " +
+        "header bg-surface max-w-full h-[72px] flex px-3 sm:px-4 md:px-8 items-center justify-between relative border-b dark:border-gray-700 z-50 " +
         className
       }
     >
@@ -32,8 +32,8 @@ const Header = React.memo(({ taggleSlidebarOpen, className }) => {
       <div className="hidden md:block">
         <SearchInput />
       </div>
-      <div className={"flex gap-5"}>
-        <div className={"icons flex gap-2 items-center relative w-56 justify-end"}>
+      <div className={"flex gap-2 sm:gap-5"}>
+        <div className={"icons flex gap-1 sm:gap-2 items-center relative w-auto justify-end"}>
           <NotificationsDropdown notifications={[]} />
           <MessagesDropdown messages={[]} />
         </div>

@@ -1,209 +1,257 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import PropTypes from "prop-types";
 import Modal from "@/components/Modal/Modal.jsx";
-import InputAndLabel from "@/components/Form/InputAndLabel.jsx";
-// import SelectWithoutLabel from "@/components/Form/SelectWithoutLabel.jsx";
-import {
-  updateEmployee,
-  fetchEmployees,
-} from "@/redux/employees/employeeAPI.js";
-import { fetchRoles } from "@/redux/roles/rolesSlice.js";
-import { fetchDepartments } from "@/redux/departments/departmentAPI.js";
-import SelectAndLabel from "@/components/Form/SelectAndLabel";
+import PropTypes from "prop-types";
+import StepsComponent from "@/app/(dashboard)/projects/_components/CreateProjectForm/StepsComponent.jsx";
+import { useState, useEffect } from "react";
+import EmployeeInfoForm from "@/app/(dashboard)/hr/employees/components/EmployeeInfoForm";
+import WorkAndRatingInfoForm from "@/app/(dashboard)/hr/employees/components/WorkAndRatingInfoForm";
+import { useUpdateEmployeeMutation } from "@/redux/employees/employeesApi";
+import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
+import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
+import ProcessingOverlay from "@/components/Feedback/ProcessingOverlay";
+import { useTranslation } from "react-i18next";
 
-function EditAnEmployeeModal({ isOpen, onClose, employee }) {
-  const dispatch = useDispatch();
-  const { loading } = useSelector((state) => state.employees);
-  const [apiError, setApiError] = useState("");
-  const [roles, setRoles] = useState([]);
-  const [departments, setDepartments] = useState([]);
-  console.log(roles, "roles");
-  console.log(loading, "loading");
+function EditAnEmployeeModal({ isOpen, onClose, employeeData }) {
+    const { t } = useTranslation();
+    const [currentStep, setCurrentStep] = useState(1);
+    const [updateEmployee, { isLoading: isUpdating }] = useUpdateEmployeeMutation();
 
-  useEffect(() => {
-    if (isOpen) {
-      setApiError("");
-      dispatch(fetchRoles())
-        ?.then((res) => {
-          setRoles(
-            res.payload.data.map((role) => ({
-              value: role._id,
-              label: role.name,
-            }))
-          );
-        })
-        .catch(() => setApiError("Failed to fetch roles. Please try again."));
+    // Alerts State
+    const [isApprovalOpen, setIsApprovalOpen] = useState(false);
+    const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
-      dispatch(fetchDepartments())
-        ?.then((res) => {
-          setDepartments(
-            res.payload.map((dept) => ({
-              value: dept._id,
-              label: dept.name,
-            }))
-          );
-        })
-        .catch(() =>
-          setApiError("Failed to fetch departments. Please try again.")
-        );
-    }
-  }, [isOpen, dispatch]);
+    const [formData, setFormData] = useState({
+        email: "",
+        name: "",
+        phone: "",
+        employee_detail: {
+            department_id: null,
+            position_id: null,
+            country: "",
+            city: "",
+            work_hours: 0,
+            salary: 0,
+            yearly_day_offs: 0,
+            weekend_days: [],
+            date_of_birth: "",
+            roles_ids: []
+        }
+    });
 
-  const formik = useFormik({
-    initialValues: {
-      name: employee?.name || "",
-      email: employee?.email || "",
-      workingHours: employee?.workingHours || "",
-      holidays: employee?.holidays || "",
-      department: employee?.department?._id || "",
-    },
-    validationSchema: Yup.object({
-      name: Yup.string().required("Name is required"),
-      email: Yup.string()
-        .email("Invalid email address")
-        .required("Email is required"),
-      workingHours: Yup.number().required("Working hours are required"),
-      holidays: Yup.number().required("Holidays are required"),
-      department: Yup.string().required("Department is required"),
-    }),
-    onSubmit: async (values, { setSubmitting }) => {
-      try {
-        setApiError("");
-        await dispatch(
-          updateEmployee({ id: employee._id, employeeData: values })
-        )?.unwrap();
-        dispatch(fetchEmployees());
-        onClose();
-      } catch (error) {
-        setApiError(
-          error.message || "Failed to update employee. Please try again."
-        );
-      } finally {
-        setSubmitting(false);
-      }
-    },
-    enableReinitialize: true,
-  });
+    useEffect(() => {
+        if (isOpen && employeeData) {
+            setFormData({
+                email: employeeData.user?.email || "",
+                name: employeeData.user?.name || "",
+                phone: employeeData.user?.phone || "",
+                employee_detail: {
+                    department_id: employeeData.department_id?._id || employeeData.department_id || null,
+                    position_id: employeeData.position_id?._id || employeeData.position_id || null,
+                    country: employeeData.country || "",
+                    city: employeeData.city || "",
+                    work_hours: employeeData.work_hours || 0,
+                    salary: employeeData.salary || 0,
+                    yearly_day_offs: employeeData.yearly_day_offs || 0,
+                    weekend_days: employeeData.weekend_days || [],
+                    date_of_birth: employeeData.date_of_birth ? new Date(employeeData.date_of_birth).toISOString().split('T')[0] : "",
+                    roles_ids: employeeData.roles_ids || []
+                }
+            });
+            setCurrentStep(1);
+        }
+    }, [isOpen, employeeData]);
 
-  useEffect(() => {
-    if (isOpen) {
-      setApiError("");
+    const updateFormData = (field, value, isDetail = false) => {
+        if (isDetail) {
+            setFormData(prev => ({
+                ...prev,
+                employee_detail: {
+                    ...prev.employee_detail,
+                    [field]: value
+                }
+            }));
+        } else {
+            setFormData(prev => ({
+                ...prev,
+                [field]: value
+            }));
+        }
+    };
 
-      dispatch(fetchDepartments())
-        ?.then((res) => {
-          setDepartments(
-            res.payload.map((dept) => ({
-              _id: dept._id, // Ensure the correct property names
-              name: dept.name,
-            }))
-          );
-        })
-        .catch(() =>
-          setApiError("Failed to fetch departments. Please try again.")
-        );
-    }
-  }, [isOpen, dispatch]);
+    const handleSaveRequest = () => {
+        setIsApprovalOpen(true);
+    };
 
-  return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      isBtns={true}
-      btnApplyTitle={formik.isSubmitting ? "Saving..." : "Edit Employee"}
-      onClick={formik.handleSubmit}
-      className={"lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12 p-3"}
-      title={"Editing an Employee"}
-      disableSubmit={formik.isSubmitting || !formik.isValid}
-    >
-      <div className="px-1">
-        {apiError && (
-          <div className="mb-4 text-red-500 text-sm">{apiError}</div>
-        )}
+    const onConfirmSave = async () => {
+        try {
+            // Clean payload: remove null or "none" values and flattern for API if needed
+            // Based on previous EditAnEmployeeModal, it expects:
+            // { name, phone, employee_details: { ... } }
+            // Note: the previous one used plural `employee_details` but the Create one used singular.
+            // I'll stick to plural `employee_details` if that's what the update API expects.
+            
+            const payload = {
+                id: employeeData.user_id,
+                name: formData.name,
+                phone: formData.phone,
+                employee_details: {
+                    ...formData.employee_detail,
+                    work_hours: Number(formData.employee_detail.work_hours),
+                    salary: Number(formData.employee_detail.salary),
+                    yearly_day_offs: Number(formData.employee_detail.yearly_day_offs),
+                }
+            };
 
-        <div className="flex flex-col gap-4">
-          <InputAndLabel
-            title="Email"
-            name="email"
-            {...formik.getFieldProps("email")}
-            error={formik.errors.email}
-          />
+            // Remove nulls and "none" from department/position
+            if (!payload.employee_details.department_id || payload.employee_details.department_id === "none") {
+                delete payload.employee_details.department_id;
+            }
+            if (!payload.employee_details.position_id) {
+                delete payload.employee_details.position_id;
+            }
+            if (!payload.employee_details.date_of_birth) {
+                delete payload.employee_details.date_of_birth;
+            }
 
-          <InputAndLabel
-            title="Role"
-            name="role"
-            {...formik.getFieldProps("role")}
-            error={formik.errors.role}
-          />
+            await updateEmployee(payload).unwrap();
+            setApiResponse({
+                isOpen: true,
+                status: "success",
+                message: t("Employee updated successfully")
+            });
+        } catch (error) {
+            setApiResponse({
+                isOpen: true,
+                status: "error",
+                message: error?.data?.message || t("Failed to update employee")
+            });
+        }
+    };
 
-          <InputAndLabel
-            title="Job Type"
-            name="jobType"
-            {...formik.getFieldProps("jobType")}
-            error={formik.errors.jobType}
-          />
+    const steps = [
+        {
+            title: t("Employee Info"),
+            content: (
+                <EmployeeInfoForm formData={formData} updateFormData={updateFormData} isEdit={true} />
+            ),
+        },
+        {
+            title: t("Work Info"),
+            content: (
+                <WorkAndRatingInfoForm formData={formData} updateFormData={updateFormData} isEdit={true} />
+            )
+        }
+    ];
 
-          <InputAndLabel
-            title="Salary"
-            name="salary"
-            type="number"
-            {...formik.getFieldProps("salary")}
-            error={formik.errors.salary}
-          />
+    const handleCloseApiResponse = () => {
+        setApiResponse(prev => ({ ...prev, isOpen: false }));
+        if (apiResponse.status === "success") {
+            onClose();
+        }
+    };
 
-          <InputAndLabel
-            title="Salary"
-            name="salary"
-            type="number"
-            {...formik.getFieldProps("salary")}
-            error={formik.errors.salary}
-          />
+    return (
+        <>
+            <Modal
+                className="lg:w-[45%] md:w-10/12 sm:w-11/12 w-11/12 p-6 "
+                isOpen={isOpen}
+                onClose={onClose}
+                customBtns={
+                    <CustomBtnModal
+                        currentStep={currentStep}
+                        totalSteps={steps.length}
+                        isLoading={isUpdating}
+                        handleNext={() =>
+                            setCurrentStep((prev) => Math.min(prev + 1, steps.length))
+                        }
+                        handleBack={() =>
+                            setCurrentStep((prev) => Math.max(prev - 1, 1))
+                        }
+                        handleSave={handleSaveRequest}
+                    />
+                }
+                title={t("Edit Employee")}
+            >
+                <StepsComponent
+                    type="edit"
+                    steps={steps}
+                    currentStep={currentStep}
+                    setCurrentStep={setCurrentStep}
+                />
+            </Modal>
 
-          <SelectAndLabel
-            title="Department"
-            name="department"
-            value={formik.values.department}
-            onChange={(val) => formik.setFieldValue("department", val)} // Sending _id
-            options={departments} // Ensure the correct structure
-            error={formik.errors.department}
-            onBlur={() => { }} />
+            <ApprovalAlert
+                isOpen={isApprovalOpen}
+                onClose={() => setIsApprovalOpen(false)}
+                onConfirm={onConfirmSave}
+                title={t("Update Employee")}
+                message={t("Are you sure you want to update this employee's details?")}
+            />
 
-          <InputAndLabel
-            title="Working Hours"
-            name="workingHours"
-            type="number"
-            {...formik.getFieldProps("workingHours")}
-            error={formik.errors.workingHours}
-          />
+            <ApiResponseAlert
+                isOpen={apiResponse.isOpen}
+                status={apiResponse.status}
+                message={apiResponse.message}
+                onClose={handleCloseApiResponse}
+            />
 
-          <InputAndLabel
-            title="Working Days"
-            name="workingDays"
-            type="number"
-            {...formik.getFieldProps("workingDays")}
-            error={formik.errors.workingDays}
-          />
+            <ProcessingOverlay isOpen={isUpdating} message={t("Updating Employee...")} />
+        </>
+    );
+}
 
-          <InputAndLabel
-            title="Annual Leave Days"
-            name="annualLeaveDays"
-            type="number"
-            {...formik.getFieldProps("annualLeaveDays")}
-            error={formik.errors.annualLeaveDays}
-          />
-
+function CustomBtnModal({
+    currentStep,
+    totalSteps,
+    handleNext,
+    handleBack,
+    handleSave,
+    isLoading
+}) {
+    const { t } = useTranslation();
+    return (
+        <div className="w-full flex items-center gap-2 justify-between pt-3">
+            {currentStep > 1 && (
+                <button
+                    onClick={handleBack}
+                    className="bg-badge-bg text-sm border flex-1 border-status-border flex justify-center items-center text-primary-500 hover:bg-opacity-80 h-full text-center py-2.5 rounded-xl transition-all font-semibold"
+                >
+                    {t("Back")}
+                </button>
+            )}
+            
+            {currentStep === totalSteps ? (
+                <button
+                    onClick={handleSave}
+                    disabled={isLoading}
+                    className="bg-primary-500 hover:bg-primary-600 transition-colors text-sm flex flex-1 justify-center items-center h-full text-center text-white py-2.5 rounded-xl disabled:opacity-50 font-semibold"
+                >
+                    {isLoading ? t("Saving...") : t("Save Changes")}
+                </button>
+            ) : (
+                <button
+                    onClick={handleNext}
+                    className="bg-primary-500 hover:bg-primary-600 transition-colors text-sm flex flex-1 justify-center items-center h-full text-center text-white py-2.5 rounded-xl transition-all font-semibold"
+                >
+                    {t("Next")}
+                </button>
+            )}
         </div>
-      </div>
-    </Modal>
-  );
+    );
 }
 
 EditAnEmployeeModal.propTypes = {
-  isOpen: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-  employee: PropTypes.object.isRequired,
+    isOpen: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
+    employeeData: PropTypes.object,
+};
+
+CustomBtnModal.propTypes = {
+    currentStep: PropTypes.number.isRequired,
+    totalSteps: PropTypes.number.isRequired,
+    handleNext: PropTypes.func.isRequired,
+    handleBack: PropTypes.func.isRequired,
+    handleSave: PropTypes.func.isRequired,
+    isLoading: PropTypes.bool
 };
 
 export default EditAnEmployeeModal;

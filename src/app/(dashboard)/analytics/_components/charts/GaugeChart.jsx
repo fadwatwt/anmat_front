@@ -2,12 +2,12 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Label } from 'recharts';
 
 const GaugeChart = ({
-                        percentage = 0,
-                        primaryColor = "#F59E0B", // تعيين القيم الافتراضية هنا مباشرة
-                        secondaryColor = "#E5E7EB",
-                        label = "DELAY",
-                        footerData = []
-                    }) => {
+    percentage = 0,
+    primaryColor = "#F59E0B", // تعيين القيم الافتراضية هنا مباشرة
+    secondaryColor = "#E5E7EB",
+    label = "DELAY",
+    footerData = []
+}) => {
 
     // بيانات الرسم البياني
     const data = [
@@ -42,13 +42,13 @@ const GaugeChart = ({
                                 value={`${percentage}%`}
                                 position="center"
                                 dy={-30}
-                                className="text-4xl font-bold fill-gray-800"
+                                className="text-4xl font-bold fill-table-title"
                             />
                             <Label
                                 value={label}
                                 position="center"
                                 dy={-65}
-                                className="text-sm uppercase font-semibold fill-gray-400"
+                                className="text-sm uppercase font-semibold fill-cell-secondary"
                             />
                         </Pie>
                     </PieChart>
@@ -56,7 +56,7 @@ const GaugeChart = ({
             </div>
 
             {/* النصوص التوضيحية في الأسفل */}
-            <div className="flex flex-col gap-2 mt-4 w-full text-sm text-gray-600 px-4">
+            <div className="flex flex-col gap-2 mt-4 w-full text-sm text-cell-secondary px-4">
                 {footerData && footerData.map((item, index) => (
                     <div key={index} className="flex items-center gap-2">
                         <div

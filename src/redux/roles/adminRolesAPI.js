@@ -3,12 +3,12 @@ import { apiSlice } from "../api/apiSlice";
 export const adminRolesApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getAdminPermissions: builder.query({
-        query: () => ({
-          url: "api/admin/permissions",
-          method: "GET",
-        }),
-        providesTags: ["AdminPermissions"],
+      query: () => ({
+        url: "api/admin/permissions",
+        method: "GET",
       }),
+      providesTags: ["AdminPermissions"],
+    }),
     getAdminRoles: builder.query({
       query: () => ({
         url: "api/admin/roles",
@@ -45,6 +45,22 @@ export const adminRolesApi = apiSlice.injectEndpoints({
         { type: "AdminRoles", id },
       ],
     }),
+    assignRole: builder.mutation({
+      query: (data) => ({
+        url: "api/admin/roles/assign",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["AdminRoles", "SystemAdmins"],
+    }),
+    unassignRole: builder.mutation({
+      query: (data) => ({
+        url: "api/admin/roles/unassign",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["AdminRoles", "SystemAdmins"],
+    }),
   }),
 });
 
@@ -54,5 +70,7 @@ export const {
   useCreateAdminRoleMutation,
   useUpdateAdminRolePermissionsMutation,
   useDeleteAdminRoleMutation,
+  useAssignRoleMutation,
+  useUnassignRoleMutation,
 } = adminRolesApi;
 

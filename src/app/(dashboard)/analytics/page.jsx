@@ -2,10 +2,11 @@
 
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
-import useAuthStore from '@/store/authStore.js';
+import { selectUserType } from "@/redux/auth/authSlice";
+import { useSelector } from "react-redux";
 
 const AnalyticsPage = () => {
-  const { authUserType } = useAuthStore();
+  const authUserType = useSelector(selectUserType);
 
   // Dynamically import components with loading fallback
   const DynamicComponent = dynamic(() => {

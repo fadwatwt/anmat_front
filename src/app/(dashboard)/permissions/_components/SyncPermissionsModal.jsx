@@ -10,9 +10,11 @@ import {
   useGetAdminPermissionsQuery,
   useUpdateAdminRolePermissionsMutation,
 } from "@/redux/roles/adminRolesAPI";
+import { useProcessing } from "@/app/providers";
 
 function SyncPermissionsModal({ isOpen, onClose, roleId, roleName, currentPermissions = [] }) {
   const [updatePermissions, { isLoading }] = useUpdateAdminRolePermissionsMutation();
+  const { showProcessing, hideProcessing } = useProcessing();
   const [apiResponse, setApiResponse] = useState({
     isOpen: false,
     status: null,
@@ -85,6 +87,7 @@ function SyncPermissionsModal({ isOpen, onClose, roleId, roleName, currentPermis
         return;
       }
 
+      showProcessing("Syncing Permissions...");
       try {
         const payload = {
           admin_permissions_ids: values.admin_permissions_ids.map((tag) => tag.id),
@@ -111,6 +114,8 @@ function SyncPermissionsModal({ isOpen, onClose, roleId, roleName, currentPermis
           status: "error",
           message: errorMessage,
         });
+      } finally {
+        hideProcessing();
       }
     },
   });
@@ -161,18 +166,44 @@ function SyncPermissionsModal({ isOpen, onClose, roleId, roleName, currentPermis
       >
         <div className="px-1">
           <div className="flex flex-col gap-4">
-            <TagInput
-              title="Permissions"
-              isRequired={false}
-              suggestions={permissionsSuggestions}
-              placeholder={
-                isLoadingPermissions
-                  ? "Loading permissions..."
-                  : "Select Permissions..."
-              }
-              value={formik.values.admin_permissions_ids}
-              onChange={handlePermissionsChange}
-            />
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Permissions</label>
+              {isLoadingPermissions ? (
+                <p className="text-sm text-gray-500">Loading permissions...</p>
+              ) : (
+                <div className="flex flex-col gap-3 max-h-60 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-md p-3">
+                  {permissionsSuggestions.map((permission) => {
+                    const isChecked = formik.values.admin_permissions_ids.some(
+                      (p) => p.id === permission.id
+                    );
+                    return (
+                      <label key={permission.id} className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              const newValues = [...formik.values.admin_permissions_ids, permission];
+                              handlePermissionsChange(newValues);
+                            } else {
+                              const newValues = formik.values.admin_permissions_ids.filter((p) => p.id !== permission.id);
+                              handlePermissionsChange(newValues);
+                            }
+                          }}
+                          className="w-4 h-4 text-primary-base bg-gray-100 border-gray-300 rounded focus:ring-primary-base dark:focus:ring-primary-base focus:ring-2 dark:bg-gray-700 dark:border-gray-600 checkbox-custom"
+                        />
+                        <span className="text-sm text-gray-700 dark:text-gray-300">
+                          {permission.name}
+                        </span>
+                      </label>
+                    );
+                  })}
+                  {permissionsSuggestions.length === 0 && (
+                    <p className="text-sm text-gray-500 text-center">No permissions available.</p>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </Modal>

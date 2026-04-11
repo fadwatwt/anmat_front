@@ -1,3 +1,5 @@
+import { useTheme } from "@/app/providers";
+
 const HalfDonutChart = ({ data, total }) => {
     let cumulativePercent = 0;
 
@@ -30,7 +32,7 @@ const HalfDonutChart = ({ data, total }) => {
     const [startXbg, startYbg] = createCoordinatesForPercent(0);
     const [endXbg, endYbg] = createCoordinatesForPercent(1);
     const backgroundPath = `M ${startXbg} ${startYbg} A 1 1 0 0 1 ${endXbg} ${endYbg}`;
-    const theme = typeof window !== "undefined" ? localStorage.getItem("theme") : null
+    const [theme] = useTheme();
 
     return (
         <svg viewBox="-1.1 -1.1 2.2 2.2">

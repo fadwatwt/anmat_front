@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useLoginMutation } from "@/redux/auth/authAPI";
 import { useDispatch, useSelector } from "react-redux";
 import { loginSuccess, loginFailure } from "@/redux/auth/authSlice";
-import {RiUserSettingsLine} from "@remixicon/react";
+import { RiUserSettingsLine } from "@remixicon/react";
 import Link from "next/link";
 
 function ForgetPasswordPage() {
@@ -34,34 +34,34 @@ function ForgetPasswordPage() {
     return (
         <form onSubmit={handleSubmit} className="loginForm flex flex-col gap-3">
             <div className="flex flex-col items-center gap-3">
-                <div className="flex w-20 h-20 justify-center items-center rounded-full bg-[#F3F3F4]">
-                    <div className="flex w-12 h-12 justify-center items-center rounded-full bg-white shadow-md">
-                        <RiUserSettingsLine size={30} />
+                <div className="flex w-20 h-20 justify-center items-center rounded-full bg-status-bg">
+                    <div className="flex w-12 h-12 justify-center items-center rounded-full bg-surface shadow-md">
+                        <RiUserSettingsLine size={30} className="text-cell-primary" />
                     </div>
                 </div>
 
                 <div className="flex flex-col items-center justify-center gap-2 text-center">
-                    <sapn className="text-2xl text-gray-900">
+                    <span className="text-2xl text-cell-primary">
                         {`Forget Password`}
-                    </sapn>
-                    <span className="text-sm text-gray-500">
-            {'Enter your email to got a reset link.'}
-          </span>
+                    </span>
+                    <span className="text-sm text-cell-secondary">
+                        {'Enter your email to got a reset link.'}
+                    </span>
                 </div>
 
                 <div className="w-full">
                     <div className="flex flex-col gap-2 w-full">
 
                         <div className={"flex flex-col gap-2 w-full"}>
-                            <label>Email Address</label>
-                            <div className="flex bg-white pl-2 px-2 w-full items-center border-2 rounded-xl">
-                                <GoMail className="text-gray-500 w-10" size={18} />
+                            <label className="text-cell-primary">Email Address</label>
+                            <div className="flex bg-surface pl-2 px-2 w-full items-center border border-status-border rounded-xl">
+                                <GoMail className="text-cell-secondary w-10" size={18} />
                                 <input
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="Enter your email"
-                                    className="w-full py-3 px-2 outline-none"
+                                    className="w-full py-3 px-2 outline-none bg-transparent text-cell-primary"
                                     required
                                 />
                             </div>

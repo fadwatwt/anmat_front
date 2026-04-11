@@ -1,11 +1,10 @@
 "use client";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useDispatch } from "react-redux";
-// استيراد المودالات الخاصة بالأقسام
+// استيراد المودالات خاصة بالأقسام
 import CreateDepartmentModal from "@/app/(dashboard)/hr/departments/modals/CreateDepartment.modal";
 import CreateChatGroupModal from "@/app/(dashboard)/hr/departments/modals/CreateChatGroup.modal";
-import EditAnEmployeeModal from "@/app/(dashboard)/hr/_modals/EditAnEmployeeModal.jsx"; // تأكد من استبداله لاحقاً بمودال تعديل قسم
+import EditDepartmentModal from "@/app/(dashboard)/hr/departments/modals/EditDepartmentModal";
 import AccountDetails from "@/app/(dashboard)/projects/_components/TableInfo/AccountDetails.jsx";
 import { RiEditLine, RiGroupLine, RiNotification4Line, RiChat1Line, RiDeleteBin7Line } from "@remixicon/react";
 import StatusActions from "@/components/Dropdowns/StatusActions";
@@ -13,11 +12,15 @@ import SendNotificationModal from "@/app/(dashboard)/hr/employees/modals/SendNot
 import Alert from "@/components/Alerts/Alert";
 import Table from "@/components/Tables/Table"
 import Page from "@/components/Page";
-import { departmentsFactory } from "@/functions/FactoryData";
+import Rating from "@/app/(dashboard)/hr/Rating.jsx";
+import ProcessingOverlay from "@/components/Feedback/ProcessingOverlay.jsx";
+
+import { useGetDepartmentsQuery, useDeleteDepartmentMutation } from "@/redux/departments/departmentsApi";
 
 function DepartmentsPage() {
-    const dispatch = useDispatch();
     const { t } = useTranslation();
+    const { data: departments = [], isLoading: isDepartmentsLoading } = useGetDepartmentsQuery();
+    const [deleteDepartment, { isLoading: isDeleting }] = useDeleteDepartmentMutation();
 
     const [isOpenEditModal, setIsOpenEditModal] = useState(false);
     const [isOpenCreateModal, setIsOpenCreateModal] = useState(false);
@@ -30,15 +33,17 @@ function DepartmentsPage() {
     const [isOpenSuccessDeleteAlert, setIsOpenSuccessDeleteAlert] = useState(false);
 
     const headers = [
-        { label: t("Departments"), width: "250px" },
-        { label: t("No. of Active Tasks / Projects"), width: "200px" },
-        { label: t("No. of Employees"), width: "150px" },
-        { label: "", width: "50px" },
+        { label: t("Departments"), width: "20%" },
+        { label: t("No. of Active Tasks / Projects"), width: "15%" },
+        { label: t("No. of Employees"), width: "15%" },
+        { label: t("Rating"), width: "15%" },
+        { label: t("Positions"), width: "30%" },
+        { label: "", width: "5%" },
     ];
 
     const DepartmentActions = ({ actualRowIndex }) => {
         const { t, i18n } = useTranslation();
-        const department = departmentsFactory[actualRowIndex];
+        const department = departments[actualRowIndex];
 
         const statesActions = [
             {
@@ -84,27 +89,43 @@ function DepartmentsPage() {
         );
     }
 
-    const DepartmentRowTable = (departments) => {
-        return departments?.map((dept, index) => [
+    const DepartmentRowTable = (depts) => {
+        return depts?.map((dept, index) => [
             <AccountDetails
-                key={`dept-${index}`}
-                path={`/hr/departments/${dept.id}`}
+                key={`dept-${dept._id}`}
+                path={`/hr/departments/${dept._id}`}
                 account={{
                     name: dept.name || t("Unknown Department"),
                     imageProfile: dept.icon || "/images/department/departmentBrand1.png",
                 }}
             />,
-            <div key={`stats-${index}`} className="flex flex-col text-sm text-gray-500 py-2">
-                <span className="font-medium text-gray-600">
+            <div key={`stats-${dept._id}`} className="flex flex-col text-sm text-cell-secondary py-2">
+                <span className="font-semibold text-cell-primary">
                     {t("Projects")}: {dept.stats?.projects_count ?? 0}
                 </span>
-                <span className="text-gray-400">
+                <span className="text-cell-secondary opacity-70">
                     {t("Tasks")}: {dept.stats?.tasks_count ?? 0}
                 </span>
             </div>,
-            <p key={`emp-count-${index}`} className="text-sm font-medium text-gray-700">
+            <p key={`emp-count-${dept._id}`} className="text-sm font-semibold text-cell-primary">
                 {dept.stats?.employees_count ?? 0}
             </p>,
+            <div key={`rating-${dept._id}`} className="flex items-center">
+                <Rating value={(dept.rate || 0) * 5} showPercentage={false} />
+            </div>,
+            <div key={`positions-${dept._id}`} className="flex flex-wrap gap-1">
+                {dept.positions_ids?.map((pos) => (
+                    <span
+                        key={pos._id}
+                        className="bg-badge-bg text-badge text-[10px] font-semibold px-2 py-0.5 rounded-full border border-status-border"
+                    >
+                        {pos.title}
+                    </span>
+                ))}
+                {(!dept.positions_ids || dept.positions_ids.length === 0) && (
+                    <span className="text-cell-secondary text-xs italic opacity-60">{t("No Positions")}</span>
+                )}
+            </div>,
         ]);
     };
 
@@ -116,9 +137,12 @@ function DepartmentsPage() {
     const handleDeleteConfirmation = async (isConfirmed) => {
         setIsOpenDeleteAlert(false);
         if (isConfirmed && selectedDeleteDepartment) {
-            // هنا تضع dispatch الخاص بحذف القسم لاحقاً
-            console.log("Deleting department:", selectedDeleteDepartment.id);
-            setIsOpenSuccessDeleteAlert(true);
+            try {
+                await deleteDepartment(selectedDeleteDepartment._id).unwrap();
+                setIsOpenSuccessDeleteAlert(true);
+            } catch (error) {
+                console.error("Failed to delete department:", error);
+            }
         }
     };
 
@@ -133,17 +157,17 @@ function DepartmentsPage() {
                         customActions={(actualRowIndex) => (
                             <DepartmentActions actualRowIndex={actualRowIndex} />
                         )}
-                        rows={DepartmentRowTable(departmentsFactory)}
+                        rows={DepartmentRowTable(departments)}
                         headerActions={
                             <div className="flex gap-2">
                                 <button
                                     onClick={() => setIsOpenSendNotifyModal(true)}
-                                    className="bg-[#EEF2FF] text-[#375DFB] px-4 py-2 rounded-lg text-sm font-medium">
+                                    className="bg-badge-bg text-primary-500 hover:bg-opacity-80 px-4 py-2 rounded-lg text-sm font-semibold transition-all">
                                     {t("Send Notification")}
                                 </button>
                                 <button
                                     onClick={() => setIsOpenCreateModal(true)}
-                                    className="bg-[#375DFB] text-white px-4 py-2 rounded-lg text-sm font-medium">
+                                    className="bg-primary-500 text-white hover:bg-primary-600 px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm">
                                     {t("Create a Department")}
                                 </button>
                             </div>
@@ -151,6 +175,8 @@ function DepartmentsPage() {
                     />
                 </div>
             </div>
+
+            <ProcessingOverlay isOpen={isDeleting} message={t("Deleting Department...")} />
 
             <CreateDepartmentModal
                 isOpen={isOpenCreateModal}
@@ -175,13 +201,13 @@ function DepartmentsPage() {
                 departmentData={selectedDepartment}
             />
 
-            <EditAnEmployeeModal
+            <EditDepartmentModal
                 isOpen={isOpenEditModal}
                 onClose={() => {
                     setIsOpenEditModal(false);
                     setSelectedDepartment(null);
                 }}
-                data={selectedDepartment}
+                department={selectedDepartment}
             />
 
             {/* تنبيه الحذف بالنوع المحدث delete */}

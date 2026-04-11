@@ -1,8 +1,9 @@
 import PropTypes from "prop-types";
 
-function MembersListXLine({ members, maxVisible }) {
-  const visibleMembers = members.slice(0, maxVisible);
-  const hiddenCount = members.length - maxVisible;
+function MembersListXLine({ members = [], maxVisible }) {
+  const safeMembers = Array.isArray(members) ? members : [];
+  const visibleMembers = safeMembers.slice(0, maxVisible);
+  const hiddenCount = safeMembers.length - maxVisible;
 
   return (
     <div className="flex items-center">
