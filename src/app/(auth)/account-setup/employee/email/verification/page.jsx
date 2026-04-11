@@ -90,14 +90,14 @@ const VerifyEmail = () => {
             {isSuccess && <ApiResponseAlert status="success" message={data?.message || "Verification email sent!"} />}
             {isError && <ApiResponseAlert status="error" message={error?.data?.message || "Failed to send verification email."} />}
 
-            <div className="relative rounded-xl px-12 py-16 border">
-                <div className="absolute top-0 left-0 w-full">
+            <div className="relative rounded-2xl px-12 py-16 border border-status-border bg-surface shadow-xl">
+                <div className="absolute top-0 left-0 w-full opacity-10">
                     <img src="/images/patterns/pattern_rec_top.png" className="w-full h-[120px]" alt="" />
                 </div>
-                <div className="flex flex-col items-center justify-center gap-8 w-full h-full">
+                <div className="flex flex-col items-center justify-center gap-8 w-full h-full relative z-10">
                     <div>
                         <svg width="126" height="127" viewBox="0 0 126 127" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M94.5 95C111.897 77.603 111.897 49.397 94.5 32C77.103 14.603 48.897 14.603 31.5 32C14.103 49.397 14.103 77.603 31.5 95C48.897 112.397 77.103 112.397 94.5 95Z" fill="#EBF1FF" />
+                            <circle cx="63" cy="63.5" r="45" className="fill-badge-bg" />
                             <path d="M91.1792 82H34.8206C34.3693 82 34 81.6304 34 81.1787V47.8213C34 47.3696 34.3693 47 34.8206 47H91.1794C91.6307 47 92 47.3696 92 47.8213V81.1787C92 81.6304 91.6307 82 91.1792 82Z" fill="#6494FF" />
                             <path d="M35.7576 53.2276L60.9895 69.4613C62.0984 70.1747 63.474 70.1799 64.5875 69.4748L90.2213 53.2411C93.3677 51.2485 92.0714 46 88.4328 46H37.5672C33.9416 45.9999 32.635 51.2186 35.7576 53.2276Z" fill="#375DFB" />
                             <path d="M96.1099 81.8881C94.8884 81.8362 93.7717 81.2652 92.9048 80.4926C91.9284 79.6225 91.2765 78.4957 90.7821 77.3399C90.4858 76.6473 90.2371 75.9385 89.9894 75.2303C89.8803 74.9186 89.4277 74.928 89.3144 75.2303C88.935 76.2424 88.469 77.2235 87.9174 78.1656C87.4596 78.9474 86.9489 79.7308 86.201 80.3061C86.1695 80.3302 86.1376 80.3536 86.1052 80.3765C85.2856 80.8472 84.3188 81.0805 83.3433 81.0344C82.9553 81.016 82.8584 81.6051 83.2502 81.6702C85.9171 82.1127 88.1528 84.0426 88.965 86.4157C89.1951 87.088 89.3063 87.7827 89.2879 88.488C89.278 88.8722 89.8447 88.9015 89.9754 88.5741C90.8373 86.415 91.8353 84.0089 94.2189 82.9329C94.8081 82.6669 95.454 82.5255 96.1098 82.5355C96.5621 82.5422 96.5583 81.9071 96.1099 81.8881Z" fill="#375DFB" />
@@ -105,14 +105,14 @@ const VerifyEmail = () => {
                         </svg>
                     </div>
 
-                    <div className="flex flex-col items-center justify-start gap-8 text-center w-[30rem]">
-                        <div className="flex flex-col gap-1 text-2xl w-full">
+                    <div className="flex flex-col items-center justify-start gap-8 text-center w-full max-w-md">
+                        <div className="flex flex-col gap-1 text-2xl w-full font-bold">
                             <span className="text-table-title">
                                 {"Email Verification"}
                             </span>
                         </div>
 
-                        <span className="block text-cell-secondary text-lg text-wrap px-4">
+                        <span className="block text-cell-secondary text-lg text-wrap px-4 font-medium leading-relaxed">
                             {hasRequested || isSuccess
                                 ? "We have sent you a link to your email for verifying your account, please check your email and continue."
                                 : "To complete your account setup, please verify your email address by clicking the link we sent to your inbox."
@@ -122,14 +122,19 @@ const VerifyEmail = () => {
                         <button
                             onClick={handleResend}
                             disabled={timeLeft > 0 || isLoading}
-                            className="bg-primary-500 text-primary-50 text-nowrap text-sm px-12 py-2 rounded-lg cursor-pointer
-                                        hover:bg-primary-600 text-center disabled:bg-primary-400 disabled:cursor-auto transition-colors"
+                            className="bg-primary-500 text-white font-bold text-nowrap text-md px-12 py-3 rounded-xl cursor-pointer shadow-lg shadow-primary-500/10 active:scale-95
+                                        hover:bg-primary-600 text-center disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                         >
                             {isLoading ? "Sending..." : "Send New Email"}
                         </button>
-                        <span className="block text-cell-secondary text-xs text-wrap px-4">
-                            resend after <span className="text-primary-500 text-sm mx-2 uppercase tabular-nums">{formatTimeSpaced(timeLeft)}</span>
-                        </span>
+                        <div className="flex flex-col gap-2">
+                             <span className="block text-cell-secondary text-xs uppercase tracking-widest font-bold">
+                                resend after
+                            </span>
+                            <span className="text-primary-500 text-2xl font-black uppercase tabular-nums">
+                                {formatTimeSpaced(timeLeft)}
+                            </span>
+                        </div>
                     </div>
 
                 </div>
