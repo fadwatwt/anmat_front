@@ -4,12 +4,17 @@ import Link from 'next/link'
 function NameAndDescription({ name, description, path }) {
   console.log(description, "description")
   return (
-    <Link href={path}>
+    path ? <Link href={path}>
       <p title={name} className="text-sm text-cell-primary truncate max-w-[200px]">{name}</p>
       <p title={description} className="text-xs text-cell-secondary truncate max-w-[200px]">
         {description}
       </p>
-    </Link>
+    </Link> : <>
+      <p title={name} className="text-sm text-cell-primary truncate max-w-[200px]">{name}</p>
+      <p title={description} className="text-xs text-cell-secondary truncate max-w-[200px]">
+        {description}
+      </p>
+    </>
   );
 }
 

@@ -103,7 +103,7 @@ function EmployeeTasksPage() {
         return tasks.map((task) => [
             <NameAndDescription
                 key={`name-${task._id}`}
-                path={`/tasks/${task._id}-${convertToSlug(task.title)}/details`}
+                // path={`/tasks/${task._id}-${convertToSlug(task.title)}/details`}
                 name={task.title}
                 description={task.description}
             />,
