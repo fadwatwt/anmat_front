@@ -29,11 +29,11 @@ function PlanCard({
 
     return (
         <div
-            className={"flex flex-col min-w-[320px] flex-1 max-w-[420px] rounded-2xl border border-gray-200 shadow-sm overflow-hidden bg-white transition-all duration-500 hover:shadow-2xl hover:border-primary-100 group relative"}>
+            className={"flex flex-col min-w-[320px] flex-1 max-w-[420px] rounded-2xl border border-status-border shadow-sm overflow-hidden bg-surface transition-all duration-500 hover:shadow-2xl hover:border-primary-100 group relative"}>
 
             {trial.is_active && (
                 <div className="absolute top-4 right-8 z-10">
-                    <div className="bg-orange-100 text-orange-600 text-[10px] font-black px-2.5 py-1 rounded-full border border-orange-200 shadow-sm flex items-center gap-1.5 animate-pulse">
+                    <div className="bg-orange-100 dark:bg-orange-900/40 text-orange-600 dark:text-orange-400 text-[10px] font-black px-2.5 py-1 rounded-full border border-orange-200 dark:border-orange-800 shadow-sm flex items-center gap-1.5 animate-pulse">
                         <span className="w-1.5 h-1.5 bg-orange-500 rounded-full" />
                         {trial.trial_days} DAYS FREE TRIAL
                     </div>
@@ -44,17 +44,17 @@ function PlanCard({
                 <div className={"flex items-start justify-between mb-4"}>
                     <div className="flex flex-col flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                            <h3 className={"text-gray-900 text-2xl font-black group-hover:text-primary-base transition-colors"}>
+                            <h3 className={"text-cell-primary text-2xl font-black group-hover:text-primary-base transition-colors"}>
                                 {name}
                             </h3>
                         </div>
-                        <p className={"text-gray-500 text-sm leading-relaxed"}>
+                        <p className={"text-cell-secondary text-sm leading-relaxed"}>
                             {description}
                         </p>
                     </div>
                     <div
                         className={
-                            "rounded-2xl w-12 h-12 bg-primary-50 flex items-center justify-center text-primary-base group-hover:bg-primary-base group-hover:text-white transition-all duration-300 shadow-inner shrink-0"
+                            "rounded-2xl w-12 h-12 bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center text-primary-base group-hover:bg-primary-base group-hover:text-white transition-all duration-300 shadow-inner shrink-0"
                         }
                     >
                         <RiCopperDiamondLine size={"24"} />
@@ -63,7 +63,7 @@ function PlanCard({
 
                 {/* Pricing Selection */}
                 <div className="flex flex-col gap-3 mb-8">
-                    <p className={"font-bold text-gray-900 text-xs uppercase tracking-widest"}>
+                    <p className={"font-bold text-cell-primary text-xs uppercase tracking-widest"}>
                         Choose your plan:
                     </p>
                     <div className="flex flex-col gap-2">
@@ -72,7 +72,7 @@ function PlanCard({
                                 key={index}
                                 className={`flex items-center justify-between p-4 rounded-xl border-2 transition-all cursor-pointer ${selectedLocalIndex === index
                                     ? "border-primary-base bg-primary-50/30"
-                                    : "border-gray-100 hover:border-gray-200 bg-gray-50/50"
+                                    : "border-status-border hover:border-primary-100 bg-status-bg/50"
                                     }`}
                             >
                                 <div className="flex items-center gap-3">
@@ -84,13 +84,13 @@ function PlanCard({
                                             checked={selectedLocalIndex === index}
                                             onChange={() => handlePriceChange(index)}
                                         />
-                                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${selectedLocalIndex === index ? "border-primary-base" : "border-gray-300"
+                                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${selectedLocalIndex === index ? "border-primary-base" : "border-gray-300 dark:border-gray-600"
                                             }`}>
                                             {selectedLocalIndex === index && <div className="w-2.5 h-2.5 rounded-full bg-primary-base animate-in zoom-in-50 duration-200" />}
                                         </div>
                                     </div>
                                     <div className="flex flex-col">
-                                        <span className={`text-sm font-bold capitalize ${selectedLocalIndex === index ? "text-primary-base" : "text-gray-700"}`}>
+                                        <span className={`text-sm font-bold capitalize ${selectedLocalIndex === index ? "text-primary-base" : "text-cell-primary"}`}>
                                             {item.interval_count > 1 ? `${item.interval_count} ` : ""}{item.interval}ly
                                         </span>
                                         {item.discount > 0 && (
@@ -101,10 +101,10 @@ function PlanCard({
                                     </div>
                                 </div>
                                 <div className="flex flex-col items-end">
-                                    <span className="text-lg font-black text-gray-900">
+                                    <span className="text-lg font-black text-cell-primary">
                                         ${item.price}
                                     </span>
-                                    <span className="text-[10px] text-gray-500 font-medium">
+                                    <span className="text-[10px] text-cell-secondary font-medium">
                                         /{item.interval === 'month' ? 'mth' : 'yr'}
                                     </span>
                                 </div>
@@ -113,10 +113,10 @@ function PlanCard({
                     </div>
                 </div>
 
-                <div className="h-px bg-gray-100 w-full mb-8" />
+                <div className="h-px bg-status-border w-full mb-8" />
 
                 <div className={"flex flex-col gap-6 justify-start items-start"}>
-                    <p className={"font-bold text-gray-900 text-xs uppercase tracking-widest"}>
+                    <p className={"font-bold text-cell-primary text-xs uppercase tracking-widest"}>
                         Whats included:
                     </p>
                     <div className={"flex flex-col items-start gap-5 w-full"}>
@@ -129,11 +129,11 @@ function PlanCard({
                                     />
                                     <div className="flex flex-col gap-1.5 flex-1">
                                         <div className="flex flex-col">
-                                            <p className={"text-sm text-gray-800 font-bold"}>
+                                            <p className={"text-sm text-cell-primary font-bold"}>
                                                 {feature.plan_feature?.title || feature.title || feature.feature_type?.title || "Feature"}
                                             </p>
                                             {(feature.plan_feature?.details || feature.details || feature.feature_type?.details) && (
-                                                <p className="text-xs text-gray-500 leading-normal">
+                                                <p className="text-xs text-cell-secondary leading-normal">
                                                     {feature.plan_feature?.details || feature.details || feature.feature_type?.details}
                                                 </p>
                                             )}
@@ -142,8 +142,8 @@ function PlanCard({
                                         {feature.properties && feature.properties.length > 0 && (
                                             <div className="flex flex-wrap gap-2 mt-1">
                                                 {feature.properties.map((prop, pIdx) => (
-                                                    <div key={pIdx} className="inline-flex items-center px-2 py-1 bg-gray-100 rounded-md text-[10px] text-gray-600 border border-gray-200/50">
-                                                        <span className="font-medium mr-1">{prop.key}:</span>
+                                                    <div key={pIdx} className="inline-flex items-center px-2 py-1 bg-badge-bg rounded-md text-[10px] text-cell-secondary border border-status-border">
+                                                        <span className="font-medium mr-1 text-cell-primary/70">{prop.key}:</span>
                                                         <span className="text-primary-base font-bold">{prop.value}</span>
                                                     </div>
                                                 ))}
@@ -153,7 +153,7 @@ function PlanCard({
                                 </div>
                             ))
                         ) : (
-                            <p className="text-gray-400 text-sm italic">Standard features included</p>
+                            <p className="text-cell-secondary text-sm italic">Standard features included</p>
                         )}
                     </div>
                 </div>
