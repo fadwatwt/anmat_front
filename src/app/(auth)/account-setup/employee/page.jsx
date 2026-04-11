@@ -28,8 +28,8 @@ const EmployeeAccountSetup = () => {
 
     return (
         <div className="flex flex-col items-center justify-center gap-8 p-8 w-full text-center">
-            <div className="flex flex-col items-center gap-6 max-w-2xl">
-                <div className="w-24 h-24 bg-primary-50 rounded-full flex items-center justify-center text-primary-500 shadow-sm">
+            <div className="flex flex-col items-center gap-6 max-w-2xl w-full">
+                <div className="w-24 h-24 bg-status-bg rounded-full flex items-center justify-center text-primary-500 shadow-sm border border-status-border">
                     {noDetails ? (
                         <LiaUserShieldSolid size={48} />
                     ) : (
@@ -37,30 +37,30 @@ const EmployeeAccountSetup = () => {
                     )}
                 </div>
 
-                <div className="flex flex-col gap-4">
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                <div className="flex flex-col gap-4 w-full">
+                    <h1 className="text-3xl font-extrabold text-cell-primary">
                         {t("Account Processing")}
                     </h1>
 
-                    <div className="space-y-4">
+                    <div className="flex flex-col gap-4">
                         {noDetails && (
-                            <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
-                                <p className="text-lg text-gray-700 dark:text-gray-300">
+                            <div className="bg-surface p-8 rounded-2xl border border-status-border shadow-sm">
+                                <p className="text-lg text-cell-primary font-medium">
                                     {t("No employee details found. Please call the manager to complete your account.")}
                                 </p>
                             </div>
                         )}
 
                         {inactive && (
-                            <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
-                                <p className="text-lg text-gray-700 dark:text-gray-300">
+                            <div className="bg-surface p-8 rounded-2xl border border-status-border shadow-sm">
+                                <p className="text-lg text-cell-primary font-medium">
                                     {t("Your account is not activated by the manager.")}
                                 </p>
                             </div>
                         )}
                     </div>
 
-                    <p className="text-sm text-gray-500 mt-4">
+                    <p className="text-sm text-cell-secondary mt-4 font-medium max-w-lg mx-auto leading-relaxed">
                         {t("Once the manager completes the required actions, you will be able to access your dashboard.")}
                     </p>
                 </div>

@@ -119,7 +119,7 @@ const SetupCompanyProfile = () => {
         return (
             <div className="w-screen h-[50vh] flex flex-col items-center justify-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-500 border-t-transparent mb-4"></div>
-                <span className="text-md text-gray-500">{t("Verifying selection...")}</span>
+                <span className="text-md text-cell-secondary font-medium">{t("Verifying selection...")}</span>
             </div>
         );
     }
@@ -133,16 +133,16 @@ const SetupCompanyProfile = () => {
                 onClose={handleAlertClose}
             />
 
-            <div className="flex flex-col items-start justify-start gap-8 p-8 rounded-2xl shadow-xl bg-white w-full max-w-xl">
+            <div className="flex flex-col items-start justify-start gap-8 p-8 rounded-2xl shadow-xl bg-surface border border-status-border w-full max-w-xl">
                 {/* Title */}
                 <div className="flex flex-col items-center text-center justify-start gap-2 w-full">
                     <span className="text-primary-500 font-bold uppercase tracking-wider text-xs">
                         {t("Organization Profile")}
                     </span>
-                    <h1 className="text-3xl font-bold text-gray-900">
+                    <h1 className="text-3xl font-bold text-cell-primary">
                         {t("Set up your company profile")}
                     </h1>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-cell-secondary font-medium">
                         {t("Let's get your company info set in two minutes.")}
                     </p>
                 </div>
@@ -227,7 +227,7 @@ const SetupCompanyProfile = () => {
                     </div>
 
                     <div className="relative flex flex-col gap-1 w-full items-start">
-                        <label className="text-gray-900 dark:text-gray-200 text-sm font-medium">
+                        <label className="text-cell-primary text-sm font-medium">
                             {t('Logo (Optional)')}
                         </label>
                         <FileUpload
@@ -245,8 +245,8 @@ const SetupCompanyProfile = () => {
                     <div className="flex items-center justify-between gap-4 mt-4">
                         <Link
                             href="/account-setup/subscriber/business-selection"
-                            className={`flex-1 text-gray-700 text-sm py-3 border border-gray-200 rounded-xl text-center transition-all
-                            ${isBusy ? 'opacity-50 pointer-events-none' : 'hover:bg-gray-50'}`}
+                            className={`flex-1 text-cell-secondary text-sm py-3 border border-status-border rounded-xl text-center transition-all font-semibold
+                            ${isBusy ? 'opacity-50 pointer-events-none' : 'hover:bg-status-bg'}`}
                         >
                             {t("Return")}
                         </Link>
@@ -254,8 +254,8 @@ const SetupCompanyProfile = () => {
                         <button
                             type="submit"
                             disabled={isBusy}
-                            className={`flex-[2] bg-primary-500 text-primary-50 text-md py-3 rounded-xl font-bold shadow-lg shadow-primary-200 transition-all
-                            ${isBusy ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary-600 active:scale-95'}`}
+                            className={`flex-[2] bg-primary-500 text-white text-md py-3 rounded-xl font-bold shadow-lg shadow-primary-500/10 transition-all active:scale-95
+                            ${isBusy ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary-600'}`}
                         >
                             {isBusy ? t("Saving...") : t("Save Company Profile")}
                         </button>
