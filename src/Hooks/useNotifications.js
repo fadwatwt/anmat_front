@@ -73,7 +73,7 @@ export const useNotifications = (userId) => {
                                     
                                     // Dispatch to Redux store
                                     dispatch(addNotification({
-                                        id: data.id,
+                                        id: data.id || data._id || `temp-${Date.now()}-${Math.random()}`, // Ensure a unique ID
                                         title: data.title,
                                         content: data.message,
                                         time: new Date(data.created_at).toLocaleTimeString(),
@@ -88,6 +88,32 @@ export const useNotifications = (userId) => {
                                 } catch (error) {
                                     console.error('❌ Error parsing notification data:', error, dataStr);
                                 }
+                            }
+                        }
+                    }
+                }
+                
+                // Process any remaining data in the buffer after stream ends
+                if (buffer.trim()) {
+                    const line = buffer.trim();
+                    if (line.startsWith('data:')) {
+                        const dataStr = line.substring(5).trim();
+                        if (dataStr) {
+                            try {
+                                const data = JSON.parse(dataStr);
+                                dispatch(addNotification({
+                                    id: data.id || data._id || `temp-${Date.now()}-${Math.random()}`,
+                                    title: data.title,
+                                    content: data.message,
+                                    time: new Date(data.created_at).toLocaleTimeString(),
+                                    priority: data.priority,
+                                    isRead: false,
+                                    action_url: data.action_url,
+                                    model_type: data.model_type,
+                                    model_id: data.model_id
+                                }));
+                            } catch (e) {
+                                // Ignore final parse error
                             }
                         }
                     }

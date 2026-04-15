@@ -12,14 +12,28 @@ const notificationsSlice = createSlice({
     initialState,
     reducers: {
         setNotifications: (state, action) => {
-            state.items = action.payload.data;
-            state.unreadCount = action.payload.meta?.unreadCount || 0;
+            const newItems = action.payload.data;
+            // Build a set of IDs that are arriving in the new history fetch
+            const newItemIds = new Set(newItems.map(n => n.id));
+            
+            // Find items already in state that are NOT in the new history fetch (real-time notifications)
+            const sseItems = state.items.filter(n => !newItemIds.has(n.id));
+            const sseUnreadCount = sseItems.filter(n => !n.isRead).length;
+            
+            // Combine existing SSE items with new history items
+            state.items = [...sseItems, ...newItems];
+            
+            // Merge unread counts: backend total + any real-time ones not yet in backend history
+            state.unreadCount = (action.payload.meta?.unreadCount || 0) + sseUnreadCount;
             state.isLoading = false;
         },
         addNotification: (state, action) => {
-            // Add new notification to the beginning of the list
-            state.items = [action.payload, ...state.items];
-            state.unreadCount += 1;
+            const exists = state.items.some(n => n.id === action.payload.id);
+            if (!exists) {
+                // Add new notification to the beginning of the list
+                state.items = [action.payload, ...state.items];
+                state.unreadCount += 1;
+            }
         },
         markRead: (state, action) => {
             const index = state.items.findIndex(n => n.id === action.payload);
