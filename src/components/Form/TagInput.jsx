@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import { createPortal } from "react-dom";
 
-const TagInput = ({ suggestions, apparent, placeholder, title, isRequired, value, onChange }) => {
+const TagInput = ({ suggestions, apparent, placeholder, title, isRequired, value, onChange, classNameContainer }) => {
     const [internalTags, setInternalTags] = useState([]);
     const tags = value || internalTags;
     const setTags = onChange || setInternalTags;
@@ -103,7 +103,7 @@ const TagInput = ({ suggestions, apparent, placeholder, title, isRequired, value
     );
 
     return (
-        <div className="w-full max-w-lg">
+        <div className={classNameContainer || "w-full max-w-lg"}>
             <div className={`relative flex flex-col gap-1 w-full items-start`}>
                 {title && <label className="text-cell-primary font-medium text-sm">
                     {title}{isRequired && <span className={"text-red-500 ms-1"}>*</span>}
@@ -171,7 +171,8 @@ TagInput.propTypes = {
     title: PropTypes.string,
     isRequired: PropTypes.bool,
     value: PropTypes.array,
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
+    classNameContainer: PropTypes.string
 };
 
 export default TagInput;

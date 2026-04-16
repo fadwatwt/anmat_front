@@ -88,7 +88,7 @@ function WorkAndRatingInfoForm({ formData, updateFormData, isEdit = false }) {
                         isRequired={true}
                         placeholder={t("1200")}
                         value={formData.employee_detail.salary}
-                        onChange={(e) => updateFormData("salary", Number(e.target.value), true)}
+                        onChange={(e) => updateFormData("salary", e.target.value === '' ? '' : Number(e.target.value), true)}
                     />
                     <InputAndLabel
                         type="number"
@@ -96,7 +96,7 @@ function WorkAndRatingInfoForm({ formData, updateFormData, isEdit = false }) {
                         isRequired={true}
                         placeholder={t("8")}
                         value={formData.employee_detail.work_hours}
-                        onChange={(e) => updateFormData("work_hours", Number(e.target.value), true)}
+                        onChange={(e) => updateFormData("work_hours", e.target.value === '' ? '' : Number(e.target.value), true)}
                     />
                     <InputAndLabel
                         type="number"
@@ -104,7 +104,7 @@ function WorkAndRatingInfoForm({ formData, updateFormData, isEdit = false }) {
                         isRequired={true}
                         placeholder={t("14")}
                         value={formData.employee_detail.yearly_day_offs}
-                        onChange={(e) => updateFormData("yearly_day_offs", Number(e.target.value), true)}
+                        onChange={(e) => updateFormData("yearly_day_offs", e.target.value === '' ? '' : Number(e.target.value), true)}
                     />
                     <ElementsSelect
                         title={t("Weekend Days")}

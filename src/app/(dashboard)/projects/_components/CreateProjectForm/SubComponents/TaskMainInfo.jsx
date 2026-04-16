@@ -200,6 +200,7 @@ function TaskMainInfo({ task, type = "project", values, handleChange, setFieldVa
           placeholder={isLoadingEmployees ? t("Loading...") : t("Select Assignees...")}
           value={values?.assignees_ids || []}
           onChange={(val) => setFieldValue("assignees_ids", val)}
+          classNameContainer="w-full"
         />
       )}
 
@@ -264,7 +265,7 @@ function TaskMainInfo({ task, type = "project", values, handleChange, setFieldVa
 
         {/* Progress */}
         <InputAndLabel
-          value={values?.progress || 0}
+          value={values?.progress ?? 0}
           onChange={handleChange}
           name="progress"
           type="number"
