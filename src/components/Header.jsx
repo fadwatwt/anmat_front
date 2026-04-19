@@ -7,11 +7,15 @@ import React from "react";
 
 import PropTypes from "prop-types";
 import { HiOutlineMenuAlt2 } from "react-icons/hi";
+import { useSelector } from "react-redux";
+import { selectNotifications, selectUnreadCount } from "@/redux/notifications/notificationsSlice";
 import NotificationsDropdown from "./Dropdowns/NotificationsDropdown.jsx";
 import MessagesDropdown from "./Dropdowns/MessagesDropdown.jsx";
 import HeaderUserMenu from "./Dropdowns/HeaderUserMenu.jsx";
 
 const Header = React.memo(({ taggleSlidebarOpen, className }) => {
+  const notifications = useSelector(selectNotifications);
+  const unreadCount = useSelector(selectUnreadCount);
 
 
   // Close dropdown when clicking outside
@@ -34,7 +38,7 @@ const Header = React.memo(({ taggleSlidebarOpen, className }) => {
       </div>
       <div className={"flex gap-2 sm:gap-5"}>
         <div className={"icons flex gap-1 sm:gap-2 items-center relative w-auto justify-end"}>
-          <NotificationsDropdown notifications={[]} />
+          <NotificationsDropdown notifications={notifications} unreadCount={unreadCount} />
           <MessagesDropdown messages={[]} />
         </div>
 

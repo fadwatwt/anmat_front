@@ -3,14 +3,25 @@
 import { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import Avatar from "./Avatar";
-import { RiNotification3Line } from "@remixicon/react";
+import { RiNotification4Line, RiCheckLine } from "@remixicon/react";
 import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
+import { selectUserId, selectUserType } from "@/redux/auth/authSlice";
+import { useMarkAllNotificationsAsReadMutation, useMarkNotificationAsReadMutation } from "@/redux/api/notificationsApi";
+import { markAllAsRead as markAllAsReadAction, markRead as markReadAction } from "@/redux/notifications/notificationsSlice";
 
-const NotificationsDropdown = ({ notifications }) => {
+const NotificationsDropdown = ({ notifications, unreadCount }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const notificationRef = useRef(null);
   const { t, i18n } = useTranslation();
   const timeoutRef = useRef(null);
+  const dispatch = useDispatch();
+
+  const userId = useSelector(selectUserId);
+  const userType = useSelector(selectUserType);
+
+  const [markAllAsReadApi] = useMarkAllNotificationsAsReadMutation();
+  const [markAsReadApi] = useMarkNotificationAsReadMutation();
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -45,6 +56,25 @@ const NotificationsDropdown = ({ notifications }) => {
     }, 200); // 200ms delay to allow smooth transition
   };
 
+  const handleMarkAllAsRead = async () => {
+    try {
+      await markAllAsReadApi().unwrap();
+      dispatch(markAllAsReadAction());
+    } catch (error) {
+      console.error("Failed to mark all as read:", error);
+    }
+  };
+
+  const handleMarkAsRead = async (e, nId) => {
+    e.stopPropagation();
+    try {
+      await markAsReadApi(nId).unwrap();
+      dispatch(markReadAction(nId));
+    } catch (error) {
+      console.error("Failed to mark notification as read:", error);
+    }
+  };
+
   return (
     <div className="w-10 relative" ref={notificationRef}>
       <div
@@ -57,10 +87,12 @@ const NotificationsDropdown = ({ notifications }) => {
           } rounded-lg py-1 px-3 text-center cursor-pointer`}
       >
         <div className="relative">
-          <RiNotification3Line className="dark:text-gray-100 text-gray-600" size={20} />
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
-            5
-          </span>
+          <RiNotification4Line className="dark:text-gray-100 text-gray-600" size={20} />
+          {unreadCount > 0 && (
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full animate-pulse">
+              {unreadCount > 9 ? '9+' : unreadCount}
+            </span>
+          )}
         </div>
       </div>
 
@@ -76,47 +108,65 @@ const NotificationsDropdown = ({ notifications }) => {
           >
             <div className="flex justify-between items-center px-4 py-3 border-b dark:border-gray-700">
               <h3 className="font-[Almarai] font-[400] text-[16px] leading-[24px] tracking-[-1.1%] dark:text-white">
-                {t("Notifications")} (5)
+                {t("Notifications")} {unreadCount > 0 && `(${unreadCount})`}
               </h3>
-              <button className="text-[#375DFB] font-[Almarai] font-[400] dark:text-primary-200 text-[14px] leading-[20px] tracking-[-0.6%] text-center hover:underline">
+              <button 
+                onClick={handleMarkAllAsRead}
+                className="text-[#375DFB] font-[Almarai] font-[400] dark:text-primary-200 text-[14px] leading-[20px] tracking-[-0.6%] text-center hover:underline"
+              >
                 {t("Mark all as read")}
               </button>
             </div>
 
             <div className="max-h-[calc(100%-120px)] sm:max-h-[calc(70vh-120px)] overflow-y-auto custom-scroll">
-              {notifications.map((notification) => (
-                <div
-                  key={notification.id}
-                  className="flex p-4 border-b dark:border-gray-700 last:border-0 sm:px-4 px-5 sm:py-3 py-4"
-                >
-                  <div className="mr-3">
-                    <Avatar
-                      user={notification.user || "User"}
-                      avatar={notification.avatar}
-                      avatarImage={notification.avatarImage}
-                      avatarColor={notification.avatarColor}
-                    />
-                  </div>
-                  <div className="flex-1 text-left">
-                    <div className="text-sm dark:text-gray-200">
-                      {notification.content}
+              {notifications.length === 0 ? (
+                <div className="p-8 text-center text-gray-500 dark:text-gray-400 font-[Almarai]">
+                  {t("No new notifications")}
+                </div>
+              ) : (
+                notifications.map((notification) => (
+                  <div
+                    key={notification.id}
+                    className={`flex p-4 border-b dark:border-gray-700 last:border-0 sm:px-4 px-5 sm:py-3 py-4 ${!notification.isRead ? 'bg-blue-50/50 dark:bg-blue-900/10' : ''}`}
+                  >
+                    <div className="mr-3">
+                      <div className={`w-2 h-10 rounded-full ${
+                        notification.priority === 'high' ? 'bg-red-500' : 
+                        notification.priority === 'normal' ? 'bg-orange-400' : 
+                        'bg-blue-400'
+                      }`} title={`Priority: ${notification.priority}`} />
                     </div>
-                    <div className="mt-1 flex items-center justify-between">
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
-                        {notification.time}
-                      </span>
+                    <div className="flex-1 text-left">
+                      <div className="flex justify-between items-start mb-1">
+                        <span className="font-bold text-sm dark:text-white truncate pr-2">
+                          {notification.title}
+                        </span>
+                        <span className="text-[10px] text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                          {notification.time}
+                        </span>
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
+                        {notification.content}
+                      </div>
                       {!notification.isRead && (
-                        <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                        <div className="mt-2 flex items-center justify-between">
+                          <div className="flex items-center">
+                            <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                            <span className="text-[10px] text-blue-500 font-medium">{t("New")}</span>
+                          </div>
+                          <button
+                            onClick={(e) => handleMarkAsRead(e, notification.id)}
+                            className="p-1 hover:bg-blue-100 dark:hover:bg-blue-800 rounded text-blue-500 transition-colors"
+                            title={t("Mark as read")}
+                          >
+                            <RiCheckLine size={14} />
+                          </button>
+                        </div>
                       )}
                     </div>
-                    {notification.actionButton && (
-                      <button className="mt-2 bg-[#375DFB] w-full sm:w-[118px] h-[32px] text-white text-sm font-[Almarai] rounded-[8px]">
-                        {notification.actionButton}
-                      </button>
-                    )}
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
 
             <div className="w-full h-[56px] px-5 py-4 border-t dark:border-gray-700 flex justify-center items-center">
@@ -133,6 +183,7 @@ const NotificationsDropdown = ({ notifications }) => {
 
 NotificationsDropdown.propTypes = {
   notifications: PropTypes.array.isRequired,
+  unreadCount: PropTypes.number.isRequired,
 };
 
 export default NotificationsDropdown;

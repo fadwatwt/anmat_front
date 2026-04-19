@@ -12,6 +12,7 @@ import financialReducer from "./financial/financialSlice";
 import { conversationsAPI } from "./conversations/conversationsAPI";
 import conversationsReducer from "./conversations/conversationsSlice";
 import industriesReducer from "./industries/industriesSlice";
+import notificationsReducer from "./notifications/notificationsSlice";
 import { apiSlice } from "./api/apiSlice";
 
 export const store = configureStore({
@@ -30,6 +31,7 @@ export const store = configureStore({
     financials: financialReducer,
     conversations: conversationsReducer,
     industries: industriesReducer,
+    notifications: notificationsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(

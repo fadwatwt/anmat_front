@@ -185,6 +185,7 @@ function TaskMainInfo({ task, type = "project", values, handleChange, setFieldVa
         <DefaultSelect
           title={t("Assignee")}
           options={optionsManager}
+          classNameContainer="w-full"
           multi={false}
           value={getSingleValue(values?.assignee_id, optionsManager)}
           onChange={(val) => handleSelectChange("assignee_id", val)}
