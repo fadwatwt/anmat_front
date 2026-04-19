@@ -12,7 +12,7 @@ const notificationsSlice = createSlice({
     initialState,
     reducers: {
         setNotifications: (state, action) => {
-            const newItems = action.payload.data;
+            const newItems = action.payload.data || [];
             // Build a set of IDs that are arriving in the new history fetch
             const newItemIds = new Set(newItems.map(n => n.id));
             
@@ -23,8 +23,22 @@ const notificationsSlice = createSlice({
             // Combine existing SSE items with new history items
             state.items = [...sseItems, ...newItems];
             
-            // Merge unread counts: backend total + any real-time ones not yet in backend history
-            state.unreadCount = (action.payload.meta?.unreadCount || 0) + sseUnreadCount;
+            // Calculate local unread count from the combined items
+            const localUnreadCount = state.items.filter(n => !n.isRead).length;
+            
+            // Merge unread counts: use backend total if available, otherwise fallback to local
+            const backendUnread = Number(action.payload.meta?.unreadCount || 0);
+            
+            // If backend says 0 but we clearly see unread items in the list, trust the list
+            state.unreadCount = (backendUnread > 0) ? backendUnread : localUnreadCount;
+            
+            console.log('🔔 [Redux] Notifications Set:', {
+                totalItems: state.items.length,
+                unreadCount: state.unreadCount,
+                backendUnread,
+                localUnreadCount
+            });
+            
             state.isLoading = false;
         },
         addNotification: (state, action) => {
@@ -33,6 +47,7 @@ const notificationsSlice = createSlice({
                 // Add new notification to the beginning of the list
                 state.items = [action.payload, ...state.items];
                 state.unreadCount += 1;
+                console.log('📨 [Redux] New notification added. New unread count:', state.unreadCount);
             }
         },
         markRead: (state, action) => {

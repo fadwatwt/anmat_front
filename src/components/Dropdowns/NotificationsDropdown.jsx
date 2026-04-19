@@ -3,12 +3,12 @@
 import { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import Avatar from "./Avatar";
-import { RiNotification3Line } from "@remixicon/react";
+import { RiNotification4Line, RiCheckLine } from "@remixicon/react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { selectUserId, selectUserType } from "@/redux/auth/authSlice";
-import { useMarkAllNotificationsAsReadMutation } from "@/redux/api/notificationsApi";
-import { markAllAsRead as markAllAsReadAction } from "@/redux/notifications/notificationsSlice";
+import { useMarkAllNotificationsAsReadMutation, useMarkNotificationAsReadMutation } from "@/redux/api/notificationsApi";
+import { markAllAsRead as markAllAsReadAction, markRead as markReadAction } from "@/redux/notifications/notificationsSlice";
 
 const NotificationsDropdown = ({ notifications, unreadCount }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -21,6 +21,7 @@ const NotificationsDropdown = ({ notifications, unreadCount }) => {
   const userType = useSelector(selectUserType);
 
   const [markAllAsReadApi] = useMarkAllNotificationsAsReadMutation();
+  const [markAsReadApi] = useMarkNotificationAsReadMutation();
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -56,12 +57,21 @@ const NotificationsDropdown = ({ notifications, unreadCount }) => {
   };
 
   const handleMarkAllAsRead = async () => {
-    if (!userId || !userType) return;
     try {
-      await markAllAsReadApi({ recipientId: userId, recipientType: userType }).unwrap();
+      await markAllAsReadApi().unwrap();
       dispatch(markAllAsReadAction());
     } catch (error) {
       console.error("Failed to mark all as read:", error);
+    }
+  };
+
+  const handleMarkAsRead = async (e, nId) => {
+    e.stopPropagation();
+    try {
+      await markAsReadApi(nId).unwrap();
+      dispatch(markReadAction(nId));
+    } catch (error) {
+      console.error("Failed to mark notification as read:", error);
     }
   };
 
@@ -77,7 +87,7 @@ const NotificationsDropdown = ({ notifications, unreadCount }) => {
           } rounded-lg py-1 px-3 text-center cursor-pointer`}
       >
         <div className="relative">
-          <RiNotification3Line className="dark:text-gray-100 text-gray-600" size={20} />
+          <RiNotification4Line className="dark:text-gray-100 text-gray-600" size={20} />
           {unreadCount > 0 && (
             <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full animate-pulse">
               {unreadCount > 9 ? '9+' : unreadCount}
@@ -139,9 +149,18 @@ const NotificationsDropdown = ({ notifications, unreadCount }) => {
                         {notification.content}
                       </div>
                       {!notification.isRead && (
-                        <div className="mt-2 flex items-center">
-                          <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                          <span className="text-[10px] text-blue-500 font-medium">New</span>
+                        <div className="mt-2 flex items-center justify-between">
+                          <div className="flex items-center">
+                            <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                            <span className="text-[10px] text-blue-500 font-medium">{t("New")}</span>
+                          </div>
+                          <button
+                            onClick={(e) => handleMarkAsRead(e, notification.id)}
+                            className="p-1 hover:bg-blue-100 dark:hover:bg-blue-800 rounded text-blue-500 transition-colors"
+                            title={t("Mark as read")}
+                          >
+                            <RiCheckLine size={14} />
+                          </button>
                         </div>
                       )}
                     </div>

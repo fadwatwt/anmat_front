@@ -10,15 +10,15 @@ export const notificationsApi = apiSlice.injectEndpoints({
             providesTags: ["Notifications"],
         }),
         markNotificationAsRead: builder.mutation({
-            query: (notificationId) => ({
-                url: `/api/notifications/mark-read/${notificationId}`,
+            query: (nId) => ({
+                url: `/api/notifications/mark-as-read/${nId}`,
                 method: "PATCH",
             }),
             invalidatesTags: ["Notifications"],
         }),
         markAllNotificationsAsRead: builder.mutation({
-            query: ({ recipientId, recipientType }) => ({
-                url: `/api/notifications/mark-all-read/${recipientId}/${recipientType}`,
+            query: () => ({
+                url: `/api/notifications/mark-all-as-read`,
                 method: "PATCH",
             }),
             invalidatesTags: ["Notifications"],

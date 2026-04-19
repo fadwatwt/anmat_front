@@ -23,6 +23,11 @@ export default function NotificationListener() {
 
     useEffect(() => {
         if (isSuccess && historyData) {
+            console.log('📊 [Listener] History data received:', {
+                dataLength: historyData.data?.length,
+                meta: historyData.meta
+            });
+
             // Map backend structure to frontend structure
             const mappedNotifications = historyData.data.map(n => ({
                 id: n._id,

@@ -10,14 +10,22 @@ export const useNotifications = (userId) => {
     const abortControllerRef = useRef(null);
 
     useEffect(() => {
+        console.log('📡 [SSE] Hook triggered for userId:', userId);
+
         // Only establish connection if userId is provided
-        if (!userId) return;
+        if (!userId) {
+            console.warn('📡 [SSE] No userId, skipping connection.');
+            return;
+        }
 
         // Ensure user is authenticated by checking for the token
         const token = localStorage.getItem('token');
-        if (!token) return;
-
-        // Use environment variable for base URL, remove trailing slash if present
+        if (!token) {
+            console.error('📡 [SSE] No token found in localStorage, skipping connection.');
+            return;
+        }
+        
+        console.log('📡 [SSE] Starting connection for user:', userId);
         const baseUrl = RootRoute ? RootRoute : 'http://localhost:3000';
         const eventSourceUrl = `${baseUrl}/api/notifications/stream/${userId}`;
 
@@ -67,9 +75,11 @@ export const useNotifications = (userId) => {
                         // SSE pushes data prefixed with 'data:'
                         if (trimmedLine.startsWith('data:')) {
                             const dataStr = trimmedLine.substring(5).trim();
+                            console.info('📥 [SSE] Message Received (Raw):', dataStr);
                             if (dataStr) {
                                 try {
                                     const data = JSON.parse(dataStr);
+                                    console.info('✅ [SSE] Notification Parsed:', data.title || data.message);
                                     
                                     // Dispatch to Redux store
                                     dispatch(addNotification({
@@ -84,9 +94,9 @@ export const useNotifications = (userId) => {
                                         model_id: data.model_id
                                     }));
 
-                                    console.log('📨 Notification added to Redux:', data.title);
+                                    console.log('📨 [SSE] Dispatched to Redux:', data.title);
                                 } catch (error) {
-                                    console.error('❌ Error parsing notification data:', error, dataStr);
+                                    console.error('❌ [SSE] Error parsing notification data:', error, dataStr);
                                 }
                             }
                         }
