@@ -67,6 +67,12 @@ const notificationsSlice = createSlice({
         setError: (state, action) => {
             state.error = action.payload;
             state.isLoading = false;
+        },
+        clearNotifications: (state) => {
+            state.items = [];
+            state.unreadCount = 0;
+            state.isLoading = false;
+            state.error = null;
         }
     }
 });
@@ -77,7 +83,8 @@ export const {
     markRead,
     markAllAsRead,
     setLoading,
-    setError
+    setError,
+    clearNotifications
 } = notificationsSlice.actions;
 
 export const selectNotifications = (state) => state.notifications.items;
