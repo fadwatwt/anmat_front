@@ -5,6 +5,7 @@ import i18n from '../../public/lib/i18n'
 import PropTypes from "prop-types";
 import { Provider } from "react-redux";
 import { store } from "@/redux/store";
+import NotificationListener from '@/components/NotificationListener';
 
 export const ThemeContext = createContext();
 export const ProcessingContext = createContext();
@@ -85,6 +86,7 @@ const ProcessingProvider = ({ children }) => {
 const Providers = ({ children }) => {
     return (
         <Provider store={store}>
+            <NotificationListener />
             <ThemeProvider>
                 <ProcessingProvider>
                     <I18nextProvider i18n={i18n}>
