@@ -3,10 +3,12 @@ import { FiPaperclip } from "react-icons/fi";
 import { BsEmojiSmile } from "react-icons/bs";
 import { MdMic } from "react-icons/md";
 import { IoSendSharp } from "react-icons/io5";
+import { MdClose } from "react-icons/md";
+import { ImSpinner2 } from "react-icons/im"; // Loader spinner
 import {useTranslation} from "react-i18next";
 
-function CommentInput() {
-    const [message, setMessage] = useState("");
+function CommentInput({ onSend, isLoading, initialValue = "", onCancel }) {
+    const [message, setMessage] = useState(initialValue);
     const [showEmojis, setShowEmojis] = useState(false);
     const {t} = useTranslation()
 
@@ -21,6 +23,15 @@ function CommentInput() {
         const file = e.target.files[0];
         if (file) {
             alert(`تم اختيار الملف: ${file.name}`); // رسالة لإظهار اسم الملف
+        }
+    };
+
+    const handleSend = () => {
+        if (message.trim() && onSend) {
+            onSend(message);
+            if (!initialValue) {
+                setMessage("");
+            }
         }
     };
 
@@ -76,13 +87,28 @@ function CommentInput() {
                 </button>
             </div>
 
-            {/* زر الإرسال */}
+            {/* زر الإرسال / التحميل */}
             <button
-                className="p-2 "
-                onClick={() => alert(`تم الإرسال: ${message}`)}
+                className={`p-2 transition-all ${isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:scale-105'}`}
+                onClick={handleSend}
+                disabled={isLoading}
             >
-                <IoSendSharp className="text-primary-base dark:text-primary-200" size={20} />
+                {isLoading ? (
+                    <ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={20} />
+                ) : (
+                    <IoSendSharp className="text-primary-base dark:text-primary-200" size={20} />
+                )}
             </button>
+            {onCancel && (
+                <button
+                    className="p-2 text-gray-500 hover:text-red-500 transition-all font-bold"
+                    onClick={onCancel}
+                    disabled={isLoading}
+                    title={t("Cancel edit")}
+                >
+                    <MdClose size={20} />
+                </button>
+            )}
         </div>
     );
 }

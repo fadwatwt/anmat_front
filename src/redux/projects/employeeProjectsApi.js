@@ -19,10 +19,36 @@ export const employeeProjectsApi = apiSlice.injectEndpoints({
             transformResponse: (response) => response.data,
             providesTags: (result, error, id) => [{ type: "Projects", id }],
         }),
+        addEmployeeProjectComment: builder.mutation({
+            query: ({ projectId, text }) => ({
+                url: `api/employee/projects/${projectId}/comments`,
+                method: "POST",
+                body: { text },
+            }),
+            invalidatesTags: (result, error, { projectId }) => ["Projects", { type: "Projects", id: projectId }],
+        }),
+        editEmployeeProjectComment: builder.mutation({
+            query: ({ projectId, commentId, text }) => ({
+                url: `api/employee/projects/${projectId}/comments/${commentId}`,
+                method: "PUT",
+                body: { text },
+            }),
+            invalidatesTags: (result, error, { projectId }) => ["Projects", { type: "Projects", id: projectId }],
+        }),
+        deleteEmployeeProjectComment: builder.mutation({
+            query: ({ projectId, commentId }) => ({
+                url: `api/employee/projects/${projectId}/comments/${commentId}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: (result, error, { projectId }) => ["Projects", { type: "Projects", id: projectId }],
+        }),
     }),
 });
 
 export const {
     useGetMyProjectsQuery,
     useGetEmployeeProjectDetailsQuery,
+    useAddEmployeeProjectCommentMutation,
+    useEditEmployeeProjectCommentMutation,
+    useDeleteEmployeeProjectCommentMutation,
 } = employeeProjectsApi;

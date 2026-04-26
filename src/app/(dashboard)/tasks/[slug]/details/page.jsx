@@ -14,7 +14,11 @@ import { useState, useMemo, use } from "react";
 import { filterAndSortTasks } from "@/functions/functionsForTasks.js";
 import { useRouter } from "next/navigation";
 import { filterOptions, comments, members as defaultMembers, attachments, activityLogs } from "@/functions/FactoryData.jsx";
-import { useGetSubscriberTaskDetailsQuery } from "@/redux/tasks/subscriberTasksApi";
+import { useGetSubscriberTaskDetailsQuery, useAddSubscriberTaskCommentMutation, useDeleteSubscriberTaskCommentMutation, useEditSubscriberTaskCommentMutation } from "@/redux/tasks/subscriberTasksApi";
+import { useGetEmployeeTaskDetailsQuery, useAddEmployeeTaskCommentMutation, useDeleteEmployeeTaskCommentMutation, useEditEmployeeTaskCommentMutation } from "@/redux/tasks/employeeTasksApi";
+import useAuthStore from '@/store/authStore.js';
+import { useSelector } from 'react-redux';
+import { selectUser } from '@/redux/auth/authSlice.js';
 
 function TaskDetailsPage({ params }) {
     const { t } = useTranslation();
@@ -24,9 +28,67 @@ function TaskDetailsPage({ params }) {
     // Handle both "id-title" and just "id"
     const taskId = slug?.includes("-") ? slug.split("-")[0] : slug;
 
-    const { data: task, isLoading, isError } = useGetSubscriberTaskDetailsQuery(taskId, {
+    const user = useSelector(selectUser);
+    const authUserType = user?.type;
+    const currentUserId = user?._id;
+
+    const useGetDetails = authUserType === "Subscriber" ? useGetSubscriberTaskDetailsQuery : useGetEmployeeTaskDetailsQuery;
+    const { data: task, isLoading, isError } = useGetDetails(taskId, {
         skip: !taskId
     });
+
+    const [addSubscriberComment, { isLoading: isSubAdding }] = useAddSubscriberTaskCommentMutation();
+    const [addEmployeeComment, { isLoading: isEmpAdding }] = useAddEmployeeTaskCommentMutation();
+    const [deleteSubscriberComment] = useDeleteSubscriberTaskCommentMutation();
+    const [deleteEmployeeComment] = useDeleteEmployeeTaskCommentMutation();
+    const [editSubscriberComment] = useEditSubscriberTaskCommentMutation();
+    const [editEmployeeComment] = useEditEmployeeTaskCommentMutation();
+
+    const [loadingComments, setLoadingComments] = useState({});
+
+    const isAddingComment = isSubAdding || isEmpAdding;
+
+    const handleAddComment = async (text) => {
+        try {
+            if (authUserType === "Subscriber") {
+                await addSubscriberComment({ taskId, text }).unwrap();
+            } else {
+                await addEmployeeComment({ taskId, text }).unwrap();
+            }
+        } catch (error) {
+            console.error("Failed to add comment: ", error);
+        }
+    };
+
+    const handleDeleteComment = async (commentId) => {
+        try {
+            setLoadingComments((prev) => ({ ...prev, [commentId]: 'deleting' }));
+            if (authUserType === "Subscriber") {
+                await deleteSubscriberComment({ taskId, commentId }).unwrap();
+            } else {
+                await deleteEmployeeComment({ taskId, commentId }).unwrap();
+            }
+        } catch (error) {
+            console.error("Failed to delete comment: ", error);
+        } finally {
+            setLoadingComments((prev) => ({ ...prev, [commentId]: null }));
+        }
+    };
+
+    const handleEditComment = async (commentId, text) => {
+        try {
+            setLoadingComments((prev) => ({ ...prev, [commentId]: 'editing' }));
+            if (authUserType === "Subscriber") {
+                await editSubscriberComment({ taskId, commentId, text }).unwrap();
+            } else {
+                await editEmployeeComment({ taskId, commentId, text }).unwrap();
+            }
+        } catch (error) {
+            console.error("Failed to edit comment: ", error);
+        } finally {
+            setLoadingComments((prev) => ({ ...prev, [commentId]: null }));
+        }
+    };
 
     const breadcrumbItems = [
         { title: t('Tasks'), path: '/tasks' },
@@ -120,9 +182,16 @@ function TaskDetailsPage({ params }) {
                                 <div className={"title-header w-full flex items-center justify-between"}>
                                     <p className={"text-lg dark:text-gray-200 "}>{t("Comments")}</p>
                                 </div>
-                                <TaskComments comments={task.comments} />
+                                <TaskComments 
+                                    comments={task.comments || []} 
+                                    currentUserId={currentUserId}
+                                    authUserType={authUserType}
+                                    onDeleteComment={handleDeleteComment}
+                                    onEditComment={handleEditComment}
+                                    loadingComments={loadingComments}
+                                />
                             </div>
-                            <CommentInput />
+                            <CommentInput onSend={handleAddComment} isLoading={isAddingComment} />
                         </div>}
                     </div>
                     <div className={"flex-1 flex flex-col gap-6"}>

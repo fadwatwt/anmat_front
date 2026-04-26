@@ -48,6 +48,29 @@ export const subscriberTasksApi = apiSlice.injectEndpoints({
             }),
             providesTags: ["Tasks"],
         }),
+        addSubscriberTaskComment: builder.mutation({
+            query: ({ taskId, text }) => ({
+                url: `api/subscriber/organization/tasks/${taskId}/comments`,
+                method: "POST",
+                body: { text },
+            }),
+            invalidatesTags: (result, error, { taskId }) => ["Tasks", { type: "Tasks", id: taskId }],
+        }),
+        deleteSubscriberTaskComment: builder.mutation({
+            query: ({ taskId, commentId }) => ({
+                url: `api/subscriber/organization/tasks/${taskId}/comments/${commentId}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: (result, error, { taskId }) => ["Tasks", { type: "Tasks", id: taskId }],
+        }),
+        editSubscriberTaskComment: builder.mutation({
+            query: ({ taskId, commentId, text }) => ({
+                url: `api/subscriber/organization/tasks/${taskId}/comments/${commentId}`,
+                method: "PUT",
+                body: { text },
+            }),
+            invalidatesTags: (result, error, { taskId }) => ["Tasks", { type: "Tasks", id: taskId }],
+        }),
     }),
 });
 
@@ -58,4 +81,7 @@ export const {
     useGetSubscriberTaskDetailsQuery,
     useUpdateSubscriberTaskMutation,
     useGetSubscriberTaskStatisticsStatusQuery,
+    useAddSubscriberTaskCommentMutation,
+    useDeleteSubscriberTaskCommentMutation,
+    useEditSubscriberTaskCommentMutation,
 } = subscriberTasksApi;

@@ -34,6 +34,29 @@ export const subscriberProjectsApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: (result, error, { id }) => ["Projects", { type: "Projects", id }],
         }),
+        addSubscriberProjectComment: builder.mutation({
+            query: ({ projectId, text }) => ({
+                url: `api/subscriber/organization/projects/${projectId}/comments`,
+                method: "POST",
+                body: { text },
+            }),
+            invalidatesTags: (result, error, { projectId }) => ["Projects", { type: "Projects", id: projectId }],
+        }),
+        editSubscriberProjectComment: builder.mutation({
+            query: ({ projectId, commentId, text }) => ({
+                url: `api/subscriber/organization/projects/${projectId}/comments/${commentId}`,
+                method: "PUT",
+                body: { text },
+            }),
+            invalidatesTags: (result, error, { projectId }) => ["Projects", { type: "Projects", id: projectId }],
+        }),
+        deleteSubscriberProjectComment: builder.mutation({
+            query: ({ projectId, commentId }) => ({
+                url: `api/subscriber/organization/projects/${projectId}/comments/${commentId}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: (result, error, { projectId }) => ["Projects", { type: "Projects", id: projectId }],
+        }),
     }),
 });
 
@@ -42,4 +65,7 @@ export const {
     useGetSubscriberProjectDetailsQuery,
     useCreateSubscriberProjectMutation,
     useUpdateSubscriberProjectMutation,
+    useAddSubscriberProjectCommentMutation,
+    useEditSubscriberProjectCommentMutation,
+    useDeleteSubscriberProjectCommentMutation,
 } = subscriberProjectsApi;

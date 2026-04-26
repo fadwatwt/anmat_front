@@ -3,13 +3,18 @@ import Page from "@/components/Page.jsx";
 import ProjectMembers from "@/app/(dashboard)/projects/[slug]/_components/ProjectMembers.jsx";
 import SelectWithoutLabel from "@/components/Form/SelectWithoutLabel.jsx";
 import TasksList from "@/app/(dashboard)/projects/[slug]/_components/TasksList.jsx";
+import TaskComments from "@/app/(dashboard)/projects/[slug]/_components/TaskComments.jsx";
+import CommentInput from "@/components/CommentInput.jsx";
 import { useTranslation } from "react-i18next";
 import InfoCard from "@/app/(dashboard)/_components/InfoCard.jsx";
 import { useState, useEffect } from "react";
 import { filterAndSortTasks } from "@/functions/functionsForTasks.js";
 import { useParams } from "next/navigation";
-import { useGetEmployeeProjectDetailsQuery } from "@/redux/projects/employeeProjectsApi.js";
+import { useGetEmployeeProjectDetailsQuery, useAddEmployeeProjectCommentMutation, useDeleteEmployeeProjectCommentMutation, useEditEmployeeProjectCommentMutation } from "@/redux/projects/employeeProjectsApi.js";
 import { useUpdateTaskStatusMutation } from "@/redux/tasks/employeeTasksApi.js";
+import useAuthStore from '@/store/authStore.js';
+import { useSelector } from 'react-redux';
+import { selectUser } from '@/redux/auth/authSlice.js';
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 
 function EmployeeProjectDetailsPage() {
@@ -17,7 +22,16 @@ function EmployeeProjectDetailsPage() {
     const { t } = useTranslation()
     const { data: projectData, isLoading, isError, error, refetch } = useGetEmployeeProjectDetailsQuery(slug);
     const project = projectData?.data || projectData;
+    const user = useSelector(selectUser);
+    const authUserType = user?.type;
+    const currentUserId = user?._id;
+
+    const [addComment, { isLoading: isAddingComment }] = useAddEmployeeProjectCommentMutation();
+    const [deleteComment] = useDeleteEmployeeProjectCommentMutation();
+    const [editComment] = useEditEmployeeProjectCommentMutation();
     const [updateTaskStatus] = useUpdateTaskStatusMutation();
+
+    const [loadingComments, setLoadingComments] = useState({});
 
     const [alertInfo, setAlertInfo] = useState({ isOpen: false, status: 'success', message: '' });
     const [filterTasks, setFilterTasks] = useState([]);
@@ -116,6 +130,38 @@ function EmployeeProjectDetailsPage() {
         }
     };
 
+    const handleAddComment = async (text) => {
+        try {
+            await addComment({ projectId: project._id, text }).unwrap();
+        } catch (error) {
+            console.error("Failed to add comment: ", error);
+        }
+    };
+
+    const handleDeleteComment = async (commentId) => {
+        try {
+            setLoadingComments((prev) => ({ ...prev, [commentId]: 'deleting' }));
+            await deleteComment({ projectId: project._id, commentId }).unwrap();
+        } catch (error) {
+            console.error("Failed to delete comment: ", error);
+        } finally {
+            setLoadingComments((prev) => ({ ...prev, [commentId]: null }));
+        }
+    };
+
+    const handleEditComment = async (commentId, text) => {
+        try {
+            setLoadingComments((prev) => ({ ...prev, [commentId]: 'editing' }));
+            await editComment({ projectId: project._id, commentId, text }).unwrap();
+        } catch (error) {
+            console.error("Failed to edit comment: ", error);
+        } finally {
+            setLoadingComments((prev) => ({ ...prev, [commentId]: null }));
+        }
+    };
+
+    const comments = project?.comments || [];
+
     return (
         <Page title={t("Project Details")} isBreadcrumbs={true} breadcrumbs={breadcrumbItems}>
             <div className={"w-full flex items-start  gap-8 flex-col md:flex-row"}>
@@ -133,6 +179,22 @@ function EmployeeProjectDetailsPage() {
                             onStatusChange={handleStatusChange} 
                         />
                     </div>
+                    {true && <div className={"bg-surface rounded-2xl w-full flex flex-col gap-3"}>
+                        <div className={"p-4 flex flex-col gap-3"}>
+                            <div className={"title-header w-full flex items-center justify-between"}>
+                                <p className={"text-lg text-table-title"}>{t("Comments")}</p>
+                            </div>
+                            <TaskComments 
+                                comments={comments} 
+                                currentUserId={currentUserId}
+                                authUserType={authUserType}
+                                onDeleteComment={handleDeleteComment}
+                                onEditComment={handleEditComment}
+                                loadingComments={loadingComments}
+                            />
+                        </div>
+                        <CommentInput onSend={handleAddComment} isLoading={isAddingComment} />
+                    </div>}
                 </div>
                 <div className={"flex-1 flex flex-col gap-6"}>
                     <ProjectMembers members={projectMembers} />

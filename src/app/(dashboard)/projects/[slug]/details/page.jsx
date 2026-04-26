@@ -16,12 +16,73 @@ import { useState, useEffect } from "react";
 import { filterAndSortTasks } from "@/functions/functionsForTasks.js";
 import EditProjectModal from "@/app/(dashboard)/projects/_modal/EditProjectModal.jsx";
 import { useParams } from "next/navigation";
-import { useGetSubscriberProjectDetailsQuery } from "@/redux/projects/subscriberProjectsApi.js";
+import { useGetSubscriberProjectDetailsQuery, useAddSubscriberProjectCommentMutation, useDeleteSubscriberProjectCommentMutation, useEditSubscriberProjectCommentMutation } from "@/redux/projects/subscriberProjectsApi.js";
+import { useGetEmployeeProjectDetailsQuery, useAddEmployeeProjectCommentMutation, useDeleteEmployeeProjectCommentMutation, useEditEmployeeProjectCommentMutation } from "@/redux/projects/employeeProjectsApi.js";
+import useAuthStore from '@/store/authStore.js';
+import { useSelector } from 'react-redux';
+import { selectUser } from '@/redux/auth/authSlice.js';
 
 function ProjectDetailsPage() {
     const { slug } = useParams();
     const { t } = useTranslation()
-    const { data: project, isLoading, isError, error } = useGetSubscriberProjectDetailsQuery(slug);
+    const user = useSelector(selectUser);
+    const authUserType = user?.type;
+    const currentUserId = user?._id;
+
+    const useGetDetails = authUserType === "Subscriber" ? useGetSubscriberProjectDetailsQuery : useGetEmployeeProjectDetailsQuery;
+    const { data: project, isLoading, isError, error } = useGetDetails(slug);
+
+    const [addSubscriberComment, { isLoading: isSubAdding }] = useAddSubscriberProjectCommentMutation();
+    const [addEmployeeComment, { isLoading: isEmpAdding }] = useAddEmployeeProjectCommentMutation();
+    const [deleteSubscriberComment] = useDeleteSubscriberProjectCommentMutation();
+    const [deleteEmployeeComment] = useDeleteEmployeeProjectCommentMutation();
+    const [editSubscriberComment] = useEditSubscriberProjectCommentMutation();
+    const [editEmployeeComment] = useEditEmployeeProjectCommentMutation();
+
+    const [loadingComments, setLoadingComments] = useState({});
+    const isAddingComment = isSubAdding || isEmpAdding;
+
+    const handleAddComment = async (text) => {
+        try {
+            if (authUserType === "Subscriber") {
+                await addSubscriberComment({ projectId: project._id, text }).unwrap();
+            } else {
+                await addEmployeeComment({ projectId: project._id, text }).unwrap();
+            }
+        } catch (error) {
+            console.error("Failed to add comment: ", error);
+        }
+    };
+
+    const handleDeleteComment = async (commentId) => {
+        try {
+            setLoadingComments((prev) => ({ ...prev, [commentId]: 'deleting' }));
+            if (authUserType === "Subscriber") {
+                await deleteSubscriberComment({ projectId: project._id, commentId }).unwrap();
+            } else {
+                await deleteEmployeeComment({ projectId: project._id, commentId }).unwrap();
+            }
+        } catch (error) {
+            console.error("Failed to delete comment: ", error);
+        } finally {
+            setLoadingComments((prev) => ({ ...prev, [commentId]: null }));
+        }
+    };
+
+    const handleEditComment = async (commentId, text) => {
+        try {
+            setLoadingComments((prev) => ({ ...prev, [commentId]: 'editing' }));
+            if (authUserType === "Subscriber") {
+                await editSubscriberComment({ projectId: project._id, commentId, text }).unwrap();
+            } else {
+                await editEmployeeComment({ projectId: project._id, commentId, text }).unwrap();
+            }
+        } catch (error) {
+            console.error("Failed to edit comment: ", error);
+        } finally {
+            setLoadingComments((prev) => ({ ...prev, [commentId]: null }));
+        }
+    };
 
     const [isOpenEditModal, setIsOpenEditModal] = useState(false)
     const [filterTasks, setFilterTasks] = useState([]);
@@ -77,9 +138,7 @@ function ProjectDetailsPage() {
 
     const tasks = mappedTasks;
 
-    const comments = [
-        // Placeholder for comments if they are not in the project details API yet
-    ];
+    const comments = project?.comments || [];
 
     const attachments = [
         // Placeholder for attachments
@@ -127,21 +186,28 @@ function ProjectDetailsPage() {
                         </div>
                         <TasksList tasks={filterTasks} isAssignedDate={true} />
                     </div>
-                    {false && <div className={"bg-surface rounded-2xl w-full flex flex-col gap-3"}>
+                    {true && <div className={"bg-surface rounded-2xl w-full flex flex-col gap-3"}>
                         <div className={"p-4 flex flex-col gap-3"}>
                             <div className={"title-header w-full flex items-center justify-between"}>
                                 <p className={"text-lg text-table-title"}>{t("Comments")}</p>
                             </div>
-                            <TaskComments comments={comments} />
+                            <TaskComments 
+                                comments={comments} 
+                                currentUserId={currentUserId}
+                                authUserType={authUserType}
+                                onDeleteComment={handleDeleteComment}
+                                onEditComment={handleEditComment}
+                                loadingComments={loadingComments}
+                            />
                         </div>
-                        <CommentInput />
+                        <CommentInput onSend={handleAddComment} isLoading={isAddingComment} />
                     </div>}
                 </div>
                 <div className={"flex-1 flex flex-col gap-6"}>
                     <ProjectMembers members={projectMembers} />
                     {/* Hiding components not yet linked to backend data */}
-                    {false && <AttachmentsList attachments={attachments} />}
-                    {false && <ActivityLogs activityLogs={activityLogs} className={"h-72"} />}
+                    {true && <AttachmentsList attachments={attachments} />}
+                    {true && <ActivityLogs activityLogs={activityLogs} className={"h-72"} />}
                     {false && <TimeLine />}
                 </div>
 
