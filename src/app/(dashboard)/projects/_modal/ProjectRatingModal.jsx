@@ -6,7 +6,7 @@ import { FaStar } from "react-icons/fa";
 import StateOfTask from "@/app/(dashboard)/projects/[slug]/_components/StateOfTask.jsx";
 import { useTranslation } from "react-i18next";
 
-function ProjectRatingModal({ isOpen, onClose, project }) {
+function ProjectRatingModal({ isOpen, onClose, project, onSubmit }) {
   const [ratings, setRatings] = useState({
     time: 0,
     content: 0,
@@ -14,10 +14,21 @@ function ProjectRatingModal({ isOpen, onClose, project }) {
   });
 
   const [comments, setComments] = useState("");
+  const [attachment, setAttachment] = useState(null);
   const { t } = useTranslation();
 
   const handleRating = (category, rating) => {
     setRatings((prev) => ({ ...prev, [category]: rating }));
+  };
+
+  const handleSubmit = () => {
+    if (onSubmit) {
+      onSubmit({
+        ratings,
+        comment: comments,
+        attachment: attachment
+      });
+    }
   };
   return (
     <Modal
@@ -26,6 +37,8 @@ function ProjectRatingModal({ isOpen, onClose, project }) {
       isBtns={true}
       title={project.name + " " + t("Rating")}
       classNameOpacity={"bg-opacity-20"}
+      btnApplyTitle={t("Submit Rating")}
+      onClick={handleSubmit}
     >
       <div className="w-full flex flex-col items-start gap-5 px-1 mb-2">
         <div className="flex flex-col w-full gap-1 items-start">
@@ -74,7 +87,7 @@ function ProjectRatingModal({ isOpen, onClose, project }) {
 
         {/* File Upload Section */}
         <div className="w-full">
-          <FileUpload />
+          <FileUpload onFileChange={(file) => setAttachment(file)} />
         </div>
 
         {/* Comments Section */}

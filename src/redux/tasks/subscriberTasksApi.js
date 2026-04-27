@@ -71,6 +71,14 @@ export const subscriberTasksApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: (result, error, { taskId }) => ["Tasks", { type: "Tasks", id: taskId }],
         }),
+        evaluateSubscriberTaskStage: builder.mutation({
+            query: ({ taskId, stageId, data }) => ({
+                url: `api/subscriber/organization/tasks/${taskId}/stages/${stageId}/evaluate`,
+                method: "PUT",
+                body: data,
+            }),
+            invalidatesTags: (result, error, { taskId }) => ["Tasks", { type: "Tasks", id: taskId }],
+        }),
     }),
 });
 
@@ -84,4 +92,5 @@ export const {
     useAddSubscriberTaskCommentMutation,
     useDeleteSubscriberTaskCommentMutation,
     useEditSubscriberTaskCommentMutation,
+    useEvaluateSubscriberTaskStageMutation,
 } = subscriberTasksApi;

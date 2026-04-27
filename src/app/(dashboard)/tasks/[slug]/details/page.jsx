@@ -14,7 +14,7 @@ import { useState, useMemo, use } from "react";
 import { filterAndSortTasks } from "@/functions/functionsForTasks.js";
 import { useRouter } from "next/navigation";
 import { filterOptions, comments, members as defaultMembers, attachments, activityLogs } from "@/functions/FactoryData.jsx";
-import { useGetSubscriberTaskDetailsQuery, useAddSubscriberTaskCommentMutation, useDeleteSubscriberTaskCommentMutation, useEditSubscriberTaskCommentMutation } from "@/redux/tasks/subscriberTasksApi";
+import { useGetSubscriberTaskDetailsQuery, useAddSubscriberTaskCommentMutation, useDeleteSubscriberTaskCommentMutation, useEditSubscriberTaskCommentMutation, useEvaluateSubscriberTaskStageMutation } from "@/redux/tasks/subscriberTasksApi";
 import { useGetEmployeeTaskDetailsQuery, useAddEmployeeTaskCommentMutation, useDeleteEmployeeTaskCommentMutation, useEditEmployeeTaskCommentMutation } from "@/redux/tasks/employeeTasksApi";
 import useAuthStore from '@/store/authStore.js';
 import { useSelector } from 'react-redux';
@@ -43,6 +43,7 @@ function TaskDetailsPage({ params }) {
     const [deleteEmployeeComment] = useDeleteEmployeeTaskCommentMutation();
     const [editSubscriberComment] = useEditSubscriberTaskCommentMutation();
     const [editEmployeeComment] = useEditEmployeeTaskCommentMutation();
+    const [evaluateStage] = useEvaluateSubscriberTaskStageMutation();
 
     const [loadingComments, setLoadingComments] = useState({});
 
@@ -87,6 +88,25 @@ function TaskDetailsPage({ params }) {
             console.error("Failed to edit comment: ", error);
         } finally {
             setLoadingComments((prev) => ({ ...prev, [commentId]: null }));
+        }
+    };
+
+    const handleEvaluateStage = async (stageId, data) => {
+        try {
+            if (authUserType === "Subscriber") {
+                const avgRate = (data.ratings.time + data.ratings.content + data.ratings.video) / 3;
+                await evaluateStage({ 
+                    taskId, 
+                    stageId, 
+                    data: {
+                        rate: avgRate || 0,
+                        comment: data.comment,
+                        attachment: data.attachment?.name || null // In a real scenario we'd upload and send URL
+                    }
+                }).unwrap();
+            }
+        } catch (error) {
+            console.error("Failed to evaluate stage: ", error);
         }
     };
 
@@ -175,7 +195,7 @@ function TaskDetailsPage({ params }) {
                                     className={"w-[120px] h-[36px]"}
                                 />
                             </div>
-                            <TasksList isAssignedDate={true} tasks={mappedStages} />
+                            <TasksList isAssignedDate={true} tasks={mappedStages} onEvaluateStage={handleEvaluateStage} />
                         </div>
                         {true && <div className={"bg-white dark:bg-white-0 rounded-2xl w-full flex flex-col gap-3"}>
                             <div className={"p-4 flex flex-col gap-3"}>

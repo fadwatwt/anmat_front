@@ -20,6 +20,7 @@ import InviteEmployeeModal from "@/app/(dashboard)/hr/_modals/InviteEmployeeModa
 import SendNotificationModal from "@/app/(dashboard)/hr/employees/modals/SendNotification.modal";
 import AssignDepartmentModal from "@/app/(dashboard)/hr/employees/modals/AssignDepartmentModal";
 import { RiDeleteBin7Line } from "react-icons/ri";
+import StarRating from "@/components/StarRating";
 import { useProcessing } from "@/app/providers";
 
 function EmployeesTap() {
@@ -59,6 +60,7 @@ function EmployeesTap() {
     { label: t("Contact"), width: "200px" },
     { label: t("Department"), width: "150px" },
     { label: t("Salary"), width: "100px" },
+    { label: t("Rating"), width: "150px" },
     { label: t("Status"), width: "100px" },
     { label: "", width: "50px" },
   ];
@@ -130,7 +132,7 @@ function EmployeesTap() {
       return [
         <AccountDetails
           key={`account-details-${index}`}
-          path={`/hr/employees/${employee._id}/profile`}
+          path={`/hr/employees/${employee.user_id}/profile`}
           account={{
             name: userData.name || t("Unknown"),
             rule: employee.position_id?.title || (userData.is_active ? t("Active") : t("Inactive")),
@@ -150,6 +152,9 @@ function EmployeesTap() {
         <div key={`salary-${index}`} className="flex flex-col">
           <p className="text-sm font-bold text-primary-base dark:text-primary-300 ">${employee.salary?.toLocaleString()}</p>
           <p className="text-[10px] text-gray-400">{employee.work_hours} {t("hrs/day")}</p>
+        </div>,
+        <div key={`rating-${index}`}>
+          <StarRating rating={employee.overall_rating || 0} />
         </div>,
         <div key={`status-${index}`}>
           <span className={`px-3 py-1 rounded-full text-xs font-medium ${userData.is_active

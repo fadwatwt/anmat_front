@@ -134,6 +134,12 @@ function TasksList({ tasks = [], isAssignedDate = false, isEmployeeView = false,
                     project={selectedTask}
                     isOpen={true}
                     onClose={() => setSelectedTask(null)}
+                    onSubmit={(data) => {
+                        if (onEvaluateStage) {
+                            onEvaluateStage(selectedTask._id, data);
+                        }
+                        setSelectedTask(null);
+                    }}
                 />
             )}
         </div>
@@ -144,7 +150,8 @@ TasksList.propTypes = {
     tasks: PropTypes.array.isRequired,
     isAssignedDate: PropTypes.bool,
     isEmployeeView: PropTypes.bool,
-    onStatusChange: PropTypes.func
+    onStatusChange: PropTypes.func,
+    onEvaluateStage: PropTypes.func
 }
 
 export default TasksList;

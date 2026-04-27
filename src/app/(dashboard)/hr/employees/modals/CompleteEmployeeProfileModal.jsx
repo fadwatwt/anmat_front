@@ -29,6 +29,9 @@ function CompleteEmployeeProfileModal({ isOpen, onClose, employee }) {
             country: "",
             city: "",
             work_hours: 8,
+            shift_type: "HOURS",
+            shift_start_time: "",
+            shift_end_time: "",
             salary: 0,
             yearly_day_offs: 14,
             weekend_days: ["Friday", "Saturday"],
@@ -88,6 +91,13 @@ function CompleteEmployeeProfileModal({ isOpen, onClose, employee }) {
             if (!payload.department_id || payload.department_id === "none") delete payload.department_id;
             if (!payload.position_id) delete payload.position_id;
             if (!payload.roles_ids || payload.roles_ids.length === 0) delete payload.roles_ids;
+            
+            if (payload.shift_type === "HOURS") {
+                delete payload.shift_start_time;
+                delete payload.shift_end_time;
+            } else {
+                delete payload.work_hours;
+            }
 
             await createDetail(payload).unwrap();
             setApiResponse({

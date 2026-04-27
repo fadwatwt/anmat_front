@@ -76,7 +76,7 @@ export const dashboardSideMenuItems = [
     //     icon: <Chart2 />
     // },
     {
-        allowed_to: ['Admin', 'Employee'],
+        allowed_to: ['Admin', 'Subscriber', 'Employee'],
         title: 'Analytics',
         path: '/analytics',
         icon: <Chart2 />

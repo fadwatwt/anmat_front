@@ -13,13 +13,55 @@ import {
     RiUserLine, RiBriefcaseLine, RiBuilding2Line, RiPhoneLine,
     RiCalendarEventLine
 } from "@remixicon/react";
-import { useGetEmployeeProfileQuery } from '@/redux/employees/employeesApi';
+import { useGetEmployeeProfileQuery, useUpdateEmployeeMutation } from '@/redux/employees/employeesApi';
+import { useGetSubscriberOrganizationQuery } from '@/redux/organizations/organizationsApi';
+import { RiMore2Fill, RiStarLine, RiEditLine } from "@remixicon/react";
 import { translateDate } from '@/functions/Days';
+import { useState } from "react";
+import ContentCard from "@/components/containers/ContentCard";
+import EditPerformanceRatingModal from "../../modals/EditPerformanceRatingModal";
+import DropdownMenu from "@/components/Dropdowns/DropdownMenu";
 
 function SingleEmployeeProfile() {
     const { t, i18n } = useTranslation()
     const { slug: employeeId } = useParams();
     const { data: employee, isLoading, error } = useGetEmployeeProfileQuery(employeeId);
+    const { data: orgData } = useGetSubscriberOrganizationQuery();
+    const [updateEmployee] = useUpdateEmployeeMutation();
+
+    const [isUpdating, setIsUpdating] = useState(false);
+
+    const handleUpdateRating = async (rating) => {
+        try {
+            setIsUpdating(true);
+            await updateEmployee({
+                id: employeeId,
+                employee_details: {
+                    manual_rating: rating
+                }
+            }).unwrap();
+        } catch (error) {
+            console.error("Failed to update rating:", error);
+        } finally {
+            setIsUpdating(false);
+        }
+    };
+
+    const [isEditRatingModalOpen, setIsEditRatingModalOpen] = useState(false);
+
+    const handleUpdateFullRating = async (data) => {
+        try {
+            setIsUpdating(true);
+            await updateEmployee({
+                id: employeeId,
+                employee_details: data
+            }).unwrap();
+        } catch (error) {
+            console.error("Failed to update rating:", error);
+        } finally {
+            setIsUpdating(false);
+        }
+    };
 
     const calculateAge = (dob) => {
         if (!dob) return "-";
@@ -40,9 +82,9 @@ function SingleEmployeeProfile() {
     ];
 
     const tasksRows = employee.ratings?.map(rating => [
-        rating.task_name || "-",
-        rating.date ? translateDate(rating.date) : "-",
-        <Rating value={rating.value || 0} />,
+        rating.details || "-",
+        rating.created_at ? translateDate(rating.created_at) : "-",
+        <Rating value={rating.score || 0} />,
         <p className={"text-wrap text-cell-secondary"}>{rating.comment || "-"}</p>
     ]) || [];
 
@@ -107,9 +149,122 @@ function SingleEmployeeProfile() {
                         </div>
                     </div>
                 </div>
-                <div className={"flex gap-6 md:flex-row flex-col items-start w-full md:px-10 px-2 justify-between"}>
-                    <div className={"md:w-8/12 w-full flex flex-col gap-4 items-center h-full"}>
-                        <div className={"bg-surface rounded-2xl p-4 gap-6 md:flex-1 flex flex-col items-center w-full"}>
+                <div className={"grid grid-cols-12 gap-6 md:px-10 px-2 w-full"}>
+                    <div className={"col-span-12 lg:col-span-8"}>
+                        <div className={"bg-surface rounded-2xl p-4 w-full gap-4 flex flex-col h-full"}>
+                            <p className={"text-lg text-start text-cell-primary font-bold"}>{t("Work Information")}</p>
+                            <div className={"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full mt-2"}>
+                                <div className={"name-profile flex items-center gap-2"}>
+                                    <div className="p-2 bg-blue-50 dark:bg-blue-500/10 rounded-lg">
+                                        <RiBuilding2Line size={18} className={"text-primary-500"} />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className={"text-cell-secondary text-xs"}>{t("Department")}</span>
+                                        <p className={"text-cell-primary text-sm font-semibold"}>{employee?.department?.name || employee?.department_id?.name || "-"}</p>
+                                    </div>
+                                </div>
+                                <div className={"name-profile flex items-center gap-2"}>
+                                    <div className="p-2 bg-green-50 dark:bg-green-500/10 rounded-lg">
+                                        <RiBriefcaseLine size={18} className={"text-green-500"} />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className={"text-cell-secondary text-xs"}>{t("Role")}</span>
+                                        <p className={"text-cell-primary text-sm font-semibold"}>{employee?.position?.name || employee?.position_id?.title || "-"}</p>
+                                    </div>
+                                </div>
+                                <div className={"name-profile flex items-center gap-2"}>
+                                    <div className="p-2 bg-yellow-50 dark:bg-yellow-500/10 rounded-lg">
+                                        <RiMoneyDollarCircleLine size={18} className={"text-yellow-500"} />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className={"text-cell-secondary text-xs"}>{t("Salary")}</span>
+                                        <p className={"text-cell-primary text-sm font-semibold"}>${employee?.salary || "0"}/{t("month")}</p>
+                                    </div>
+                                </div>
+                                <div className={"name-profile flex items-center gap-2"}>
+                                    <div className="p-2 bg-purple-50 dark:bg-purple-500/10 rounded-lg">
+                                        <RiTimeLine size={18} className={"text-purple-500"} />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className={"text-cell-secondary text-xs"}>{t("Working Hours")}</span>
+                                        <p className={"text-cell-primary text-sm font-semibold"}> {employee?.work_hours || "0"} {t("hrs/day")}</p>
+                                    </div>
+                                </div>
+                                <div className={"name-profile flex items-center gap-2"}>
+                                    <div className="p-2 bg-orange-50 dark:bg-orange-500/10 rounded-lg">
+                                        <RiCalendarLine size={18} className={"text-orange-500"} />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className={"text-cell-secondary text-xs"}>{t("Annual Leave")}</span>
+                                        <p className={"text-cell-primary text-sm font-semibold"}> {employee?.yearly_day_offs || "0"} {t("days")}</p>
+                                    </div>
+                                </div>
+                                <div className={"name-profile flex items-center gap-2"}>
+                                    <div className="p-2 bg-red-50 dark:bg-red-500/10 rounded-lg">
+                                        <RiCalendarEventLine size={18} className={"text-red-500"} />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className={"text-cell-secondary text-xs"}>{t("Weekend")}</span>
+                                        <p className={"text-cell-primary text-sm font-semibold"}> {employee?.weekend_days?.join(" - ") || "-"}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className={"col-span-12 lg:col-span-4"}>
+                        {orgData?.is_points_system_active && (
+                            <ContentCard
+                                title={t("Performance Rating")}
+                                toolbar={
+                                    <DropdownMenu
+                                        removeDefaultButtonStyling={true}
+                                        button={
+                                            <button className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                                                <RiMore2Fill size={20} className="text-gray-400" />
+                                            </button>
+                                        }
+                                        content={
+                                            <div className="flex flex-col min-w-[120px] bg-white dark:bg-gray-800 rounded-lg overflow-hidden border border-status-border">
+                                                <button
+                                                    onClick={() => setIsEditRatingModalOpen(true)}
+                                                    className="flex items-center gap-2 p-3 text-sm text-cell-primary hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left w-full"
+                                                >
+                                                    <RiEditLine size={18} className="text-primary-base" />
+                                                    {t("Edit")}
+                                                </button>
+                                            </div>
+                                        }
+                                    />
+                                }
+                                main={
+                                    <div className="flex flex-col items-center justify-center gap-4 py-2">
+                                        <div className="relative">
+                                            <div className="text-5xl font-bold text-primary-base">
+                                                {employee?.evaluation_method === 'MANUAL' ? (employee?.manual_rating || 0).toFixed(1) : (employee?.overall_rating || 0).toFixed(1)}
+                                            </div>
+                                            <div className="absolute -top-2 -right-6">
+                                                {employee?.evaluation_method === 'MANUAL' && (
+                                                    <span className="px-1.5 py-0.5 bg-orange-100 text-orange-600 text-[10px] font-bold rounded uppercase">
+                                                        {t("Manual")}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <Rating 
+                                            value={employee?.evaluation_method === 'MANUAL' ? employee?.manual_rating || 0 : employee?.overall_rating || 0} 
+                                            size={24}
+                                        />
+                                        <p className="text-sm text-cell-secondary">
+                                            {employee?.evaluation_method === 'MANUAL' ? t("Manual Override active") : t("Automatic calculation")}
+                                        </p>
+                                    </div>
+                                }
+                            />
+                        )}
+                    </div>
+
+                    <div className={"col-span-12 mt-6"}>
+                        <div className={"bg-surface rounded-2xl p-4 gap-6 flex flex-col items-center w-full"}>
                             <div className={"flex justify-between items-center w-full"}>
                                 <p className={"text-lg text-cell-primary font-bold"}>{t("Tasks Rating")}</p>
                             </div>
@@ -119,44 +274,14 @@ function SingleEmployeeProfile() {
                             </div>
                         </div>
                     </div>
-                    <div className={"w-full flex h-full flex-col gap-3"}>
-                        <div className={"bg-surface rounded-2xl p-4 md:flex-1 w-full gap-4 flex flex-col"}>
-                            <p className={"text-lg text-start text-cell-primary font-bold"}>{t("Work Information")}</p>
-                            <div className={"flex flex-col w-full gap-6"}>
-                                <div className={"name-profile flex items-center gap-1"}>
-                                    <RiBuilding2Line size={18} className={"text-cell-secondary"} />
-                                    <span className={"text-cell-secondary text-sm"}>{t("Department")}:</span>
-                                    <p className={"text-cell-primary text-sm font-medium"}>{employee?.department?.name || employee?.department_id?.name || "-"}</p>
-                                </div>
-                                <div className={"name-profile flex items-center gap-1"}>
-                                    <RiBriefcaseLine size={18} className={"text-cell-secondary"} />
-                                    <span className={"text-cell-secondary text-sm"}>{t("Role")}:</span>
-                                    <p className={"text-cell-primary text-sm font-medium"}>{employee?.position?.name || employee?.position_id?.title || "-"}</p>
-                                </div>
-                                <div className={"name-profile flex items-center gap-1"}>
-                                    <RiMoneyDollarCircleLine size={"18"} className={"text-cell-secondary"} />
-                                    <span className={"text-cell-secondary text-sm"}>{t("Salary")}:</span>
-                                    <p className={"text-cell-primary text-sm font-medium"}>${employee?.salary || "0"}/{t("month")}</p>
-                                </div>
-                                <div className={"name-profile flex items-center gap-1"}>
-                                    <RiTimeLine size={"18"} className={"text-cell-secondary"} />
-                                    <span className={"text-cell-secondary text-sm"}>{t("Working Hours")}:</span>
-                                    <p className={"text-cell-primary text-sm font-medium"}> {employee?.work_hours || "0"} {t("hours")}/{t("day")}</p>
-                                </div>
-                                <div className={"name-profile flex items-center gap-1"}>
-                                    <RiCalendarLine size={"18"} className={"text-cell-secondary"} />
-                                    <span className={"text-cell-secondary text-sm"}>{t("Annual Leave Days")}:</span>
-                                    <p className={"text-cell-primary text-sm font-medium"}> {employee?.yearly_day_offs || "0"} {t("days")}/{t("year")}</p>
-                                </div>
-                                <div className={"name-profile flex items-center gap-1"}>
-                                    <RiCalendarEventLine size={"18"} className={"text-cell-secondary"} />
-                                    <span className={"text-cell-secondary text-sm"}>{t("Weekend Days")}:</span>
-                                    <p className={"text-cell-primary text-sm font-medium"}> {employee?.weekend_days?.join(" - ") || "-"}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
+
+                <EditPerformanceRatingModal
+                    isOpen={isEditRatingModalOpen}
+                    onClose={() => setIsEditRatingModalOpen(false)}
+                    employee={employee}
+                    onUpdate={handleUpdateFullRating}
+                />
             </div>
         </Page>
     );

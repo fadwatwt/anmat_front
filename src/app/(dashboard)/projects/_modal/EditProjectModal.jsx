@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { useUpdateSubscriberProjectMutation } from "@/redux/projects/subscriberProjectsApi";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
+import EvaluationModal from "@/components/Modal/EvaluationModal";
 import { useProcessing } from "@/app/providers";
 
 function EditProjectModal({ isOpen, onClose, project }) {
@@ -18,6 +19,7 @@ function EditProjectModal({ isOpen, onClose, project }) {
   const formikRef = useRef(null);
   const [apiResponse, setApiResponse] = useState({ isOpen: false, status: null, message: "" });
   const [isApprovalOpen, setIsApprovalOpen] = useState(false);
+  const [isEvaluationOpen, setIsEvaluationOpen] = useState(false);
   const [pendingValues, setPendingValues] = useState(null);
 
   const formatDate = (date) => {
@@ -45,11 +47,16 @@ function EditProjectModal({ isOpen, onClose, project }) {
 
   const handleUpdate = (values) => {
     setPendingValues(values);
-    setIsApprovalOpen(true);
+    if (values.status === 'completed') {
+      setIsEvaluationOpen(true);
+    } else {
+      setIsApprovalOpen(true);
+    }
   };
 
-  const handleConfirmUpdate = async () => {
+  const handleConfirmUpdate = async (evaluationPayload = null) => {
     setIsApprovalOpen(false);
+    setIsEvaluationOpen(false);
     if (!pendingValues) return;
 
     try {
@@ -66,6 +73,10 @@ function EditProjectModal({ isOpen, onClose, project }) {
         progress: Number(pendingValues.progress) || 0,
         status: pendingValues.status || "open",
       };
+
+      if (evaluationPayload) {
+        Object.assign(payload, evaluationPayload);
+      }
 
       showProcessing(t("Updating project..."));
       const response = await updateProject({ id: project?._id || project?.id, data: payload }).unwrap();
@@ -153,9 +164,17 @@ function EditProjectModal({ isOpen, onClose, project }) {
       <ApprovalAlert
         isOpen={isApprovalOpen}
         onClose={() => setIsApprovalOpen(false)}
-        onConfirm={handleConfirmUpdate}
+        onConfirm={() => handleConfirmUpdate()}
         title={t("Confirm Project Update")}
         message={t("Are you sure you want to update this project's information?")}
+      />
+
+      <EvaluationModal
+        isOpen={isEvaluationOpen}
+        onClose={() => setIsEvaluationOpen(false)}
+        onSubmit={(payload) => handleConfirmUpdate(payload)}
+        type="project"
+        isSubmitting={isLoading}
       />
     </>
   );

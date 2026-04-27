@@ -3,20 +3,18 @@
 import DonutChartComponent from "@/components/containers/chart/DonutChartComponent";
 import DefaultSelect from "@/components/Form/DefaultSelect";
 
-const SubscriptionsChart = () => {
-
+const SubscriptionsChart = ({ totalCompanies = 50, totalUsers = 75 }) => {
     const chartData = {
-        total: 125,
+        total: totalCompanies + totalUsers,
         records: [
-
             {
                 title: "Companies",
-                value: 50,
+                value: totalCompanies,
                 color: "#375DFB"
             },
             {
                 title: "Users",
-                value: 75,
+                value: totalUsers,
                 color: "#F2AE40"
             }
         ]

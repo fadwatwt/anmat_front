@@ -14,39 +14,55 @@ import ProjectsPerformanceList from "@/app/(dashboard)/analytics/_components/cha
 import TopEmployeesList from "@/app/(dashboard)/analytics/_components/charts/TopEmployeesList";
 import DepartmentsRankingTable
     from "@/app/(dashboard)/analytics/_components/company_manager/departments/DepartmentsRankingTable";
+import { useGetSubscriberAnalyticsQuery } from "@/redux/analytics/analyticsApi";
 
 function CompanyManagerAnalytics() {
-    // --- البيانات الوهمية ---
-    const tasksSummaryData = [
+    const { data: analyticsData, isLoading, error } = useGetSubscriberAnalyticsQuery();
+
+    if (isLoading) return <div className="text-center py-20">Loading analytics...</div>;
+    if (error) return <div className="p-8 text-red-500 text-center">Error loading analytics data.</div>;
+
+    const data = analyticsData?.data || {};
+
+    // Map tasks summary dynamically
+    const tasksSummaryData = data.tasksSummary?.length > 0 ? data.tasksSummary.map((item, index) => {
+        const colors = ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
+        return { name: item.name, value: item.value, color: colors[index % colors.length] };
+    }) : [
         { name: 'Active', value: 50, color: '#4F46E5' },
         { name: 'Completed', value: 50, color: '#10B981' },
-        { name: 'Late', value: 50, color: '#F59E0B' },
-        { name: 'Overdue', value: 50, color: '#EF4444' },
     ];
 
-    const tasksRatingData = [
+    const tasksRatingData = data.tasksRatingData?.length > 0 ? data.tasksRatingData.map((item, index) => {
+        const colors = ['#4F46E5', '#FBBF24', '#EF4444'];
+        return { name: item.name, value: item.value, color: colors[index % colors.length] };
+    }) : [
         { name: 'High Rating', value: 150, color: '#4F46E5' },
         { name: 'Low Rating', value: 50, color: '#FBBF24' },
     ];
 
-    const projectsProgressData = [
+    const projectsProgressData = data.projectsProgress?.length > 0 ? data.projectsProgress : [
         { name: 'Alpha Project', completedTasks: 75, totalTasks: 100, daysLeft: 2 },
         { name: 'Beta Project', completedTasks: 40, totalTasks: 100, daysLeft: 5 },
-        { name: 'Gamma Project', completedTasks: 90, totalTasks: 100, daysLeft: 1 },
-        { name: 'Delta Project', completedTasks: 60, totalTasks: 100, daysLeft: 3 },
     ];
 
-    const recentProjectsData = [
+    const recentProjectsData = data.recentProjects?.length > 0 ? data.recentProjects : [
         { name: 'Alpha Project', department: 'Publishing Dep' },
         { name: 'Beta Project', department: 'Marketing Dep' },
-        { name: 'Gamma Project', department: 'Sales Dep' },
-        { name: 'Delta Project', department: 'Design Dep' },
     ];
 
-    const topEmployeesData = [
+    const topEmployeesData = data.topEmployees?.length > 0 ? data.topEmployees : [
         { name: 'Ali Ali', department: 'Publishing Dep' },
         { name: 'Rawan Ahmed', department: 'Publishing Dep' },
         { name: 'Yara Ahmed', department: 'Publishing Dep' },
+    ];
+
+    const employeeAttendanceData = data.employeeAttendance?.length > 0 ? data.employeeAttendance.map((item, index) => {
+        const colors = ['#10B981', '#F59E0B'];
+        return { name: item.name, value: item.value, color: colors[index % colors.length] };
+    }) : [
+        { name: 'On Time', value: 20, color: '#10B981' }, 
+        { name: 'Late', value: 10, color: '#F59E0B' }
     ];
 
     const employeeRatingData = [
@@ -80,7 +96,7 @@ function CompanyManagerAnalytics() {
                     <h2 className="text-sm font-bold text-cell-secondary mb-6 uppercase tracking-widest px-1">Tasks Analytics</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <AnalyticsCard title="Tasks Summary">
-                            <DynamicDoughnut data={tasksSummaryData} centerTitle="TASKS" centerValue="200" />
+                            <DynamicDoughnut data={tasksSummaryData} centerTitle="TASKS" centerValue={data.overview?.totalTasks || "200"} />
                         </AnalyticsCard>
                         <AnalyticsCard title="Tasks Performance" showDropdowns={true} dropdown1Label="Last 6 months">
                             <PerformanceBar />
@@ -141,8 +157,8 @@ function CompanyManagerAnalytics() {
 
                         <AnalyticsCard title="Employee Adherence" showDropdowns={true} dropdown1Label="Employee Name">
                             <DynamicDoughnut
-                                data={[{ name: 'On Time', value: 20, color: '#10B981' }, { name: 'Late', value: 10, color: '#F59E0B' }]}
-                                centerTitle="DAYS" centerValue="30"
+                                data={employeeAttendanceData}
+                                centerTitle="RECORDS" centerValue={employeeAttendanceData.reduce((acc, curr) => acc + curr.value, 0).toString()}
                             />
                         </AnalyticsCard>
 

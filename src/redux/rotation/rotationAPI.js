@@ -6,7 +6,7 @@ export const fetchAllRotations = createAsyncThunk(
   "rotation/fetchAll",
   async (dateRange, thunkAPI) => {
     try {
-      const response = await axios.get(`${RootRoute}/rotation`, {
+      const response = await axios.get(`${RootRoute}/api/rotation`, {
         params: dateRange,
       });
       return response.data;

@@ -12,8 +12,15 @@ import ProjectTimelineChart from "@/app/(dashboard)/analytics/_components/admin/
 import RevenuesChart from "@/app/(dashboard)/analytics/_components/admin/charts/RevenuesChart";
 import ProjectsPerformanceList from "@/app/(dashboard)/analytics/_components/admin/lists/ProjectsPerformanceList";
 import DefaultSelect from "@/components/Form/DefaultSelect";
+import { useGetAdminAnalyticsQuery } from "@/redux/analytics/analyticsApi";
 
 const AdminAnalytics = () => {
+    const { data: adminData, isLoading, error } = useGetAdminAnalyticsQuery();
+
+    if (isLoading) return <div className="text-center py-20">Loading analytics...</div>;
+    if (error) return <div className="p-8 text-red-500 text-center">Error loading admin analytics.</div>;
+
+    const data = adminData?.data || {};
 
     return (
         <Page
@@ -42,7 +49,7 @@ const AdminAnalytics = () => {
                             <IndustriesChart />
                         </div>
                         <div className="w-full h-full min-h-[400px]">
-                            <SubscriptionsChart />
+                            <SubscriptionsChart totalCompanies={data.totalCompanies} totalUsers={data.totalUsers} />
                         </div>
                         <div className="w-full h-full min-h-[400px]">
                             <CompaniesSubscriptionsChart />

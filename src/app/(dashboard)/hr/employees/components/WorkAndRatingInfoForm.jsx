@@ -40,6 +40,11 @@ function WorkAndRatingInfoForm({ formData, updateFormData, isEdit = false }) {
         { id: "Sunday", element: t("Sunday") },
     ];
 
+    const shiftTypeOptions = [
+        { id: "HOURS", element: t("Flexible Hours") },
+        { id: "FIXED_SHIFT", element: t("Fixed Shift") },
+    ];
+
     return (
         <div className={"flex flex-col gap-6 max-h-full pb-3"}>
             <div className="bg-surface p-4 rounded-xl border border-status-border shadow-sm flex flex-col gap-4">
@@ -90,14 +95,43 @@ function WorkAndRatingInfoForm({ formData, updateFormData, isEdit = false }) {
                         value={formData.employee_detail.salary}
                         onChange={(e) => updateFormData("salary", e.target.value === '' ? '' : Number(e.target.value), true)}
                     />
-                    <InputAndLabel
-                        type="number"
-                        title={t("Work Hours")}
-                        isRequired={true}
-                        placeholder={t("8")}
-                        value={formData.employee_detail.work_hours}
-                        onChange={(e) => updateFormData("work_hours", e.target.value === '' ? '' : Number(e.target.value), true)}
+                    <ElementsSelect
+                        title={t("Shift Type")}
+                        options={shiftTypeOptions}
+                        defaultValue={shiftTypeOptions.find(opt => opt.id === formData.employee_detail.shift_type)}
+                        onChange={(val) => updateFormData("shift_type", val[0]?.id || "HOURS", true)}
+                        name="shift_type"
+                        classNameContainer={"w-full"}
                     />
+                    
+                    {formData.employee_detail.shift_type === "HOURS" ? (
+                        <InputAndLabel
+                            type="number"
+                            title={t("Work Hours")}
+                            isRequired={true}
+                            placeholder={t("8")}
+                            value={formData.employee_detail.work_hours}
+                            onChange={(e) => updateFormData("work_hours", e.target.value === '' ? '' : Number(e.target.value), true)}
+                        />
+                    ) : (
+                        <>
+                            <InputAndLabel
+                                type="time"
+                                title={t("Shift Start Time")}
+                                isRequired={true}
+                                value={formData.employee_detail.shift_start_time}
+                                onChange={(e) => updateFormData("shift_start_time", e.target.value, true)}
+                            />
+                            <InputAndLabel
+                                type="time"
+                                title={t("Shift End Time")}
+                                isRequired={true}
+                                value={formData.employee_detail.shift_end_time}
+                                onChange={(e) => updateFormData("shift_end_time", e.target.value, true)}
+                            />
+                        </>
+                    )}
+                    
                     <InputAndLabel
                         type="number"
                         title={t("Yearly Days-Off")}

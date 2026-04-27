@@ -10,6 +10,7 @@ import Assignees from "@/app/(dashboard)/projects/_components/TableInfo/Assignee
 import Status from "@/app/(dashboard)/projects/_components/TableInfo/Status.jsx";
 import Progress from "@/app/(dashboard)/projects/_components/TableInfo/Progress.jsx";
 import EditProjectModal from "@/app/(dashboard)/projects/_modal/EditProjectModal";
+import StarRating from "@/components/StarRating";
 import { defaultPhoto } from "@/Root.Route.js";
 import {
     RiLayoutGridFill,
@@ -74,6 +75,7 @@ function ProjectsTab() {
         { label: t("Due Date"), width: "150px" },
         { label: t("Status"), width: "140px" },
         { label: t("Progress"), width: "120px" },
+        { label: t("Evaluation"), width: "180px" },
         { label: "", width: "50px" }, // Actions
     ];
 
@@ -126,6 +128,15 @@ function ProjectsTab() {
         </span>,
         <Status key={`status-${project._id}`} type={project.status || "open"} />,
         <Progress key={`prog-${project._id}`} percentage={project.progress || 0} />,
+        <div key={`eval-${project._id}`}>
+            {project.overall_rating > 0 ? (
+                <StarRating rating={project.overall_rating} />
+            ) : (
+                <span className="text-xs text-cell-secondary italic">
+                    {t("Not evaluated yet")}
+                </span>
+            )}
+        </div>,
     ]);
 
     if (isLoading) {

@@ -10,9 +10,23 @@ import TasksSummaryChart from "@/app/(dashboard)/analytics/_components/employee/
 import TasksPerformanceChart from "@/app/(dashboard)/analytics/_components/employee/TasksPerformanceChart";
 import TasksTimelineChart from "@/app/(dashboard)/analytics/_components/employee/TasksTimelineChart";
 import TasksRatingChart from "@/app/(dashboard)/analytics/_components/employee/TasksRatingChart";
+import { useGetEmployeeAnalyticsQuery } from "@/redux/analytics/analyticsApi";
 
 const EmployeeAnalytics = () => {
+    const { data: employeeData, isLoading, error } = useGetEmployeeAnalyticsQuery();
 
+    if (isLoading) return <div className="text-center py-20">Loading analytics...</div>;
+    if (error) return <div className="p-8 text-red-500 text-center">Error loading employee analytics.</div>;
+
+    const data = employeeData?.data || {};
+
+    const tasksSummaryData = data.tasksSummary?.length > 0 ? {
+        total: data.tasksSummary.reduce((acc, curr) => acc + curr.value, 0),
+        records: data.tasksSummary.map((item, index) => {
+            const colors = ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
+            return { title: item.name, value: item.value, color: colors[index % colors.length] };
+        })
+    } : null;
     return (
         <Page
             title="All Analytics Overview"
@@ -31,7 +45,7 @@ const EmployeeAnalytics = () => {
                 </span>
                 <div className="flex flex-col md:flex-row items-stretch gap-4 justify-between w-full">
                     <div className="w-full md:w-1/2">
-                        <TasksSummaryChart />
+                        <TasksSummaryChart data={tasksSummaryData} />
                     </div>
                     <div className="w-full md:w-1/2">
                         <TasksPerformanceChart />

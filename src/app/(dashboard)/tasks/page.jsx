@@ -18,6 +18,7 @@ import {
 } from "@/redux/tasks/subscriberTasksApi";
 import { useGetEmployeeTasksQuery, useUpdateTaskStatusMutation } from "@/redux/tasks/employeeTasksApi";
 import Modal from "@/components/Modal/Modal.jsx";
+import EvaluationModal from "@/components/Modal/EvaluationModal";
 import { useProcessing } from "@/app/providers";
 
 // ✅ Lazy-loaded components
@@ -51,6 +52,7 @@ function TasksPage() {
   const [taskToDelete, setTaskToDelete] = useState(null);
   const [isOpenStatusModal, setIsOpenStatusModal] = useState(false);
   const [taskToUpdateStatus, setTaskToUpdateStatus] = useState(null);
+  const [isOpenEvaluationModal, setIsOpenEvaluationModal] = useState(false);
   const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
   const allowedStatuses = ['open', 'pending', 'in-progress', 'completed', 'rejected', 'cancelled'];
@@ -113,16 +115,27 @@ function TasksPage() {
     setIsOpenStatusModal(true);
   };
 
-  const handleStatusUpdate = async (status) => {
+  const handleStatusUpdate = async (status, evaluationPayload = null) => {
+    if (status === 'completed' && !evaluationPayload) {
+      setIsOpenStatusModal(false);
+      setIsOpenEvaluationModal(true);
+      return;
+    }
+
     if (taskToUpdateStatus) {
       try {
-        const res = await updateTaskStatus({ id: taskToUpdateStatus._id, status }).unwrap();
+        const payload = { id: taskToUpdateStatus._id, status };
+        if (evaluationPayload) {
+           Object.assign(payload, evaluationPayload);
+        }
+        const res = await updateTaskStatus(payload).unwrap();
         setApiResponse({
           isOpen: true,
           status: "success",
           message: res?.message || t("Status updated successfully"),
         });
         setIsOpenStatusModal(false);
+        setIsOpenEvaluationModal(false);
         setTaskToUpdateStatus(null);
       } catch (err) {
         setApiResponse({
@@ -151,6 +164,11 @@ function TasksPage() {
           text: t("Edit"),
           icon: <RiEditLine size={16} className="text-primary-500" />,
           onClick: () => router.push(`/tasks/${task._id}/edit`),
+        },
+        {
+          text: t("Change Status"),
+          icon: <RiEditLine size={16} className="text-primary-500" />,
+          onClick: () => handleOpenStatusModal(task),
         },
         {
           text: t("Delete"),
@@ -291,6 +309,18 @@ function TasksPage() {
           ))}
         </div>
       </Modal>
+
+      <EvaluationModal
+        isOpen={isOpenEvaluationModal}
+        onClose={() => {
+            setIsOpenEvaluationModal(false);
+            setTaskToUpdateStatus(null);
+        }}
+        onSubmit={(payload) => handleStatusUpdate('completed', payload)}
+        type="task"
+        hasStages={taskToUpdateStatus?.stages && taskToUpdateStatus.stages.length > 0}
+        isSubmitting={false}
+      />
     </>
   );
 }
