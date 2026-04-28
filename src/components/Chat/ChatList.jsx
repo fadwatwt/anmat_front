@@ -6,9 +6,10 @@ import { Search, MoreVertical, MessageSquare } from "lucide-react";
 
 const ChatList = ({ activeChatId, onSelectChat }) => {
   const { data: chats, isLoading } = useGetChatsQuery();
+  const chatsList = Array.isArray(chats?.data) ? chats.data : [];
   const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredChats = chats?.filter((chat) =>
+  const filteredChats = chatsList.filter((chat) =>
     chat.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     chat.participants?.some(p => p.name?.toLowerCase().includes(searchQuery.toLowerCase()))
   );

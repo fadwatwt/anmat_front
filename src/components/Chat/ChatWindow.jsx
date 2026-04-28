@@ -11,7 +11,7 @@ const ChatWindow = ({ activeChat, onBack }) => {
     skip: !activeChat?._id,
   });
 
-  const messages = Array.isArray(messagesData) ? messagesData : messagesData?.messages || [];
+  const messages = Array.isArray(messagesData?.data) ? messagesData.data : [];
 
   const { sendMessage, setTyping } = useChat(activeChat?._id);
 
