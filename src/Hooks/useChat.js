@@ -16,39 +16,62 @@ export const useChat = (chatId) => {
 
     const socket = initSocket(token);
 
+    console.log(`📡 [Chat] Connecting... User: ${userId}, Active Chat: ${chatId || "None"}`);
+
+    // Join personal room to receive global updates (like new chats or messages in other rooms)
+    socket.emit("join_chat", { chat_id: userId });
+    console.log(`📡 [Chat] Joined personal room: ${userId}`);
+
     if (chatId) {
       socket.emit("join_chat", { chat_id: chatId });
+      console.log(`📡 [Chat] Joined chat room: ${chatId}`);
     }
 
     const handleNewMessage = (message) => {
-      console.log("📥 [Socket] New Message:", message);
-      // Update the RTK Query cache for getMessages
-      dispatch(
-        conversationsAPI.util.updateQueryData("getMessages", chatId, (draft) => {
-          // Handle both array and object { messages: [] } formats
-          const messages = Array.isArray(draft) ? draft : draft?.messages;
-          if (messages && Array.isArray(messages)) {
-            if (!messages.find((m) => m._id === message._id)) {
-              messages.unshift(message); // Assuming newest first
-            }
-          }
-        })
-      );
+      console.log("📥 [Chat] New Message Event Received:", message);
       
-      // Also update the chat list (getChats) to update the last message/timestamp
+      // 1. Update the Chat List (Always)
       dispatch(
         conversationsAPI.util.updateQueryData("getChats", undefined, (draft) => {
-          if (draft && Array.isArray(draft)) {
-            const chatIndex = draft.findIndex((c) => c._id === message.chat_id);
+          // The backend returns { status, data: [] }
+          const chats = draft?.data; 
+          if (Array.isArray(chats)) {
+            const chatIndex = chats.findIndex((c) => c._id === message.chat_id);
             if (chatIndex !== -1) {
-              draft[chatIndex].last_message = message;
-              // Reorder chats to put the active one at top?
-              const [updatedChat] = draft.splice(chatIndex, 1);
-              draft.unshift(updatedChat);
+              console.log("📝 [Chat] Updating existing chat in list:", message.chat_id);
+              chats[chatIndex].last_message = message;
+              
+              // Increment unread count if it's not the active chat and not sent by me
+              if (message.chat_id !== chatId && message.sent_by !== userId) {
+                chats[chatIndex].unreadCount = (chats[chatIndex].unreadCount || 0) + 1;
+              }
+
+              // Move to top
+              const [updatedChat] = chats.splice(chatIndex, 1);
+              chats.unshift(updatedChat);
+            } else {
+              console.log("🆕 [Chat] Chat not in list, triggering refetch...");
+              dispatch(conversationsAPI.util.invalidateTags(["Chats"]));
             }
           }
         })
       );
+
+      // 2. Update Messages Cache (Only if it's the active chat)
+      if (chatId && message.chat_id === chatId) {
+        console.log("💬 [Chat] Updating active chat messages:", chatId);
+        dispatch(
+          conversationsAPI.util.updateQueryData("getMessages", chatId, (draft) => {
+            // The backend returns { status, data: [] }
+            const messages = draft?.data;
+            if (Array.isArray(messages)) {
+              if (!messages.find((m) => m._id === message._id)) {
+                messages.unshift(message);
+              }
+            }
+          })
+        );
+      }
     };
 
     const handleUserTyping = ({ user_id, is_typing }) => {
@@ -74,10 +97,17 @@ export const useChat = (chatId) => {
   const sendMessage = useCallback((content, attachment = null) => {
     const socket = getSocket();
     if (socket && chatId) {
+      console.log(`📤 [Chat] Sending message to ${chatId}:`, content);
       socket.emit("send_message", {
         chat_id: chatId,
         content,
         attachment
+      }, (ack) => {
+        if (ack?.error) {
+          console.error("❌ [Chat] Send Message Error:", ack.error);
+        } else {
+          console.log("✅ [Chat] Message sent successfully");
+        }
       });
     }
   }, [chatId]);
