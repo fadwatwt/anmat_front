@@ -11,8 +11,8 @@ const almarai = Almarai({ subsets: ["arabic"], weight: ["300", "400", "700", "80
 
 export default function RootLayout({ children }) {
     return (
-        <html lang="en">
-            <body className={almarai.className}>
+        <html lang="en" suppressHydrationWarning>
+            <body className={almarai.className} suppressHydrationWarning>
                 <Providers> {children}</Providers>
             </body>
         </html>

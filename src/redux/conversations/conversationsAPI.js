@@ -4,9 +4,8 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const conversationsAPI = createApi({
   reducerPath: "conversationsAPI",
   baseQuery: fetchBaseQuery({ 
-    baseUrl: `${RootRoute}/chats`,
+    baseUrl: `${RootRoute}/api/chats`,
     prepareHeaders: (headers) => {
-        // هذا الكود يشتغل فقط في المتصفح
         const token = typeof window !== "undefined" && localStorage.getItem("token");
 
       if (token) headers.set("Authorization", `Bearer ${token}`);
@@ -18,13 +17,13 @@ export const conversationsAPI = createApi({
       query: () => "/",
     }),
     getMessages: builder.query({
-      query: (chatId) => `/${chatId}`,
+      query: (chatId) => `/${chatId}/messages`,
     }),
     sendMessage: builder.mutation({
-      query: ({ chatId, content }) => ({
+      query: ({ chatId, content, attachment }) => ({
         url: `/${chatId}/messages`,
         method: "POST",
-        body: { content },
+        body: { content, attachment },
       }),
     }),
     createChat: builder.mutation({
