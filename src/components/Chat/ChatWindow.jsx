@@ -11,7 +11,11 @@ const ChatWindow = ({ activeChat, onBack }) => {
     skip: !activeChat?._id,
   });
 
+<<<<<<< HEAD
   const messages = Array.isArray(messagesData) ? messagesData : messagesData?.data || [];
+=======
+  const messages = Array.isArray(messagesData?.data) ? messagesData.data : [];
+>>>>>>> 8101f555bfff8c0602133fe3aea0a0e2f5416f40
 
   const { sendMessage, setTyping } = useChat(activeChat?._id);
 

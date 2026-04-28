@@ -16,7 +16,7 @@ const ChatList = ({ activeChatId, onSelectChat }) => {
   const filteredChats = chats.filter((chat) => {
     const otherParticipant = chat.participants_ids?.find(p => p._id !== userId);
     const chatTitle = chat.title || otherParticipant?.name || "Direct Chat";
-    
+
     return chatTitle.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
@@ -62,18 +62,17 @@ const ChatList = ({ activeChatId, onSelectChat }) => {
             <button
               key={chat._id}
               onClick={() => onSelectChat(chat)}
-              className={`w-full flex items-center p-4 gap-3 transition-all border-l-4 ${
-                activeChatId === chat._id 
-                  ? "border-primary" 
+              className={`w-full flex items-center p-4 gap-3 transition-all border-l-4 ${activeChatId === chat._id
+                  ? "border-primary"
                   : "border-transparent"
-              }`}
+                }`}
               style={{ backgroundColor: activeChatId === chat._id ? 'var(--menu-active-bg)' : 'transparent' }}
             >
               <div className="relative flex-shrink-0">
-                <div 
+                <div
                   className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg overflow-hidden border"
-                  style={{ 
-                    backgroundColor: 'var(--color-blue-ebf1ff)', 
+                  style={{
+                    backgroundColor: 'var(--color-blue-ebf1ff)',
                     color: 'var(--color-primary)',
                     borderColor: 'var(--status-border)'
                   }}
