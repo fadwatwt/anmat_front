@@ -50,6 +50,22 @@ export const departmentsApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["Departments"],
         }),
+        getDepartmentProfile: builder.query({
+            query: (id) => ({
+                url: `api/subscriber/organization/departments/${id}/profile`,
+                method: "GET",
+            }),
+            transformResponse: (response) => response.data,
+            providesTags: (result, error, id) => [{ type: "Departments", id }],
+        }),
+        rateDepartment: builder.mutation({
+            query: ({ id, ...ratingData }) => ({
+                url: `api/subscriber/organization/departments/${id}/rate`,
+                method: "POST",
+                body: ratingData,
+            }),
+            invalidatesTags: (result, error, { id }) => [{ type: "Departments", id }],
+        }),
     }),
 });
 
@@ -60,4 +76,6 @@ export const {
     useAssignEmployeesToDepartmentMutation,
     useUnassignEmployeesFromDepartmentMutation,
     useDeleteDepartmentMutation,
+    useGetDepartmentProfileQuery,
+    useRateDepartmentMutation,
 } = departmentsApi;

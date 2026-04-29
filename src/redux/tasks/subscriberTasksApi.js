@@ -73,8 +73,8 @@ export const subscriberTasksApi = apiSlice.injectEndpoints({
         }),
         evaluateSubscriberTaskStage: builder.mutation({
             query: ({ taskId, stageId, data }) => ({
-                url: `api/subscriber/organization/tasks/${taskId}/stages/${stageId}/evaluate`,
-                method: "PUT",
+                url: `api/subscriber/tasks/${taskId}/stages/${stageId}/evaluate`,
+                method: "POST",
                 body: data,
             }),
             invalidatesTags: (result, error, { taskId }) => ["Tasks", { type: "Tasks", id: taskId }],

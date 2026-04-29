@@ -36,7 +36,13 @@ const EditPerformanceRatingModal = ({ isOpen, onClose, employee, onUpdate }) => 
                         { id: "MANUAL", value: t("Manual Override") }
                     ]}
                     value={[{ id: method, value: method === "MANUAL" ? t("Manual Override") : t("Auto (Based on calculations)") }]}
-                    onChange={(val) => setMethod(val[0].id)}
+                    onChange={(val) => {
+                        const newMethod = val[0].id;
+                        setMethod(newMethod);
+                        if (newMethod === "AUTO") {
+                            setRating(0);
+                        }
+                    }}
                 />
 
                 {method === "MANUAL" && (

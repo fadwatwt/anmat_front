@@ -94,14 +94,16 @@ function TaskDetailsPage({ params }) {
     const handleEvaluateStage = async (stageId, data) => {
         try {
             if (authUserType === "Subscriber") {
-                const avgRate = (data.ratings.time + data.ratings.content + data.ratings.video) / 3;
                 await evaluateStage({ 
                     taskId, 
                     stageId, 
                     data: {
-                        rate: avgRate || 0,
-                        comment: data.comment,
-                        attachment: data.attachment?.name || null // In a real scenario we'd upload and send URL
+                        score: data.score || 0,
+                        rate_time: data.rate_time || 0,
+                        rate_content: data.rate_content || 0,
+                        rate_video: data.rate_video || 0,
+                        comment: data.comment || "",
+                        attachment: data.attachment || null 
                     }
                 }).unwrap();
             }
@@ -126,11 +128,17 @@ function TaskDetailsPage({ params }) {
 
         let stages = task.stages.map(stage => ({
             _id: stage._id,
+            taskId: taskId, // Pass parent taskId to each stage
             name: stage.name,
             status: stage.status,
             assignedDate: stage.start_date,
             dueDate: stage.due_date,
-            delivery: stage.status === "completed" ? "Delayed" : "", // Mapping to StateOfTask ahead of deadline
+            rate: stage.rate,
+            rate_time: stage.rate_time,
+            rate_content: stage.rate_content,
+            rate_video: stage.rate_video,
+            comment: stage.comment,
+            delivery: stage.status === "completed" ? "Completed" : (stage.status || "Pending"), 
         }));
 
         if (filterBy === "all") return stages;

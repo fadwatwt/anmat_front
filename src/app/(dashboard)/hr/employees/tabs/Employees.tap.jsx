@@ -153,8 +153,14 @@ function EmployeesTap() {
           <p className="text-sm font-bold text-primary-base dark:text-primary-300 ">${employee.salary?.toLocaleString()}</p>
           <p className="text-[10px] text-gray-400">{employee.work_hours} {t("hrs/day")}</p>
         </div>,
-        <div key={`rating-${index}`}>
-          <StarRating rating={employee.overall_rating || 0} />
+        <div key={`rating-${index}`} className="flex items-center">
+          {employee.overall_rating > 0 ? (
+            <StarRating rating={employee.overall_rating} />
+          ) : (
+            <span className="text-xs text-cell-secondary italic opacity-60">
+              {t("No rating yet")}
+            </span>
+          )}
         </div>,
         <div key={`status-${index}`}>
           <span className={`px-3 py-1 rounded-full text-xs font-medium ${userData.is_active

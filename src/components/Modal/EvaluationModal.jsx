@@ -33,6 +33,11 @@ const EvaluationModal = ({ isOpen, onClose, onSubmit, type = 'task', hasStages =
             return;
         }
 
+        if (type === 'employee' && (evaluationMethod === 'AUTO_FROM_TASKS' || evaluationMethod === 'AUTO')) {
+            onSubmit({ evaluation_method: 'AUTO' });
+            return;
+        }
+
         const avgRating = (ratings.quality + ratings.speed + ratings.communication) / 3;
         
         if (type === 'task') {
@@ -62,13 +67,31 @@ const EvaluationModal = ({ isOpen, onClose, onSubmit, type = 'task', hasStages =
         evaluationOptions.push({ id: 'AUTO_FROM_TASKS', value: t("Auto (Average of internal tasks)") });
     } else if (type === 'task' && hasStages) {
         evaluationOptions.push({ id: 'AUTO_FROM_STAGES', value: t("Auto (Average of internal stages)") });
+    } else if (type === 'employee') {
+        evaluationOptions.push({ id: 'AUTO', value: t("Auto (Average of employee performance)") });
     }
+
+    const handleMethodChange = (val) => {
+        if (val && val.length > 0) {
+            const newMethod = val[0].id;
+            setEvaluationMethod(newMethod);
+            if (newMethod !== 'MANUAL') {
+                setRatings({
+                    quality: 0,
+                    speed: 0,
+                    communication: 0,
+                });
+            }
+        } else {
+            setEvaluationMethod('MANUAL');
+        }
+    };
 
     return (
         <Modal 
             isOpen={isOpen} 
             onClose={onClose} 
-            title={type === 'project' ? "Evaluate Project" : "Evaluate Task"}
+            title={type === 'project' ? t("Evaluate Project") : type === 'employee' ? t("Evaluate Employee") : t("Evaluate Task")}
             isBtns={true}
             btnApplyTitle={t("Submit Evaluation")}
             onClick={handleSubmit}
@@ -76,18 +99,12 @@ const EvaluationModal = ({ isOpen, onClose, onSubmit, type = 'task', hasStages =
             className="lg:w-[500px] md:w-8/12 sm:w-10/12 w-11/12 p-6"
         >
             <div className="flex flex-col gap-6 py-2">
-                {(type === 'project' || (type === 'task' && hasStages)) && (
+                {(type === 'project' || (type === 'task' && hasStages) || type === 'employee') && (
                     <div className="flex flex-col gap-2">
                         <label className="text-sm font-medium text-cell-secondary">{t("Evaluation Method")}</label>
                         <DefaultSelect 
                             value={evaluationOptions.filter(opt => opt.id === evaluationMethod)}
-                            onChange={(val) => {
-                                if (val && val.length > 0) {
-                                    setEvaluationMethod(val[0].id);
-                                } else {
-                                    setEvaluationMethod('MANUAL');
-                                }
-                            }}
+                            onChange={handleMethodChange}
                             options={evaluationOptions}
                             placeholder={t("Select Method")}
                             multi={false}

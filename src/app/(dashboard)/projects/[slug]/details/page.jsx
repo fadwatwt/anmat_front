@@ -99,7 +99,7 @@ function ProjectDetailsPage() {
             }] : [],
             assignedDate: task.start_date,
             dueDate: task.due_date,
-            rate: task.ratings?.length ? (task.ratings.reduce((acc, r) => acc + r.value, 0) / task.ratings.length) : 0
+            rate: task.ratings?.length ? (task.ratings.reduce((acc, r) => acc + r.value, 0) / task.ratings.length) : null
         };
     }) || [];
 

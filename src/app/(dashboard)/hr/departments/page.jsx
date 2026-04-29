@@ -6,7 +6,7 @@ import CreateDepartmentModal from "@/app/(dashboard)/hr/departments/modals/Creat
 import CreateChatGroupModal from "@/app/(dashboard)/hr/departments/modals/CreateChatGroup.modal";
 import EditDepartmentModal from "@/app/(dashboard)/hr/departments/modals/EditDepartmentModal";
 import AccountDetails from "@/app/(dashboard)/projects/_components/TableInfo/AccountDetails.jsx";
-import { RiEditLine, RiGroupLine, RiNotification4Line, RiChat1Line, RiDeleteBin7Line } from "@remixicon/react";
+import { RiEditLine, RiGroupLine, RiNotification4Line, RiChat1Line, RiDeleteBin7Line, RiUserLine } from "@remixicon/react";
 import StatusActions from "@/components/Dropdowns/StatusActions";
 import SendNotificationModal from "@/app/(dashboard)/hr/employees/modals/SendNotification.modal";
 import Alert from "@/components/Alerts/Alert";
@@ -41,11 +41,20 @@ function DepartmentsPage() {
         { label: "", width: "5%" },
     ];
 
+
+
     const DepartmentActions = ({ actualRowIndex }) => {
         const { t, i18n } = useTranslation();
         const department = departments[actualRowIndex];
 
         const statesActions = [
+            {
+                text: t("View Profile"),
+                icon: <RiUserLine size={20} className="text-primary-400" />,
+                onClick: () => {
+                    window.location.href = `/hr/departments/${department._id}/profile`;
+                },
+            },
             {
                 text: t("Edit"),
                 icon: <RiEditLine size={20} className="text-primary-400" />,
@@ -93,7 +102,7 @@ function DepartmentsPage() {
         return depts?.map((dept, index) => [
             <AccountDetails
                 key={`dept-${dept._id}`}
-                path={`/hr/departments/${dept._id}`}
+                path={`/hr/departments/${dept._id}/profile`}
                 account={{
                     name: dept.name || t("Unknown Department"),
                     imageProfile: dept.icon || "/images/department/departmentBrand1.png",
