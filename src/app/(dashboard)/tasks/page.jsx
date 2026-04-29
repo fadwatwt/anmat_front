@@ -19,6 +19,7 @@ import {
 import { useGetEmployeeTasksQuery, useUpdateTaskStatusMutation } from "@/redux/tasks/employeeTasksApi";
 import Modal from "@/components/Modal/Modal.jsx";
 import EvaluationModal from "@/components/Modal/EvaluationModal";
+import StarRating from "@/components/StarRating";
 import { useProcessing } from "@/app/providers";
 
 // ✅ Lazy-loaded components
@@ -55,7 +56,7 @@ function TasksPage() {
   const [isOpenEvaluationModal, setIsOpenEvaluationModal] = useState(false);
   const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
-  const allowedStatuses = ['open', 'pending', 'in-progress', 'completed', 'rejected', 'cancelled'];
+  const allowedStatuses = ['open', 'pending', 'in-progress', 'completed', 'done', 'rejected', 'cancelled'];
 
 
   // Headers matching the design and important info
@@ -70,6 +71,7 @@ function TasksPage() {
     { label: t("Priority"), width: "100px" },
     { label: t("Status"), width: "100px" },
     { label: t("Progress"), width: "120px" },
+    { label: t("Rating"), width: "120px" },
     { label: t("Due Date"), width: "120px" },
     { label: "", width: "50px" },
   ], [isEmployee, t]);
@@ -116,7 +118,7 @@ function TasksPage() {
   };
 
   const handleStatusUpdate = async (status, evaluationPayload = null) => {
-    if (status === 'completed' && !evaluationPayload) {
+    if (status === 'done' && !evaluationPayload) {
       setIsOpenStatusModal(false);
       setIsOpenEvaluationModal(true);
       return;
@@ -126,7 +128,7 @@ function TasksPage() {
       try {
         const payload = { id: taskToUpdateStatus._id, status };
         if (evaluationPayload) {
-           Object.assign(payload, evaluationPayload);
+          Object.assign(payload, evaluationPayload);
         }
         const res = await updateTaskStatus(payload).unwrap();
         setApiResponse({
@@ -230,6 +232,15 @@ function TasksPage() {
         </div>
         <span className="text-xs font-medium text-cell-secondary">{task.progress || 0}%</span>
       </div>,
+      <div key={`rating-${task._id}`} className="flex items-center">
+        {task.ratings?.length > 0 ? (
+          <StarRating rating={task.ratings.reduce((acc, r) => acc + (r.score || 0), 0) / task.ratings.length} />
+        ) : (
+          <span className="text-xs text-cell-secondary italic opacity-60">
+            {t("No rating yet")}
+          </span>
+        )}
+      </div>,
       <p key={`due-date-${task._id}`} className="text-sm text-cell-secondary text-nowrap">
         {task.due_date ? translateDate(task.due_date) : "-"}
       </p>,
@@ -313,10 +324,10 @@ function TasksPage() {
       <EvaluationModal
         isOpen={isOpenEvaluationModal}
         onClose={() => {
-            setIsOpenEvaluationModal(false);
-            setTaskToUpdateStatus(null);
+          setIsOpenEvaluationModal(false);
+          setTaskToUpdateStatus(null);
         }}
-        onSubmit={(payload) => handleStatusUpdate('completed', payload)}
+        onSubmit={(payload) => handleStatusUpdate('done', payload)}
         type="task"
         hasStages={taskToUpdateStatus?.stages && taskToUpdateStatus.stages.length > 0}
         isSubmitting={false}

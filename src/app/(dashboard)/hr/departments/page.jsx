@@ -12,7 +12,7 @@ import SendNotificationModal from "@/app/(dashboard)/hr/employees/modals/SendNot
 import Alert from "@/components/Alerts/Alert";
 import Table from "@/components/Tables/Table"
 import Page from "@/components/Page";
-import Rating from "@/app/(dashboard)/hr/Rating.jsx";
+import StarRating from "@/components/StarRating";
 import ProcessingOverlay from "@/components/Feedback/ProcessingOverlay.jsx";
 
 import { useGetDepartmentsQuery, useDeleteDepartmentMutation } from "@/redux/departments/departmentsApi";
@@ -120,7 +120,7 @@ function DepartmentsPage() {
                 {dept.stats?.employees_count ?? 0}
             </p>,
             <div key={`rating-${dept._id}`} className="flex items-center">
-                <Rating value={(dept.rate || 0) * 5} showPercentage={false} />
+                <StarRating rating={dept.rate || 0} />
             </div>,
             <div key={`positions-${dept._id}`} className="flex flex-wrap gap-1">
                 {dept.positions_ids?.map((pos) => (

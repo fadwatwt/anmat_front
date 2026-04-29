@@ -43,12 +43,16 @@ function Status({ type }) {
       border: "border-purple-300 dark:border-purple-500",
     },
     open: {
-      icon: <IoTime className="text-blue-500" />,
-      border: "border-blue-300 dark:border-blue-500",
+      icon: <IoTime className="text-gray-500" />,
+      border: "border-gray-300 dark:border-gray-500",
     },
     completed: {
-      icon: <FaCircleCheck className="text-green-500" />,
-      border: "border-green-300 dark:border-green-500",
+      icon: <FaCircleCheck className="text-teal-500" />,
+      border: "border-teal-300 dark:border-teal-500",
+    },
+    done: {
+      icon: <FaCircleCheck className="text-green-600" />,
+      border: "border-green-400 dark:border-green-600",
     },
     rejected: {
       icon: <RiCloseCircleFill size={15} className="text-red-500" />,
@@ -88,6 +92,7 @@ Status.propTypes = {
     "In Progress",
     "In-Progress",
     "Completed",
+    "Done",
     "Rejected",
     "Cancelled",
   ]).isRequired,

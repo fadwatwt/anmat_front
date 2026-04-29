@@ -21,6 +21,13 @@ import { useState } from "react";
 import ContentCard from "@/components/containers/ContentCard";
 import EditPerformanceRatingModal from "../../modals/EditPerformanceRatingModal";
 import DropdownMenu from "@/components/Dropdowns/DropdownMenu";
+import TabsOutContent from "@/components/Modal/TabsContener/TabsOutContent.jsx";
+import Status from "@/app/(dashboard)/projects/_components/TableInfo/Status.jsx";
+import { 
+    useGetEmployeeRequestsQuery, 
+    useDeleteEmployeeRequestMutation 
+} from '@/redux/employees/employeeRequestsApi';
+import { RiDeleteBin7Line } from "@remixicon/react";
 
 function SingleEmployeeProfile() {
     const { t, i18n } = useTranslation()
@@ -28,6 +35,8 @@ function SingleEmployeeProfile() {
     const { data: employee, isLoading, error } = useGetEmployeeProfileQuery(employeeId);
     const { data: orgData } = useGetSubscriberOrganizationQuery();
     const [updateEmployee] = useUpdateEmployeeMutation();
+    const { data: requests = [], isLoading: isLoadingRequests } = useGetEmployeeRequestsQuery({ employee_id: employeeId });
+    const [deleteRequest] = useDeleteEmployeeRequestMutation();
 
     const [isUpdating, setIsUpdating] = useState(false);
 
@@ -67,6 +76,138 @@ function SingleEmployeeProfile() {
         if (!dob) return "-";
         return dayjs().diff(dayjs(dob), 'year');
     };
+
+    const [activeTab, setActiveTab] = useState("Leave");
+
+    const handleDeleteRequest = async (id) => {
+        if (window.confirm(t("Are you sure you want to delete this request?"))) {
+            try {
+                await deleteRequest(id).unwrap();
+            } catch (err) {
+                console.error("Failed to delete request:", err);
+            }
+        }
+    };
+
+    const getLeaveRows = () => {
+        return requests
+            .filter(req => req.type === "DAY_OFF")
+            .map(req => [
+                req.created_at ? translateDate(req.created_at) : "-",
+                t("Day Off"),
+                <div key={req._id} className="flex flex-col gap-1">
+                    <Status type={req.status} title={req.status} />
+                    <span className="text-[10px] text-cell-secondary">{req.vacation_date ? translateDate(req.vacation_date) : "-"}</span>
+                </div>,
+                <button
+                    key={`del-${req._id}`}
+                    onClick={() => handleDeleteRequest(req._id)}
+                    className="p-1 text-red-500 hover:bg-red-50 rounded"
+                >
+                    <RiDeleteBin7Line size={18} />
+                </button>
+            ]);
+    };
+
+    const getDelayRows = () => {
+        return requests
+            .filter(req => req.type === "WORK_DELAY")
+            .map(req => [
+                req.created_at ? translateDate(req.created_at) : "-",
+                t("Delay Request"),
+                <div key={req._id} className="flex flex-col gap-1">
+                    <Status type={req.status} title={req.status} />
+                    <span className="text-[10px] text-cell-secondary">{req.work_due_at ? translateDate(req.work_due_at) : "-"}</span>
+                </div>,
+                <button
+                    key={`del-${req._id}`}
+                    onClick={() => handleDeleteRequest(req._id)}
+                    className="p-1 text-red-500 hover:bg-red-50 rounded"
+                >
+                    <RiDeleteBin7Line size={18} />
+                </button>
+            ]);
+    };
+
+    const getFinancialRows = () => {
+        return requests
+            .filter(req => req.type === "SALARY_ADVANCE")
+            .map(req => [
+                req.created_at ? translateDate(req.created_at) : "-",
+                t("Salary Advance"),
+                <div key={req._id} className="flex flex-col gap-1">
+                    <Status type={req.status} title={req.status} />
+                    <span className="text-[10px] text-cell-secondary">{req.advance_salary_by || "-"}</span>
+                </div>,
+                <button
+                    key={`del-${req._id}`}
+                    onClick={() => handleDeleteRequest(req._id)}
+                    className="p-1 text-red-500 hover:bg-red-50 rounded"
+                >
+                    <RiDeleteBin7Line size={18} />
+                </button>
+            ]);
+    };
+
+    const tabsData = [
+        {
+            title: "Leave",
+            content: (
+                <Table
+                    classContainer={"max-w-full"}
+                    headers={[
+                        { label: t("Request Date") },
+                        { label: t("Type") },
+                        { label: t("Status - Vacation Date") },
+                        { label: "" }
+                    ]}
+                    rows={getLeaveRows()}
+                    isActions={false}
+                    isCheckInput={false}
+                    isTitle={false}
+                    isLoading={isLoadingRequests}
+                />
+            ),
+        },
+        {
+            title: "Delay",
+            content: (
+                <Table
+                    classContainer={"max-w-full"}
+                    headers={[
+                        { label: t("Request Date") },
+                        { label: t("Type") },
+                        { label: t("Status - Delay Date") },
+                        { label: "" }
+                    ]}
+                    rows={getDelayRows()}
+                    isActions={false}
+                    isCheckInput={false}
+                    isTitle={false}
+                    isLoading={isLoadingRequests}
+                />
+            ),
+        },
+        {
+            title: "Financial",
+            content: (
+                <Table
+                    classContainer={"max-w-full"}
+                    headers={[
+                        { label: t("Request Date") },
+                        { label: t("Type") },
+                        { label: t("Status - Details") },
+                        { label: "" }
+                    ]}
+                    rows={getFinancialRows()}
+                    isActions={false}
+                    isCheckInput={false}
+                    isTitle={false}
+                    isLoading={isLoadingRequests}
+                />
+            ),
+        },
+    ];
 
     if (isLoading) return <div className="text-center py-10">{t("Loading...")}</div>;
     if (error) return <div className="text-center py-10 text-red-500">{t("Error loading profile")}</div>;
@@ -261,6 +402,25 @@ function SingleEmployeeProfile() {
                                 }
                             />
                         )}
+                    </div>
+
+                    <div className={"col-span-12 mt-6"}>
+                        <div className={"bg-surface rounded-2xl p-4 gap-6 flex flex-col items-center w-full"}>
+                            <div className={"flex justify-between items-center w-full"}>
+                                <p className={"text-lg text-cell-primary font-bold"}>{t("Requests")}</p>
+                            </div>
+                            <div className={"w-full flex flex-col gap-4"}>
+                                <div className={"flex w-full md:w-1/3"}>
+                                    <TabsOutContent tabs={tabsData} onTabChange={(title) => setActiveTab(title)} />
+                                </div>
+                                <div className={"w-full"}>
+                                    {tabsData.map(
+                                        ({ title, content }) =>
+                                            activeTab === title && <div key={title}>{content}</div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div className={"col-span-12 mt-6"}>

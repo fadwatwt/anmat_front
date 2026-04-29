@@ -26,10 +26,10 @@ export const employeeTasksApi = apiSlice.injectEndpoints({
             transformResponse: (response) => response.data || response,
         }),
         updateTaskStatus: builder.mutation({
-            query: ({ id, status }) => ({
+            query: ({ id, ...body }) => ({
                 url: `api/employee/tasks/${id}/status-update`,
                 method: "PUT",
-                body: { status },
+                body,
             }),
             invalidatesTags: ["Tasks"],
         }),
