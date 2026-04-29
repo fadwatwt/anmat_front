@@ -11,11 +11,7 @@ const ChatWindow = ({ activeChat, onBack }) => {
     skip: !activeChat?._id,
   });
 
-<<<<<<< HEAD
   const messages = Array.isArray(messagesData) ? messagesData : messagesData?.data || [];
-=======
-  const messages = Array.isArray(messagesData?.data) ? messagesData.data : [];
->>>>>>> 8101f555bfff8c0602133fe3aea0a0e2f5416f40
 
   const { sendMessage, setTyping } = useChat(activeChat?._id);
 
@@ -38,7 +34,7 @@ const ChatWindow = ({ activeChat, onBack }) => {
       {/* Header */}
       <div className="p-4 border-b dark:border-gray-800 flex items-center justify-between shadow-sm z-10">
         <div className="flex items-center gap-3">
-          <button 
+          <button
             onClick={onBack}
             className="md:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors mr-1"
           >
@@ -82,8 +78,8 @@ const ChatWindow = ({ activeChat, onBack }) => {
       <MessageList messages={messages} isLoading={isLoading} />
 
       {/* Input */}
-      <MessageInput 
-        onSendMessage={(content) => sendMessage(content)} 
+      <MessageInput
+        onSendMessage={(content) => sendMessage(content)}
         onTyping={(isTyping) => setTyping(isTyping)}
       />
     </div>
