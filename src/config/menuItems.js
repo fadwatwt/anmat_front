@@ -141,12 +141,12 @@ export const dashboardSideMenuItems = [
         path: '/employee/projects',
         icon: <NoteText />
     },
-    // {
-    //     allowed_to: ['Subscriber', 'Employee'],
-    //     title: 'Conversations',
-    //     path: '/conversations',
-    //     icon: <Messages1 />
-    // },
+    {
+        allowed_to: ['Subscriber', 'Employee'],
+        title: 'Conversations',
+        path: '/conversations',
+        icon: <Messages1 />
+    },
     // {
     //     allowed_to: ['Subscriber'],
     //     title: 'Social Media',

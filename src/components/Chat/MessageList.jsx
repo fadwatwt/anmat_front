@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useRef } from "react";
 import { format } from "date-fns";
+import { Check, CheckCheck } from "lucide-react";
 import { useSelector } from "react-redux";
 import { selectUserId } from "@/redux/auth/authSlice";
 
@@ -80,8 +81,13 @@ const MessageList = ({ messages, isLoading }) => {
                       </div>
                     )}
                   </div>
-                  <span className={`text-[9px] text-sub-300 mt-1 ${isMe ? "text-right mr-1" : "ml-1"}`}>
+                  <span className={`text-[9px] text-sub-300 mt-1 flex items-center gap-0.5 ${isMe ? "justify-end mr-1" : "ml-1"}`}>
                     {format(new Date(message.created_at || Date.now()), "HH:mm")}
+                    {isMe && (
+                      message.read_by?.some((id) => id !== currentUserId)
+                        ? <CheckCheck size={11} className="text-primary-500" />
+                        : <Check size={11} className="text-sub-300" />
+                    )}
                   </span>
                 </div>
               </div>

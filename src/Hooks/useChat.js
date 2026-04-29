@@ -1,10 +1,9 @@
 "use client";
 import { useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { initSocket, getSocket, disconnectSocket } from "@/services/socketService";
+import { initSocket, getSocket } from "@/services/socketService";
 import { selectUserId } from "@/redux/auth/authSlice";
 import { conversationsAPI } from "@/redux/conversations/conversationsAPI";
-import { addTempMessage } from "@/redux/conversations/conversationsSlice";
 
 export const useChat = (chatId) => {
   const dispatch = useDispatch();
@@ -25,7 +24,37 @@ export const useChat = (chatId) => {
     if (chatId) {
       socket.emit("join_chat", { chat_id: chatId });
       console.log(`📡 [Chat] Joined chat room: ${chatId}`);
+
+      // Notify server that this user has read the chat
+      socket.emit("mark_read", { chat_id: chatId });
+
+      // Optimistically zero the unread count in the chat list cache
+      dispatch(
+        conversationsAPI.util.updateQueryData("getChats", undefined, (draft) => {
+          const chats = draft?.data;
+          if (Array.isArray(chats)) {
+            const chat = chats.find((c) => c._id === chatId);
+            if (chat) chat.unreadCount = 0;
+          }
+        })
+      );
     }
+
+    const handleMessagesRead = ({ chat_id, user_id }) => {
+      console.log(`👁 [Chat] Messages read in ${chat_id} by ${user_id}`);
+      dispatch(
+        conversationsAPI.util.updateQueryData("getMessages", chat_id, (draft) => {
+          const messages = draft?.data;
+          if (Array.isArray(messages)) {
+            messages.forEach((msg) => {
+              if (msg.read_by && !msg.read_by.includes(user_id)) {
+                msg.read_by.push(user_id);
+              }
+            });
+          }
+        })
+      );
+    };
 
     const handleNewMessage = (message) => {
       console.log("📥 [Chat] New Message Event Received:", message);
@@ -71,6 +100,12 @@ export const useChat = (chatId) => {
             }
           })
         );
+
+        // Chat is open and message is from someone else — mark as read immediately
+        if (message.sent_by?._id !== userId && message.sent_by !== userId) {
+          socket.emit("mark_read", { chat_id: chatId });
+          dispatch(conversationsAPI.endpoints.markChatAsRead.initiate(chatId));
+        }
       }
     };
 
@@ -84,11 +119,13 @@ export const useChat = (chatId) => {
     };
 
     socket.on("new_message", handleNewMessage);
+    socket.on("messages_read", handleMessagesRead);
     socket.on("user_typing", handleUserTyping);
     socket.on("exception", handleException);
 
     return () => {
       socket.off("new_message", handleNewMessage);
+      socket.off("messages_read", handleMessagesRead);
       socket.off("user_typing", handleUserTyping);
       socket.off("exception", handleException);
     };

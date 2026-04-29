@@ -20,7 +20,7 @@ import CreateEmployeeModal from "@/app/(dashboard)/hr/employees/modals/CreateEmp
 import InviteEmployeeModal from "@/app/(dashboard)/hr/_modals/InviteEmployeeModal";
 import SendNotificationModal from "@/app/(dashboard)/hr/employees/modals/SendNotification.modal";
 import AssignDepartmentModal from "@/app/(dashboard)/hr/employees/modals/AssignDepartmentModal";
-import { useCreateChatMutation } from "@/redux/conversations/conversationsAPI";
+import { useCreateChatMutation, useGetChatsQuery } from "@/redux/conversations/conversationsAPI";
 import { setActiveChat } from "@/redux/conversations/conversationsSlice";
 import { useRouter } from "next/navigation";
 import { RiMessage2Line } from "@remixicon/react";
@@ -33,6 +33,7 @@ function EmployeesTap() {
   const dispatch = useDispatch();
 
   const { data: employees = [], error, isLoading } = useGetEmployeesQuery();
+  const { data: chatsData } = useGetChatsQuery();
   const [createChat] = useCreateChatMutation();
   const [deleteEmployee] = useDeleteEmployeeMutation();
   const [toggleActivity] = useToggleEmployeeActivityMutation();
@@ -277,15 +278,28 @@ function EmployeesTap() {
   const handleChatWithEmployee = async (employee) => {
     if (!employee?.user_id) return;
 
+    const existingChats = chatsData?.data || [];
+    const existingChat = existingChats.find(chat =>
+      chat.participants_ids?.some(p =>
+        (typeof p === "object" ? p._id : p) === employee.user_id
+      )
+    );
+
+    if (existingChat) {
+      dispatch(setActiveChat(existingChat));
+      router.push("/conversations");
+      return;
+    }
+
     showProcessing(t("Initializing chat..."));
     try {
       const result = await createChat({
         participants_ids: [employee.user_id],
         is_group: false
       }).unwrap();
-      
+
       const chatObject = result?.data || result;
-      
+
       if (chatObject?._id) {
         dispatch(setActiveChat(chatObject));
         router.push("/conversations");

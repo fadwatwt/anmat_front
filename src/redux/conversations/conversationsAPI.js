@@ -36,12 +36,19 @@ export const conversationsAPI = createApi({
       }),
       invalidatesTags: ["Chats"],
     }),
+    markChatAsRead: builder.mutation({
+      query: (chatId) => ({
+        url: `/${chatId}/read`,
+        method: "PATCH",
+      }),
+    }),
   }),
 });
 
-export const { 
+export const {
   useGetChatsQuery,
   useGetMessagesQuery,
   useSendMessageMutation,
   useCreateChatMutation,
+  useMarkChatAsReadMutation,
 } = conversationsAPI;

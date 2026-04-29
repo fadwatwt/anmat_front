@@ -8,7 +8,9 @@ import { selectUserId } from "@/redux/auth/authSlice";
 
 const ChatList = ({ activeChatId, onSelectChat }) => {
   const userId = useSelector(selectUserId);
-  const { data: chatsData, isLoading } = useGetChatsQuery();
+  const { data: chatsData, isLoading } = useGetChatsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
   const [searchQuery, setSearchQuery] = useState("");
 
   const chats = chatsData?.data || [];
@@ -84,7 +86,7 @@ const ChatList = ({ activeChatId, onSelectChat }) => {
                   )}
                 </div>
                 {chat.isOnline && (
-                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-gray-900 rounded-full"></div>
+                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-surface rounded-full"></div>
                 )}
               </div>
               <div className="flex-1 min-w-0 text-left">
@@ -103,7 +105,7 @@ const ChatList = ({ activeChatId, onSelectChat }) => {
                 </p>
               </div>
               {chat.unreadCount > 0 && (
-                <div className="bg-primary text-white text-[10px] font-bold px-2 py-1 rounded-full min-w-[20px] text-center">
+                <div className="bg-primary-500 text-white text-[10px] font-bold px-2 py-1 rounded-full min-w-[20px] text-center">
                   {chat.unreadCount}
                 </div>
               )}
