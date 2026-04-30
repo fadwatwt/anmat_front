@@ -4,7 +4,7 @@ import TaskStage from "./SubComponents/TaskStage.jsx";
 import { useTranslation } from "react-i18next";
 import PropTypes from "prop-types";
 
-function CreateTaskForm({ task, type = "project", values, handleChange, setFieldValue, lockedProjectId, lockedProjectName }) {
+function CreateTaskForm({ task, type = "project", values, handleChange, setFieldValue, lockedProjectId, lockedProjectName, hideProjectSelect = false }) {
   const { t } = useTranslation();
 
   const handleAddStage = () => {
@@ -30,6 +30,7 @@ function CreateTaskForm({ task, type = "project", values, handleChange, setField
         setFieldValue={setFieldValue}
         lockedProjectId={lockedProjectId}
         lockedProjectName={lockedProjectName}
+        hideProjectSelect={hideProjectSelect}
       />
       <div className={"flex flex-col gap-4"}>
         {stages.map((stage, index) => (
@@ -66,6 +67,7 @@ CreateTaskForm.propTypes = {
   setFieldValue: PropTypes.func,
   lockedProjectId: PropTypes.string,
   lockedProjectName: PropTypes.string,
+  hideProjectSelect: PropTypes.bool,
 };
 
 export default CreateTaskForm;

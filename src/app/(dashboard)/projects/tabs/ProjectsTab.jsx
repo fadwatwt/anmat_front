@@ -9,28 +9,44 @@ import Department from "@/app/(dashboard)/projects/_components/TableInfo/Departm
 import Assignees from "@/app/(dashboard)/projects/_components/TableInfo/Assignees.jsx";
 import Status from "@/app/(dashboard)/projects/_components/TableInfo/Status.jsx";
 import Progress from "@/app/(dashboard)/projects/_components/TableInfo/Progress.jsx";
+import EvaluationModal from "@/components/Modal/EvaluationModal";
+import StatusActions from "@/components/Dropdowns/StatusActions";
+import Modal from "@/components/Modal/Modal.jsx";
 import EditProjectModal from "@/app/(dashboard)/projects/_modal/EditProjectModal";
+import SaveAsTemplateModal from "@/app/(dashboard)/projects/_modal/SaveAsTemplateModal";
 import StarRating from "@/components/StarRating";
+import { 
+    useGetSubscriberProjectsQuery, 
+    useUpdateSubscriberProjectMutation 
+} from "@/redux/projects/subscriberProjectsApi";
+import { useSelector } from "react-redux";
 import { defaultPhoto } from "@/Root.Route.js";
 import {
     RiLayoutGridFill,
     RiPencilLine,
     RiEyeLine,
     RiDownload2Line,
+    RiFileCopy2Line,
+    RiStarLine,
 } from "@remixicon/react";
-
-import { useGetSubscriberProjectsQuery } from "@/redux/projects/subscriberProjectsApi";
 import dayjs from "dayjs";
 
 function ProjectsTab() {
     const { t } = useTranslation();
+    const user = useSelector((state) => state.auth.user);
+    const canEvaluate = user?.type === "Subscriber" || user?.permissions?.includes("evaluate");
 
     const { data: projectsData, isLoading, isError, error } = useGetSubscriberProjectsQuery();
     const projects = projectsData || [];
 
+    const [updateProject, { isLoading: isUpdating }] = useUpdateSubscriberProjectMutation();
+
     const [pagination, setPagination] = useState({ currentPage: 1, rowsPerPage: 7, totalPages: 1 });
     const [isOpenEditModal, setIsOpenEditModal] = useState(false);
     const [isOpenDeleteAlert, setIsOpenDeleteAlert] = useState(false);
+    const [isOpenTemplateModal, setIsOpenTemplateModal] = useState(false);
+    const [isOpenStatusModal, setIsOpenStatusModal] = useState(false);
+    const [isOpenEvaluationModal, setIsOpenEvaluationModal] = useState(false);
     const [selectedProject, setSelectedProject] = useState(null);
 
     const router = useRouter();
@@ -43,25 +59,61 @@ function ProjectsTab() {
         setPagination(prev => ({ ...prev, rowsPerPage: newRowsPerPage, currentPage: 1 }));
     };
 
-    const handleViewProject = (index) => {
-        const project = projects[index];
+    const handleViewProject = (project) => {
         if (project?._id || project?.id) {
             router.push(`/projects/${project._id || project.id}/details`);
         }
     };
 
-    const handleEditProject = (index) => {
-        setSelectedProject(projects[index]);
+    const handleEditProject = (project) => {
+        setSelectedProject(project);
         setIsOpenEditModal(true);
     };
 
-    const handleDeleteProject = (index) => {
-        setSelectedProject(projects[index]);
+    const handleDeleteProject = (project) => {
+        setSelectedProject(project);
         setIsOpenDeleteAlert(true);
     };
 
+    const handleSaveAsTemplate = (project) => {
+        setSelectedProject(project);
+        setIsOpenTemplateModal(true);
+    };
+
+    const handleOpenStatusModal = (project) => {
+        setSelectedProject(project);
+        setIsOpenStatusModal(true);
+    };
+
+    const handleOpenEvaluation = (project) => {
+        setSelectedProject(project);
+        setIsOpenEvaluationModal(true);
+    };
+
+    const handleStatusUpdate = async (status, evaluationPayload = null) => {
+        if (status === 'done' && !evaluationPayload && canEvaluate) {
+            setIsOpenStatusModal(false);
+            setIsOpenEvaluationModal(true);
+            return;
+        }
+
+        if (selectedProject) {
+            try {
+                const payload = { id: selectedProject._id, data: { status } };
+                if (evaluationPayload) {
+                    Object.assign(payload.data, evaluationPayload);
+                }
+                await updateProject(payload).unwrap();
+                setIsOpenStatusModal(false);
+                setIsOpenEvaluationModal(false);
+                setSelectedProject(null);
+            } catch (err) {
+                console.error("Failed to update status:", err);
+            }
+        }
+    };
+
     const confirmDelete = () => {
-        // Logic for deletion would go here (mutation call)
         setIsOpenDeleteAlert(false);
         setSelectedProject(null);
     };
@@ -79,19 +131,52 @@ function ProjectsTab() {
         { label: "", width: "50px" }, // Actions
     ];
 
-    const customActions = (index) => (
-        <div className="absolute right-0 mt-2 w-48 bg-surface rounded-md shadow-lg z-10 border border-status-border p-1 flex flex-col">
-            <button onClick={() => handleViewProject(index)} className="flex items-center gap-2 px-3 py-2 text-sm text-cell-primary hover:bg-status-bg w-full text-left rounded-md">
-                <RiEyeLine size={16} className="text-blue-500" /> {t("View")}
-            </button>
-            <button onClick={() => handleEditProject(index)} className="flex items-center gap-2 px-3 py-2 text-sm text-cell-primary hover:bg-status-bg w-full text-left rounded-md">
-                <RiPencilLine size={16} className="text-blue-500" /> {t("Edit")}
-            </button>
-            <button className="flex items-center gap-2 px-3 py-2 text-sm text-cell-primary hover:bg-status-bg w-full text-left rounded-md">
-                <RiDownload2Line size={16} className="text-blue-500" /> {t("Download Attachs")}
-            </button>
-        </div>
-    );
+    const allowedStatuses = ['open', 'in-progress', 'completed', 'cancelled'];
+    if (canEvaluate) allowedStatuses.push('done');
+
+    const customActions = (index) => {
+        const project = projects[index];
+        const actions = [
+            {
+                text: t("View Details"),
+                icon: <RiEyeLine className="text-blue-500" />,
+                onClick: () => handleViewProject(project),
+            },
+            {
+                text: t("Edit Project"),
+                icon: <RiPencilLine className="text-primary-500" />,
+                onClick: () => handleEditProject(project),
+            },
+            {
+                text: t("Change Status"),
+                icon: <RiLayoutGridFill className="text-amber-500" />,
+                onClick: () => handleOpenStatusModal(project),
+            },
+        ];
+
+        if (canEvaluate) {
+            actions.push({
+                text: t("Evaluate & Done"),
+                icon: <RiStarLine className="text-green-500" />,
+                onClick: () => handleOpenEvaluation(project),
+            });
+        }
+
+        actions.push(
+            {
+                text: t("Save as Template"),
+                icon: <RiFileCopy2Line className="text-amber-500" />,
+                onClick: () => handleSaveAsTemplate(project),
+            },
+            {
+                text: t("Download Attachs"),
+                icon: <RiDownload2Line className="text-blue-500" />,
+                onClick: () => {},
+            }
+        );
+
+        return <StatusActions states={actions} />;
+    };
 
     const rows = projects.map((project) => [
         <NameAndDescription
@@ -120,10 +205,10 @@ function ProjectsTab() {
                 avatar: user?.imageProfile || user?.avatar || defaultPhoto
             }))}
         />,
-        <span key={`start-${project._id}`} className="text-sm text-cell-primary">
+        <span key={`start-${project._id}`} className="text-sm text-cell-primary text-nowrap">
             {project.start_date ? dayjs(project.start_date).format("DD MMM, YYYY") : t("N/A")}
         </span>,
-        <span key={`due-${project._id}`} className="text-sm text-cell-primary">
+        <span key={`due-${project._id}`} className="text-sm text-cell-primary text-nowrap">
             {project.due_date ? dayjs(project.due_date).format("DD MMM, YYYY") : t("N/A")}
         </span>,
         <Status key={`status-${project._id}`} type={project.status || "open"} />,
@@ -132,7 +217,7 @@ function ProjectsTab() {
             {project.overall_rating > 0 ? (
                 <StarRating rating={project.overall_rating} />
             ) : (
-                <span className="text-xs text-cell-secondary italic">
+                <span className="text-xs text-cell-secondary italic opacity-60">
                     {t("Not evaluated yet")}
                 </span>
             )}
@@ -185,6 +270,17 @@ function ProjectsTab() {
                 />
             )}
 
+            {selectedProject && (
+                <SaveAsTemplateModal
+                    project={selectedProject}
+                    isOpen={isOpenTemplateModal}
+                    onClose={() => {
+                        setIsOpenTemplateModal(false);
+                        setSelectedProject(null);
+                    }}
+                />
+            )}
+
             <Alert
                 type="warning"
                 title={t("Delete Project?")}
@@ -198,6 +294,36 @@ function ProjectsTab() {
                     setSelectedProject(null);
                 }}
                 onSubmit={confirmDelete}
+            />
+
+            <Modal
+                isOpen={isOpenStatusModal}
+                onClose={() => setIsOpenStatusModal(false)}
+                title={t("Update Project Status")}
+                className="w-11/12 md:w-1/3 p-4"
+            >
+                <div className="flex flex-col gap-2 p-4">
+                    {allowedStatuses.map((status) => (
+                        <button
+                            key={status}
+                            onClick={() => handleStatusUpdate(status)}
+                            className="flex items-center justify-between p-3 rounded-xl border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900 transition-all"
+                        >
+                            <Status type={status} />
+                        </button>
+                    ))}
+                </div>
+            </Modal>
+
+            <EvaluationModal
+                isOpen={isOpenEvaluationModal}
+                onClose={() => {
+                    setIsOpenEvaluationModal(false);
+                    setSelectedProject(null);
+                }}
+                onSubmit={(payload) => handleStatusUpdate('done', payload)}
+                type="project"
+                isSubmitting={isUpdating}
             />
         </div>
     );

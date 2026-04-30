@@ -2,12 +2,13 @@
 import TemplateMainInfo from "./TemplateMainInfo.jsx";
 import PropTypes from "prop-types";
 
-function TemplateInfoForm({ template, values, handelChange }) {
+function TemplateInfoForm({ template, values, handleChange, setFieldValue }) {
     return (
         <div className={"w-full"}>
             <TemplateMainInfo
                 values={values}
-                handleChange={handelChange}
+                handleChange={handleChange}
+                setFieldValue={setFieldValue}
                 type={"template"}
                 template={template && template}
             />
@@ -18,7 +19,8 @@ function TemplateInfoForm({ template, values, handelChange }) {
 TemplateInfoForm.propTypes = {
     template: PropTypes.object,
     values: PropTypes.object,
-    handelChange: PropTypes.func,
+    handleChange: PropTypes.func,
+    setFieldValue: PropTypes.func,
 };
 
 export default TemplateInfoForm;

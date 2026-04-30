@@ -8,6 +8,10 @@ import ElementsSelect from "@/components/Form/ElementsSelect.jsx";
 import Status from "@/app/(dashboard)/projects/_components/TableInfo/Status.jsx";
 import { useTranslation } from "react-i18next";
 import PropTypes from "prop-types";
+import { useGetEmployeesQuery } from "@/redux/employees/employeesApi";
+import { useGetDepartmentsQuery } from "@/redux/departments/departmentsApi";
+import { defaultPhoto } from "@/Root.Route";
+import TagInput from "@/components/Form/TagInput";
 
 function TemplateMainInfo({
     template,
@@ -15,61 +19,35 @@ function TemplateMainInfo({
     values,
     handleChange,
     setFieldValue,
-    optionsManager: propsOptionsManager,
-    optionsDepartment: propsOptionsDepartment
 }) {
     const { t } = useTranslation();
 
-    // Mock users (replace with actual API data)
-    const users = [
-        {
-            id: "66f15fb144588bfbce5cb808",
-            name: "check-permission-admin",
-            username: "Admin",
-            image: "https://example.com/admin.jpg",
-        },
-        {
-            id: "2",
-            name: "Ahmed Khalil",
-            username: "Ahmed",
-            image: "https://example.com/ahmed.jpg",
-        },
-    ];
+    // Fetch real employees
+    const { data: employeesData, isLoading: isLoadingEmployees } = useGetEmployeesQuery();
+    const employees = employeesData || [];
 
-    // Map users to dropdown options
-    const mockOptionsManager = users.map((user) => ({
-        id: user.id,
-        value: user.name,
+    // Fetch real departments
+    const { data: departmentsData, isLoading: isLoadingDepartments } = useGetDepartmentsQuery();
+    const departments = departmentsData || [];
+
+    // Map employees to dropdown options
+    const optionsManager = employees.map((emp) => ({
+        id: emp.user_id,
+        value: emp.user?.name || emp.name || t("Unknown"),
     }));
 
-    const optionsManager = propsOptionsManager || mockOptionsManager;
-
     // Department options
-    const mockOptionsDepartment = [
-        { id: "", value: `${t("Select Department")}...` },
-        { id: "1", value: "UI / UX Design" },
-        { id: "2", value: "Design" },
-        { id: "3", value: "Development" },
-        { id: "4", value: "Marketing" },
-    ];
-
-    const optionsDepartment = propsOptionsDepartment || mockOptionsDepartment;
+    const optionsDepartment = departments.map(dept => ({
+        id: dept._id,
+        value: dept.name
+    }));
 
     // Category options
     const optionsCategory = [
-        { id: "", value: `${t("Select Category")}...` },
-        { id: "1", value: "Lorem Ipsum" },
-        { id: "2", value: "Software Development" },
-        { id: "3", value: "Marketing Campaign" },
-        { id: "4", value: "Design Project" },
-    ];
-
-    // Assign Tasks options
-    const optionsAssignTasks = [
-        { id: "", value: `${t("Select Tasks")}...` },
-        { id: "1", value: "Task 1" },
-        { id: "2", value: "Task 2" },
-        { id: "3", value: "Task 3" },
+        { id: "Software Development", value: t("Software Development") },
+        { id: "Marketing", value: t("Marketing") },
+        { id: "Design", value: t("Design") },
+        { id: "General", value: t("General") },
     ];
 
     // Status options
@@ -82,7 +60,6 @@ function TemplateMainInfo({
 
     // Rating options
     const optionsRating = [
-        { id: "", value: `${t("Select Rating")}...` },
         { id: "1", value: "1" },
         { id: "2", value: "2" },
         { id: "3", value: "3" },
@@ -90,14 +67,11 @@ function TemplateMainInfo({
         { id: "5", value: "5" },
     ];
 
-    // Assignees options (mock - will be multi-select)
-    const optionsAssignees = [
-        { id: "", value: `${t("Select Assignees")}...` },
-        { id: "1", value: "User 1" },
-        { id: "2", value: "User 2" },
-        { id: "3", value: "User 3" },
-        { id: "4", value: "User 4" },
-    ];
+    // Assignees options (mapped from real employees)
+    const optionsAssignees = employees.map(emp => ({
+        id: emp.user_id,
+        value: emp.user?.name || emp.name || t("Unknown"),
+    }));
 
     // Formik
     const formik = useFormik({
@@ -129,10 +103,34 @@ function TemplateMainInfo({
     // Handle dropdown selection
     const handleSelectChange = (name, value) => {
         if (setFieldValue) {
-            setFieldValue(name, value);
+            // If it's an array (from DefaultSelect), extract IDs
+            if (Array.isArray(value)) {
+                if (name === "assignees") {
+                    // For multi-select, send array of IDs
+                    setFieldValue(name, value.map(v => v.id));
+                } else {
+                    // For single-select, send the first ID
+                    setFieldValue(name, value[0]?.id || "");
+                }
+            } else {
+                setFieldValue(name, value);
+            }
         } else {
             formik.setFieldValue(name, value);
         }
+    };
+
+    const getSingleValue = (val, options) => {
+        if (!val) return [];
+        // If val is already an object/array, we might need to handle it, 
+        // but usually it's the ID string from Formik
+        const found = options.find(o => o.id === val);
+        return found ? [found] : [];
+    };
+
+    const getMultiValue = (val, options) => {
+        if (!val || !Array.isArray(val)) return [];
+        return options.filter(o => val.includes(o.id));
     };
 
     return (
@@ -159,20 +157,11 @@ function TemplateMainInfo({
             <DefaultSelect
                 title="Category"
                 options={optionsCategory}
-                defaultValue={valuesInputs.category}
+                multi={false}
+                value={getSingleValue(valuesInputs.category, optionsCategory)}
                 onChange={(value) => handleSelectChange("category", value)}
                 name="category"
                 placeholder="Select Category..."
-            />
-
-            {/* Assign Tasks */}
-            <DefaultSelect
-                title="Assign Tasks"
-                options={optionsAssignTasks}
-                defaultValue={valuesInputs.assignTasks}
-                onChange={(value) => handleSelectChange("assignTasks", value)}
-                name="assignTasks"
-                placeholder="Select Tasks..."
             />
 
             {/* Description */}
@@ -188,7 +177,8 @@ function TemplateMainInfo({
             <DefaultSelect
                 title="Department"
                 options={optionsDepartment}
-                defaultValue={valuesInputs.department}
+                multi={false}
+                value={getSingleValue(valuesInputs.department, optionsDepartment)}
                 onChange={(value) => handleSelectChange("department", value)}
                 name="department"
                 placeholder="Select Department..."
@@ -199,20 +189,21 @@ function TemplateMainInfo({
                 <DefaultSelect
                     title="Manager"
                     options={optionsManager}
-                    defaultValue={valuesInputs.manager}
+                    multi={false}
+                    value={getSingleValue(valuesInputs.manager, optionsManager)}
                     onChange={(value) => handleSelectChange("manager", value)}
                     name="manager"
                     placeholder="Select Manager..."
                     className={"flex-1"}
                 />
                 <DefaultSelect
-                    title="Assignees"
+                    title={t("Assignees")}
                     options={optionsAssignees}
-                    defaultValue={valuesInputs.assignees}
+                    multi={true}
+                    value={getMultiValue(valuesInputs.assignees, optionsAssignees)}
                     onChange={(value) => handleSelectChange("assignees", value)}
                     name="assignees"
-                    placeholder="Select Assignees..."
-                    className={"flex-1"}
+                    className="flex-1"
                 />
             </div>
 
@@ -241,7 +232,8 @@ function TemplateMainInfo({
                 <DefaultSelect
                     title="Rating"
                     options={optionsRating}
-                    defaultValue={valuesInputs.rating}
+                    multi={false}
+                    value={valuesInputs.rating}
                     onChange={(value) => handleSelectChange("rating", value)}
                     name="rating"
                     placeholder="Select Rating..."

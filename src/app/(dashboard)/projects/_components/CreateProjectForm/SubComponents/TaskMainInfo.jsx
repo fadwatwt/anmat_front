@@ -10,7 +10,7 @@ import { useGetSubscriberProjectsQuery } from "@/redux/projects/subscriberProjec
 import TagInput from "@/components/Form/TagInput";
 import { defaultPhoto } from "@/Root.Route";
 
-function TaskMainInfo({ task, type = "project", values, handleChange, setFieldValue, lockedProjectId, lockedProjectName }) {
+function TaskMainInfo({ task, type = "project", values, handleChange, setFieldValue, lockedProjectId, lockedProjectName, hideProjectSelect = false }) {
   const { t } = useTranslation();
 
   // Fetch real employees
@@ -88,7 +88,7 @@ function TaskMainInfo({ task, type = "project", values, handleChange, setFieldVa
 
   const getSingleValue = (val, options) => {
     if (!val) return [];
-    const found = options.find(o => o.id === val);
+    const found = options.find(o => String(o.id) === String(val));
     return found ? [found] : [];
   };
 
@@ -98,8 +98,8 @@ function TaskMainInfo({ task, type = "project", values, handleChange, setFieldVa
         {type === "project" ? t("Project Main Info") : t("Task Main Info")}:
       </p>
 
-      {/* Project Selection (only for Task) */}
-      {type === "task" && (
+      {/* Project Selection (only for Task and if not hidden) */}
+      {type === "task" && !hideProjectSelect && (
         lockedProjectId ? (
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-cell-primary">
@@ -305,6 +305,7 @@ TaskMainInfo.propTypes = {
   setFieldValue: PropTypes.func,
   lockedProjectId: PropTypes.string,
   lockedProjectName: PropTypes.string,
+  hideProjectSelect: PropTypes.bool,
 };
 
 export default TaskMainInfo;

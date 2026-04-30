@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
 import Table from "../../../../../components/Tables/Table.jsx";
 import EditAnEmployeeModal from "@/app/(dashboard)/hr/_modals/EditAnEmployeeModal.jsx";
 import AccountDetails from "@/app/(dashboard)/projects/_components/TableInfo/AccountDetails.jsx";
@@ -13,20 +14,28 @@ import {
   useToggleEmployeeActivityMutation,
 } from "@/redux/employees/employeesApi";
 import { useUnassignEmployeesFromDepartmentMutation } from "@/redux/departments/departmentsApi";
-import { RiEditLine, RiNotification4Line, RiBuilding2Line, RiLogoutBoxLine, RiToggleLine, RiToggleFill } from "@remixicon/react";
+import { RiEditLine, RiNotification4Line, RiBuilding2Line, RiLogoutBoxLine, RiToggleLine, RiToggleFill, RiDeleteBin7Line } from "@remixicon/react";
 import StatusActions from "@/components/Dropdowns/StatusActions";
 import CreateEmployeeModal from "@/app/(dashboard)/hr/employees/modals/CreateEmployee.modal";
 import InviteEmployeeModal from "@/app/(dashboard)/hr/_modals/InviteEmployeeModal";
 import SendNotificationModal from "@/app/(dashboard)/hr/employees/modals/SendNotification.modal";
 import AssignDepartmentModal from "@/app/(dashboard)/hr/employees/modals/AssignDepartmentModal";
-import { RiDeleteBin7Line } from "react-icons/ri";
+import { useCreateChatMutation, useGetChatsQuery } from "@/redux/conversations/conversationsAPI";
+import { setActiveChat } from "@/redux/conversations/conversationsSlice";
+import { useRouter } from "next/navigation";
+import { RiMessage2Line } from "@remixicon/react";
 import StarRating from "@/components/StarRating";
 import { useProcessing } from "@/app/providers";
 
 function EmployeesTap() {
   const { t } = useTranslation();
+  const router = useRouter();
   const { showProcessing, hideProcessing } = useProcessing();
+  const dispatch = useDispatch();
+
   const { data: employees = [], error, isLoading } = useGetEmployeesQuery();
+  const { data: chatsData } = useGetChatsQuery();
+  const [createChat] = useCreateChatMutation();
   const [deleteEmployee] = useDeleteEmployeeMutation();
   const [toggleActivity] = useToggleEmployeeActivityMutation();
   const [unassignEmployees, { isLoading: isUnassigning }] = useUnassignEmployeesFromDepartmentMutation();
@@ -60,7 +69,6 @@ function EmployeesTap() {
     { label: t("Contact"), width: "200px" },
     { label: t("Department"), width: "150px" },
     { label: t("Salary"), width: "100px" },
-    { label: t("Rating"), width: "150px" },
     { label: t("Status"), width: "100px" },
     { label: "", width: "50px" },
   ];
@@ -113,6 +121,11 @@ function EmployeesTap() {
         text: employee.user?.is_active ? t("Deactivate") : t("Activate"),
         icon: employee.user?.is_active ? <RiToggleFill className="text-orange-500" /> : <RiToggleLine className="text-green-500" />,
         onClick: () => handleToggleActivity(employee),
+      },
+      {
+        text: t("Chat"),
+        icon: <RiMessage2Line className="text-blue-500" />,
+        onClick: () => handleChatWithEmployee(employee),
       },
       {
         text: t("Delete"),
@@ -267,6 +280,42 @@ function EmployeesTap() {
         message: err?.data?.message || t("Failed to toggle employee status")
       });
       setIsToggleApprovalOpen(false);
+    } finally {
+      hideProcessing();
+    }
+  };
+
+  const handleChatWithEmployee = async (employee) => {
+    if (!employee?.user_id) return;
+
+    const existingChats = chatsData?.data || [];
+    const existingChat = existingChats.find(chat =>
+      chat.participants_ids?.some(p =>
+        (typeof p === "object" ? p._id : p) === employee.user_id
+      )
+    );
+
+    if (existingChat) {
+      dispatch(setActiveChat(existingChat));
+      router.push("/conversations");
+      return;
+    }
+
+    showProcessing(t("Initializing chat..."));
+    try {
+      const result = await createChat({
+        participants_ids: [employee.user_id],
+        is_group: false
+      }).unwrap();
+
+      const chatObject = result?.data || result;
+
+      if (chatObject?._id) {
+        dispatch(setActiveChat(chatObject));
+        router.push("/conversations");
+      }
+    } catch (error) {
+      console.error("Failed to start chat:", error);
     } finally {
       hideProcessing();
     }

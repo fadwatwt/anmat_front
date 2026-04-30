@@ -24,49 +24,23 @@ import {
     RiDownload2Line
 } from "@remixicon/react";
 
-// Dummy Data for Templates
-const
-    dummyTemplates = Array.from({ length: 8 }).map((_, i) => ({
-        _id: `template-${i}`,
-        templateName: `Template ${i + 1}`,
-        description: "Template for project management",
-        department: {
-            name: "Digital Publishing Division",
-            icon: RiLayoutGridFill,
-        },
-        manager: {
-            name: `Manager ${i + 1}`,
-            role: "Product Manager",
-            avatar: defaultPhoto,
-        },
-        category: "Lorem Ipsum",
-        assignees: [
-            { name: "User 1", avatar: defaultPhoto },
-            { name: "User 2", avatar: defaultPhoto },
-            { name: "User 3", avatar: defaultPhoto },
-        ],
-        teams: [
-            { name: "Dev", icon: RiGroupFill },
-            { name: "Design", icon: RiLayoutGridFill },
-        ],
-        assignedDate: "15 Nov, 2024",
-        dueDate: "16 Jan, 2025",
-        startDate: "15 Nov, 2024",
-        endDate: "16 Jan, 2025",
-        updatedAt: "16 Jan, 2025",
-        progress: 20 + (i * 10),
-        rating: 4.5,
-        status: { type: i % 3 === 0 ? "Active" : i % 3 === 1 ? "In Review" : "In Progress" },
-    }));
+import { useGetProjectTemplatesQuery, useDeleteProjectTemplateMutation } from "@/redux/projects/subscriberProjectTemplatesApi";
+import Loading from "@/components/Loading";
+import dayjs from "dayjs";
 
 function TemplatesTab() {
     const { t } = useTranslation();
     const router = useRouter();
     const dispatch = useDispatch();
 
-    // Local State
-    const [templates, setTemplates] = useState(dummyTemplates);
-    const [pagination, setPagination] = useState({ currentPage: 1, rowsPerPage: 7, totalPages: 2 });
+    const { data: projectTemplates, isLoading, isError } = useGetProjectTemplatesQuery();
+    const [deleteTemplate] = useDeleteProjectTemplateMutation();
+
+    console.log("API Response - Project Templates:", projectTemplates);
+
+    const templates = projectTemplates || [];
+
+    const [pagination, setPagination] = useState({ currentPage: 1, rowsPerPage: 7, totalPages: 1 });
     const [isOpenDeleteAlert, setIsOpenDeleteAlert] = useState(false);
     const [selectedTemplate, setSelectedTemplate] = useState(null);
 
@@ -80,7 +54,7 @@ function TemplatesTab() {
 
     const handleViewTemplate = (index) => {
         const template = templates[index];
-        router.push(`/projects/templates/${template._id}-${convertToSlug(template.templateName)}`);
+        router.push(`/projects/templates/${template._id}-${convertToSlug(template.name)}`);
     };
 
     const handleEditTemplate = (index) => {
@@ -93,10 +67,14 @@ function TemplatesTab() {
         setIsOpenDeleteAlert(true);
     };
 
-    const confirmDelete = () => {
-        setTemplates(prev => prev.filter(t => t._id !== selectedTemplate._id));
-        setIsOpenDeleteAlert(false);
-        setSelectedTemplate(null);
+    const confirmDelete = async () => {
+        try {
+            await deleteTemplate(selectedTemplate._id).unwrap();
+            setIsOpenDeleteAlert(false);
+            setSelectedTemplate(null);
+        } catch (err) {
+            console.error("Failed to delete template:", err);
+        }
     };
 
     const handleStatusChange = (index, newStatus) => {
@@ -116,13 +94,8 @@ function TemplatesTab() {
         { label: t("Department"), width: "220px" },
         { label: t("Category"), width: "180px" },
         { label: t("Assignees"), width: "180px" },
-        { label: t("Teams"), width: "140px" },
-        { label: t("Assigned - Due Date"), width: "220px" },
-        { label: t("Started - Ended at Date"), width: "220px" },
         { label: t("Updated At"), width: "160px" },
-        { label: t("Progress"), width: "120px" },
-        { label: t("Rating"), width: "140px" },
-        { label: t("Template"), width: "140px" },
+        { label: t("Usage"), width: "140px" },
         { label: "", width: "50px" }, // Actions
     ];
 
@@ -140,7 +113,7 @@ function TemplatesTab() {
             >
                 <RiPencilLine size={16} className="text-blue-500" /> {t("Edit")}
             </button>
-            <button onClick={() => handleInvite(index)} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left rounded-md">
+            <button className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left rounded-md">
                 <RiDownload2Line size={16} className="text-blue-500" /> {t("Download Attachs")}
             </button>
             <button
@@ -163,46 +136,44 @@ function TemplatesTab() {
         </div>
     );
 
+    if (isLoading) return <Loading />;
+    if (isError) return <div className="text-red-500 p-4">Error loading templates</div>;
+
     const rows = templates.map((template) => [
         <NameAndDescription
             key={`name-${template._id}`}
-            path={`/projects/templates/${template._id}-${convertToSlug(template.templateName)}`}
-            name={template.templateName}
+            path={`/projects/templates/${template._id}-${convertToSlug(template.name || "template")}`}
+            name={template.name}
             description={template.description}
         />,
         <AccountDetails
             key={`mgr-${template._id}`}
             account={{
-                name: template.manager.name,
-                rule: template.manager.role,
-                imageProfile: template.manager.avatar,
+                name: template.manager?.name || "N/A",
+                rule: "Manager",
+                imageProfile: defaultPhoto,
             }}
         />,
         <Department
             key={`dept-${template._id}`}
-            name={template.department.name}
-            icon={template.department.icon}
+            name={template.department?.name || "N/A"}
+            icon={RiLayoutGridFill}
         />,
         <span key={`cat-${template._id}`} className="text-sm text-gray-700 dark:text-gray-300">
-            {template.category}
+            {template.category || "General"}
         </span>,
-        <Assignees key={`assign-${template._id}`} users={template.assignees} />,
-        <Teams key={`teams-${template._id}`} teams={template.teams} />,
-        <div key={`dates1-${template._id}`} className="flex flex-col text-xs text-gray-500">
-            <span>{template.assignedDate}</span>
-            <span>{template.dueDate}</span>
-        </div>,
-        <div key={`dates2-${template._id}`} className="flex flex-col text-xs text-gray-500">
-            <span>{template.startDate}</span>
-            <span>{template.endDate}</span>
-        </div>,
+        <Assignees 
+            key={`assign-${template._id}`} 
+            users={template.assignees?.map(a => ({ 
+                name: a.name || "N/A", 
+                avatar: defaultPhoto 
+            })) || []} 
+        />,
         <span key={`updated-${template._id}`} className="text-xs text-gray-500">
-            {template.updatedAt}
+            {dayjs(template.updated_at).format("DD MMM, YYYY")}
         </span>,
-        <Progress key={`prog-${template._id}`} percentage={template.progress} />,
-        <Rating key={`rating-${template._id}`} rating={template.rating} />,
-        <span key={`template-${template._id}`} className="text-sm text-gray-700 dark:text-gray-300">
-            Template 1
+        <span key={`usage-${template._id}`} className="text-sm text-gray-700 dark:text-gray-300">
+            {template.usage_count || 0} {t("uses")}
         </span>,
     ]);
 

@@ -3,6 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const conversationsAPI = createApi({
   reducerPath: "conversationsAPI",
+  tagTypes: ["Chats"],
   baseQuery: fetchBaseQuery({ 
     baseUrl: `${RootRoute}/api/chats`,
     prepareHeaders: (headers) => {
@@ -15,6 +16,7 @@ export const conversationsAPI = createApi({
   endpoints: (builder) => ({
     getChats: builder.query({
       query: () => "/",
+      providesTags: ["Chats"],
     }),
     getMessages: builder.query({
       query: (chatId) => `/${chatId}/messages`,
@@ -32,13 +34,21 @@ export const conversationsAPI = createApi({
         method: "POST",
         body: newChat,
       }),
+      invalidatesTags: ["Chats"],
+    }),
+    markChatAsRead: builder.mutation({
+      query: (chatId) => ({
+        url: `/${chatId}/read`,
+        method: "PATCH",
+      }),
     }),
   }),
 });
 
-export const { 
+export const {
   useGetChatsQuery,
   useGetMessagesQuery,
   useSendMessageMutation,
   useCreateChatMutation,
+  useMarkChatAsReadMutation,
 } = conversationsAPI;

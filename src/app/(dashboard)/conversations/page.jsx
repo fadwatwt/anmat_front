@@ -10,12 +10,12 @@ const ConversationPage = () => {
   return (
     <Page
       isTitle={false}
-      className="flex w-full h-screen bg-gray-50 dark:bg-gray-950 p-0"
+      className="flex w-full h-screen bg-main p-0"
     >
       <div className="flex-1 flex flex-col h-full overflow-hidden">
-        <div className="px-6 py-4 flex items-center justify-between bg-white dark:bg-gray-900 border-b dark:border-gray-800">
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
-            {t("Team Communications")}
+        <div className="px-6 py-4 flex items-center justify-between bg-surface border-b border-status-border">
+          <h1 className="text-2xl font-bold text-page-title">
+            {t("Conversations")}
           </h1>
         </div>
         <ChatContainer />

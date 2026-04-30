@@ -1,13 +1,14 @@
 "use client"
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Page from "@/components/Page.jsx";
 import ProjectInfoForm from "@/app/(dashboard)/projects/_components/CreateProjectForm/ProjectInfoForm.jsx";
 import CreateTaskForm from "@/app/(dashboard)/projects/_components/CreateProjectForm/CreateTaskForm.jsx";
 import { useCreateSubscriberProjectMutation } from "@/redux/projects/subscriberProjectsApi";
 import { useCreateSubscriberTaskMutation } from "@/redux/tasks/subscriberTasksApi";
+import { useCreateProjectFromTemplateMutation, useGetProjectTemplateDetailsQuery } from "@/redux/projects/subscriberProjectTemplatesApi";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { useProcessing } from "@/app/providers";
 import { Formik, Form } from 'formik';
@@ -16,9 +17,17 @@ import { translateDate } from "@/functions/Days";
 
 function CreateProjectPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const templateId = searchParams.get("templateId");
+
     const { t } = useTranslation();
     const { showProcessing, hideProcessing } = useProcessing();
+    
+    const { data: templateDetails, isLoading: isLoadingTemplate } = useGetProjectTemplateDetailsQuery(templateId, { skip: !templateId });
+    const template = templateDetails;
+
     const [createProject, { isLoading: isCreatingProject }] = useCreateSubscriberProjectMutation();
+    const [createProjectFromTemplate, { isLoading: isCreatingFromTemplate }] = useCreateProjectFromTemplateMutation();
     const [createTask, { isLoading: isCreatingTask }] = useCreateSubscriberTaskMutation();
     const [apiResponse, setApiResponse] = useState({ isOpen: false, status: null, message: "" });
     const [isApprovalOpen, setIsApprovalOpen] = useState(false);
@@ -38,19 +47,28 @@ function CreateProjectPage() {
         { title: t('Create a project'), path: '' }
     ];
 
-    const projectInitialValues = {
-        name: "",
-        description: "",
-        department_id: "",
-        manager_id: "",
-        assignees_ids: [],
+    const projectInitialValues = useMemo(() => ({
+        name: template?.name || "",
+        description: template?.description || "",
+        department_id: template?.department?._id || template?.department_id || "",
+        manager_id: template?.manager?._id || template?.manager_id || "",
+        assignees_ids: template?.assignees?.map(a => ({ 
+            id: a._id, 
+            name: a.user?.name || a.name || t("Unknown") 
+        })) || [],
         start_date: "",
         due_date: "",
         started_in: "",
         finished_in: "",
-        status: "open",
-        progress: "0"
-    };
+        status: template?.status || "open",
+        progress: template?.progress?.toString() || "0"
+    }), [template, t]);
+
+    useEffect(() => {
+        if (template) {
+            console.log("Template Loaded for Project Creation:", template);
+        }
+    }, [template]);
 
     // Task initial values - uses project's department as default
     const getTaskInitialValues = () => ({
@@ -97,7 +115,12 @@ function CreateProjectPage() {
             };
 
             showProcessing(t("Creating project..."));
-            const response = await createProject(payload).unwrap();
+            let response;
+            if (templateId) {
+                response = await createProjectFromTemplate({ templateId, data: payload }).unwrap();
+            } else {
+                response = await createProject(payload).unwrap();
+            }
             hideProcessing();
             const projectData = response?.data || response;
             setCreatedProject(projectData);
@@ -243,7 +266,11 @@ function CreateProjectPage() {
                 <div className="bg-surface p-5 rounded-2xl shadow-sm border border-status-border">
                     {/* Step 1: Project Info Form */}
                     {!isProjectCreated && (
-                        <Formik initialValues={projectInitialValues} onSubmit={handleProjectSubmit}>
+                        <Formik 
+                            initialValues={projectInitialValues} 
+                            onSubmit={handleProjectSubmit}
+                            enableReinitialize={true}
+                        >
                             {({ values, handleChange, setFieldValue }) => (
                                 <Form className="flex flex-col gap-4">
                                     <ProjectInfoForm
@@ -254,10 +281,10 @@ function CreateProjectPage() {
                                     <div className="flex justify-between items-center mt-4">
                                         <button
                                             type="submit"
-                                            disabled={isCreatingProject}
+                                            disabled={isCreatingProject || isCreatingFromTemplate}
                                             className="bg-primary-base dark:bg-primary-200 dark:text-black min-w-[160px] text-white p-[10px] rounded-[10px] disabled:opacity-50"
                                         >
-                                            {isCreatingProject ? t("Creating...") : t("Create Project")}
+                                            {isCreatingProject || isCreatingFromTemplate ? t("Creating...") : t("Create Project")}
                                         </button>
                                         <button
                                             type="button"

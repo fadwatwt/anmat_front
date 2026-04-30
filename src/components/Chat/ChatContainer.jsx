@@ -1,19 +1,32 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { setActiveChat } from "@/redux/conversations/conversationsSlice";
 import ChatList from "./ChatList";
 import ChatWindow from "./ChatWindow";
 
 const ChatContainer = () => {
-  const [selectedChat, setSelectedChat] = useState(null);
-  const [showMobileList, setShowMobileList] = useState(true);
+  const dispatch = useDispatch();
+  const reduxActiveChat = useSelector((state) => state.conversations.activeChat);
+  const [selectedChat, setSelectedChat] = useState(reduxActiveChat);
+  const [showMobileList, setShowMobileList] = useState(!reduxActiveChat);
+
+  useEffect(() => {
+    if (reduxActiveChat) {
+      setSelectedChat(reduxActiveChat);
+      setShowMobileList(false);
+    }
+  }, [reduxActiveChat]);
 
   const handleSelectChat = (chat) => {
+    dispatch(setActiveChat(chat));
     setSelectedChat(chat);
     setShowMobileList(false);
   };
 
   return (
-    <div className="flex h-[calc(100vh-80px)] overflow-hidden rounded-2xl border dark:border-gray-800 bg-white dark:bg-gray-900 shadow-xl m-4">
+    <div className="flex h-[calc(100vh-80px)] overflow-hidden rounded-2xl border bg-surface shadow-xl m-4" style={{ borderColor: 'var(--status-border)' }}>
+
       {/* Sidebar - hidden on mobile when a chat is selected */}
       <div className={`${showMobileList ? "flex" : "hidden"} md:flex w-full md:w-[350px] lg:w-[400px] flex-col h-full`}>
         <ChatList activeChatId={selectedChat?._id} onSelectChat={handleSelectChat} />
