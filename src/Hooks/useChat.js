@@ -58,6 +58,11 @@ export const useChat = (chatId) => {
 
     const handleNewMessage = (message) => {
       console.log("📥 [Chat] New Message Event Received:", message);
+
+      // New message from someone else → badge count needs updating
+      if (message.sent_by?._id !== userId && message.sent_by !== userId) {
+        dispatch(conversationsAPI.util.invalidateTags(["UnreadChats"]));
+      }
       
       // 1. Update the Chat List (Always)
       dispatch(
