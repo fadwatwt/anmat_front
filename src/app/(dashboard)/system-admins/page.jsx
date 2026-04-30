@@ -14,7 +14,8 @@ import Alert from "@/components/Alerts/Alert";
 import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import { useUnassignRoleMutation } from "@/redux/roles/adminRolesAPI";
-import { RiAddCircleLine, RiCloseLine } from "@remixicon/react";
+import { RiAddCircleLine, RiCloseLine, RiNotification4Line } from "@remixicon/react";
+import SendAdminNotificationModal from "@/components/Modal/SendAdminNotificationModal";
 
 function SystemAdminsPage() {
     const { data: adminsResponse, isLoading } = useGetAdminsQuery();
@@ -28,6 +29,8 @@ function SystemAdminsPage() {
     const [apiResponse, setApiResponse] = useState({ status: "", message: "" });
     const [selectedAdmin, setSelectedAdmin] = useState(null);
     const [selectedRole, setSelectedRole] = useState(null);
+    const [isNotifyModalOpen, setIsNotifyModalOpen] = useState(false);
+    const [notifyTarget, setNotifyTarget] = useState(null);
     const [unassignRole] = useUnassignRoleMutation();
 
     const headers = [
@@ -122,6 +125,12 @@ function SystemAdminsPage() {
                     setIsAssignRoleModalOpen(true);
                 },
             },
+            {
+                text: t("Send Notification"), icon: <RiNotification4Line className="text-primary-400" />, onClick: () => {
+                    setNotifyTarget(adminsData[actualRowIndex]);
+                    setIsNotifyModalOpen(true);
+                },
+            },
             // {
             //     text: "View", icon: <RiEyeLine className="text-primary-400" />, onClick: () => {
             //         console.log(actualRowIndex)
@@ -191,6 +200,13 @@ function SystemAdminsPage() {
                 onClose={() => setIsResponseOpen(false)}
                 status={apiResponse.status}
                 message={apiResponse.message}
+            />
+
+            <SendAdminNotificationModal
+                isOpen={isNotifyModalOpen}
+                onClose={() => { setIsNotifyModalOpen(false); setNotifyTarget(null); }}
+                preSelectedUser={notifyTarget}
+                sourceType="admin"
             />
         </Page>
     );

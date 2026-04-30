@@ -23,6 +23,13 @@ export const notificationsApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["Notifications"],
         }),
+        sendAdminNotification: builder.mutation({
+            query: (body) => ({
+                url: `/api/notifications/admin/send`,
+                method: "POST",
+                body,
+            }),
+        }),
     }),
 });
 
@@ -30,4 +37,5 @@ export const {
     useGetNotificationsQuery,
     useMarkNotificationAsReadMutation,
     useMarkAllNotificationsAsReadMutation,
+    useSendAdminNotificationMutation,
 } = notificationsApi;

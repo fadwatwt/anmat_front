@@ -2,8 +2,7 @@
 
 import {
   RiCheckboxCircleLine, RiCloseCircleLine, RiEditLine,
-  RiEye2Line,
-  RiFlashlightLine,
+  RiEye2Line, RiFlashlightLine, RiNotification4Line,
 } from "@remixicon/react";
 import { useTranslation } from "react-i18next";
 import Table from "@/components/Tables/Table";
@@ -18,6 +17,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FiEye } from "react-icons/fi";
 import { format } from "date-fns";
+import SendAdminNotificationModal from "@/components/Modal/SendAdminNotificationModal";
 
 const headers = [
   { label: "Subscriber", width: "300px" },
@@ -38,6 +38,8 @@ function Subscribers() {
 
   const [isDeleteSubAert, setIsDeleteSubAert] = useState(false);
   const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
+  const [isNotifyModalOpen, setIsNotifyModalOpen] = useState(false);
+  const [notifyTarget, setNotifyTarget] = useState(null);
 
   const handleDeleteSubAert = () => {
     setIsDeleteSubAert(!isDeleteSubAert);
@@ -170,7 +172,13 @@ function Subscribers() {
           handleDeleteSubAert()
           console.log("Delete", subscriber._id)
         },
-      }
+      },
+      {
+        text: t("Send Notification"), icon: <RiNotification4Line className="text-primary-400" />, onClick: () => {
+          setNotifyTarget(subscriber);
+          setIsNotifyModalOpen(true);
+        },
+      },
     ]
     return (
       <StatusActions states={statesActions} className={`${i18n.language === "ar" ? "left-0" : "right-0"
@@ -216,6 +224,13 @@ function Subscribers() {
         status={apiResponse.status}
         message={apiResponse.message}
         onClose={() => setApiResponse({ ...apiResponse, isOpen: false })}
+      />
+
+      <SendAdminNotificationModal
+        isOpen={isNotifyModalOpen}
+        onClose={() => { setIsNotifyModalOpen(false); setNotifyTarget(null); }}
+        preSelectedUser={notifyTarget}
+        sourceType="subscriber"
       />
     </Page>
   );
