@@ -10,14 +10,9 @@ const ConversationPage = () => {
   return (
     <Page
       isTitle={false}
-      className="flex w-full h-screen bg-main p-0"
+      className="w-full h-full p-0 m-0 overflow-hidden"
     >
-      <div className="flex-1 flex flex-col h-full overflow-hidden">
-        <div className="px-6 py-4 flex items-center justify-between bg-surface border-b border-status-border">
-          <h1 className="text-2xl font-bold text-page-title">
-            {t("Conversations")}
-          </h1>
-        </div>
+      <div className="w-full h-full overflow-hidden bg-main">
         <ChatContainer />
       </div>
     </Page>

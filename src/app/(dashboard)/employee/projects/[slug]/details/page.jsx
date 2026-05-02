@@ -7,10 +7,12 @@ import TaskComments from "@/app/(dashboard)/projects/[slug]/_components/TaskComm
 import CommentInput from "@/components/CommentInput.jsx";
 import { useTranslation } from "react-i18next";
 import InfoCard from "@/app/(dashboard)/_components/InfoCard.jsx";
+import AttachmentsList from "@/app/(dashboard)/projects/[slug]/_components/AttachmentsList.jsx";
+import ActivityLogs from "@/components/ActivityLogs.jsx";
 import { useState, useEffect } from "react";
 import { filterAndSortTasks } from "@/functions/functionsForTasks.js";
 import { useParams } from "next/navigation";
-import { useGetEmployeeProjectDetailsQuery, useAddEmployeeProjectCommentMutation, useDeleteEmployeeProjectCommentMutation, useEditEmployeeProjectCommentMutation } from "@/redux/projects/employeeProjectsApi.js";
+import { useGetEmployeeProjectDetailsQuery, useAddEmployeeProjectCommentMutation, useDeleteEmployeeProjectCommentMutation, useEditEmployeeProjectCommentMutation, useUploadEmployeeProjectAttachmentMutation, useDeleteEmployeeProjectAttachmentMutation, useEvaluateEmployeeProjectMutation } from "@/redux/projects/employeeProjectsApi.js";
 import { useUpdateTaskStatusMutation } from "@/redux/tasks/employeeTasksApi.js";
 import useAuthStore from '@/store/authStore.js';
 import { useSelector } from 'react-redux';
@@ -29,6 +31,9 @@ function EmployeeProjectDetailsPage() {
     const [addComment, { isLoading: isAddingComment }] = useAddEmployeeProjectCommentMutation();
     const [deleteComment] = useDeleteEmployeeProjectCommentMutation();
     const [editComment] = useEditEmployeeProjectCommentMutation();
+    const [uploadAttachment, { isLoading: isUploadingAttachment }] = useUploadEmployeeProjectAttachmentMutation();
+    const [deleteAttachment] = useDeleteEmployeeProjectAttachmentMutation();
+    const [evaluateProject] = useEvaluateEmployeeProjectMutation();
     const [updateTaskStatus] = useUpdateTaskStatusMutation();
 
     const [loadingComments, setLoadingComments] = useState({});
@@ -52,7 +57,7 @@ function EmployeeProjectDetailsPage() {
             }] : []),
             assignedDate: task.start_date,
             dueDate: task.due_date,
-            rate: task.ratings?.length ? (task.ratings.reduce((acc, r) => acc + r.value, 0) / task.ratings.length) : 0
+            rate: task.rate || 0
         };
     }) || [];
 
@@ -130,6 +135,24 @@ function EmployeeProjectDetailsPage() {
         }
     };
 
+    const handleUploadAttachment = async (file) => {
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            await uploadAttachment({ projectId: project._id, formData }).unwrap();
+        } catch (error) {
+            console.error("Failed to upload attachment: ", error);
+        }
+    };
+
+    const handleDeleteAttachment = async (attachmentId) => {
+        try {
+            await deleteAttachment({ projectId: project._id, attachmentId }).unwrap();
+        } catch (error) {
+            console.error("Failed to delete attachment: ", error);
+        }
+    };
+
     const handleAddComment = async (text) => {
         try {
             await addComment({ projectId: project._id, text }).unwrap();
@@ -160,13 +183,42 @@ function EmployeeProjectDetailsPage() {
         }
     };
 
+    const handleEvaluateProject = async (evaluationData) => {
+        try {
+            await evaluateProject({ projectId: project._id, data: evaluationData }).unwrap();
+            setAlertInfo({
+                isOpen: true,
+                status: 'success',
+                message: t('Project evaluated successfully'),
+            });
+        } catch (error) {
+            console.error("Failed to evaluate project: ", error);
+            setAlertInfo({
+                isOpen: true,
+                status: 'error',
+                message: error?.data?.message || t('Failed to evaluate project'),
+            });
+        }
+    };
+
     const comments = project?.comments || [];
+    const attachments = project?.attachments || [];
+    const activityLogs = []; // Placeholder for activity logs
+
+    const canDeleteAttachments = authUserType === "Subscriber" || user?.permissions?.includes('manage_attachments');
+    const canEvaluate = authUserType === "Subscriber" || user?.permissions?.includes('evaluate');
 
     return (
         <Page title={t("Project Details")} isBreadcrumbs={true} breadcrumbs={breadcrumbItems}>
             <div className={"w-full flex items-start  gap-8 flex-col md:flex-row"}>
                 <div className={"flex flex-col gap-6 md:w-[60%] w-full "}>
-                    <InfoCard type={"project"} data={projectInfoData} isEditBtn={false} />
+                    <InfoCard 
+                        type={"project"} 
+                        data={projectInfoData} 
+                        isEditBtn={false} 
+                        rate={project?.overall_rating || 0}
+                        onRate={canEvaluate ? handleEvaluateProject : null}
+                    />
                     <div className={"p-4 bg-surface rounded-2xl w-full flex flex-col gap-3"}>
                         <div className={"title-header pb-3 w-full flex items-center justify-between "}>
                             <p className={"text-lg text-table-title"}>{t("Project Tasks")} </p>
@@ -198,6 +250,13 @@ function EmployeeProjectDetailsPage() {
                 </div>
                 <div className={"flex-1 flex flex-col gap-6"}>
                     <ProjectMembers members={projectMembers} />
+                    <AttachmentsList 
+                        attachments={attachments} 
+                        onUpload={handleUploadAttachment} 
+                        onDelete={canDeleteAttachments ? handleDeleteAttachment : null}
+                        isUploading={isUploadingAttachment} 
+                    />
+                    <ActivityLogs activityLogs={activityLogs} className={"h-72"} />
                 </div>
             </div>
             {alertInfo.isOpen && (

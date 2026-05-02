@@ -57,6 +57,21 @@ export const subscriberProjectsApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: (result, error, { projectId }) => ["Projects", { type: "Projects", id: projectId }],
         }),
+        uploadSubscriberProjectAttachment: builder.mutation({
+            query: ({ projectId, formData }) => ({
+                url: `api/subscriber/organization/projects/${projectId}/upload`,
+                method: "POST",
+                body: formData,
+            }),
+            invalidatesTags: (result, error, { projectId }) => ["Projects", { type: "Projects", id: projectId }],
+        }),
+        deleteSubscriberProjectAttachment: builder.mutation({
+            query: ({ projectId, attachmentId }) => ({
+                url: `api/subscriber/organization/projects/${projectId}/upload/${attachmentId}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: (result, error, { projectId }) => ["Projects", { type: "Projects", id: projectId }],
+        }),
     }),
 });
 
@@ -65,7 +80,10 @@ export const {
     useGetSubscriberProjectDetailsQuery,
     useCreateSubscriberProjectMutation,
     useUpdateSubscriberProjectMutation,
+    useDeleteSubscriberProjectMutation,
     useAddSubscriberProjectCommentMutation,
     useEditSubscriberProjectCommentMutation,
     useDeleteSubscriberProjectCommentMutation,
+    useUploadSubscriberProjectAttachmentMutation,
+    useDeleteSubscriberProjectAttachmentMutation,
 } = subscriberProjectsApi;

@@ -12,8 +12,9 @@ import { useTranslation } from "react-i18next";
 import { translateDate } from "@/functions/Days.js";
 import ActionsBtns from "@/components/ActionsBtns.jsx";
 import useDropdown from "@/Hooks/useDropdown.js";
+import StarRating from "@/components/StarRating.jsx";
 
-function InfoCard({ type, data, handelEditAction }) {
+function InfoCard({ type, data, handelEditAction, rate, onRate }) {
     const { t } = useTranslation();
     const [dropdownOpen, setDropdownOpen] = useDropdown();
 
@@ -48,9 +49,12 @@ function InfoCard({ type, data, handelEditAction }) {
     return (
         <div className={"flex flex-col p-4 w-full bg-surface rounded-2xl gap-3"}>
             <div className={"title-header re w-full flex justify-between items-center"}>
-                <div className={"flex gap-2"}>
+                <div className={"flex gap-2 items-center"}>
                     <p className={"text-xl text-table-title"}>{name}</p>
                     <Status type={status} title={status} />
+                    {rate !== undefined && (
+                        <StarRating rating={rate} onClickRate={onRate} />
+                    )}
                 </div>
                 <div className="relative cursor-pointer flex-1 flex justify-end dropdown-container" onClick={handleDropdownToggle}>
                     <PiDotsThreeVerticalBold />
@@ -116,7 +120,9 @@ TaskOrStage.propTypes = {
 InfoCard.propTypes = {
     type: PropTypes.oneOf(["project", "task"]).isRequired,
     data: PropTypes.object,
-    handelEditAction: PropTypes.func
+    handelEditAction: PropTypes.func,
+    rate: PropTypes.number,
+    onRate: PropTypes.func
 };
 
 IconWithTitleAndNumber.propTypes = {

@@ -4,11 +4,15 @@ import PropTypes from "prop-types";
 import StarRating from "@/components/StarRating.jsx";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert.jsx";
 import { useState, useMemo } from "react";
+import { useSelector } from "react-redux";
+import { selectUser } from "@/redux/auth/authSlice";
 import { useTranslation } from "react-i18next";
 import { translateDate } from "@/functions/Days.js";
 import { RiArrowDownSLine, RiFlag2Line, RiStackLine } from "react-icons/ri";
 import { FaStar } from "react-icons/fa";
-import { useEvaluateSubscriberTaskStageMutation } from "@/redux/tasks/subscriberTasksApi";
+import { useEvaluateSubscriberTaskStageMutation, useEvaluateSubscriberTaskMutation, useUploadSubscriberTaskAttachmentMutation, useDeleteSubscriberTaskAttachmentMutation } from "@/redux/tasks/subscriberTasksApi";
+import { useUploadEmployeeTaskAttachmentMutation, useDeleteEmployeeTaskAttachmentMutation } from "@/redux/tasks/employeeTasksApi";
+import AttachmentsList from "./AttachmentsList";
 
 // Evaluation Modal components
 import Modal from "@/components/Modal/Modal";
@@ -52,7 +56,7 @@ function StageRatingModal({ stage, task, onClose, onSubmit }) {
         <Modal
             isOpen={!!stage}
             onClose={onClose}
-            title={`${t("Evaluate Stage")}: ${stage.name}`}
+            title={`${task.stages?.length > 0 ? t("Evaluate Stage") : t("Evaluate Task")}: ${stage.name || stage.title}`}
             isBtns={true}
             btnApplyTitle={t("Submit Evaluation")}
             onClick={handleSubmit}
@@ -114,7 +118,44 @@ function TasksList({ tasks = [], isAssignedDate = false, isEmployeeView = false,
     const [alertConfig, setAlertConfig] = useState({ isOpen: false, status: "", message: "" });
 
     const { t } = useTranslation()
+    const user = useSelector(selectUser);
+    const canDeleteAttachments = user?.type === "Subscriber" || user?.permissions?.includes('manage_attachments');
+    const canEvaluate = user?.type === "Subscriber" || user?.permissions?.includes('evaluate');
+
     const [evaluateStage] = useEvaluateSubscriberTaskStageMutation();
+    const [evaluateTask] = useEvaluateSubscriberTaskMutation();
+    const [uploadSubscriberTaskAttachment, { isLoading: isSubUploading }] = useUploadSubscriberTaskAttachmentMutation();
+    const [uploadEmployeeTaskAttachment, { isLoading: isEmpUploading }] = useUploadEmployeeTaskAttachmentMutation();
+    const [deleteSubscriberTaskAttachment] = useDeleteSubscriberTaskAttachmentMutation();
+    const [deleteEmployeeTaskAttachment] = useDeleteEmployeeTaskAttachmentMutation();
+
+    const isUploading = isSubUploading || isEmpUploading;
+
+    const handleTaskUploadAttachment = async (taskId, file) => {
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            if (!isEmployeeView) {
+                await uploadSubscriberTaskAttachment({ taskId, formData }).unwrap();
+            } else {
+                await uploadEmployeeTaskAttachment({ taskId, formData }).unwrap();
+            }
+        } catch (error) {
+            console.error("Failed to upload task attachment: ", error);
+        }
+    };
+
+    const handleTaskDeleteAttachment = async (taskId, attachmentId) => {
+        try {
+            if (!isEmployeeView) {
+                await deleteSubscriberTaskAttachment({ taskId, attachmentId }).unwrap();
+            } else {
+                await deleteEmployeeTaskAttachment({ taskId, attachmentId }).unwrap();
+            }
+        } catch (error) {
+            console.error("Failed to delete task attachment: ", error);
+        }
+    };
 
     const statusOptions = [
         { id: "open", name: "Open" },
@@ -153,10 +194,15 @@ function TasksList({ tasks = [], isAssignedDate = false, isEmployeeView = false,
         try {
             if (onEvaluateStage) {
                 await onEvaluateStage(stageId, evaluationData);
-            } else {
+            } else if (selectedTask.stages?.length > 0) {
                 await evaluateStage({
                     taskId: taskId,
                     stageId: stageId,
+                    data: evaluationData
+                }).unwrap();
+            } else {
+                await evaluateTask({
+                    taskId: taskId,
                     data: evaluationData
                 }).unwrap();
             }
@@ -164,7 +210,7 @@ function TasksList({ tasks = [], isAssignedDate = false, isEmployeeView = false,
             setAlertConfig({
                 isOpen: true,
                 status: "success",
-                message: t("Stage evaluated successfully")
+                message: selectedTask.stages?.length > 0 ? t("Stage evaluated successfully") : t("Task evaluated successfully")
             });
             setSelectedTask(null);
         } catch (err) {
@@ -186,7 +232,7 @@ function TasksList({ tasks = [], isAssignedDate = false, isEmployeeView = false,
     }
 
     return (
-        <div className={"max-h-[500px] flex flex-col w-full overflow-hidden overflow-y-auto custom-scroll"}>
+        <div className={"max-h-[600px] flex flex-col w-full overflow-y-auto custom-scroll pb-32"}>
             {
                 tasks.map((task, index) => (
                     <div key={task._id || index} className={"p-3 flex flex-col gap-3 hover:bg-status-bg transition-colors border-b border-status-border last:border-0"}>
@@ -194,42 +240,57 @@ function TasksList({ tasks = [], isAssignedDate = false, isEmployeeView = false,
                             <div className="flex flex-col gap-1">
                                 <p className={"text-sm font-semibold text-cell-primary"}>{task.name || task.title}</p>
                                 <div className={"delivery flex gap-1 items-center relative"}>
-                                    {isEmployeeView ? (
-                                        <div className="relative">
-                                            <button
-                                                onClick={() => setActiveStatusId(activeStatusId === task._id ? null : task._id)}
-                                                className="flex items-center gap-1 hover:opacity-80 transition-opacity"
-                                            >
-                                                <StateOfTask type={task.delivery || task.status} timeLate={task.timeLate} />
-                                                <RiArrowDownSLine className="text-soft-400" size={14} />
-                                            </button>
+                                    {(() => {
+                                        const userId = user?._id?.toString();
+                                        const assigneeId = (task.assignee_id?._id || task.assignee_id || task.assignee?._id)?.toString();
 
-                                            {activeStatusId === task._id && (
-                                                <>
-                                                    <div
-                                                        className="fixed inset-0 z-10"
-                                                        onClick={() => setActiveStatusId(null)}
-                                                    />
-                                                    <div className="absolute top-full left-0 mt-1 w-32 bg-surface border border-status-border rounded-lg shadow-xl z-20 py-1">
-                                                        {statusOptions.map((opt) => (
-                                                            <button
-                                                                key={opt.id}
-                                                                onClick={() => handleStatusChange(task._id, opt.id)}
-                                                                className={`w-full text-left px-3 py-1.5 text-xs hover:bg-status-bg transition-colors ${(task.delivery || task.status) === opt.id ? 'text-primary-500 font-semibold' : 'text-cell-primary'
-                                                                    }`}
-                                                            >
-                                                                {t(opt.name)}
-                                                            </button>
-                                                        ))}
-                                                    </div>
-                                                </>
-                                            )}
-                                        </div>
-                                    ) : (
-                                        <StateOfTask type={task.delivery || task.status} timeLate={task.timeLate} />
-                                    )}
+                                        const isAssignee = !!userId && !!assigneeId && userId === assigneeId;
+                                        const isSubscriber = user?.type === "Subscriber";
+                                        const hasPermission = Array.isArray(user?.permissions) && (
+                                            user.permissions.includes('manage_tasks') ||
+                                            user.permissions.includes('edit_tasks') ||
+                                            user.permissions.includes('update_tasks')
+                                        );
+
+                                        const canChangeStatus = isEmployeeView && (isAssignee || isSubscriber || hasPermission);
+
+                                        return (
+                                            <div className="relative">
+                                                <button
+                                                    onClick={canChangeStatus ? () => setActiveStatusId(activeStatusId === task._id ? null : task._id) : undefined}
+                                                    className={`flex items-center gap-1 transition-all ${canChangeStatus ? 'hover:opacity-80 cursor-pointer' : 'opacity-50 cursor-not-allowed filter grayscale'}`}
+                                                    disabled={!canChangeStatus}
+                                                    title={!canChangeStatus ? t('Only assigned employee or subscriber can change status') : ''}
+                                                >
+                                                    <StateOfTask type={task.delivery || task.status} timeLate={task.timeLate} />
+                                                    <RiArrowDownSLine className="text-soft-400" size={14} />
+                                                </button>
+
+                                                {canChangeStatus && activeStatusId === task._id && (
+                                                    <>
+                                                        <div
+                                                            className="fixed inset-0 z-10"
+                                                            onClick={() => setActiveStatusId(null)}
+                                                        />
+                                                        <div className="absolute top-full left-0 mt-1 w-32 bg-surface border border-status-border rounded-lg shadow-xl z-50 py-1">
+                                                            {statusOptions.map((opt) => (
+                                                                <button
+                                                                    key={opt.id}
+                                                                    onClick={() => handleStatusChange(task._id, opt.id)}
+                                                                    className={`w-full text-left px-3 py-1.5 text-xs hover:bg-status-bg transition-colors ${(task.delivery || task.status) === opt.id ? 'text-primary-500 font-semibold' : 'text-cell-primary'
+                                                                        }`}
+                                                                >
+                                                                    {t(opt.name)}
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    </>
+                                                )}
+                                            </div>
+                                        );
+                                    })()}
                                     {task.priority && (
-                                        <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium uppercase ${task.priority === 'high' ? 'bg-red-100 text-red-700' :
+                                        <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium capitalize ${task.priority === 'high' || task.priority === 'urgent' ? 'bg-red-100 text-red-700' :
                                             task.priority === 'medium' ? 'bg-amber-100 text-amber-700' :
                                                 'bg-blue-100 text-blue-700'
                                             }`}>
@@ -239,7 +300,7 @@ function TasksList({ tasks = [], isAssignedDate = false, isEmployeeView = false,
                                 </div>
                             </div>
                             <StarRating
-                                onClickRate={() => setSelectedTask(task.stages?.length > 0 ? task : { ...task, activeStage: task })}
+                                onClickRate={canEvaluate ? () => setSelectedTask(task.stages?.length > 0 ? task : { ...task, activeStage: task }) : null}
                                 rating={task.rate}
                             />
                         </div>
@@ -251,29 +312,27 @@ function TasksList({ tasks = [], isAssignedDate = false, isEmployeeView = false,
                             </div>
 
                             <div className="flex gap-4 items-center">
-                                {task.stages?.length > 0 && (
-                                    <button
-                                        onClick={() => setExpandedTaskId(expandedTaskId === task._id ? null : task._id)}
-                                        className="flex items-center gap-1.5 text-xs font-medium text-primary-base hover:opacity-80 transition-opacity"
-                                    >
-                                        <RiStackLine size={14} />
-                                        <span>{task.stages.length} {t("Stages")}</span>
-                                        <RiArrowDownSLine className={`transition-transform ${expandedTaskId === task._id ? 'rotate-180' : ''}`} size={14} />
-                                    </button>
-                                )}
+                                <button
+                                    onClick={() => setExpandedTaskId(expandedTaskId === task._id ? null : task._id)}
+                                    className="flex items-center gap-1.5 text-xs font-medium text-primary-base hover:opacity-80 transition-opacity"
+                                >
+                                    <RiStackLine size={14} />
+                                    <span>{task.stages?.length || 0} {t("Stages")}</span>
+                                    <RiArrowDownSLine className={`transition-transform ${expandedTaskId === task._id ? 'rotate-180' : ''}`} size={14} />
+                                </button>
 
                                 {
                                     isAssignedDate && (task.assignedDate || task.dueDate) &&
                                     <div className={"flex gap-4 items-center"}>
                                         {task.assignedDate && (
                                             <div className="flex flex-col">
-                                                <span className={"text-cell-secondary text-[10px] uppercase tracking-wider"}>{t("Assigned")}:</span>
+                                                <span className={"text-cell-secondary text-[10px] capitalize"}>{t("Assigned")}:</span>
                                                 <span className="text-xs text-cell-primary">{translateDate(task.assignedDate)}</span>
                                             </div>
                                         )}
                                         {task.dueDate && (
                                             <div className="flex flex-col">
-                                                <span className={"text-cell-secondary text-[10px] uppercase tracking-wider"}>{t("Due")}:</span>
+                                                <span className={"text-cell-secondary text-[10px] capitalize"}>{t("Due")}:</span>
                                                 <span className="text-xs text-cell-primary">{translateDate(task.dueDate)}</span>
                                             </div>
                                         )}
@@ -282,26 +341,39 @@ function TasksList({ tasks = [], isAssignedDate = false, isEmployeeView = false,
                             </div>
                         </div>
 
-                        {expandedTaskId === task._id && task.stages?.length > 0 && (
-                            <div className="mt-2 pl-4 border-l-2 border-primary-100 dark:border-primary-500/20 flex flex-col gap-2 py-2">
-                                {task.stages.map((stage, sIdx) => (
-                                    <div key={stage._id || sIdx} className="flex items-center justify-between group">
-                                        <div className="flex items-center gap-2">
-                                            <RiFlag2Line size={12} className={stage.status === 'completed' ? 'text-green-500' : 'text-soft-400'} />
-                                            <span className="text-xs text-cell-primary font-medium">{stage.name}</span>
-                                            <span className={`text-[9px] px-1 rounded uppercase font-bold ${stage.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
-                                                }`}>
-                                                {t(stage.status)}
-                                            </span>
-                                        </div>
-                                        <div className="flex items-center gap-3">
-                                            <StarRating
-                                                rating={stage.rate}
-                                                onClickRate={() => setSelectedTask({ ...task, activeStage: stage })}
-                                            />
-                                        </div>
+                        {expandedTaskId === task._id && (
+                            <div className="mt-2 pl-4 border-l-2 border-primary-100 dark:border-primary-500/20 flex flex-col gap-4 py-2">
+                                {task.stages?.length > 0 && (
+                                    <div className="flex flex-col gap-2">
+                                        {task.stages.map((stage, sIdx) => (
+                                            <div key={stage._id || sIdx} className="flex items-center justify-between group">
+                                                <div className="flex items-center gap-2">
+                                                    <RiFlag2Line size={12} className={stage.status === 'completed' ? 'text-green-500' : 'text-soft-400'} />
+                                                    <span className="text-xs text-cell-primary font-medium">{stage.name}</span>
+                                                    <span className={`text-[9px] px-1 rounded capitalize font-bold ${stage.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
+                                                        }`}>
+                                                        {t(stage.status)}
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center gap-3">
+                                                    <StarRating
+                                                        rating={stage.rate}
+                                                        onClickRate={canEvaluate ? () => setSelectedTask({ ...task, activeStage: stage }) : null}
+                                                    />
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
-                                ))}
+                                )}
+
+                                <div className="mt-2">
+                                    <AttachmentsList
+                                        attachments={task.attachments || []}
+                                        onUpload={(file) => handleTaskUploadAttachment(task._id, file)}
+                                        onDelete={canDeleteAttachments ? (attachmentId) => handleTaskDeleteAttachment(task._id, attachmentId) : null}
+                                        isUploading={isUploading}
+                                    />
+                                </div>
                             </div>
                         )}
                     </div>

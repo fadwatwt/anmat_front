@@ -8,10 +8,12 @@ import { selectUserId } from "@/redux/auth/authSlice";
 
 const ChatList = ({ activeChatId, onSelectChat }) => {
   const userId = useSelector(selectUserId);
-  const { data: chatsData, isLoading } = useGetChatsQuery(undefined, {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showArchived, setShowArchived] = useState(false);
+
+  const { data: chatsData, isLoading } = useGetChatsQuery({ is_archived: showArchived }, {
     refetchOnMountOrArgChange: true,
   });
-  const [searchQuery, setSearchQuery] = useState("");
 
   const chats = chatsData?.data || [];
 
@@ -37,9 +39,20 @@ const ChatList = ({ activeChatId, onSelectChat }) => {
       <div className="p-4 border-b border-status-border">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold text-cell-primary">Messages</h2>
-          <button className="p-2 hover:bg-weak-100 rounded-full transition-colors">
-            <MoreVertical size={20} className="text-sub-500" />
-          </button>
+          <div className="flex gap-1 bg-weak-50 p-1 rounded-lg">
+            <button 
+              onClick={() => setShowArchived(false)}
+              className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${!showArchived ? 'bg-white shadow-sm text-primary' : 'text-sub-500 hover:text-cell-primary'}`}
+            >
+              Active
+            </button>
+            <button 
+              onClick={() => setShowArchived(true)}
+              className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${showArchived ? 'bg-white shadow-sm text-primary' : 'text-sub-500 hover:text-cell-primary'}`}
+            >
+              Archived
+            </button>
+          </div>
         </div>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-sub-500" size={18} />
@@ -94,14 +107,14 @@ const ChatList = ({ activeChatId, onSelectChat }) => {
                   <h3 className="font-semibold truncate text-cell-primary">
                     {chat.title || chat.participants_ids?.find(p => p._id !== userId)?.name || "Direct Chat"}
                   </h3>
-                  {chat.last_message && (
+                  {chat.lastMessage && (
                     <span className="text-[10px] whitespace-nowrap text-sub-500">
-                      {formatDistanceToNow(new Date(chat.last_message.created_at), { addSuffix: false })}
+                      {formatDistanceToNow(new Date(chat.lastMessage.created_at), { addSuffix: false })}
                     </span>
                   )}
                 </div>
                 <p className="text-sm truncate text-sub-500">
-                  {chat.last_message?.content || "No messages yet"}
+                  {chat.lastMessage?.content || "No messages yet"}
                 </p>
               </div>
               {chat.unreadCount > 0 && (

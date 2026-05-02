@@ -52,7 +52,7 @@ function StateOfTask({type,timeLate}) {
         default:
             return (
                 <div className={"flex items-center rounded-full py-0.5 px-2 gap-1 bg-slate-50 dark:bg-slate-900/20"}>
-                    <p className={"text-slate-700 dark:text-slate-400 text-[11px] font-medium uppercase"}>{t(type)}</p>
+                    <p className={"text-slate-700 dark:text-slate-400 text-[11px] font-medium capitalize"}>{t(type)}</p>
                 </div>
             );
     }

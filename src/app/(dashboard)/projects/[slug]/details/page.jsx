@@ -16,8 +16,10 @@ import { useState, useEffect } from "react";
 import { filterAndSortTasks } from "@/functions/functionsForTasks.js";
 import EditProjectModal from "@/app/(dashboard)/projects/_modal/EditProjectModal.jsx";
 import { useParams } from "next/navigation";
-import { useGetSubscriberProjectDetailsQuery, useAddSubscriberProjectCommentMutation, useDeleteSubscriberProjectCommentMutation, useEditSubscriberProjectCommentMutation } from "@/redux/projects/subscriberProjectsApi.js";
-import { useGetEmployeeProjectDetailsQuery, useAddEmployeeProjectCommentMutation, useDeleteEmployeeProjectCommentMutation, useEditEmployeeProjectCommentMutation } from "@/redux/projects/employeeProjectsApi.js";
+import { useGetSubscriberProjectDetailsQuery, useAddSubscriberProjectCommentMutation, useDeleteSubscriberProjectCommentMutation, useEditSubscriberProjectCommentMutation, useUploadSubscriberProjectAttachmentMutation, useDeleteSubscriberProjectAttachmentMutation } from "@/redux/projects/subscriberProjectsApi.js";
+import { useGetEmployeeProjectDetailsQuery, useAddEmployeeProjectCommentMutation, useDeleteEmployeeProjectCommentMutation, useEditEmployeeProjectCommentMutation, useUploadEmployeeProjectAttachmentMutation, useDeleteEmployeeProjectAttachmentMutation } from "@/redux/projects/employeeProjectsApi.js";
+import { useUpdateSubscriberTaskMutation } from "@/redux/tasks/subscriberTasksApi.js";
+import { useUpdateTaskStatusMutation } from "@/redux/tasks/employeeTasksApi.js";
 import useAuthStore from '@/store/authStore.js';
 import { useSelector } from 'react-redux';
 import { selectUser } from '@/redux/auth/authSlice.js';
@@ -38,9 +40,55 @@ function ProjectDetailsPage() {
     const [deleteEmployeeComment] = useDeleteEmployeeProjectCommentMutation();
     const [editSubscriberComment] = useEditSubscriberProjectCommentMutation();
     const [editEmployeeComment] = useEditEmployeeProjectCommentMutation();
+    const [uploadSubscriberAttachment, { isLoading: isSubUploading }] = useUploadSubscriberProjectAttachmentMutation();
+    const [uploadEmployeeAttachment, { isLoading: isEmpUploading }] = useUploadEmployeeProjectAttachmentMutation();
+    const [deleteSubscriberAttachment] = useDeleteSubscriberProjectAttachmentMutation();
+    const [deleteEmployeeAttachment] = useDeleteEmployeeProjectAttachmentMutation();
+
+    const [updateSubscriberTaskStatus] = useUpdateSubscriberTaskMutation();
+    const [updateEmployeeTaskStatus] = useUpdateTaskStatusMutation();
+
+    const handleStatusChange = async (taskId, newStatus) => {
+        try {
+            if (authUserType === "Subscriber") {
+                await updateSubscriberTaskStatus({ id: taskId, status: newStatus }).unwrap();
+            } else {
+                await updateEmployeeTaskStatus({ id: taskId, status: newStatus }).unwrap();
+            }
+        } catch (error) {
+            console.error("Failed to update task status: ", error);
+        }
+    };
 
     const [loadingComments, setLoadingComments] = useState({});
     const isAddingComment = isSubAdding || isEmpAdding;
+    const isUploadingAttachment = isSubUploading || isEmpUploading;
+
+    const handleUploadAttachment = async (file) => {
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            if (authUserType === "Subscriber") {
+                await uploadSubscriberAttachment({ projectId: project._id, formData }).unwrap();
+            } else {
+                await uploadEmployeeAttachment({ projectId: project._id, formData }).unwrap();
+            }
+        } catch (error) {
+            console.error("Failed to upload attachment: ", error);
+        }
+    };
+
+    const handleDeleteAttachment = async (attachmentId) => {
+        try {
+            if (authUserType === "Subscriber") {
+                await deleteSubscriberAttachment({ projectId: project._id, attachmentId }).unwrap();
+            } else {
+                await deleteEmployeeAttachment({ projectId: project._id, attachmentId }).unwrap();
+            }
+        } catch (error) {
+            console.error("Failed to delete attachment: ", error);
+        }
+    };
 
     const handleAddComment = async (text) => {
         try {
@@ -99,7 +147,7 @@ function ProjectDetailsPage() {
             }] : [],
             assignedDate: task.start_date,
             dueDate: task.due_date,
-            rate: task.ratings?.length ? (task.ratings.reduce((acc, r) => acc + r.value, 0) / task.ratings.length) : null
+            rate: task.rate || 0,
         };
     }) || [];
 
@@ -129,6 +177,24 @@ function ProjectDetailsPage() {
         department: project.department?.name || project.department_id?.name || null,
     };
 
+    const handleEvaluateProject = async (evaluationData) => {
+        try {
+            await updateProject({ id: project._id, data: evaluationData }).unwrap();
+            setAlertInfo({
+                isOpen: true,
+                status: 'success',
+                message: t('Project evaluated successfully'),
+            });
+        } catch (error) {
+            console.error("Failed to evaluate project: ", error);
+            setAlertInfo({
+                isOpen: true,
+                status: 'error',
+                message: error?.data?.message || t('Failed to evaluate project'),
+            });
+        }
+    };
+
     const projectMembers = project.assignees?.map(member => ({
         name: member.name,
         imageProfile: member.imageProfile || member.avatar,
@@ -140,13 +206,14 @@ function ProjectDetailsPage() {
 
     const comments = project?.comments || [];
 
-    const attachments = [
-        // Placeholder for attachments
-    ];
+    const attachments = project?.attachments || [];
 
     const activityLogs = [
         // Placeholder for activity logs
     ];
+
+    const canDeleteAttachments = authUserType === "Subscriber" || user?.permissions?.includes('manage_attachments');
+    const canEvaluate = authUserType === "Subscriber" || user?.permissions?.includes('evaluate');
 
     const filterOptions = [
         { id: "deadLine", name: "dead line" },
@@ -178,21 +245,32 @@ function ProjectDetailsPage() {
         <Page title={t("Project Details")} isBreadcrumbs={true} breadcrumbs={breadcrumbItems}>
             <div className={"w-full flex items-start  gap-8 flex-col md:flex-row"}>
                 <div className={"flex flex-col gap-6 md:w-[60%] w-full "}>
-                    <InfoCard type={"project"} data={projectInfoData} handelEditAction={handelEditModal} />
+                    <InfoCard 
+                        type={"project"} 
+                        data={projectInfoData} 
+                        handelEditAction={handelEditModal} 
+                        rate={project.overall_rating || 0}
+                        onRate={canEvaluate ? handleEvaluateProject : null}
+                    />
                     <div className={"p-4 bg-surface rounded-2xl w-full flex flex-col gap-3"}>
                         <div className={"title-header pb-3 w-full flex items-center justify-between "}>
                             <p className={"text-lg text-table-title"}>{t("Project Tasks")} </p>
                             <SelectWithoutLabel onChange={handelChangeFilterTask} options={filterOptions} title={"Filter by"} className={"w-[120px] h-[36px]"} />
                         </div>
-                        <TasksList tasks={filterTasks} isAssignedDate={true} />
+                        <TasksList 
+                            tasks={filterTasks} 
+                            isAssignedDate={true} 
+                            isEmployeeView={true} 
+                            onStatusChange={handleStatusChange} 
+                        />
                     </div>
                     {true && <div className={"bg-surface rounded-2xl w-full flex flex-col gap-3"}>
                         <div className={"p-4 flex flex-col gap-3"}>
                             <div className={"title-header w-full flex items-center justify-between"}>
                                 <p className={"text-lg text-table-title"}>{t("Comments")}</p>
                             </div>
-                            <TaskComments 
-                                comments={comments} 
+                            <TaskComments
+                                comments={comments}
                                 currentUserId={currentUserId}
                                 authUserType={authUserType}
                                 onDeleteComment={handleDeleteComment}
@@ -204,9 +282,14 @@ function ProjectDetailsPage() {
                     </div>}
                 </div>
                 <div className={"flex-1 flex flex-col gap-6"}>
-                    <ProjectMembers members={projectMembers} />
+                    {true && <ProjectMembers members={projectMembers} />}
                     {/* Hiding components not yet linked to backend data */}
-                    {true && <AttachmentsList attachments={attachments} />}
+                    {true && <AttachmentsList 
+                        attachments={attachments} 
+                        onUpload={handleUploadAttachment} 
+                        onDelete={canDeleteAttachments ? handleDeleteAttachment : null}
+                        isUploading={isUploadingAttachment} 
+                    />}
                     {true && <ActivityLogs activityLogs={activityLogs} className={"h-72"} />}
                     {false && <TimeLine />}
                 </div>

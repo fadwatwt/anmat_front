@@ -25,7 +25,7 @@ const ChatContainer = () => {
   };
 
   return (
-    <div className="flex h-[calc(100vh-80px)] overflow-hidden rounded-2xl border bg-surface shadow-xl m-4" style={{ borderColor: 'var(--status-border)' }}>
+    <div className="flex h-full overflow-hidden bg-surface" style={{ borderLeft: '1px solid var(--status-border)' }}>
 
       {/* Sidebar - hidden on mobile when a chat is selected */}
       <div className={`${showMobileList ? "flex" : "hidden"} md:flex w-full md:w-[350px] lg:w-[400px] flex-col h-full`}>

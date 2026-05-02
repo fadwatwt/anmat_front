@@ -59,24 +59,27 @@ export const useChat = (chatId) => {
     const handleNewMessage = (message) => {
       console.log("📥 [Chat] New Message Event Received:", message);
 
+      const msgChatId = message.chat_id?.toString() || message.chat_id;
+      const msgSenderId = message.sent_by?._id?.toString() || message.sent_by?.toString() || message.sent_by;
+      const currentUserIdStr = userId?.toString();
+
       // New message from someone else → badge count needs updating
-      if (message.sent_by?._id !== userId && message.sent_by !== userId) {
+      if (msgSenderId !== currentUserIdStr) {
         dispatch(conversationsAPI.util.invalidateTags(["UnreadChats"]));
       }
       
       // 1. Update the Chat List (Always)
       dispatch(
         conversationsAPI.util.updateQueryData("getChats", undefined, (draft) => {
-          // The backend returns { status, data: [] }
           const chats = draft?.data; 
           if (Array.isArray(chats)) {
-            const chatIndex = chats.findIndex((c) => c._id === message.chat_id);
+            const chatIndex = chats.findIndex((c) => c._id?.toString() === msgChatId);
             if (chatIndex !== -1) {
-              console.log("📝 [Chat] Updating existing chat in list:", message.chat_id);
+              console.log("📝 [Chat] Updating existing chat in list:", msgChatId);
               chats[chatIndex].last_message = message;
               
               // Increment unread count if it's not the active chat and not sent by me
-              if (message.chat_id !== chatId && message.sent_by !== userId) {
+              if (msgChatId !== chatId?.toString() && msgSenderId !== currentUserIdStr) {
                 chats[chatIndex].unreadCount = (chats[chatIndex].unreadCount || 0) + 1;
               }
 
@@ -92,14 +95,14 @@ export const useChat = (chatId) => {
       );
 
       // 2. Update Messages Cache (Only if it's the active chat)
-      if (chatId && message.chat_id === chatId) {
+      if (chatId && msgChatId === chatId.toString()) {
         console.log("💬 [Chat] Updating active chat messages:", chatId);
         dispatch(
           conversationsAPI.util.updateQueryData("getMessages", chatId, (draft) => {
-            // The backend returns { status, data: [] }
             const messages = draft?.data;
             if (Array.isArray(messages)) {
-              if (!messages.find((m) => m._id === message._id)) {
+              const messageExists = messages.some((m) => m._id?.toString() === message._id?.toString());
+              if (!messageExists) {
                 messages.unshift(message);
               }
             }
@@ -107,7 +110,7 @@ export const useChat = (chatId) => {
         );
 
         // Chat is open and message is from someone else — mark as read immediately
-        if (message.sent_by?._id !== userId && message.sent_by !== userId) {
+        if (msgSenderId !== currentUserIdStr) {
           socket.emit("mark_read", { chat_id: chatId });
           dispatch(conversationsAPI.endpoints.markChatAsRead.initiate(chatId));
         }

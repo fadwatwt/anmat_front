@@ -56,6 +56,21 @@ export const employeeTasksApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: (result, error, { taskId }) => ["Tasks", { type: "Tasks", id: taskId }],
         }),
+        uploadEmployeeTaskAttachment: builder.mutation({
+            query: ({ taskId, formData }) => ({
+                url: `api/employee/tasks/${taskId}/upload`,
+                method: "POST",
+                body: formData,
+            }),
+            invalidatesTags: (result, error, { taskId }) => ["Tasks", { type: "Tasks", id: taskId }],
+        }),
+        deleteEmployeeTaskAttachment: builder.mutation({
+            query: ({ taskId, attachmentId }) => ({
+                url: `api/employee/tasks/${taskId}/upload/${attachmentId}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: (result, error, { taskId }) => ["Tasks", { type: "Tasks", id: taskId }],
+        }),
     }),
 });
 
@@ -67,4 +82,6 @@ export const {
     useAddEmployeeTaskCommentMutation,
     useDeleteEmployeeTaskCommentMutation,
     useEditEmployeeTaskCommentMutation,
+    useUploadEmployeeTaskAttachmentMutation,
+    useDeleteEmployeeTaskAttachmentMutation,
 } = employeeTasksApi;

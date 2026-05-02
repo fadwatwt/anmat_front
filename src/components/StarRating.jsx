@@ -7,7 +7,8 @@ const StarRating = ({ rating, onClickRate }) => {
     const totalStars = 5;
     const { t } = useTranslation()
 
-    if (rating === null || rating === undefined || rating === 0) {
+    if (rating === null || rating === undefined || rating === 0 || isNaN(rating)) {
+        if (!onClickRate) return null;
         return (
             <button onClick={onClickRate} className="p-1.5 flex items-center gap-0.5 border rounded-lg border-soft-200 dark:border-gray-700 hover:bg-gray-50 transition-colors">
                 <IoMdStarOutline className="text-yellow-400" size={20} />

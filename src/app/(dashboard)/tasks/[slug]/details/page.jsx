@@ -14,7 +14,7 @@ import { useState, useMemo, use } from "react";
 import { filterAndSortTasks } from "@/functions/functionsForTasks.js";
 import { useRouter } from "next/navigation";
 import { filterOptions, comments, members as defaultMembers, attachments, activityLogs } from "@/functions/FactoryData.jsx";
-import { useGetSubscriberTaskDetailsQuery, useAddSubscriberTaskCommentMutation, useDeleteSubscriberTaskCommentMutation, useEditSubscriberTaskCommentMutation, useEvaluateSubscriberTaskStageMutation } from "@/redux/tasks/subscriberTasksApi";
+import { useGetSubscriberTaskDetailsQuery, useAddSubscriberTaskCommentMutation, useDeleteSubscriberTaskCommentMutation, useEditSubscriberTaskCommentMutation, useEvaluateSubscriberTaskStageMutation, useEvaluateSubscriberTaskMutation } from "@/redux/tasks/subscriberTasksApi";
 import { useGetEmployeeTaskDetailsQuery, useAddEmployeeTaskCommentMutation, useDeleteEmployeeTaskCommentMutation, useEditEmployeeTaskCommentMutation } from "@/redux/tasks/employeeTasksApi";
 import useAuthStore from '@/store/authStore.js';
 import { useSelector } from 'react-redux';
@@ -44,6 +44,7 @@ function TaskDetailsPage({ params }) {
     const [editSubscriberComment] = useEditSubscriberTaskCommentMutation();
     const [editEmployeeComment] = useEditEmployeeTaskCommentMutation();
     const [evaluateStage] = useEvaluateSubscriberTaskStageMutation();
+    const [evaluateTask] = useEvaluateSubscriberTaskMutation();
 
     const [loadingComments, setLoadingComments] = useState({});
 
@@ -94,18 +95,27 @@ function TaskDetailsPage({ params }) {
     const handleEvaluateStage = async (stageId, data) => {
         try {
             if (authUserType === "Subscriber") {
-                await evaluateStage({ 
-                    taskId, 
-                    stageId, 
-                    data: {
-                        score: data.score || 0,
-                        rate_time: data.rate_time || 0,
-                        rate_content: data.rate_content || 0,
-                        rate_video: data.rate_video || 0,
-                        comment: data.comment || "",
-                        attachment: data.attachment || null 
-                    }
-                }).unwrap();
+                const evaluationPayload = {
+                    score: data.score || 0,
+                    rate_time: data.rate_time || 0,
+                    rate_content: data.rate_content || 0,
+                    rate_video: data.rate_video || 0,
+                    comment: data.comment || "",
+                    attachment: data.attachment || null 
+                };
+
+                if (stageId && stageId !== taskId) {
+                    await evaluateStage({ 
+                        taskId, 
+                        stageId, 
+                        data: evaluationPayload
+                    }).unwrap();
+                } else {
+                    await evaluateTask({
+                        taskId,
+                        data: evaluationPayload
+                    }).unwrap();
+                }
             }
         } catch (error) {
             console.error("Failed to evaluate stage: ", error);

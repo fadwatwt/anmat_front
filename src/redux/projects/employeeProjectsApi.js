@@ -42,6 +42,29 @@ export const employeeProjectsApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: (result, error, { projectId }) => ["Projects", { type: "Projects", id: projectId }],
         }),
+        uploadEmployeeProjectAttachment: builder.mutation({
+            query: ({ projectId, formData }) => ({
+                url: `api/employee/projects/${projectId}/upload`,
+                method: "POST",
+                body: formData,
+            }),
+            invalidatesTags: (result, error, { projectId }) => ["Projects", { type: "Projects", id: projectId }],
+        }),
+        deleteEmployeeProjectAttachment: builder.mutation({
+            query: ({ projectId, attachmentId }) => ({
+                url: `api/employee/projects/${projectId}/upload/${attachmentId}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: (result, error, { projectId }) => ["Projects", { type: "Projects", id: projectId }],
+        }),
+        evaluateEmployeeProject: builder.mutation({
+            query: ({ projectId, data }) => ({
+                url: `api/subscriber/organization/projects/${projectId}`,
+                method: "PATCH",
+                body: data,
+            }),
+            invalidatesTags: (result, error, { projectId }) => ["Projects", { type: "Projects", id: projectId }],
+        }),
     }),
 });
 
@@ -51,4 +74,7 @@ export const {
     useAddEmployeeProjectCommentMutation,
     useEditEmployeeProjectCommentMutation,
     useDeleteEmployeeProjectCommentMutation,
+    useUploadEmployeeProjectAttachmentMutation,
+    useDeleteEmployeeProjectAttachmentMutation,
+    useEvaluateEmployeeProjectMutation,
 } = employeeProjectsApi;

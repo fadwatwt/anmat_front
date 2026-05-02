@@ -77,6 +77,29 @@ export const subscriberTasksApi = apiSlice.injectEndpoints({
                 method: "POST",
                 body: data,
             }),
+            invalidatesTags: (result, error, { taskId }) => ["Tasks", "Projects", { type: "Tasks", id: taskId }],
+        }),
+        evaluateSubscriberTask: builder.mutation({
+            query: ({ taskId, data }) => ({
+                url: `api/subscriber/tasks/${taskId}/evaluate`,
+                method: "POST",
+                body: data,
+            }),
+            invalidatesTags: (result, error, { taskId }) => ["Tasks", "Projects", { type: "Tasks", id: taskId }],
+        }),
+        uploadSubscriberTaskAttachment: builder.mutation({
+            query: ({ taskId, formData }) => ({
+                url: `api/subscriber/organization/tasks/${taskId}/upload`,
+                method: "POST",
+                body: formData,
+            }),
+            invalidatesTags: (result, error, { taskId }) => ["Tasks", { type: "Tasks", id: taskId }],
+        }),
+        deleteSubscriberTaskAttachment: builder.mutation({
+            query: ({ taskId, attachmentId }) => ({
+                url: `api/subscriber/organization/tasks/${taskId}/upload/${attachmentId}`,
+                method: "DELETE",
+            }),
             invalidatesTags: (result, error, { taskId }) => ["Tasks", { type: "Tasks", id: taskId }],
         }),
     }),
@@ -93,4 +116,7 @@ export const {
     useDeleteSubscriberTaskCommentMutation,
     useEditSubscriberTaskCommentMutation,
     useEvaluateSubscriberTaskStageMutation,
+    useEvaluateSubscriberTaskMutation,
+    useUploadSubscriberTaskAttachmentMutation,
+    useDeleteSubscriberTaskAttachmentMutation,
 } = subscriberTasksApi;
