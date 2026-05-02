@@ -39,7 +39,7 @@ const Header = React.memo(({ taggleSlidebarOpen, className }) => {
       <div className={"flex gap-2 sm:gap-5"}>
         <div className={"icons flex gap-1 sm:gap-2 items-center relative w-auto justify-end"}>
           <NotificationsDropdown notifications={notifications} unreadCount={unreadCount} />
-          <MessagesDropdown messages={[]} />
+          <MessagesDropdown />
         </div>
 
         {/* User Profile Section */}
