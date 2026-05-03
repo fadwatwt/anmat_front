@@ -81,20 +81,20 @@ function AddLeaveModal({ isOpen, onClose }) {
     });
 
     const onConfirmSave = async () => {
-        showProcessing(t("Creating Leave..."));
+        showProcessing(t("Creating Short Leave..."));
         try {
             await createLeave(formik.values).unwrap();
             setApiResponse({
                 isOpen: true,
                 status: "success",
-                message: t("Leave created successfully")
+                message: t("Short Leave created successfully")
             });
             formik.resetForm();
         } catch (error) {
             setApiResponse({
                 isOpen: true,
                 status: "error",
-                message: error?.data?.message || error.message || t("Failed to create leave")
+                message: error?.data?.message || error.message || t("Failed to create short leave")
             });
         } finally {
             hideProcessing();
@@ -124,7 +124,7 @@ function AddLeaveModal({ isOpen, onClose }) {
                 btnCancelTitle={t("Cancel")}
                 onClick={() => formik.handleSubmit()}
                 className="lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12 px-3"
-                title={t("Add a Leave")}
+                title={t("Add a Short Leave")}
                 isDisabled={isLoading}
             >
                 <div className="px-1 overflow-visible">
@@ -180,8 +180,8 @@ function AddLeaveModal({ isOpen, onClose }) {
                 isOpen={isApprovalOpen}
                 onClose={() => setIsApprovalOpen(false)}
                 onConfirm={onConfirmSave}
-                title={t("Create Leave")}
-                message={t("Are you sure you want to create this leave record?")}
+                title={t("Create Short Leave")}
+                message={t("Are you sure you want to create this short leave record?")}
                 confirmBtnText={t("Confirm")}
                 cancelBtnText={t("Cancel")}
                 type="info"

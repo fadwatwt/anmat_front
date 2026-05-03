@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { addNotification } from '@/redux/notifications/notificationsSlice';
 import { RootRoute } from '@/Root.Route';
+import { conversationsAPI } from '@/redux/conversations/conversationsAPI';
 
 export const useNotifications = (userId) => {
     const dispatch = useDispatch();
@@ -81,18 +82,25 @@ export const useNotifications = (userId) => {
                                     const data = JSON.parse(dataStr);
                                     console.info('✅ [SSE] Notification Parsed:', data.title || data.message);
                                     
-                                    // Dispatch to Redux store
-                                    dispatch(addNotification({
-                                        id: data.id || data._id || `temp-${Date.now()}-${Math.random()}`, // Ensure a unique ID
-                                        title: data.title,
-                                        content: data.message,
-                                        time: new Date(data.created_at).toLocaleTimeString(),
-                                        priority: data.priority,
-                                        isRead: false,
-                                        action_url: data.action_url,
-                                        model_type: data.model_type,
-                                        model_id: data.model_id
-                                    }));
+                                    // For Chat messages, we don't want them in the general notifications list
+                                    // but we DO want to trigger a refresh for the messages bubble icon
+                                    if (data.model_type === 'Chat') {
+                                        console.log('💬 [SSE] Chat notification received. Refreshing unread chats...');
+                                        dispatch(conversationsAPI.util.invalidateTags(['UnreadChats']));
+                                    } else {
+                                        // Dispatch to Redux store for all other notification types
+                                        dispatch(addNotification({
+                                            id: data.id || data._id || `temp-${Date.now()}-${Math.random()}`,
+                                            title: data.title,
+                                            content: data.message,
+                                            time: new Date(data.created_at).toLocaleTimeString(),
+                                            priority: data.priority,
+                                            isRead: false,
+                                            action_url: data.action_url,
+                                            model_type: data.model_type,
+                                            model_id: data.model_id
+                                        }));
+                                    }
 
                                     console.log('📨 [SSE] Dispatched to Redux:', data.title);
                                 } catch (error) {
@@ -111,17 +119,21 @@ export const useNotifications = (userId) => {
                         if (dataStr) {
                             try {
                                 const data = JSON.parse(dataStr);
-                                dispatch(addNotification({
-                                    id: data.id || data._id || `temp-${Date.now()}-${Math.random()}`,
-                                    title: data.title,
-                                    content: data.message,
-                                    time: new Date(data.created_at).toLocaleTimeString(),
-                                    priority: data.priority,
-                                    isRead: false,
-                                    action_url: data.action_url,
-                                    model_type: data.model_type,
-                                    model_id: data.model_id
-                                }));
+                                if (data.model_type === 'Chat') {
+                                    dispatch(conversationsAPI.util.invalidateTags(['UnreadChats']));
+                                } else {
+                                    dispatch(addNotification({
+                                        id: data.id || data._id || `temp-${Date.now()}-${Math.random()}`,
+                                        title: data.title,
+                                        content: data.message,
+                                        time: new Date(data.created_at).toLocaleTimeString(),
+                                        priority: data.priority,
+                                        isRead: false,
+                                        action_url: data.action_url,
+                                        model_type: data.model_type,
+                                        model_id: data.model_id
+                                    }));
+                                }
                             } catch (e) {
                                 // Ignore final parse error
                             }

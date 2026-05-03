@@ -13,6 +13,7 @@ import { FaStar } from "react-icons/fa";
 import { useEvaluateSubscriberTaskStageMutation, useEvaluateSubscriberTaskMutation, useUploadSubscriberTaskAttachmentMutation, useDeleteSubscriberTaskAttachmentMutation } from "@/redux/tasks/subscriberTasksApi";
 import { useUploadEmployeeTaskAttachmentMutation, useDeleteEmployeeTaskAttachmentMutation } from "@/redux/tasks/employeeTasksApi";
 import AttachmentsList from "./AttachmentsList";
+import TaskLogsViewer from "./TaskLogsViewer";
 
 // Evaluation Modal components
 import Modal from "@/components/Modal/Modal";
@@ -374,6 +375,7 @@ function TasksList({ tasks = [], isAssignedDate = false, isEmployeeView = false,
                                         isUploading={isUploading}
                                     />
                                 </div>
+                                <TaskLogsViewer taskId={task._id} />
                             </div>
                         )}
                     </div>

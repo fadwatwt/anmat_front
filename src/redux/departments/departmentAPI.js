@@ -7,10 +7,19 @@ export const fetchDepartments = createAsyncThunk(
   "departments/fetchAll",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${RootRoute}/departments`);
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const response = await axios.get(
+        `${RootRoute}/api/subscriber/organization/departments`,
+        config
+      );
       return response.data.data;
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data);
     }
   }
 );

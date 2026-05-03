@@ -13,6 +13,8 @@ import { useState } from "react";
 import ContentCard from "@/components/containers/ContentCard";
 import Rating from "@/app/(dashboard)/hr/Rating.jsx";
 import { translateDate } from '@/functions/Days';
+import { useGetDepartmentLogsQuery } from "@/redux/activity-logs/activityLogsApi";
+import ActivityLogs from "@/components/ActivityLogs.jsx";
 
 function DepartmentProfile() {
     const { t, i18n } = useTranslation()
@@ -20,6 +22,9 @@ function DepartmentProfile() {
     const { data: department, isLoading, error } = useGetDepartmentProfileQuery(departmentId);
     const { data: orgData } = useGetSubscriberOrganizationQuery();
     const [rateDepartment] = useRateDepartmentMutation();
+
+    const { data: departmentLogsData } = useGetDepartmentLogsQuery({ departmentId: departmentId, limit: 10 }, { skip: !departmentId });
+    const activityLogs = departmentLogsData?.data || [];
 
     if (isLoading) return <div className="text-center py-10 font-medium">{t("Loading...")}</div>;
     if (error) return <div className="text-center py-10 text-red-500 font-medium">{t("Error loading department profile")}</div>;
@@ -187,6 +192,10 @@ function DepartmentProfile() {
                             }
                         />
                     </div>
+                </div>
+
+                <div className="mt-2">
+                    <ActivityLogs activityLogs={activityLogs} isRawLogs={true} className={"max-h-80"} />
                 </div>
             </div>
         </Page>

@@ -27,6 +27,8 @@ import {
     useGetEmployeeRequestsQuery, 
     useDeleteEmployeeRequestMutation 
 } from '@/redux/employees/employeeRequestsApi';
+import { useGetEmployeeLogsQuery } from "@/redux/activity-logs/activityLogsApi";
+import ActivityLogs from "@/components/ActivityLogs.jsx";
 import { RiDeleteBin7Line } from "@remixicon/react";
 
 function SingleEmployeeProfile() {
@@ -37,6 +39,9 @@ function SingleEmployeeProfile() {
     const [updateEmployee] = useUpdateEmployeeMutation();
     const { data: requests = [], isLoading: isLoadingRequests } = useGetEmployeeRequestsQuery({ employee_id: employeeId });
     const [deleteRequest] = useDeleteEmployeeRequestMutation();
+
+    const { data: employeeLogsData } = useGetEmployeeLogsQuery({ employeeId: employeeId, limit: 10 }, { skip: !employeeId });
+    const activityLogs = employeeLogsData?.data || [];
 
     const [isUpdating, setIsUpdating] = useState(false);
 
@@ -433,6 +438,10 @@ function SingleEmployeeProfile() {
                                     isCheckInput={false} isTitle={false} />
                             </div>
                         </div>
+                    </div>
+
+                    <div className={"col-span-12 mt-6"}>
+                        <ActivityLogs activityLogs={activityLogs} isRawLogs={true} className={"h-72"} />
                     </div>
                 </div>
 

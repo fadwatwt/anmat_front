@@ -119,7 +119,7 @@ export const dashboardSideMenuItems = [
     },
     {
         allowed_to: ['Employee'],
-        title: 'Leaves',
+        title: 'Short Leaves',
         path: '/leaves',
         icon: <Stickynote size={20} />
     },

@@ -31,7 +31,7 @@ export const employeeTasksApi = apiSlice.injectEndpoints({
                 method: "PUT",
                 body,
             }),
-            invalidatesTags: ["Tasks"],
+            invalidatesTags: ["Tasks", "ActivityLogs"],
         }),
         addEmployeeTaskComment: builder.mutation({
             query: ({ taskId, text }) => ({
@@ -39,14 +39,14 @@ export const employeeTasksApi = apiSlice.injectEndpoints({
                 method: "POST",
                 body: { text },
             }),
-            invalidatesTags: (result, error, { taskId }) => ["Tasks", { type: "Tasks", id: taskId }],
+            invalidatesTags: (result, error, { taskId }) => ["Tasks", { type: "Tasks", id: taskId }, "ActivityLogs"],
         }),
         deleteEmployeeTaskComment: builder.mutation({
             query: ({ taskId, commentId }) => ({
                 url: `api/employee/tasks/${taskId}/comments/${commentId}`,
                 method: "DELETE",
             }),
-            invalidatesTags: (result, error, { taskId }) => ["Tasks", { type: "Tasks", id: taskId }],
+            invalidatesTags: (result, error, { taskId }) => ["Tasks", { type: "Tasks", id: taskId }, "ActivityLogs"],
         }),
         editEmployeeTaskComment: builder.mutation({
             query: ({ taskId, commentId, text }) => ({
@@ -54,7 +54,7 @@ export const employeeTasksApi = apiSlice.injectEndpoints({
                 method: "PUT",
                 body: { text },
             }),
-            invalidatesTags: (result, error, { taskId }) => ["Tasks", { type: "Tasks", id: taskId }],
+            invalidatesTags: (result, error, { taskId }) => ["Tasks", { type: "Tasks", id: taskId }, "ActivityLogs"],
         }),
         uploadEmployeeTaskAttachment: builder.mutation({
             query: ({ taskId, formData }) => ({
@@ -62,14 +62,14 @@ export const employeeTasksApi = apiSlice.injectEndpoints({
                 method: "POST",
                 body: formData,
             }),
-            invalidatesTags: (result, error, { taskId }) => ["Tasks", { type: "Tasks", id: taskId }],
+            invalidatesTags: (result, error, { taskId }) => ["Tasks", { type: "Tasks", id: taskId }, "ActivityLogs"],
         }),
         deleteEmployeeTaskAttachment: builder.mutation({
             query: ({ taskId, attachmentId }) => ({
                 url: `api/employee/tasks/${taskId}/upload/${attachmentId}`,
                 method: "DELETE",
             }),
-            invalidatesTags: (result, error, { taskId }) => ["Tasks", { type: "Tasks", id: taskId }],
+            invalidatesTags: (result, error, { taskId }) => ["Tasks", { type: "Tasks", id: taskId }, "ActivityLogs"],
         }),
     }),
 });

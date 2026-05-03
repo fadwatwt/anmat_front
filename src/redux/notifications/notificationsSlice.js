@@ -87,8 +87,8 @@ export const {
     clearNotifications
 } = notificationsSlice.actions;
 
-export const selectNotifications = (state) => state.notifications.items;
-export const selectUnreadCount = (state) => state.notifications.unreadCount;
+export const selectNotifications = (state) => state.notifications.items.filter(n => n.model_type !== 'Chat');
+export const selectUnreadCount = (state) => state.notifications.items.filter(n => n.model_type !== 'Chat' && !n.isRead).length;
 export const selectIsNotificationsLoading = (state) => state.notifications.isLoading;
 
 export default notificationsSlice.reducer;

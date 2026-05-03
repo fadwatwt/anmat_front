@@ -2,11 +2,12 @@
 
 import Page from "@/components/Page";
 import TasksSummaryChart from "@/app/(dashboard)/analytics/_components/employee/TasksSummaryChart";
-import ActivityLogs from "@/components/ActivityLogs.jsx";
+import ActivityLogs from "@/components/ActivityLogs";
 import TasksPerformanceChart from "@/app/(dashboard)/analytics/_components/employee/TasksPerformanceChart";
 import Table from "@/components/Tables/Table";
 import EmployeeRequests from "@/app/(dashboard)/dashboard/_components/employee/EmployeeRequests";
 import { useGetEmployeeTaskStatisticsStatusQuery, useGetEmployeeTasksQuery } from "@/redux/tasks/employeeTasksApi";
+import { useGetEmployeeDashboardLogsQuery } from "@/redux/activity-logs/activityLogsApi";
 import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
 
@@ -14,6 +15,7 @@ const EmployeeDashboard = () => {
     const { t } = useTranslation();
     const { data: statsData } = useGetEmployeeTaskStatisticsStatusQuery();
     const { data: tasks = [], isLoading: isTasksLoading } = useGetEmployeeTasksQuery();
+    const { data: logsData, isLoading: isLogsLoading } = useGetEmployeeDashboardLogsQuery({ limit: 10 });
 
     const statusColorMap = {
         open: "#375DFB", // Blue
@@ -51,14 +53,7 @@ const EmployeeDashboard = () => {
         { label: t("Delivery Date"), width: "120px" },
     ];
 
-    const activityLogs = [
-        {
-            type: "add",
-            title: "New task added",
-            description: "John Doe added a new task: Design website layout.",
-            timeAgo: "2025-01-13T14:00:00.000Z",
-        },
-    ];
+    const activityLogs = logsData?.data || [];
 
     const rows = tasks.map((task, index) => [
         <span key={`title-${index}`} className="text-cell-primary">{task.title}</span>,
@@ -107,7 +102,11 @@ const EmployeeDashboard = () => {
                         }
                     />
                     <div className="w-full md:w-1/3">
-                        <ActivityLogs activityLogs={activityLogs} className={"max-h-[30rem]"} />
+                        <ActivityLogs
+                            activityLogs={activityLogs}
+                            className={"max-h-[30rem]"}
+                            isLoading={isLogsLoading}
+                        />
                     </div>
                 </div>
                 <div className="w-full">

@@ -3,6 +3,8 @@ import { fetchAllRotations } from "./rotationAPI";
 
 const initialState = {
   rotations: [],
+  days: [],
+  pagination: null,
   loading: false,
   error: null,
 };
@@ -19,7 +21,9 @@ const rotationSlice = createSlice({
       })
       .addCase(fetchAllRotations.fulfilled, (state, action) => {
         state.loading = false;
-        state.rotations = action.payload;
+        state.rotations = action.payload?.data?.rotations || [];
+        state.days = action.payload?.data?.days || [];
+        state.pagination = action.payload?.data?.pagination || null;
       })
       .addCase(fetchAllRotations.rejected, (state, action) => {
         state.loading = false;

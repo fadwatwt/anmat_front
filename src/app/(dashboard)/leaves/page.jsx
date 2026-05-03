@@ -28,9 +28,9 @@ function MyLeavesPage() {
     ]) || [];
 
     return (
-        <Page title={t("My Leaves")}>
+        <Page title={t("My Short Leaves")}>
             <Table
-                title={t("Leaves History")}
+                title={t("Short Leaves History")}
                 headers={headers}
                 rows={rows}
                 isActions={false}

@@ -16,13 +16,14 @@ import { useState, useEffect } from "react";
 import { filterAndSortTasks } from "@/functions/functionsForTasks.js";
 import EditProjectModal from "@/app/(dashboard)/projects/_modal/EditProjectModal.jsx";
 import { useParams } from "next/navigation";
-import { useGetSubscriberProjectDetailsQuery, useAddSubscriberProjectCommentMutation, useDeleteSubscriberProjectCommentMutation, useEditSubscriberProjectCommentMutation, useUploadSubscriberProjectAttachmentMutation, useDeleteSubscriberProjectAttachmentMutation } from "@/redux/projects/subscriberProjectsApi.js";
-import { useGetEmployeeProjectDetailsQuery, useAddEmployeeProjectCommentMutation, useDeleteEmployeeProjectCommentMutation, useEditEmployeeProjectCommentMutation, useUploadEmployeeProjectAttachmentMutation, useDeleteEmployeeProjectAttachmentMutation } from "@/redux/projects/employeeProjectsApi.js";
+import { useGetSubscriberProjectDetailsQuery, useAddSubscriberProjectCommentMutation, useDeleteSubscriberProjectCommentMutation, useEditSubscriberProjectCommentMutation, useUploadSubscriberProjectAttachmentMutation, useDeleteSubscriberProjectAttachmentMutation, useUpdateSubscriberProjectMutation } from "@/redux/projects/subscriberProjectsApi.js";
+import { useGetEmployeeProjectDetailsQuery, useAddEmployeeProjectCommentMutation, useDeleteEmployeeProjectCommentMutation, useEditEmployeeProjectCommentMutation, useUploadEmployeeProjectAttachmentMutation, useDeleteEmployeeProjectAttachmentMutation, useEvaluateEmployeeProjectMutation } from "@/redux/projects/employeeProjectsApi.js";
 import { useUpdateSubscriberTaskMutation } from "@/redux/tasks/subscriberTasksApi.js";
 import { useUpdateTaskStatusMutation } from "@/redux/tasks/employeeTasksApi.js";
 import useAuthStore from '@/store/authStore.js';
 import { useSelector } from 'react-redux';
 import { selectUser } from '@/redux/auth/authSlice.js';
+import { useGetProjectLogsQuery } from "@/redux/activity-logs/activityLogsApi";
 
 function ProjectDetailsPage() {
     const { slug } = useParams();
@@ -34,6 +35,9 @@ function ProjectDetailsPage() {
     const useGetDetails = authUserType === "Subscriber" ? useGetSubscriberProjectDetailsQuery : useGetEmployeeProjectDetailsQuery;
     const { data: project, isLoading, isError, error } = useGetDetails(slug);
 
+    const { data: projectLogsData } = useGetProjectLogsQuery({ projectId: project?._id, limit: 10 }, { skip: !project?._id });
+    const activityLogs = projectLogsData?.data || [];
+
     const [addSubscriberComment, { isLoading: isSubAdding }] = useAddSubscriberProjectCommentMutation();
     const [addEmployeeComment, { isLoading: isEmpAdding }] = useAddEmployeeProjectCommentMutation();
     const [deleteSubscriberComment] = useDeleteSubscriberProjectCommentMutation();
@@ -44,6 +48,8 @@ function ProjectDetailsPage() {
     const [uploadEmployeeAttachment, { isLoading: isEmpUploading }] = useUploadEmployeeProjectAttachmentMutation();
     const [deleteSubscriberAttachment] = useDeleteSubscriberProjectAttachmentMutation();
     const [deleteEmployeeAttachment] = useDeleteEmployeeProjectAttachmentMutation();
+    const [updateSubscriberProject] = useUpdateSubscriberProjectMutation();
+    const [evaluateEmployeeProject] = useEvaluateEmployeeProjectMutation();
 
     const [updateSubscriberTaskStatus] = useUpdateSubscriberTaskMutation();
     const [updateEmployeeTaskStatus] = useUpdateTaskStatusMutation();
@@ -179,7 +185,11 @@ function ProjectDetailsPage() {
 
     const handleEvaluateProject = async (evaluationData) => {
         try {
-            await updateProject({ id: project._id, data: evaluationData }).unwrap();
+            if (authUserType === "Subscriber") {
+                await updateSubscriberProject({ id: project._id, data: evaluationData }).unwrap();
+            } else {
+                await evaluateEmployeeProject({ projectId: project._id, data: evaluationData }).unwrap();
+            }
             setAlertInfo({
                 isOpen: true,
                 status: 'success',
@@ -205,12 +215,7 @@ function ProjectDetailsPage() {
     const tasks = mappedTasks;
 
     const comments = project?.comments || [];
-
     const attachments = project?.attachments || [];
-
-    const activityLogs = [
-        // Placeholder for activity logs
-    ];
 
     const canDeleteAttachments = authUserType === "Subscriber" || user?.permissions?.includes('manage_attachments');
     const canEvaluate = authUserType === "Subscriber" || user?.permissions?.includes('evaluate');
@@ -290,7 +295,7 @@ function ProjectDetailsPage() {
                         onDelete={canDeleteAttachments ? handleDeleteAttachment : null}
                         isUploading={isUploadingAttachment} 
                     />}
-                    {true && <ActivityLogs activityLogs={activityLogs} className={"h-72"} />}
+                    {true && <ActivityLogs activityLogs={activityLogs} isRawLogs={true} className={"h-72"} />}
                     {false && <TimeLine />}
                 </div>
 

@@ -29,7 +29,7 @@ function Tabs({ tabs, setActiveTitleTab, activeTab: controlledActiveTab, onTabCh
     };
 
     return (
-        <div className="max-w-[80vw] flex flex-col gap-4">
+        <div className="w-full flex flex-col gap-4">
             {/* Tabs navigation */}
             <div className="tabs-nav flex tab-content overflow-x-auto gap-6 max-w-full  border-b border-gray-200 dark:border-gray-700">
                 {tabs.map(({ title, icon: Icon }, index) => (
@@ -46,7 +46,7 @@ function Tabs({ tabs, setActiveTitleTab, activeTab: controlledActiveTab, onTabCh
             </div>
 
             {/* Active tab content */}
-            <div className={`tab-content w-full text-nowrap overflow-x-auto md:mt-4 bar overflow-y-auto h-[calc(100vh-15rem)]`}>
+            <div className={`tab-content w-full overflow-x-auto md:mt-4 bar overflow-y-auto h-[calc(100vh-15rem)]`}>
                 {tabs.map(({ title, content }) => (
                     <div key={title} className={activeTabTitle === title ? "block" : "hidden"}>
                         {content}

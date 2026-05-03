@@ -18,6 +18,7 @@ import { useGetDepartmentsQuery } from "@/redux/departments/departmentsApi";
 import EmployeeRequests from "./employee/EmployeeRequests";
 import { useGetSubscriberTaskStatisticsStatusQuery } from "@/redux/tasks/subscriberTasksApi";
 import { useGetSubscriberProjectsQuery } from "@/redux/projects/subscriberProjectsApi";
+import { useGetOrganizationLogsQuery } from "@/redux/activity-logs/activityLogsApi";
 
 const AdminDashboard = () => {
   const { t } = useTranslation("common");
@@ -93,14 +94,8 @@ const AdminDashboard = () => {
     setIsConfirmApprovalAlert((prev) => !prev);
   }, []);
 
-  const activityLogs = [
-    {
-      type: "add",
-      title: "New task added",
-      description: "John Doe added a new task: Design website layout.",
-      timeAgo: "2025-01-13T14:00:00.000Z",
-    },
-  ];
+  const { data: orgLogsData, isLoading: isLogsLoading } = useGetOrganizationLogsQuery({ limit: 10 });
+  const rawLogs = orgLogsData?.data || [];
 
   const headers = [
     { label: "Project Name", width: "180px" },
@@ -193,7 +188,12 @@ const AdminDashboard = () => {
         </div>
 
         {/* Activity Logs Section (1/3 of the width) */}
-        <ActivityLogs className={"max-h-[30rem]"} activityLogs={activityLogs} />
+        <ActivityLogs
+          className={"max-h-[30rem]"}
+          activityLogs={rawLogs}
+          isRawLogs={true}
+          isLoading={isLogsLoading}
+        />
       </div>
 
       {/* Requests Section */}

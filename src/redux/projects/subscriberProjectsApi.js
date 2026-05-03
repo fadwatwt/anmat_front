@@ -15,7 +15,11 @@ export const subscriberProjectsApi = apiSlice.injectEndpoints({
                 url: `api/subscriber/organization/projects/${id}`,
                 method: "GET",
             }),
-            providesTags: (result, error, id) => [{ type: "Projects", id }],
+            providesTags: (result, error, id) => [
+                { type: "Projects", id: result?._id || id },
+                { type: "Projects", id },
+                "Projects"
+            ],
             transformResponse: (response) => response.data || response,
         }),
         createSubscriberProject: builder.mutation({
@@ -24,7 +28,7 @@ export const subscriberProjectsApi = apiSlice.injectEndpoints({
                 method: "POST",
                 body: newProject,
             }),
-            invalidatesTags: ["Projects"],
+            invalidatesTags: ["Projects", "ActivityLogs"],
         }),
         updateSubscriberProject: builder.mutation({
             query: ({ id, data }) => ({
@@ -32,7 +36,7 @@ export const subscriberProjectsApi = apiSlice.injectEndpoints({
                 method: "PATCH",
                 body: data,
             }),
-            invalidatesTags: (result, error, { id }) => ["Projects", { type: "Projects", id }],
+            invalidatesTags: (result, error, { id }) => ["Projects", { type: "Projects", id }, "ActivityLogs"],
         }),
         addSubscriberProjectComment: builder.mutation({
             query: ({ projectId, text }) => ({

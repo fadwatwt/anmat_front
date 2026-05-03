@@ -16,14 +16,14 @@ export const subscriberTasksApi = apiSlice.injectEndpoints({
                 method: "POST",
                 body: newTask,
             }),
-            invalidatesTags: ["Tasks"],
+            invalidatesTags: ["Tasks", "ActivityLogs"],
         }),
         deleteSubscriberTask: builder.mutation({
             query: (id) => ({
                 url: `api/subscriber/organization/tasks/${id}`,
                 method: "DELETE",
             }),
-            invalidatesTags: ["Tasks"],
+            invalidatesTags: ["Tasks", "ActivityLogs"],
         }),
         getSubscriberTaskDetails: builder.query({
             query: (id) => ({
@@ -39,7 +39,7 @@ export const subscriberTasksApi = apiSlice.injectEndpoints({
                 method: "PUT",
                 body: data,
             }),
-            invalidatesTags: (result, error, { id }) => ["Tasks", { type: "Tasks", id }],
+            invalidatesTags: (result, error, { id }) => ["Tasks", { type: "Tasks", id }, "ActivityLogs"],
         }),
         getSubscriberTaskStatisticsStatus: builder.query({
             query: () => ({
@@ -54,14 +54,14 @@ export const subscriberTasksApi = apiSlice.injectEndpoints({
                 method: "POST",
                 body: { text },
             }),
-            invalidatesTags: (result, error, { taskId }) => ["Tasks", { type: "Tasks", id: taskId }],
+            invalidatesTags: (result, error, { taskId }) => ["Tasks", { type: "Tasks", id: taskId }, "ActivityLogs"],
         }),
         deleteSubscriberTaskComment: builder.mutation({
             query: ({ taskId, commentId }) => ({
                 url: `api/subscriber/organization/tasks/${taskId}/comments/${commentId}`,
                 method: "DELETE",
             }),
-            invalidatesTags: (result, error, { taskId }) => ["Tasks", { type: "Tasks", id: taskId }],
+            invalidatesTags: (result, error, { taskId }) => ["Tasks", { type: "Tasks", id: taskId }, "ActivityLogs"],
         }),
         editSubscriberTaskComment: builder.mutation({
             query: ({ taskId, commentId, text }) => ({
@@ -69,7 +69,7 @@ export const subscriberTasksApi = apiSlice.injectEndpoints({
                 method: "PUT",
                 body: { text },
             }),
-            invalidatesTags: (result, error, { taskId }) => ["Tasks", { type: "Tasks", id: taskId }],
+            invalidatesTags: (result, error, { taskId }) => ["Tasks", { type: "Tasks", id: taskId }, "ActivityLogs"],
         }),
         evaluateSubscriberTaskStage: builder.mutation({
             query: ({ taskId, stageId, data }) => ({
@@ -77,7 +77,7 @@ export const subscriberTasksApi = apiSlice.injectEndpoints({
                 method: "POST",
                 body: data,
             }),
-            invalidatesTags: (result, error, { taskId }) => ["Tasks", "Projects", { type: "Tasks", id: taskId }],
+            invalidatesTags: (result, error, { taskId }) => ["Tasks", "Projects", { type: "Tasks", id: taskId }, "ActivityLogs"],
         }),
         evaluateSubscriberTask: builder.mutation({
             query: ({ taskId, data }) => ({
@@ -85,7 +85,7 @@ export const subscriberTasksApi = apiSlice.injectEndpoints({
                 method: "POST",
                 body: data,
             }),
-            invalidatesTags: (result, error, { taskId }) => ["Tasks", "Projects", { type: "Tasks", id: taskId }],
+            invalidatesTags: (result, error, { taskId }) => ["Tasks", "Projects", { type: "Tasks", id: taskId }, "ActivityLogs"],
         }),
         uploadSubscriberTaskAttachment: builder.mutation({
             query: ({ taskId, formData }) => ({
@@ -93,14 +93,14 @@ export const subscriberTasksApi = apiSlice.injectEndpoints({
                 method: "POST",
                 body: formData,
             }),
-            invalidatesTags: (result, error, { taskId }) => ["Tasks", { type: "Tasks", id: taskId }],
+            invalidatesTags: (result, error, { taskId }) => ["Tasks", { type: "Tasks", id: taskId }, "ActivityLogs"],
         }),
         deleteSubscriberTaskAttachment: builder.mutation({
             query: ({ taskId, attachmentId }) => ({
                 url: `api/subscriber/organization/tasks/${taskId}/upload/${attachmentId}`,
                 method: "DELETE",
             }),
-            invalidatesTags: (result, error, { taskId }) => ["Tasks", { type: "Tasks", id: taskId }],
+            invalidatesTags: (result, error, { taskId }) => ["Tasks", { type: "Tasks", id: taskId }, "ActivityLogs"],
         }),
     }),
 });

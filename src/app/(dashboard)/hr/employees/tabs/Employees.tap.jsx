@@ -69,6 +69,7 @@ function EmployeesTap() {
     { label: t("Contact"), width: "200px" },
     { label: t("Department"), width: "150px" },
     { label: t("Salary"), width: "100px" },
+    { label: t("Rating"), width: "120px" },
     { label: t("Status"), width: "100px" },
     { label: "", width: "50px" },
   ];

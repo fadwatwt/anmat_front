@@ -32,7 +32,7 @@ function HRPage() {
             content: <AttendanceTab />,
         },
         {
-            title: "Leave",
+            title: "Short Leaves",
             content: <LeavesTab />,
         },
         {
