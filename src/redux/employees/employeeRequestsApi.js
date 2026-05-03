@@ -12,10 +12,10 @@ export const employeeRequestsApi = apiSlice.injectEndpoints({
             providesTags: ["EmployeeRequests"],
         }),
         updateEmployeeRequestStatus: builder.mutation({
-            query: ({ id, status }) => ({
+            query: ({ id, status, comment }) => ({
                 url: `api/subscriber/organization/employees-requests/${id}/status`,
                 method: "PUT",
-                body: { status },
+                body: { status, comment },
             }),
             invalidatesTags: ["EmployeeRequests"],
         }),

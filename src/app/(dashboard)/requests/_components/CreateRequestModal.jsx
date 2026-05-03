@@ -44,6 +44,7 @@ function CreateRequestModal({ isOpen, onClose }) {
             advance_salary_by: "",
             old_salary_amount: "",
             vacation_date: "",
+            vacation_end_date: "",
         },
         validationSchema: Yup.object({
             type: Yup.string().required(t("Request type is required")),
@@ -72,7 +73,15 @@ function CreateRequestModal({ isOpen, onClose }) {
                 then: (schema) => schema.min(
                     new Date(new Date().setHours(23, 59, 59, 999)),
                     t("Vacation date must be after today")
-                ).required(t("Vacation date is required")),
+                ).required(t("Vacation start date is required")),
+                otherwise: (schema) => schema.nullable().strip(),
+            }),
+            vacation_end_date: Yup.date().when("type", {
+                is: "DAY_OFF",
+                then: (schema) => schema.min(
+                    Yup.ref('vacation_date'),
+                    t("Vacation end date must be after or equal to start date")
+                ).nullable(),
                 otherwise: (schema) => schema.nullable().strip(),
             }),
         }),
@@ -98,6 +107,7 @@ function CreateRequestModal({ isOpen, onClose }) {
                             payload.old_salary_amount = values.old_salary_amount;
                         } else if (values.type === "DAY_OFF") {
                             payload.vacation_date = values.vacation_date;
+                            payload.vacation_end_date = values.vacation_end_date;
                         }
 
                         showProcessing(t("Submitting request..."));
@@ -205,16 +215,27 @@ function CreateRequestModal({ isOpen, onClose }) {
                     )}
 
                     {formik.values.type === "DAY_OFF" && (
-                        <InputAndLabel
-                            title={t("Vacation Date")}
-                            name="vacation_date"
-                            type="date"
-                            value={formik.values.vacation_date}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            error={formik.touched.vacation_date && formik.errors.vacation_date}
-                            isRequired
-                        />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <InputAndLabel
+                                title={t("Vacation Start Date")}
+                                name="vacation_date"
+                                type="date"
+                                value={formik.values.vacation_date}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.vacation_date && formik.errors.vacation_date}
+                                isRequired
+                            />
+                            <InputAndLabel
+                                title={t("Vacation End Date")}
+                                name="vacation_end_date"
+                                type="date"
+                                value={formik.values.vacation_end_date}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.vacation_end_date && formik.errors.vacation_end_date}
+                            />
+                        </div>
                     )}
 
                     <TextAreaWithLabel

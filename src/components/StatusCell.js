@@ -1,4 +1,4 @@
-import { RiCheckboxCircleFill, RiCloseCircleFill, RiQuestionLine, RiTimeLine, RiErrorWarningFill } from "@remixicon/react";
+import { RiCheckboxCircleFill, RiCloseCircleFill, RiQuestionLine, RiTimeLine, RiErrorWarningFill, RiInformationLine } from "@remixicon/react";
 
 const normalizeStatus = (status) => {
     if (!status) return "";
@@ -115,7 +115,7 @@ const statusConfig = {
     },
     "open": {
         bgColor: "bg-yellow-50",
-        icon: <RiQuestionLine size={15} className="text-yellow-700" />,
+        icon: <RiInformationLine size={15} className="text-yellow-700" />,
         textColor: "text-yellow-700",
     },
     "in-progress": {

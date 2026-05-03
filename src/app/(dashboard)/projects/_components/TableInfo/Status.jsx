@@ -66,6 +66,14 @@ function Status({ type }) {
       icon: <IoTime className="text-yellow-500" />,
       border: "border-yellow-300 dark:border-yellow-500",
     },
+    delivered: {
+      icon: <FaCircleCheck className="text-blue-500" />,
+      border: "border-blue-300 dark:border-blue-500",
+    },
+    read: {
+      icon: <FaCircleCheck className="text-green-500" />,
+      border: "border-green-300 dark:border-green-500",
+    },
   };
 
   const normalizedType = type?.toLowerCase() || "inactive";
@@ -95,6 +103,8 @@ Status.propTypes = {
     "Done",
     "Rejected",
     "Cancelled",
+    "Delivered",
+    "Read",
   ]).isRequired,
 };
 

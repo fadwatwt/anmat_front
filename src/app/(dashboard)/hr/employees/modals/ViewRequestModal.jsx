@@ -11,20 +11,22 @@ import ProcessingOverlay from "@/components/Feedback/ProcessingOverlay";
 function ViewRequestModal({ isOpen, onClose, request }) {
     const { t } = useTranslation();
     const [status, setStatus] = useState("");
+    const [comment, setComment] = useState("");
     const [updateStatus, { isLoading: isUpdating }] = useUpdateEmployeeRequestStatusMutation();
     const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
     useEffect(() => {
         if (request) {
             setStatus(request.status);
+            setComment(request.comment || "");
         }
     }, [request]);
 
     const handleSave = async () => {
-        if (!status || status === request.status) return;
+        if (!status) return;
 
         try {
-            await updateStatus({ id: request.id, status }).unwrap();
+            await updateStatus({ id: request.id, status, comment }).unwrap();
             setApiResponse({
                 isOpen: true,
                 status: "success",
@@ -79,6 +81,24 @@ function ViewRequestModal({ isOpen, onClose, request }) {
                         options={options}
                         placeholder={t("Choose status...")}
                     />
+
+                    <div className="flex flex-col gap-2">
+                        <span className="text-sm font-semibold text-cell-primary">{t("Reason for Request")}</span>
+                        <div className="p-3 bg-status-bg rounded-lg text-sm text-cell-secondary border border-status-border">
+                            {request.reason}
+                        </div>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                        <span className="text-sm font-semibold text-cell-primary">{t("Subscriber Comment / Explanation")}</span>
+                        <textarea
+                            className="w-full p-3 bg-surface border border-status-border rounded-lg text-sm text-cell-primary focus:ring-2 focus:ring-primary-500 outline-none min-h-[100px] resize-none transition-all"
+                            placeholder={t("Explain why this status was chosen...")}
+                            value={comment}
+                            onChange={(e) => setComment(e.target.value)}
+                        />
+                        <span className="text-[10px] text-cell-secondary italic">{t("This comment will be visible to the employee.")}</span>
+                    </div>
 
                     <div className="flex justify-end gap-2 pt-4 border-t border-status-border">
                         <button

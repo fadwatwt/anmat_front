@@ -16,8 +16,23 @@ import {
     RiGraduationCapLine,
     RiMailLine, RiMoneyDollarCircleLine, RiTimeLine,
     RiUserLine, RiBriefcaseLine, RiBuilding2Line, RiPhoneLine,
-    RiCalendarEventLine, RiDeleteBin7Line
+    RiCalendarEventLine, RiDeleteBin7Line,
+    RiErrorWarningLine, RiBellLine, RiInformationLine
 } from "@remixicon/react";
+import { useGetMySubscriberNotificationsQuery, useMarkSubscriberNotificationAsReadMutation } from "@/redux/subscriber-notifications/subscriberNotificationsApi";
+
+// Map icon name strings from backend to actual icon components
+const ICON_MAP = {
+    RiErrorWarningLine: <RiErrorWarningLine size={16} />,
+    RiBellLine: <RiBellLine size={16} />,
+    RiInformationLine: <RiInformationLine size={16} />,
+};
+
+const COLOR_MAP = {
+    red: "text-red-500 bg-red-50 dark:bg-red-500/10",
+    yellow: "text-yellow-500 bg-yellow-50 dark:bg-yellow-500/10",
+    blue: "text-blue-500 bg-blue-50 dark:bg-blue-500/10",
+};
 import { useSelector } from 'react-redux';
 import { selectUser } from '@/redux/auth/authSlice';
 import {
@@ -29,15 +44,30 @@ import { translateDate } from '@/functions/Days';
 import dayjs from 'dayjs';
 import ContentCard from "@/components/containers/ContentCard";
 
+const tabsList = [
+    { title: "Notifications" },
+    { title: "Leave" },
+    { title: "Delay" },
+    { title: "Financial" },
+];
+
 function EmployeeProfile() {
+
     const { t, i18n } = useTranslation()
     const user = useSelector(selectUser);
     const employeeDetail = user?.employee_detail || {};
-    
+
     const { data: requests = [], isLoading: isLoadingRequests } = useGetEmployeeAuthRequestsQuery();
     const [cancelRequest] = useCancelEmployeeRequestMutation();
 
-    const [activeTab, setActiveTab] = useState("Leave");
+    const { data: notificationsData, isLoading: isLoadingNotifications } = useGetMySubscriberNotificationsQuery({
+        page: 1,
+        limit: 10
+    });
+    const notifications = notificationsData?.data?.data || [];
+    const [markAsRead] = useMarkSubscriberNotificationAsReadMutation();
+
+    const [activeTab, setActiveTab] = useState("Notifications");
     const [isAddRequestModal, setIsAddRequestModal] = useState(false);
     const [isEditProfileModal, setIsEditProfileModal] = useState(false);
     const [isChangePasswordModal, setIsChangePasswordModal] = useState(false);
@@ -70,7 +100,7 @@ function EmployeeProfile() {
                     <span className="text-[10px] text-cell-secondary">{req.vacation_date ? translateDate(req.vacation_date) : "-"}</span>
                 </div>,
                 req.status === 'pending' ? (
-                    <button 
+                    <button
                         key={`del-${req._id}`}
                         onClick={() => handleDeleteRequest(req._id)}
                         className="p-1 text-red-500 hover:bg-red-50 rounded"
@@ -92,7 +122,7 @@ function EmployeeProfile() {
                     <span className="text-[10px] text-cell-secondary">{req.work_due_at ? translateDate(req.work_due_at) : "-"}</span>
                 </div>,
                 req.status === 'pending' ? (
-                    <button 
+                    <button
                         key={`del-${req._id}`}
                         onClick={() => handleDeleteRequest(req._id)}
                         className="p-1 text-red-500 hover:bg-red-50 rounded"
@@ -114,7 +144,7 @@ function EmployeeProfile() {
                     <span className="text-[10px] text-cell-secondary">{req.advance_salary_by || "-"}</span>
                 </div>,
                 req.status === 'pending' ? (
-                    <button 
+                    <button
                         key={`del-${req._id}`}
                         onClick={() => handleDeleteRequest(req._id)}
                         className="p-1 text-red-500 hover:bg-red-50 rounded"
@@ -125,50 +155,91 @@ function EmployeeProfile() {
             ]);
     };
 
-    const tabsData = [
-        {
-            title: "Leave",
-            content: (
-                <Table
-                    classContainer={"max-w-full"}
-                    headers={[{ label: t("Request Date") }, { label: t("Type") }, { label: t("Status - Vacation Date") }, { label: "" }]}
-                    rows={getLeaveRows()}
-                    isActions={false}
-                    isCheckInput={false}
-                    isTitle={false}
-                    isLoading={isLoadingRequests}
-                />
-            ),
-        },
-        {
-            title: "Delay",
-            content: (
-                <Table
-                    classContainer={"max-w-full"}
-                    headers={[{ label: t("Request Date") }, { label: t("Type") }, { label: t("Status - Delay Date") }, { label: "" }]}
-                    rows={getDelayRows()}
-                    isActions={false}
-                    isCheckInput={false}
-                    isTitle={false}
-                    isLoading={isLoadingRequests}
-                />
-            ),
-        },
-        {
-            title: "Financial",
-            content: (
-                <Table
-                    classContainer={"max-w-full"}
-                    headers={[{ label: t("Request Date") }, { label: t("Type") }, { label: t("Status - Details") }, { label: "" }]}
-                    rows={getFinancialRows()}
-                    isActions={false}
-                    isCheckInput={false}
-                    isTitle={false}
-                    isLoading={isLoadingRequests}
-                />
-            ),
-        },
-    ];
+    const getNotificationRows = () => {
+        return notifications.map(notif => {
+            const type = notif.notification_type_id || {};
+            const Icon = ICON_MAP[type.icon] || <RiInformationLine size={16} />;
+            const colorClass = COLOR_MAP[type.color] || "text-gray-500 bg-gray-50 dark:bg-gray-500/10";
+
+            return [
+                notif.created_at ? translateDate(notif.created_at) : "-",
+                <div key={notif._id} className="flex items-center gap-2">
+                    <span className={`p-1.5 rounded-full ${colorClass}`}>
+                        {Icon}
+                    </span>
+                    <span className="font-medium text-sm text-cell-primary">{type.name || t("Notification")}</span>
+                </div>,
+                <div key={`info-${notif._id}`} className="flex flex-col max-w-xs">
+                    <span className="font-semibold text-cell-primary text-sm truncate" title={notif.title}>{notif.title}</span>
+                    <span className="text-xs text-cell-secondary truncate" title={notif.message}>{notif.message}</span>
+                </div>,
+                <div key={`status-${notif._id}`} onClick={() => notif.status !== 'read' && markAsRead(notif._id)} className="cursor-pointer">
+                    <Status type={notif.status} title={t(notif.status)} />
+                </div>
+            ];
+        });
+    };
+
+    const renderTabContent = () => {
+        switch (activeTab) {
+            case "Notifications":
+                return (
+                    <Table
+                        classContainer={"max-w-full"}
+                        headers={[
+                            { label: t("Date"), width: "15%" },
+                            { label: t("Type"), width: "20%" },
+                            { label: t("Message"), width: "50%" },
+                            { label: t("Status"), width: "15%" }
+                        ]}
+                        rows={getNotificationRows()}
+                        isActions={false}
+                        isCheckInput={false}
+                        isTitle={false}
+                        isLoading={isLoadingNotifications}
+                    />
+                );
+            case "Leave":
+                return (
+                    <Table
+                        classContainer={"max-w-full"}
+                        headers={[{ label: t("Request Date") }, { label: t("Type") }, { label: t("Status - Vacation Date") }, { label: "" }]}
+                        rows={getLeaveRows()}
+                        isActions={false}
+                        isCheckInput={false}
+                        isTitle={false}
+                        isLoading={isLoadingRequests}
+                    />
+                );
+            case "Delay":
+                return (
+                    <Table
+                        classContainer={"max-w-full"}
+                        headers={[{ label: t("Request Date") }, { label: t("Type") }, { label: t("Status - Delay Date") }, { label: "" }]}
+                        rows={getDelayRows()}
+                        isActions={false}
+                        isCheckInput={false}
+                        isTitle={false}
+                        isLoading={isLoadingRequests}
+                    />
+                );
+            case "Financial":
+                return (
+                    <Table
+                        classContainer={"max-w-full"}
+                        headers={[{ label: t("Request Date") }, { label: t("Type") }, { label: t("Status - Details") }, { label: "" }]}
+                        rows={getFinancialRows()}
+                        isActions={false}
+                        isCheckInput={false}
+                        isTitle={false}
+                        isLoading={isLoadingRequests}
+                    />
+                );
+            default:
+                return null;
+        }
+    };
+
 
     const tasksRows = employeeDetail.ratings?.map(rating => [
         rating.details || "-",
@@ -185,7 +256,7 @@ function EmployeeProfile() {
                     <div className={"w-full md:h-40 h-[20vh]"}>
                         <img className={"max-w-full w-full max-h-full object-cover rounded-xl"} src={"/images/profileBanner.png"} alt={""} />
                     </div>
-                    
+
                     <div className={"absolute md:top-1/3 top-[50px] w-full md:px-10 px-2"}>
                         <div className={" rounded-2xl p-4 border border-status-border flex bg-surface"}>
                             <div className={"flex md:items-center md:flex-row md:justify-center flex-col justify-between gap-6 flex-1"}>
@@ -321,10 +392,10 @@ function EmployeeProfile() {
                             </div>
                             <div className={"w-full flex flex-col gap-4"}>
                                 <div className={"flex w-full md:w-1/3"}>
-                                    <TabsOutContent tabs={tabsData} onTabChange={(title) => setActiveTab(title)} />
+                                    <TabsOutContent tabs={tabsList} activeTab={activeTab} onTabChange={(title) => setActiveTab(title)} />
                                 </div>
                                 <div className={"w-full"}>
-                                    {tabsData.map(({ title, content }) => activeTab === title && <div key={title}>{content}</div>)}
+                                    {renderTabContent()}
                                 </div>
                             </div>
                         </div>
