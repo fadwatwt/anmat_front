@@ -7,6 +7,7 @@ export const industriesApi = apiSlice.injectEndpoints({
                 url: "api/admin/industries",
                 method: "GET",
             }),
+            transformResponse: (response) => response.data,
             providesTags: ["Industries"],
         }),
         createIndustry: builder.mutation({
@@ -14,6 +15,14 @@ export const industriesApi = apiSlice.injectEndpoints({
                 url: "api/admin/industries",
                 method: "POST",
                 body: newIndustry,
+            }),
+            invalidatesTags: ["Industries"],
+        }),
+        updateIndustry: builder.mutation({
+            query: ({ id, ...body }) => ({
+                url: `api/admin/industries/${id}`,
+                method: "PATCH",
+                body,
             }),
             invalidatesTags: ["Industries"],
         }),
@@ -46,6 +55,7 @@ export const industriesApi = apiSlice.injectEndpoints({
 export const {
     useGetIndustriesQuery,
     useCreateIndustryMutation,
+    useUpdateIndustryMutation,
     useDeleteIndustryMutation,
     useGetIndustriesOrganizationsCountQuery,
     useGetIndustriesForSubscribersQuery,

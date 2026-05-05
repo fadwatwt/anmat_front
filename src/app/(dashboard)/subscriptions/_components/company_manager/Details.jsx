@@ -1,12 +1,33 @@
 "use client"
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 import { RiVipDiamondLine } from "react-icons/ri";
-import Alert from "@/components/Alerts/Alert";
 import CheckAlert from "@/components/Alerts/CheckِِAlert";
+import { useGetMySubscriptionQuery } from "@/redux/subscriptions/subscriptionsApi";
+import { format } from "date-fns";
 
-function Details() {
+function Details({ onUpgradeClick }) {
+    const { t } = useTranslation();
+    const { data: subscription, isLoading, error } = useGetMySubscriptionQuery();
+
+    if (isLoading) return <div className="p-5 text-center">{t("Loading...")}</div>;
+    if (error) return <div className="p-5 text-center text-red-500">{t("Error loading subscription details")}</div>;
+    if (!subscription) return <div className="p-5 text-center">{t("No active subscription found")}</div>;
+
+    const plan = subscription.plan_id || {};
+    
+    // Find user limit feature
+    const userLimitFeature = plan.features?.find(f => 
+        f.feature_type_id?.type === 'users_limit' || 
+        f.feature_type_id?.title?.toLowerCase().includes('user')
+    );
+    const userLimit = userLimitFeature?.properties?.find(p => p.key === 'limit')?.value || "Unlimited";
+
+    // Find price (using first active pricing as fallback)
+    const activePricing = plan.pricing?.find(p => p.is_active) || plan.pricing?.[0];
+    const price = activePricing?.price || 0;
+
     return (
-        <div className={"md:p-5 p-2 rounded-2xl bg-white dark:bg-gray-800 border border-gray-200"}>
+        <div className={"md:p-5 p-2 rounded-2xl bg-surface border border-status-border"}>
             <div className="flex flex-col gap-8 w-full">
                 {/* header */}
                 <div className="flex items-start gap-2 w-full">
@@ -16,11 +37,11 @@ function Details() {
                         </div>
                     </div>
                     <div className="flex flex-col items-start justify-start gap-1">
-                        <span className="text-md text-gray-700">
+                        <span className="!text-cell-secondary text-md">
                             {t("You're subscribed on")}
                         </span>
-                        <span className="text-lg text-primary-700 font-bold">
-                            {t("Professional Plan")}
+                        <span className="!text-primary-base text-lg font-bold">
+                            {plan.name || t("Unknown Plan")}
                         </span>
                     </div>
                 </div>
@@ -28,37 +49,44 @@ function Details() {
                 {/* info */}
                 <div className="flex items-start gap-8 justify-between w-full">
                     <div className="flex flex-col items-start justify-start gap-0 min-w-[15rem]">
-                        <span className="text-sm text-gray-700">
+                        <span className="!text-cell-secondary text-sm">
                             {t("Users")}
                         </span>
-                        <span className="text-sm text-gray-900 font-bold">
-                            2345 of 6789 Users
+                        <span className="!text-table-title text-sm font-bold">
+                            {subscription.usage?.employees || 0} {t("of")} {userLimit} {t("Users")}
                         </span>
                     </div>
                     <div className="flex flex-col items-start justify-start gap-0 min-w-[15rem]">
-                        <span className="text-sm text-gray-700">
+                        <span className="!text-cell-secondary text-sm">
                             {t("Subscription end date")}
                         </span>
-                        <span className="text-sm text-gray-900 font-bold">
-                            May 12, 2025
+                        <span className="!text-table-title text-sm font-bold">
+                            {subscription.expires_at ? format(new Date(subscription.expires_at), "MMMM dd, yyyy") : t("N/A")}
                         </span>
                     </div>
                     <div className="flex flex-col items-start justify-start gap-0 min-w-[15rem]">
-                        <span className="text-sm text-gray-700">
+                        <span className="!text-cell-secondary text-sm">
                             {t("Price estimate")}
                         </span>
-                        <span className="text-lg text-gray-900 font-bold">
-                            $120
+                        <span className="!text-table-title text-lg font-bold">
+                            ${price}
                         </span>
                     </div>
                 </div>
 
                 {/* actions */}
                 <div className="flex items-start justify-center gap-4">
-                    <button className="text-sm bg-white text-red-700 px-4 py-2 w-96 rounded-lg hover:bg-gray-100 transition-colors border border-gray-200">
+                    <button
+                        type="button"
+                        className="text-sm bg-surface !text-red-600 px-4 py-2 w-96 rounded-lg hover:bg-status-bg transition-colors border border-status-border"
+                    >
                         {t("Cancel subscription renewal")}
                     </button>
-                    <button className="text-sm bg-primary-100 text-primary-600 px-4 py-2 w-96 rounded-lg hover:bg-primary-600 hover:text-primary-100 transition-colors">
+                    <button
+                        type="button"
+                        onClick={onUpgradeClick}
+                        className="text-sm bg-primary-100 !text-primary-base px-4 py-2 w-96 rounded-lg hover:bg-primary-base hover:!text-white transition-colors"
+                    >
                         {t("Upgrade")}
                     </button>
                 </div>
@@ -73,7 +101,7 @@ function Details() {
                 description={
                     <p>
                         Are you sure you want to <span className="font-bold text-black">cancel renewal</span> of the
-                        <span className="font-bold text-black"> basic plan</span> with <span className="font-bold text-black">$10/mth</span>?
+                        <span className="font-bold text-black"> {plan.name}</span> with <span className="font-bold text-black">${price}/mth</span>?
                     </p>
                 }
                 onSubmit={() => {}}

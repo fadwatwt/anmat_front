@@ -1,257 +1,240 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { RiEditLine } from "@remixicon/react";
-import { RiDeleteBin7Line } from "react-icons/ri";
-import * as Iconsax from 'iconsax-react';
+import {
+    RiEditLine,
+    RiDeleteBin7Line,
+    RiCheckboxCircleLine,
+    RiCloseCircleLine,
+} from "@remixicon/react";
+import * as Iconsax from "iconsax-react";
 
 import Table from "@/components/Tables/Table";
 import Page from "@/components/Page";
 import StatusActions from "@/components/Dropdowns/StatusActions";
 import { statusCell } from "@/components/StatusCell";
-import { useProcessing } from "@/app/providers";
-import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
+import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
+import ProcessingOverlay from "@/components/Feedback/ProcessingOverlay.jsx";
 import CreateIndustryModal from "./modals/CreateIndustry.modal.jsx";
 
 import {
     useGetIndustriesQuery,
-    useCreateIndustryMutation,
-    useDeleteIndustryMutation
+    useDeleteIndustryMutation,
+    useUpdateIndustryMutation,
 } from "@/redux/industries/industriesApi";
 
-// 1. مكون الأكشنز المنفصل
-const IndustryActions = ({ i18n, t, onEdit, onDelete }) => {
-    const actions = [
-        {
-            text: t("Edit"),
-            icon: <RiEditLine className="text-blue-500" />,
-            onClick: onEdit
-        },
-        {
-            text: t("Delete"),
-            icon: <RiDeleteBin7Line className="text-red-500" />,
-            onClick: onDelete
-        }
-    ];
-
-    return (
-        <StatusActions
-            states={actions}
-            className={i18n.language === "ar" ? "left-0" : "right-0"}
-        />
-    );
-};
+const headers = [
+    { label: "Industry Name", width: "25%" },
+    { label: "Icon",          width: "12%" },
+    { label: "Created By",    width: "12%" },
+    { label: "Subscribers",   width: "12%" },
+    { label: "Allowed",       width: "12%" },
+    { label: "Status",        width: "15%" },
+    { label: "",              width: "12%" },
+];
 
 function IndustriesPage() {
-    const { i18n, t } = useTranslation();
-    const { showProcessing, hideProcessing } = useProcessing();
+    const { t, i18n } = useTranslation();
 
-    const { data: industriesResponse, isLoading } = useGetIndustriesQuery();
+    const { data: industries = [], isLoading, error } = useGetIndustriesQuery();
+    const [deleteIndustry, { isLoading: isDeleting }] = useDeleteIndustryMutation();
+    const [updateIndustry, { isLoading: isToggling }] = useUpdateIndustryMutation();
 
-    const tableHeaders = useMemo(() => [
-        { label: t("Industry Name"), width: "200px" },
-        { label: t("Icon"), width: "100px" },
-        { label: t("By User"), width: "150px" },
-        { label: t("Is Allowed"), width: "150px" },
-        { label: t("Status"), width: "120px" },
-        { label: "", width: "50px" }
-    ], [t]);
-    const [createIndustry] = useCreateIndustryMutation();
-    const [deleteIndustry] = useDeleteIndustryMutation();
+    const [isModalOpen,  setIsModalOpen]  = useState(false);
+    const [selectedItem, setSelectedItem] = useState(null);
 
-    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-    const [selectedIndustry, setSelectedIndustry] = useState(null);
-    const [apiAlert, setApiAlert] = useState({ isOpen: false, status: "", message: "" });
-    const [deleteConfirm, setDeleteConfirm] = useState({ isOpen: false, item: null });
-    const [createConfirm, setCreateConfirm] = useState({ isOpen: false, data: null });
+    const [approvalConfig, setApprovalConfig] = useState({
+        isOpen: false, type: "warning", title: "", message: "", onConfirm: null,
+    });
+    const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
-    const industriesData = industriesResponse?.data || industriesResponse || [];
+    /* ── helpers ─────────────────────────────────────────────────── */
+    const openCreate  = () => { setSelectedItem(null); setIsModalOpen(true); };
+    const openEdit    = (industry) => { setSelectedItem(industry); setIsModalOpen(true); };
+    const closeModal  = () => { setIsModalOpen(false); setSelectedItem(null); };
 
-    // دالة التبديل (Toggles)
-    const toggleCreateModal = () => {
-        if (isCreateModalOpen) setSelectedIndustry(null);
-        setIsCreateModalOpen(!isCreateModalOpen);
-    };
+    const confirm      = (cfg) => setApprovalConfig({ ...cfg, isOpen: true });
+    const closeApproval = () => setApprovalConfig((p) => ({ ...p, isOpen: false }));
+    const respond      = (status, message) => setApiResponse({ isOpen: true, status, message });
+    const closeResponse = () => setApiResponse((p) => ({ ...p, isOpen: false }));
 
-    const handleAction = (formData) => {
-        setCreateConfirm({ isOpen: true, data: formData });
-    };
-
-    const confirmAction = async () => {
-        const formData = createConfirm.data;
-        if (!formData) return;
-
-        setCreateConfirm({ isOpen: false, data: null });
-        showProcessing(formData._id ? t("Updating Industry…") : t("Creating Industry…"));
-        try {
-            if (formData._id) {
-                // Keep the original logic (which seems to be using delete mutation for update)
-                // for consistency with the existing code structure.
-                await deleteIndustry(formData._id).unwrap();
-            } else {
-                await createIndustry(formData).unwrap();
-            }
-            setApiAlert({
-                isOpen: true,
-                status: "success",
-                message: formData._id ? t("Industry updated successfully") : t("Industry created successfully")
-            });
-            setIsCreateModalOpen(false);
-            setSelectedIndustry(null);
-        } catch (error) {
-            setApiAlert({
-                isOpen: true,
-                status: "error",
-                message: error?.data?.message || t("Something went wrong")
-            });
-        } finally {
-            hideProcessing();
-        }
-    };
-
-    const handleDeleteClick = (industry) => {
-        setDeleteConfirm({ isOpen: true, item: industry });
-    };
-
-    const onConfirmDelete = async () => {
-        const industry = deleteConfirm.item;
-        if (!industry) return;
-
-        showProcessing(t("Deleting Industry…"));
-        setDeleteConfirm({ isOpen: false, item: null });
-        try {
-            await deleteIndustry(industry._id).unwrap();
-            setApiAlert({
-                isOpen: true,
-                status: "success",
-                message: t("Industry deleted successfully")
-            });
-        } catch (error) {
-            setApiAlert({
-                isOpen: true,
-                status: "error",
-                message: error?.data?.message || t("Failed to delete")
-            });
-        } finally {
-            hideProcessing();
-        }
-    };
-
-    // 3. معالجة البيانات وتحويلها لصفوف الجدول
-    const rows = useMemo(() => {
-        return industriesData.map((item) => {
-            const IconName = item.icon_name || item.logo;
-            const IconComponent = IconName && Iconsax[IconName];
-
-            return [
-                // اسم الصناعة
-                <div key={`${item._id}_name`} className="text-cell-primary font-medium">{item.name}</div>,
-
-                // اللوجو
-                <div key={`${item._id}_icon`} className="w-12 h-12 flex items-center justify-center">
-                    {IconComponent ? (
-                        <div className="bg-badge-bg p-2 rounded-xl text-badge-text flex items-center justify-center border border-status-border">
-                            <IconComponent size={24} variant="Bold" color="currentColor" />
-                        </div>
-                    ) : IconName && IconName.includes('/') ? (
-                        <img className="w-full h-full object-contain" src={IconName} alt={item.name} />
-                    ) : (
-                        <div className="bg-status-bg border border-status-border w-full h-full rounded flex items-center justify-center text-[10px] text-cell-secondary">
-                            {IconName || t("No Logo")}
-                        </div>
-                    )}
-                </div>,
-
-                // By Subscriber
-                <div key={`${item._id}_bysub`} className="flex items-center">
-                    <span className={`px-2 py-1 rounded-full text-xs border ${item.by_subscriber ? "bg-badge-bg text-badge-text border-status-border" : "bg-status-bg text-cell-secondary border-status-border"}`}>
-                        {item.by_subscriber ? t("Subscriber") : t("Admin")}
-                    </span>
-                </div>,
-
-                // Is Allowed
-                <div key={`${item._id}_allowed`} className="flex items-center">
-                    <span className={`px-2 py-1 rounded-full text-xs border ${item.is_allowed
-                        ? "bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 border-green-100 dark:border-green-800"
-                        : "bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-red-100 dark:border-red-800"}`}>
-                        {item.is_allowed ? t("Allowed") : t("Blocked")}
-                    </span>
-                </div>,
-
-                statusCell(item.status || "Active", item._id),
-                "" // Placeholder for actions
-            ];
+    const handleDelete = (industry) => {
+        confirm({
+            type: "danger",
+            title: t("Delete Industry"),
+            message: t(`Are you sure you want to delete "${industry.name}"? This action cannot be undone.`),
+            onConfirm: async () => {
+                try {
+                    await deleteIndustry(industry._id).unwrap();
+                    respond("success", t("Industry deleted successfully!"));
+                } catch (err) {
+                    respond("error", err?.data?.message || t("Failed to delete industry."));
+                }
+            },
         });
-    }, [industriesData, t]);
+    };
 
-    if (isLoading) return <div className="p-10 text-center">{t("Loading...")}</div>;
+    const handleToggleAllowed = (industry) => {
+        const next = !industry.is_allowed;
+        confirm({
+            type: "warning",
+            title: next ? t("Enable Industry") : t("Disable Industry"),
+            message: t(`Are you sure you want to ${next ? "enable" : "disable"} "${industry.name}"?`),
+            onConfirm: async () => {
+                try {
+                    await updateIndustry({ id: industry._id, is_allowed: next }).unwrap();
+                    respond("success", t(`Industry ${next ? "enabled" : "disabled"} successfully!`));
+                } catch (err) {
+                    respond("error", err?.data?.message || t("Failed to update status."));
+                }
+            },
+        });
+    };
+
+    /* ── per-row actions dropdown ────────────────────────────────── */
+    const IndustryActions = ({ industry }) => {
+        const actions = [
+            {
+                text: t("Edit"),
+                icon: <RiEditLine size={18} className="text-primary-400" />,
+                onClick: () => openEdit(industry),
+            },
+            {
+                text: industry.is_allowed ? t("Disable") : t("Enable"),
+                icon: industry.is_allowed
+                    ? <RiCloseCircleLine size={18} className="text-orange-500" />
+                    : <RiCheckboxCircleLine size={18} className="text-green-500" />,
+                onClick: () => handleToggleAllowed(industry),
+            },
+            {
+                text: t("Delete"),
+                icon: <RiDeleteBin7Line size={18} className="text-red-500" />,
+                onClick: () => handleDelete(industry),
+            },
+        ];
+
+        return (
+            <StatusActions
+                states={actions}
+                className={i18n.language === "ar" ? "left-0" : "right-0"}
+            />
+        );
+    };
+
+    /* ── row data ────────────────────────────────────────────────── */
+    const rows = industries.map((industry) => {
+        const iconKey       = industry.icon_name || industry.logo;
+        const IconComponent = iconKey && Iconsax[iconKey];
+
+        return [
+            /* Industry name + icon preview */
+            <div key={`${industry._id}_name`} className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-primary-100 flex items-center justify-center shrink-0 border border-status-border">
+                    {IconComponent
+                        ? <IconComponent size={20} variant="Bold" className="text-primary-base" />
+                        : <span className="text-base">{iconKey || "🏭"}</span>
+                    }
+                </div>
+                <span className="text-sm font-semibold text-cell-primary truncate max-w-[160px]" title={industry.name}>
+                    {industry.name}
+                </span>
+            </div>,
+
+            /* Icon key badge */
+            <div key={`${industry._id}_icon`}>
+                {iconKey ? (
+                    <span className="px-2 py-1 bg-status-bg border border-status-border rounded-lg text-xs text-cell-secondary font-mono">
+                        {iconKey}
+                    </span>
+                ) : (
+                    <span className="text-xs text-cell-secondary italic">{t("None")}</span>
+                )}
+            </div>,
+
+            /* Created by */
+            <div key={`${industry._id}_by`}>
+                <span className={`px-2 py-1 rounded-full text-xs border ${
+                    industry.by_subscriber
+                        ? "bg-badge-bg text-badge-text border-status-border"
+                        : "bg-status-bg text-cell-secondary border-status-border"
+                }`}>
+                    {industry.by_subscriber ? t("Subscriber") : t("Admin")}
+                </span>
+            </div>,
+
+            /* Subscribers count */
+            <div key={`${industry._id}_subs`}>
+                <span className="text-sm font-semibold text-cell-primary">
+                    {industry.subscribers_count ?? 0}
+                </span>
+            </div>,
+
+            /* Allowed badge — click to toggle */
+            <div key={`${industry._id}_allowed`} className="cursor-pointer" onClick={() => handleToggleAllowed(industry)}>
+                <span className={`px-2 py-1 rounded-full text-xs border ${
+                    industry.is_allowed
+                        ? "bg-green-50 text-green-600 border-green-100"
+                        : "bg-red-50 text-red-600 border-red-100"
+                }`}>
+                    {industry.is_allowed ? t("Allowed") : t("Blocked")}
+                </span>
+            </div>,
+
+            /* Status cell */
+            statusCell(industry.is_allowed ? "active" : "in-active", industry._id),
+        ];
+    });
+
+    /* ── render ─────────────────────────────────────────────────── */
+    if (isLoading) return <div className="flex justify-center items-center h-full p-10">{t("Loading...")}</div>;
+    if (error)     return <div className="flex justify-center items-center h-full p-10 text-red-500">{t("Error loading industries.")}</div>;
 
     return (
         <Page
             title={t("Industries")}
             isBtn={true}
             btnTitle={t("Add Industry")}
-            btnOnClick={toggleCreateModal}
+            btnOnClick={openCreate}
         >
             <Table
-                title={t("All Industries")}
-                headers={tableHeaders}
-                rows={rows}
                 classContainer="rounded-2xl px-8"
+                title={t("All Industries")}
+                headers={headers}
+                rows={rows}
                 isActions={false}
+                customActions={(idx) => <IndustryActions industry={industries[idx]} />}
                 isFilter={true}
-                customActions={(index) => {
-                    const industry = industriesData[index];
-                    return (
-                        <IndustryActions
-                            i18n={i18n}
-                            t={t}
-                            onEdit={() => {
-                                setSelectedIndustry(industry);
-                                setIsCreateModalOpen(true);
-                            }}
-                            onDelete={() => handleDeleteClick(industry)}
-                        />
-                    );
-                }}
             />
+
+            <ProcessingOverlay
+                isOpen={isDeleting || isToggling}
+                message={isDeleting ? t("Deleting industry...") : t("Updating status...")}
+            />
+
             <CreateIndustryModal
-                isOpen={isCreateModalOpen}
-                onClose={toggleCreateModal}
-                onClick={handleAction}
-                item={selectedIndustry}
+                isOpen={isModalOpen}
+                onClose={closeModal}
+                item={selectedItem}
             />
+
+            <ApprovalAlert
+                isOpen={approvalConfig.isOpen}
+                onClose={closeApproval}
+                onConfirm={approvalConfig.onConfirm}
+                title={approvalConfig.title}
+                message={approvalConfig.message}
+                type={approvalConfig.type}
+                confirmBtnText={t("Yes, Confirm")}
+                cancelBtnText={t("Cancel")}
+            />
+
             <ApiResponseAlert
-                isOpen={apiAlert.isOpen}
-                status={apiAlert.status}
-                message={apiAlert.message}
-                onClose={() => setApiAlert({ ...apiAlert, isOpen: false })}
-                successTitle={t("Success")}
-                errorTitle={t("Error")}
-            />
-            <ApprovalAlert
-                isOpen={deleteConfirm.isOpen}
-                title={t("Delete Industry")}
-                message={t("Are you sure you want to delete \"{{name}}\"? This action cannot be undone.", { name: deleteConfirm.item?.name })}
-                type="danger"
-                onConfirm={onConfirmDelete}
-                onClose={() => setDeleteConfirm({ isOpen: false, item: null })}
-                confirmBtnText={t("Yes, Delete")}
-                cancelBtnText={t("Cancel")}
-            />
-            <ApprovalAlert
-                isOpen={createConfirm.isOpen}
-                title={createConfirm.data?._id ? t("Confirm Update") : t("Confirm Creation")}
-                message={createConfirm.data?._id 
-                    ? t("Are you sure you want to update this industry?") 
-                    : t("Are you sure you want to create this new industry?")}
-                type="info"
-                onConfirm={confirmAction}
-                onClose={() => setCreateConfirm({ isOpen: false, data: null })}
-                confirmBtnText={createConfirm.data?._id ? t("Update") : t("Create")}
-                cancelBtnText={t("Cancel")}
+                isOpen={apiResponse.isOpen}
+                status={apiResponse.status}
+                message={apiResponse.message}
+                onClose={closeResponse}
             />
         </Page>
     );

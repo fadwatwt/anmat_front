@@ -443,5 +443,15 @@
   "Schedule": "جدولة",
   "Login": "تسجيل الدخول",
   "Evaluation": "التقييم",
-  "Not evaluated yet": "لم يتم تقييمه بعد"
+  "Not evaluated yet": "لم يتم تقييمه بعد",
+  "Pending Registration": "تسجيل قيد الانتظار",
+  "Registration": "التسجيل",
+  "Complete": "مكتمل",
+  "Pending": "قيد الانتظار",
+  "Copy Link": "نسخ الرابط",
+  "Invitation link copied to clipboard": "تم نسخ رابط الدعوة إلى الحافظة",
+  "Failed to copy link": "فشل نسخ الرابط",
+  "Confirm Password": "تأكيد كلمة المرور",
+  "Registered": "مسجل",
+  "Complete Registration": "إكمال التسجيل"
 }

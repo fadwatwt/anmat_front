@@ -7,16 +7,21 @@ import { LiaUser } from "react-icons/lia";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useRegisterEmployeeAccountMutation } from "@/redux/auth/authAPI";
+import { useGetInvitationInfoQuery } from "@/redux/employees/employeesApi";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 
 const EmployeeRegistration = () => {
     const { t } = useTranslation();
     const router = useRouter();
-    const [registerEmployee, { isLoading }] = useRegisterEmployeeAccountMutation();
+    const [registerEmployee, { isLoading: isRegistering }] = useRegisterEmployeeAccountMutation();
     const [error, setError] = useState("");
     const [invitationToken, setInvitationToken] = useState("");
     const [organizationId, setOrganizationId] = useState("");
     const [isCheckingToken, setIsCheckingToken] = useState(true);
+
+    const { data: invitationInfo, isLoading: isLoadingInfo, isError: isInfoError } = useGetInvitationInfoQuery(invitationToken, {
+        skip: !invitationToken
+    });
 
     const [alertConfig, setAlertConfig] = useState({
         isOpen: false,
@@ -85,6 +90,12 @@ const EmployeeRegistration = () => {
         },
     });
 
+    useEffect(() => {
+        if (invitationInfo?.email) {
+            formik.setFieldValue("email", invitationInfo.email);
+        }
+    }, [invitationInfo]);
+
     const handleAlertClose = () => {
         setAlertConfig(prev => ({ ...prev, isOpen: false }));
         if (alertConfig.status === "success") {
@@ -92,10 +103,24 @@ const EmployeeRegistration = () => {
         }
     };
 
-    if (isCheckingToken) {
+    if (isCheckingToken || isLoadingInfo) {
         return (
             <div className="w-full h-screen flex items-center justify-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+            </div>
+        );
+    }
+
+    if (isInfoError) {
+        return (
+            <div className="w-full h-screen flex flex-col items-center justify-center gap-4">
+                <p className="text-red-500 font-medium">{t("Invalid or expired invitation link")}</p>
+                <button
+                    onClick={() => router.push('/sign-in')}
+                    className="text-primary-500 hover:underline"
+                >
+                    {t("Back to Login")}
+                </button>
             </div>
         );
     }
@@ -157,6 +182,8 @@ const EmployeeRegistration = () => {
                         placeholder={t("Enter Email Address...")}
                         error={formik.touched.email && formik.errors.email}
                         isRequired={true}
+                        readOnly={!!invitationInfo?.email}
+                        disabled={!!invitationInfo?.email}
                     />
 
                     <InputAndLabel
@@ -199,11 +226,11 @@ const EmployeeRegistration = () => {
                     <div className="flex flex-col items-center justify-center mt-4">
                         <button
                             type="submit"
-                            disabled={isLoading}
+                            disabled={isRegistering}
                             className="bg-primary-500 text-white font-medium text-md w-full py-3 rounded-xl cursor-pointer
                             hover:bg-primary-600 transition-colors shadow-md disabled:bg-primary-300 flex items-center justify-center gap-2"
                         >
-                            {isLoading ? (
+                            {isRegistering ? (
                                 <>
                                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                                     {t("Processing...")}

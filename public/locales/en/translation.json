@@ -1,5 +1,15 @@
 {
   "Dashboard": "Dashboard",
   "Evaluation": "Evaluation",
-  "Not evaluated yet": "Not evaluated yet"
+  "Not evaluated yet": "Not evaluated yet",
+  "Pending Registration": "Pending Registration",
+  "Registration": "Registration",
+  "Complete": "Complete",
+  "Pending": "Pending",
+  "Copy Link": "Copy Link",
+  "Invitation link copied to clipboard": "Invitation link copied to clipboard",
+  "Failed to copy link": "Failed to copy link",
+  "Confirm Password": "Confirm Password",
+  "Registered": "Registered",
+  "Complete Registration": "Complete Registration"
 }

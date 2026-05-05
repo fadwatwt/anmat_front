@@ -34,12 +34,12 @@ export const dashboardSideMenuItems = [
         path: '/industries',
         icon: <Category2 />
     },
-    // {
-    //     allowed_to: ['Subscriber'],
-    //     title: 'Subscriptions',
-    //     path: '/subscriptions',
-    //     icon: <ReceiptText />
-    // },
+    {
+        allowed_to: ['Admin', 'Subscriber'],
+        title: 'Subscriptions',
+        path: '/subscriptions',
+        icon: <ReceiptText />
+    },
     {
         allowed_to: ['Subscriber'],
         title: 'HR Management',

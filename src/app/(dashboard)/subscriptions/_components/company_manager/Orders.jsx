@@ -11,6 +11,9 @@ import {
     RiVisaFill
 } from "@remixicon/react";
 import Table from "@/components/Tables/Table";
+import { useTranslation } from "react-i18next";
+import { useGetMyPaymentsQuery } from "@/redux/subscriptions/subscriptionsApi";
+import { format } from "date-fns";
 
 const headers = [
     { label: "Product", width: "300px" },
@@ -21,55 +24,23 @@ const headers = [
     { label: "", width: "50px" }
 ];
 
-// Sample data - replace with your actual data
-const ordersData = [
-    {
-        product: "Basic Plan",
-        paymentMethod: "Master Card",
-        date: "2023-05-15",
-        amount: "$99.00",
-        status: "Active"
-    },
-    {
-        product: "Premium Plan",
-        paymentMethod: "Visa",
-        date: "2023-05-16",
-        amount: "$199.00",
-        status: "Pending"
-    },
-    {
-        product: "Basic Plan",
-        paymentMethod: "Master Card",
-        date: "2023-05-15",
-        amount: "$99.00",
-        status: "Cancelled"
-    },
-    {
-        product: "Premium Plan",
-        paymentMethod: "Visa",
-        date: "2023-05-16",
-        amount: "$199.00",
-        status: "Completed"
-    }
-];
-
 const statusConfig = {
-    Active: {
+    paid: {
         bgColor: "bg-green-50",
         icon: <RiCheckboxCircleFill size={15} className="text-green-700" />,
         textColor: "text-green-700",
     },
-    Pending: {
+    pending: {
         bgColor: "bg-yellow-50",
         icon: <RiTimeLine size={15} className="text-yellow-700" />,
         textColor: "text-yellow-700",
     },
-    Cancelled: {
+    failed: {
         bgColor: "bg-red-50",
         icon: <RiCloseCircleFill size={15} className="text-red-700" />,
         textColor: "text-red-700",
     },
-    Completed: {
+    succeeded: {
         bgColor: "bg-blue-50",
         icon: <RiCheckDoubleFill size={15} className="text-blue-700" />,
         textColor: "text-blue-700",
@@ -77,6 +48,8 @@ const statusConfig = {
 };
 
 function OrdersTable() {
+    const { t } = useTranslation();
+    const { data: payments = [], isLoading } = useGetMyPaymentsQuery();
 
     const statusCell = (status) => {
         const config = statusConfig[status] || {
@@ -92,48 +65,50 @@ function OrdersTable() {
             >
                 {config.icon}
                 <span className={`text-xs ${config.textColor}`}>
-                    {status}
+                    {t(status)}
                 </span>
             </div>
         );
     };
 
     // Transform data into the format expected by the Table component
-    const rows = ordersData.map(order => [
+    const rows = payments.map(payment => [
         // Product cell
-        <div key="product" className="flex items-center justify-start gap-2">
+        <div key={`product-${payment._id}`} className="flex items-center justify-start gap-2">
             <div className="rounded-full p-2 bg-primary-100">
                 <div className="rounded-full p-2 bg-primary-200">
                     <RiHourglass2Line size={25} className="rounded-full text-primary-500 stroke-[5px]" />
                 </div>
             </div>
             <span className="text-md text-gray-900">
-                {order.product}
+                {payment.stripe_metadata?.[0]?.split(': ')[1] || t("Subscription")}
             </span>
         </div>,
 
         // Payment Method cell
-        <div key="payment" className="flex items-center justify-start gap-2">
-            {order.paymentMethod === 'Visa' ? <RiVisaFill size={35} className="rounded-full stroke-[5px]" /> : <RiMastercardFill size={35} className="rounded-full stroke-[5px]" />}
+        <div key={`pm-${payment._id}`} className="flex items-center justify-start gap-2">
+            {payment.payment_method_id?.card_brand === 'visa' ? <RiVisaFill size={35} className="rounded-full stroke-[5px]" /> : <RiMastercardFill size={35} className="rounded-full stroke-[5px]" />}
             <span className="text-md text-gray-900">
-                {order.paymentMethod}
+                {payment.payment_method_id?.card_brand || t("Card")}
             </span>
         </div>,
 
         // Date cell
-        <div key="date">{order.date}</div>,
+        <div key={`date-${payment._id}`}>{payment.createdAt ? format(new Date(payment.createdAt), "MMM dd, yyyy") : "N/A"}</div>,
 
         // Amount cell
-        <div key="amount">{order.amount}</div>,
+        <div key={`amount-${payment._id}`}>{payment.currency?.toUpperCase()} {payment.amount}</div>,
 
         // Status cell
-        statusCell(order.status)
+        statusCell(payment.status)
     ]);
+
+    if (isLoading) return <div className="p-5 text-center">{t("Loading...")}</div>;
 
     return (
         <Table
             classContainer={"rounded-2xl px-8"}
-            title="Orders"
+            title={t("Orders")}
             headers={headers}
             isActions={true}
             rows={rows}

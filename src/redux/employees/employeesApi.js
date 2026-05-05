@@ -72,6 +72,13 @@ export const employeesApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["Employees"],
         }),
+        getInvitationInfo: builder.query({
+            query: (token) => ({
+                url: `api/employee-invitations/info/${token}`,
+                method: "GET",
+            }),
+            transformResponse: (response) => response.data,
+        }),
     }),
 });
 
@@ -85,4 +92,5 @@ export const {
     useGetNewEmployeesQuery,
     useCreateEmployeeDetailMutation,
     useGetEmployeeProfileQuery,
+    useGetInvitationInfoQuery,
 } = employeesApi;

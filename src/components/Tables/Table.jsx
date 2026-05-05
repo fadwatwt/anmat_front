@@ -55,7 +55,8 @@ function Table({
     onIndustryChange,
     hideSearchInput = false,
     toolbarCustomContent = null,
-    headerActions = null
+    headerActions = null,
+    onRowClick
 }) {
     const { t, i18n } = useTranslation();
     const [isAllSelected, setIsAllSelected] = useState(false);
@@ -243,7 +244,18 @@ function Table({
                             {currentRows?.map((row, rowIndex) => {
                                 const actualRowIndex = rowIndex + startIndex;
                                 return (
-                                    <tr key={actualRowIndex} className="hover:bg-gray-50 dark:hover:bg-status-bg w-full border-b border-status-border transition-colors">
+                                    <tr 
+                                        key={actualRowIndex} 
+                                        className={`hover:bg-gray-50 dark:hover:bg-status-bg w-full border-b border-status-border transition-colors ${onRowClick ? 'cursor-pointer' : ''}`}
+                                        onClick={(e) => {
+                                            if (e.target.closest('.checkbox-custom') || e.target.closest('.dropdown-container')) {
+                                                return;
+                                            }
+                                            if (onRowClick) {
+                                                onRowClick(actualRowIndex);
+                                            }
+                                        }}
+                                    >
                                         {isCheckInput && (
                                             <td className="px- py-6 text-center" style={{ borderBottomLeftRadius: "8px" }}>
                                                 <input
@@ -389,7 +401,8 @@ Table.propTypes = {
     customActions: PropTypes.func,
     hideSearchInput: PropTypes.bool,
     toolbarCustomContent: PropTypes.node,
-    headerActions: PropTypes.node
+    headerActions: PropTypes.node,
+    onRowClick: PropTypes.func
 };
 
 export default Table;

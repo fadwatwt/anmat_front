@@ -23,6 +23,8 @@ function CreateEmployeeModal({ isOpen, onClose }) {
         email: "",
         name: "",
         phone: "",
+        password: "",
+        password_confirmation: "",
         employee_detail: {
             department_id: null,
             position_id: null,

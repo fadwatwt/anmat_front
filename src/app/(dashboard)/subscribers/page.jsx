@@ -119,7 +119,7 @@ function Subscribers() {
         </div>
       </div>
       <span className="text-sm font-medium text-cell-primary">
-        {"Standard"}
+        {subscriber.activePlan?.name || "N/A"}
       </span>
     </div>,
 
@@ -128,12 +128,12 @@ function Subscribers() {
       {subscriber.organization?.industry?.name || "N/A"}
     </div>,
     <div key={`${subscriber._id}_date`} className="text-sm text-cell-secondary">
-      {subscriber.createdAt ? format(new Date(subscriber.createdAt), "MMM dd, yyyy") : "N/A"}
+      {(subscriber.subscribed_at || subscriber.createdAt) ? format(new Date(subscriber.subscribed_at || subscriber.createdAt), "MMM dd, yyyy") : "N/A"}
     </div>,
 
     // Users Subscribed cell
     <div key={`${subscriber._id}_amount`} className="px-2 py-0.5 text-xs text-badge-text bg-badge-bg border border-status-border text-center rounded-[25px] w-fit mx-auto">
-      {"0"}
+      {subscriber.total_users || "0"}
     </div>,
 
     // Status cell
@@ -204,6 +204,11 @@ function Subscribers() {
           <SubscriptionActions subscriber={subscribers?.[actualRowIndex]} />)
         }
         industryOptions={industryOptions}
+        onRowClick={(index) => {
+          if (subscribers?.[index]?._id) {
+            router.push(`/subscribers/${subscribers[index]._id}/profile`);
+          }
+        }}
       />
       <CheckAlert
         isOpen={isDeleteSubAert}

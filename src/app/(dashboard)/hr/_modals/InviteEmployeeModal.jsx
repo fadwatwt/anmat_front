@@ -83,35 +83,34 @@ function InviteEmployeeModal({ isOpen, onClose }) {
                 isOpen={isOpen && !showSuccessModal}
                 onClose={handleCloseInviteModal}
                 isBtns={false}
-                customBtns={
-                    <DefaultButton
-                        type={'button'}
-                        title={isLoading || formik.isSubmitting ? "Sending..." : "Invite"}
-                        onClick={formik.handleSubmit}
-                        disabled={isLoading || formik.isSubmitting || !formik.isValid}
-                        className={"bg-primary-500 font-medium dark:bg-primary-200 dark:text-black text-white mt-4"}
-                    />
-                }
                 className={"lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12 px-4 pb-4"}
                 title={"Invite New Employee"}
             >
-                <div className="flex flex-col gap-2">
-                    <div className="px-1">
-                        {apiError && (
-                            <div className="mb-4 text-red-500 text-sm bg-red-50 p-3 rounded-lg">{apiError}</div>
-                        )}
+                <form onSubmit={formik.handleSubmit}>
+                    <div className="flex flex-col gap-2">
+                        <div className="px-1">
+                            {apiError && (
+                                <div className="mb-4 text-red-500 text-sm bg-red-50 p-3 rounded-lg">{apiError}</div>
+                            )}
 
-                        <div className="flex flex-col gap-4">
-                            <InputAndLabel
-                                title="Email"
-                                name="email"
-                                placeholder="Enter employee email"
-                                {...formik.getFieldProps("email")}
-                                error={formik.touched.email && formik.errors.email}
-                            />
+                            <div className="flex flex-col gap-4">
+                                <InputAndLabel
+                                    title="Email"
+                                    name="email"
+                                    placeholder="Enter employee email"
+                                    {...formik.getFieldProps("email")}
+                                    error={formik.touched.email && formik.errors.email}
+                                />
+                            </div>
                         </div>
                     </div>
-                </div>
+                    <DefaultButton
+                        type={'submit'}
+                        title={isLoading || formik.isSubmitting ? "Sending..." : "Invite"}
+                        disabled={isLoading || formik.isSubmitting || !formik.isValid}
+                        className={"bg-primary-500 font-medium dark:bg-primary-200 dark:text-black text-white mt-4 w-full"}
+                    />
+                </form>
             </Modal>
 
             {/* Success Modal with Copy Registration URL */}

@@ -26,6 +26,8 @@ import { useRouter } from "next/navigation";
 import { RiMessage2Line } from "@remixicon/react";
 import StarRating from "@/components/StarRating";
 import { useProcessing } from "@/app/providers";
+import { RiCheckboxCircleFill, RiFileCopyLine, RiTimerLine, RiUserReceived2Line, RiCheckLine } from "@remixicon/react";
+import { toast } from "react-toastify";
 
 function EmployeesTap() {
   const { t } = useTranslation();
@@ -70,6 +72,7 @@ function EmployeesTap() {
     { label: t("Department"), width: "150px" },
     { label: t("Salary"), width: "100px" },
     { label: t("Rating"), width: "120px" },
+    { label: t("Registration"), width: "150px" },
     { label: t("Status"), width: "100px" },
     { label: "", width: "50px" },
   ];
@@ -128,6 +131,14 @@ function EmployeesTap() {
         icon: <RiMessage2Line className="text-blue-500" />,
         onClick: () => handleChatWithEmployee(employee),
       },
+      ...(employee.registration_status === 'registered' ? [{
+        text: t("Complete Registration"),
+        icon: <RiCheckLine className="text-blue-500" />,
+        onClick: () => {
+          setSelectedEmployee(employee);
+          setIsOpenEditModal(true);
+        },
+      }] : []),
       {
         text: t("Delete"),
         icon: <RiDeleteBin7Line className="text-red-500" />,
@@ -148,7 +159,7 @@ function EmployeesTap() {
           key={`account-details-${index}`}
           path={`/hr/employees/${employee.user_id}/profile`}
           account={{
-            name: userData.name || t("Unknown"),
+            name: userData.name ? t(userData.name) : t("Unknown"),
             rule: employee.position_id?.title || (userData.is_active ? t("Active") : t("Inactive")),
             imageProfile: "https://ui-avatars.com/api/?name=" + (userData.name || "User") + "&background=random",
           }}
@@ -174,6 +185,33 @@ function EmployeesTap() {
             <span className="text-xs text-cell-secondary italic opacity-60">
               {t("No rating yet")}
             </span>
+          )}
+        </div>,
+        <div key={`registration-${index}`}>
+          {employee.registration_status === 'complete' ? (
+            <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
+              <RiCheckboxCircleFill size={18} />
+              <span className="text-xs font-medium">{t("Complete")}</span>
+            </div>
+          ) : employee.registration_status === 'registered' ? (
+            <div className="flex items-center gap-1 text-blue-500">
+              <RiUserReceived2Line size={18} />
+              <span className="text-xs font-medium">{t("Registered")}</span>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-1 text-orange-500">
+                <RiTimerLine size={18} />
+                <span className="text-xs font-medium">{t("Pending")}</span>
+              </div>
+              <button
+                onClick={() => handleCopyInvitationLink(employee)}
+                className="flex items-center gap-1 text-[10px] text-primary-500 hover:underline"
+              >
+                <RiFileCopyLine size={12} />
+                {t("Copy Link")}
+              </button>
+            </div>
           )}
         </div>,
         <div key={`status-${index}`}>
@@ -322,6 +360,22 @@ function EmployeesTap() {
     }
   };
 
+  const handleCopyInvitationLink = (employee) => {
+    if (!employee.invitation_token) return;
+
+    const frontendUrl = window.location.origin;
+    const link = `${frontendUrl}/register/employee#reg_emp_t=${employee.invitation_token}#org=${employee.organization_id}`;
+
+    navigator.clipboard.writeText(link)
+      .then(() => {
+        toast.success(t("Invitation link copied to clipboard"));
+      })
+      .catch((err) => {
+        console.error("Failed to copy link:", err);
+        toast.error(t("Failed to copy link"));
+      });
+  };
+
   if (isLoading) return <div className="p-4">{t("Loading...")}</div>;
   if (error) return <div className="text-red-500 p-4">{t("Error loading employees")}</div>;
 
@@ -464,4 +518,4 @@ function EmployeesTap() {
   );
 }
 
-export default EmployeesTap;
+export default EmployeesTap;

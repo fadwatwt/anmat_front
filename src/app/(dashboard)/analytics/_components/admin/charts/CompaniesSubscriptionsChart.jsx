@@ -63,6 +63,7 @@ const CompaniesSubscriptionsChart = ({ monthlyData: monthlyProp }) => {
                             options={[{ id: 1, value: format(new Date(), "yyyy") }]}
                             value={[{ id: 1, value: format(new Date(), "yyyy") }]}
                             multi={false}
+                            variant="chart"
                         />
                     </div>
                 </div>

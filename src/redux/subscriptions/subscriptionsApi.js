@@ -4,7 +4,7 @@ export const subscriptionsApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getSubscriptions: builder.query({
             query: (params) => ({
-                url: "api/admin/subscriptions",
+                url: "api/subscriptions/admin/list",
                 method: "GET",
                 params,
             }),
@@ -13,7 +13,7 @@ export const subscriptionsApi = apiSlice.injectEndpoints({
         }),
         getSubscription: builder.query({
             query: (id) => ({
-                url: `api/admin/subscriptions/${id}`,
+                url: `api/subscriptions/admin/${id}`, // Assuming this exists or should match the pattern
                 method: "GET",
             }),
             transformResponse: (response) => response.data,
@@ -21,7 +21,7 @@ export const subscriptionsApi = apiSlice.injectEndpoints({
         }),
         updateSubscriptionStatus: builder.mutation({
             query: ({ id, status }) => ({
-                url: `api/admin/subscriptions/${id}/update-status`,
+                url: `api/subscriptions/admin/${id}/update-status`,
                 method: "PATCH",
                 body: { status },
             }),
@@ -29,7 +29,23 @@ export const subscriptionsApi = apiSlice.injectEndpoints({
         }),
         getSubscriptionsBasicDetails: builder.query({
             query: () => ({
-                url: "api/admin/subscriptions/basic-details",
+                url: "api/subscriptions/admin/basic-details",
+                method: "GET",
+            }),
+            transformResponse: (response) => response.data,
+            providesTags: ["Subscriptions"],
+        }),
+        getMySubscription: builder.query({
+            query: () => ({
+                url: "api/subscriptions/subscriber/my-subscription",
+                method: "GET",
+            }),
+            transformResponse: (response) => response.data,
+            providesTags: ["Subscriptions"],
+        }),
+        getMyPayments: builder.query({
+            query: () => ({
+                url: "api/subscriptions/subscriber/my-payments",
                 method: "GET",
             }),
             transformResponse: (response) => response.data,
@@ -43,4 +59,6 @@ export const {
     useGetSubscriptionQuery,
     useUpdateSubscriptionStatusMutation,
     useGetSubscriptionsBasicDetailsQuery,
+    useGetMySubscriptionQuery,
+    useGetMyPaymentsQuery,
 } = subscriptionsApi;

@@ -4,32 +4,31 @@ import { RiBankCardLine, RiBillLine, RiCalendarTodoLine, RiFileList3Line, RiHour
 import Sidebar from "@/components/Subcomponents/Sidebar.jsx";
 import { useState } from "react";
 import Details from "@/app/(dashboard)/subscriptions/_components/company_manager/Details.jsx";
-import OrdersTable from "@/app/(dashboard)/subscriptions/_components/company_manager/Orders.jsx";
 import Page from "@/components/Page";
 import Pricing from "@/app/(dashboard)/subscriptions/_components/company_manager/Pricing.jsx";
 import BillingHistory from "@/app/(dashboard)/subscriptions/_components/company_manager/BillingHistory.jsx";
 import ChangeBillingInfoModal from "@/app/(dashboard)/subscriptions/_components/company_manager/partials/ChangeBillingInfoModal.jsx";
-import History from "@/app/(dashboard)/subscriptions/_components/company_manager/History.jsx";
 import PaymentMethods from "@/app/(dashboard)/subscriptions/_components/company_manager/PaymentMethods.jsx";
 import AddNewPaymentModal from "@/app/(dashboard)/subscriptions/_components/company_manager/partials/AddNewPaymentModal.jsx";
-import { Card, Coin, Coin1, Note, Receipt, Receipt2, Timer } from "iconsax-react";
+import { Card, Coin1, Receipt, Receipt2 } from "iconsax-react";
 
 function CompanySubscriptions() {
     const { t } = useTranslation()
 
-    const listSideBar = [
-        { id: "subscription-info", title: "Subscription Information", content: <Details />, icon: <Receipt2 color="currentColor" /> },
-        { id: "subscription-history", title: "Subscription History", content: <History />, icon: <Timer color="currentColor" /> },
-        { id: "billing-history", title: "Billing History", content: <BillingHistory />, icon: <Receipt color="currentColor" /> },
-        { id: "orders", title: "Orders", content: <OrdersTable />, icon: <Note color="currentColor" /> },
-        { id: "payent-methods", title: "Payment Methods", content: <PaymentMethods />, icon: <Card color="currentColor" /> },
-        { id: "pricing", title: "Pricing", content: <Pricing />, icon: <Coin1 color="currentColor" /> }
-    ]
     const [activeTab, setActiveTab] = useState('subscription-info');
 
     const handelChangeActiveTab = (activeTap) => {
         setActiveTab(activeTap);
     }
+
+    const goToPricing = () => setActiveTab('pricing');
+
+    const listSideBar = [
+        { id: "subscription-info", title: "Subscription Information", content: <Details onUpgradeClick={goToPricing} />, icon: <Receipt2 color="currentColor" /> },
+        { id: "billing-history", title: "Billing History", content: <BillingHistory />, icon: <Receipt color="currentColor" /> },
+        { id: "payent-methods", title: "Payment Methods", content: <PaymentMethods />, icon: <Card color="currentColor" /> },
+        { id: "pricing", title: "Pricing", content: <Pricing />, icon: <Coin1 color="currentColor" /> }
+    ]
 
     const [billingInfoModalOpen, setBillingInfoModalOpen] = useState(false);
 

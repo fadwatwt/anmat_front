@@ -58,22 +58,26 @@ function PlanDetails() {
                 </div>
             ))}
         </div>,
-        <div key={`features-${h._id}`} className="flex flex-col gap-2 py-1">
+        <div key={`features-${h._id}`} className="flex flex-col gap-3 py-1">
             {h.features?.map((f, idx) => (
-                <div key={idx} className="flex flex-col gap-0.5">
-                    <div className="flex items-center gap-1.5">
-                        <div className="h-1 w-1 rounded-full bg-primary-400"></div>
-                        <span className="text-sm font-medium text-cell-primary">
+                <div key={idx} className="flex flex-col gap-1.5">
+                    <div className="flex items-start gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-primary-400 mt-1.5 shrink-0" />
+                        <span className="text-sm font-semibold text-cell-primary leading-tight">
                             {f.feature_type?.title || f.plan_feature?.title}
                         </span>
                     </div>
                     {f.properties?.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 ml-3">
+                        <div className="flex flex-wrap gap-2 ml-3.5">
                             {f.properties.map((prop, pIdx) => (
-                                <span key={pIdx} className="text-[11px] bg-status-bg px-1.5 py-0.5 rounded border border-status-border text-cell-secondary">
-                                    <span className="opacity-70">{prop.key}:</span>
-                                    <span className="font-bold text-primary-600 ml-1">{prop.value}</span>
-                                </span>
+                                <div key={pIdx} className="bg-slate-50 border border-slate-100 rounded-md px-2 py-1 flex items-center gap-1.5 shadow-sm">
+                                    <span className="text-[11px] text-slate-400 font-medium">
+                                        {prop.key}:
+                                    </span>
+                                    <span className="text-[11px] font-bold text-blue-600">
+                                        {prop.value}
+                                    </span>
+                                </div>
                             ))}
                         </div>
                     )}

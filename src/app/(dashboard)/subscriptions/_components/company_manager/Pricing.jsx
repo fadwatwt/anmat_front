@@ -1,145 +1,252 @@
 "use client"
 
-import { RiCheckboxCircleLine, RiFlashlightLine } from "@remixicon/react";
-import { Check, TickCircle } from "iconsax-react";
-import { CheckIcon } from "lucide-react";
-import React from "react";
+
+
+
+
+
+import { RiFlashlightLine, RiCheckboxCircleFill } from "@remixicon/react";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import Switch2 from "@/components/Form/Switch2";
 import CheckAlert from "@/components/Alerts/CheckِِAlert";
+import Modal from "@/components/Modal/Modal";
+import StripePaymentWrapper from "@/components/stripe/StripePaymentWrapper";
+import { selectUser } from "@/redux/auth/authSlice";
+import { useGetSubscriberSubscriptionPlansQuery } from "@/redux/plans/subscriptionPlansApi";
+import { useGetMySubscriptionQuery } from "@/redux/subscriptions/subscriptionsApi";
 
-const pricingData = [
-    {
-        name: "Basic Plan",
-        price: "$10/mth",
-        description: "All the basics to get started.",
-        features: [
-            "Access to core dashboard features",
-            "Access to basic analytics",
-            "Email support"
-        ]
-    },
-    {
-        name: "Professional Plan",
-        price: "$20/mth",
-        description: "Advanced features for professionals.",
-        features: [
-            "Everything in Basic Plan",
-            "Advanced analytics",
-            "Priority email support",
-            "Customizable dashboard"
-        ]
-    },
-    {
-        name: "Enterprise Plan",
-        price: "$50/mth",
-        description: "All features for large teams.",
-        features: [
-            "Everything in Professional Plan",
-            "Dedicated account manager",
-            "24/7 support",
-            "Custom integrations"
-        ]
-    }
-]
+
+import { useTranslation } from "react-i18next";
+
 
 function Pricing() {
+    const { t } = useTranslation();
+    const user = useSelector(selectUser);
+    const { data: plans = [], isLoading } = useGetSubscriberSubscriptionPlansQuery();
+    const { data: currentSubscription } = useGetMySubscriptionQuery();
+    const [billingCycle, setBillingCycle] = useState("month"); // "month" or "year"
+    const [selectedPlanInfo, setSelectedPlanInfo] = useState(null);
+    const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
-    const planFeatures = (plan) => plan.features.map((feature, index) => [
-        <div key={index} className="flex items-start justify-start gap-2 w-full">
-            <div className="bg-primary-100 rounded-full p-1.5">
-                <svg width="13" height="11" viewBox="0 0 13 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M11.096 0.390037L3.93602 7.30004L2.03602 5.27004C1.68602 4.94004 1.13602 4.92004 0.736015 5.20004C0.346015 5.49004 0.236015 6.00004 0.476015 6.41004L2.72602 10.07C2.94602 10.41 3.32601 10.62 3.75601 10.62C4.16601 10.62 4.55602 10.41 4.77602 10.07C5.13602 9.60004 12.006 1.41004 12.006 1.41004C12.906 0.490037 11.816 -0.319963 11.096 0.380037V0.390037Z" fill="#375DFB" />
-                </svg>
-            </div>
-            <span className="text-sm text-gray-700 text-start">
-                {feature}
-            </span>
-        </div>
-    ]);
+    const handleToggleBillingCycle = () => {
+        setBillingCycle(prev => prev === "month" ? "year" : "month");
+    }
+
+    const handleSelectPlan = (plan) => {
+        const pricingIndex = plan.pricing?.findIndex(p => p.interval === billingCycle && p.is_active);
+        const idx = pricingIndex >= 0 ? pricingIndex : 0;
+        const selectedPricing = plan.pricing?.[idx];
+        if (!selectedPricing) return;
+        setSelectedPlanInfo({
+            plan,
+            price: selectedPricing.price,
+            priceId: plan.stripe_price_ids?.[idx],
+            trialDays: plan.trial?.is_active ? plan.trial?.trial_days : 0,
+        });
+        setIsCheckoutOpen(true);
+    };
+
+    const closeCheckout = () => {
+        setIsCheckoutOpen(false);
+        setSelectedPlanInfo(null);
+    };
+
+    const planFeatures = (plan) => {
+        if (!plan.features || plan.features.length === 0) {
+            return (
+                <p className="text-sm italic text-cell-secondary col-span-full">
+                    {t("Standard features included")}
+                </p>
+            );
+        }
+        return plan.features.map((feature, index) => {
+            const title =
+                feature.plan_feature?.title ||
+                feature.feature_type?.title ||
+                feature.feature_type_id?.title ||
+                feature.title ||
+                t("Feature");
+            const details =
+                feature.plan_feature?.details ||
+                feature.feature_type?.details ||
+                feature.details ||
+                "";
+
+            return (
+                <div
+                    key={index}
+                    className="flex items-start gap-3 p-3 rounded-xl border border-status-border bg-status-bg hover:bg-primary-50 hover:border-primary-100 transition-colors"
+                >
+                    <RiCheckboxCircleFill
+                        size={20}
+                        className="text-primary-base shrink-0 mt-0.5"
+                    />
+                    <div className="flex flex-col items-start text-start gap-1 flex-1 min-w-0">
+                        <span className="!text-table-title text-sm font-semibold break-words">
+                            {title}
+                        </span>
+                        {details ? (
+                            <span className="!text-cell-secondary text-xs leading-snug">
+                                {details}
+                            </span>
+                        ) : null}
+                        {feature.properties && feature.properties.length > 0 ? (
+                            <div className="flex flex-wrap gap-1.5 mt-1">
+                                {feature.properties.map((prop, pIdx) => (
+                                    <span
+                                        key={pIdx}
+                                        className="inline-flex items-center px-2 py-0.5 bg-surface border border-status-border rounded-md text-[11px]"
+                                    >
+                                        <span className="!text-cell-secondary font-medium me-1">
+                                            {prop.key}:
+                                        </span>
+                                        <span className="!text-primary-base font-bold">
+                                            {prop.value}
+                                        </span>
+                                    </span>
+                                ))}
+                            </div>
+                        ) : null}
+                    </div>
+                </div>
+            );
+        });
+    };
+
+    if (isLoading) return <div className="p-10 text-center">{t("Loading plans...")}</div>;
 
     return (
         <div className="flex flex-col items-stretch justify-start gap-6">
-            <div className={"flex justify-between items-baseline"}>
-                <div className={"flex text-sm gap-3"}>
-                    <span className={"font-bold"}>Team size:</span>
-                    <span>20 Users</span>
-                </div>
-                <div className={"flex *:text-sm gap-3"}>
-                    <span>Pay Monthly</span>
-                    <Switch2 isOn={true} handleToggle={() => {}} />
-                    <span>Pay Yearly</span>
-                    <span className={"text-blue-600 bg-blue-100 p-1 rounded-lg"}>Save 25%</span>
+            <div className={"flex justify-end items-baseline"}>
+                <div className={"flex *:text-sm gap-3 items-center"}>
+                    <span>{t("Pay Monthly")}</span>
+                    <Switch2 isOn={billingCycle === "year"} handleToggle={handleToggleBillingCycle} />
+                    <span>{t("Pay Yearly")}</span>
+                    <span className={"text-blue-600 bg-blue-100 p-1 rounded-lg"}>{t("Save 25%")}</span>
                 </div>
             </div>
-            {pricingData.map((plan, index) => [
-                <React.Fragment key={index}>
-                    <div className={"rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 flex flex-col gap-6 overflow-hidden shadow-md"}>
+
+            {plans.filter(p => p.is_active).map((plan, index) => {
+                const pricing = plan.pricing?.find(p => p.interval === billingCycle && p.is_active) || plan.pricing?.[0];
+                const isCurrentPlan = currentSubscription?.plan_id?._id === plan._id;
+
+                return (
+                    <div key={index} className={`rounded-2xl bg-surface border ${isCurrentPlan ? 'border-primary-500 ring-2 ring-primary-100' : 'border-status-border'} flex flex-col gap-6 overflow-hidden shadow-md transition-all`}>
                         {/* Details */}
-                        <div className="flex items-center gap-4 justify-between px-8 py-8">
+                        <div className="flex items-stretch gap-6 justify-between px-8 py-8 md:flex-row flex-col">
                             {/* Basic Info */}
-                            <div className="flex flex-col items-center justify-center gap-2 w-5/12">
+                            <div className="flex flex-col items-center justify-center gap-2 md:w-4/12 w-full md:border-e md:pe-6 border-status-border">
                                 <div className="rounded-full p-2 bg-primary-100">
                                     <div className="rounded-full p-2 bg-primary-200">
                                         <RiFlashlightLine size={25} className="rounded-full text-primary-500 stroke-[5px]" />
                                     </div>
                                 </div>
-                                <span className="text-md text-primary-700 font-semibold text-center">
+                                <span className="!text-primary-base text-md font-semibold text-center">
                                     {plan.name}
                                 </span>
-                                <span className="text-3xl font-bold text-gray-900 text-center">
-                                    {plan.price}
-                                </span>
-                                <span className="text-sm text-gray-500 text-center">
-                                    {plan.description}
+                                <div className="flex items-baseline gap-1">
+                                    <span className="!text-table-title text-3xl font-bold text-center">
+                                        ${pricing?.price || 0}
+                                    </span>
+                                    <span className="!text-cell-secondary text-sm">
+                                        /{billingCycle === 'month' ? t('mth') : t('yr')}
+                                    </span>
+                                </div>
+                                <span className="!text-cell-secondary text-sm text-center">
+                                    {plan.description || t("Plan description placeholder")}
                                 </span>
                             </div>
 
                             {/* Features */}
-                            <div className="flex text-sm items-center justify-start gap-4 flex-wrap">
-                                {planFeatures(plan)}
+                            <div className="flex flex-col flex-1 gap-3">
+                                <span className="!text-table-title text-sm font-semibold uppercase tracking-wide">
+                                    {t("What's included")}
+                                </span>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                    {planFeatures(plan)}
+                                </div>
                             </div>
                         </div>
 
-                        <div className="px-8 py-4 bg-gray-50 w-full">
-                            <button className="text-primary-100 bg-primary-500 hover:bg-primary-600 text-md font-light
-                            w-full rounded-xl py-2 cursor-pointer">
-                                Subscribe
+                        <div className="px-8 py-4 bg-status-bg w-full">
+                            <button
+                                type="button"
+                                disabled={isCurrentPlan}
+                                onClick={() => handleSelectPlan(plan)}
+                                className={`text-md font-light w-full rounded-xl py-2 cursor-pointer transition-colors ${
+                                    isCurrentPlan
+                                    ? "bg-status-border !text-cell-secondary cursor-not-allowed"
+                                    : "!text-white bg-primary-500 hover:bg-primary-600"
+                                }`}
+                            >
+                                {isCurrentPlan ? t("Current Plan") : t("Upgrade / Subscribe")}
                             </button>
                         </div>
                     </div>
-                </React.Fragment>
-            ])}
+                );
+            })}
+
+            <Modal
+                isOpen={isCheckoutOpen}
+                onClose={closeCheckout}
+                title={t("Secure Subscription Checkout")}
+                className={"lg:w-[500px] md:w-10/12 w-11/12 p-0 overflow-hidden"}
+                isHideCancel={true}
+            >
+                {selectedPlanInfo && (
+                    <div className="p-0">
+                        <div className="bg-status-bg p-6 border-b border-status-border">
+                            <div className="flex justify-between items-center">
+                                <div>
+                                    <p className="!text-primary-base text-xs font-bold uppercase tracking-wider mb-1">
+                                        {t("Selected Plan")}
+                                    </p>
+                                    <h3 className="!text-table-title text-xl font-bold">
+                                        {selectedPlanInfo.plan.name}
+                                    </h3>
+                                </div>
+                                <div className="text-right">
+                                    <p className="!text-table-title text-2xl font-black">
+                                        ${selectedPlanInfo.price}
+                                    </p>
+                                    <p className="!text-cell-secondary text-xs font-medium">
+                                        {t("Billed recurringly")}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="p-6">
+                            <StripePaymentWrapper
+                                amount={selectedPlanInfo.price}
+                                priceId={selectedPlanInfo.priceId}
+                                planId={selectedPlanInfo.plan._id}
+                                trialDays={selectedPlanInfo.trialDays}
+                                onFinish={closeCheckout}
+                                userEmail={user?.email}
+                                userName={user?.name}
+                                userPhone={user?.phone}
+                            />
+                        </div>
+                    </div>
+                )}
+            </Modal>
 
             <CheckAlert
-                isOpen={false} // OR true s
+                isOpen={false}
                 onClose={() => {}}
                 type="success"
-                title="Success"
+                title={t("Success")}
                 description={
                     <span>
-            Congratulations, you have successfully subscribed to the <span className="font-bold text-black">Basic Plan</span>.
-        </span>
+                        {t("Congratulations, you have successfully subscribed to the plan.")}
+                    </span>
                 }
-                confirmBtnText="Done"
+                confirmBtnText={t("Done")}
                 hideConfirmBtn={true}
-                onSubmit={() => console.log("Success modal closed")}
-            />
-            <CheckAlert
-                isOpen={false} // OR true
-                onClose={() => {}}
-                type="cancel"
-                title="Cancel Renewal Confirmation"
-                confirmBtnText="Yes, Stop"
-                description={
-                    <p>
-                        Are you sure you want to <span className="font-bold text-black">cancel renewal</span> of the
-                        <span className="font-bold text-black"> basic plan</span> with <span className="font-bold text-black">$10/mth</span>?
-                    </p>
-                }
                 onSubmit={() => {}}
             />
         </div>
-
     );
 }
 

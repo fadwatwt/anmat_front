@@ -53,6 +53,26 @@ function EmployeeInfoForm({ formData, updateFormData, isEdit = false }) {
                         onChange={(e) => updateFormData("phone", e.target.value)}
                     />
                 </div>
+                {!isEdit && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <InputAndLabel
+                            type="password"
+                            title={t("Password")}
+                            isRequired={true}
+                            placeholder={t("Enter password")}
+                            value={formData.password}
+                            onChange={(e) => updateFormData("password", e.target.value)}
+                        />
+                        <InputAndLabel
+                            type="password"
+                            title={t("Confirm Password")}
+                            isRequired={true}
+                            placeholder={t("Confirm password")}
+                            value={formData.password_confirmation}
+                            onChange={(e) => updateFormData("password_confirmation", e.target.value)}
+                        />
+                    </div>
+                )}
                 <DateInput
                     title={t("Date of Birth")}
                     isRequired={true}

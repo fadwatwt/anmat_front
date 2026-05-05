@@ -179,12 +179,14 @@ function CustomSelect({
             {/* Custom Input/Tags Area */}
             <div className="relative">
                 <div
-                    ref={inputContainerRef} // الـ Ref لحساب موضع الـ Portal
+                    ref={inputContainerRef} // Ref to calculate Portal position
                     onClick={() => setIsDropdownOpen(true)}
-                    className={variant === "chart" ? `flex items-center justify-between gap-2 h-auto bg-status-bg text-cell-primary w-full border border-status-border rounded-lg hover:bg-status-bg/80 transition-colors shadow-sm cursor-pointer focus-within:ring-1 focus-within:ring-primary-500 py-1.5 px-3 ${classNameSelect || "text-xs"}` : `flex flex-wrap items-center gap-2 h-auto bg-status-bg text-cell-primary w-full border border-status-border rounded-lg ${classNameSelect ? classNameSelect : "py-2 px-3 text-sm"} shadow-sm cursor-text focus-within:ring-2 focus-within:ring-primary-500 focus-within:border-primary-500`}
+                    className={variant === "chart" 
+                        ? `flex items-center justify-between gap-2 h-9 bg-status-bg text-cell-primary w-full border border-status-border rounded-xl hover:border-primary-400 transition-all shadow-sm cursor-pointer px-3 ${classNameSelect || "text-xs font-medium"}` 
+                        : `flex flex-wrap items-center gap-2 h-auto bg-status-bg text-cell-primary w-full border border-status-border rounded-xl ${classNameSelect ? classNameSelect : "py-2.5 px-4 text-sm"} shadow-sm cursor-text focus-within:ring-2 focus-within:ring-primary-500/20 focus-within:border-primary-500 transition-all`}
                 >
                     {/* Tags (Selected Options) */}
-                    <div className={variant === "chart" ? "flex items-center gap-1 font-medium text-cell-secondary truncate" : "flex flex-wrap gap-1"}>
+                    <div className={variant === "chart" ? "flex items-center gap-1 font-medium text-cell-secondary truncate flex-nowrap" : "flex flex-wrap gap-1"}>
                         {selectedOptions.map((option) => (
                             variant === "chart" || (!multi) ? (
                                 <span key={option.id} className="truncate">
@@ -221,12 +223,12 @@ function CustomSelect({
                             calculateDropdownPosition();
                         }}
                         onBlur={() => setTimeout(() => setIsDropdownOpen(false), 200)}
-                        className={`flex-grow bg-transparent focus:outline-none ${variant === "chart" ? "w-0 min-w-0 p-0 text-xs hidden sm:block" : "text-sm p-1 min-w-[100px]"}`}
+                        className={`flex-grow bg-transparent focus:outline-none ${variant === "chart" ? "hidden" : "text-sm p-1 min-w-[100px]"}`}
                     />
 
                     {/* Dropdown Arrow */}
-                    <div className={`flex items-center`}>
-                        <IoIosArrowDown className="text-cell-secondary" />
+                    <div className="flex items-center flex-shrink-0">
+                        <IoIosArrowDown className={`text-cell-secondary transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} size={variant === "chart" ? 14 : 16} />
                     </div>
                 </div>
             </div>

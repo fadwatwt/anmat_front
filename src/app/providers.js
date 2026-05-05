@@ -6,6 +6,8 @@ import PropTypes from "prop-types";
 import { Provider } from "react-redux";
 import { store } from "@/redux/store";
 import NotificationListener from '@/components/NotificationListener';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const ThemeContext = createContext();
 export const ProcessingContext = createContext();
@@ -91,6 +93,18 @@ const Providers = ({ children }) => {
                 <ProcessingProvider>
                     <I18nextProvider i18n={i18n}>
                         {children}
+                        <ToastContainer
+                            position="top-right"
+                            autoClose={3000}
+                            hideProgressBar={false}
+                            newestOnTop
+                            closeOnClick
+                            rtl={i18n.language === 'ar'}
+                            pauseOnFocusLoss
+                            draggable
+                            pauseOnHover
+                            theme="colored"
+                        />
                     </I18nextProvider>
                 </ProcessingProvider>
             </ThemeProvider>
