@@ -4,62 +4,40 @@ import * as Yup from "yup";
 import PropTypes from "prop-types";
 import Modal from "@/components/Modal/Modal.jsx";
 import InputAndLabel from "@/components/Form/InputAndLabel.jsx";
-import { useCreateSubscriptionPlanMutation } from "@/redux/plans/subscriptionPlansApi.js";
+import { useUpdateSubscriptionPlanMutation } from "@/redux/plans/subscriptionPlansApi.js";
 import { useGetSubscriptionFeatureTypesQuery } from "@/redux/plans/subscriptionsFeatureTypesApi.js";
 import SelectAndLabel from "@/components/Form/SelectAndLabel";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Switch2 from "@/components/Form/Switch2";
-import { RiDeleteBin7Line } from "@remixicon/react";
+import SwitchWithLabel from "@/components/Form/SwitchWithLabel";
+import { RiDeleteBin7Line, RiInformationLine, RiHashtag } from "@remixicon/react";
 import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
+import { useTranslation } from "react-i18next";
 import BtnAddOutline from "@/components/Form/BtnAddOutline";
 import ElementsSelect from "@/components/Form/ElementsSelect";
 import { FiTrash2 } from "react-icons/fi";
-import { useTranslation } from "react-i18next";
-import SwitchWithLabel from "@/components/Form/SwitchWithLabel";
 
-function CreatePlanModal({ isOpen, onClose }) {
+function EditPlanModal({ isOpen, onClose, plan }) {
   const { t } = useTranslation();
-  const [createSubscriptionPlan, { isLoading: isCreating }] = useCreateSubscriptionPlanMutation();
+  const [updateSubscriptionPlan, { isLoading: isUpdating }] = useUpdateSubscriptionPlanMutation();
   const { data: featureTypes } = useGetSubscriptionFeatureTypesQuery("active");
-
-  const calculateDays = (interval, count) => {
-    const counts = {
-      day: 1,
-      week: 7,
-      month: 30,
-      year: 365
-    };
-    return (counts[interval] || 30) * (parseInt(count) || 1);
-  };
 
   const [showApproval, setShowApproval] = useState(false);
   const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
+
+  const calculateDays = (interval, count) => {
+    const counts = { day: 1, week: 7, month: 30, year: 365 };
+    return (counts[interval] || 30) * (parseInt(count) || 1);
+  };
 
   const formik = useFormik({
     initialValues: {
       name: "",
       description: "",
-      pricing: [
-        {
-          price: "",
-          interval: "month",
-          interval_count: 1,
-          days_number: 30,
-          discount: 0,
-          is_active: true
-        }
-      ],
-      features: [
-        {
-          feature_type_id: "",
-          properties: []
-        }
-      ],
-      trial: {
-        trial_days: 14,
-        is_active: true
-      },
+      pricing: [],
+      features: [],
+      trial: { trial_days: 14, is_active: true },
       is_active: true
     },
     validationSchema: Yup.object({
@@ -101,20 +79,45 @@ function CreatePlanModal({ isOpen, onClose }) {
     },
   });
 
-  const handleConfirmCreate = async () => {
+  useEffect(() => {
+    if (plan && isOpen) {
+      formik.setValues({
+        name: plan.name || "",
+        description: plan.description || "",
+        pricing: plan.pricing?.map(p => ({
+            price: p.price ?? 0,
+            interval: p.interval || "month",
+            interval_count: p.interval_count ?? 1,
+            days_number: p.days_number ?? 30,
+            discount: p.discount ?? 0,
+            is_active: p.is_active ?? true
+        })) || [],
+        features: plan.features?.map(f => ({
+            feature_type_id: f.feature_type?._id || f.plan_feature?._id || f.feature_type_id || "",
+            properties: f.properties || []
+        })) || [],
+        trial: {
+            trial_days: plan.trial?.trial_days ?? 14,
+            is_active: plan.trial?.is_active ?? false
+        },
+        is_active: plan.is_active ?? true
+      });
+    }
+  }, [plan, isOpen]);
+
+  const handleConfirmUpdate = async () => {
     try {
-      const result = await createSubscriptionPlan(formik.values).unwrap();
+      await updateSubscriptionPlan({ id: plan._id, ...formik.values }).unwrap();
       setApiResponse({
         isOpen: true,
         status: "success",
-        message: "Plan created successfully!"
+        message: "Plan updated successfully! A new version has been archived."
       });
-      formik.resetForm();
     } catch (error) {
       setApiResponse({
         isOpen: true,
         status: "error",
-        message: error?.data?.message || "Failed to create plan. Please try again."
+        message: error?.data?.message || "Failed to update plan."
       });
     }
   };
@@ -156,7 +159,6 @@ function CreatePlanModal({ isOpen, onClose }) {
     const selectedType = featureTypes.find(ft => ft._id === featureTypeId);
     const newFeatures = [...formik.values.features];
 
-    // Initialize properties based on attributes_definitions
     const initialProperties = selectedType?.attributes_definitions.map(attr => ({
       key: attr.key,
       value: attr.data_type === "number" ? 0 : ""
@@ -186,12 +188,23 @@ function CreatePlanModal({ isOpen, onClose }) {
       isOpen={isOpen}
       onClose={onClose}
       isBtns={true}
-      btnApplyTitle={isCreating ? t("Creating...") : t("Save")}
+      btnApplyTitle={isUpdating ? t("Updating...") : t("Update Plan")}
       onClick={() => formik.submitForm()}
       className={"lg:w-5/12 md:w-8/12 sm:w-10/12 w-11/12"}
-      title={"Add Plan"}
+      title={"Edit Plan"}
     >
       <div className="flex flex-col gap-4 max-h-[70vh] overflow-y-auto custom-scrollbar">
+        {/* Warning Banner */}
+        <div className="mx-4 p-3 bg-blue-50 border border-blue-100 rounded-xl flex items-start gap-3">
+            <RiInformationLine size={20} className="text-blue-500 shrink-0 mt-0.5" />
+            <div className="flex flex-col">
+                <span className="text-xs font-bold text-blue-700">Financial Rights Preservation</span>
+                <p className="text-[10px] text-blue-600 leading-tight">
+                    Updating this plan will automatically archive the current version. Existing subscribers will stay on their current price and features until their next renewal.
+                </p>
+            </div>
+        </div>
+
         <div className={"px-4 grid grid-cols-1 gap-4"}>
           <InputAndLabel
             title="Plan Name"
@@ -199,7 +212,6 @@ function CreatePlanModal({ isOpen, onClose }) {
             value={formik.values.name}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            placeholder="Enter plan name"
             error={formik.touched.name && formik.errors.name}
             isRequired={true}
           />
@@ -209,7 +221,6 @@ function CreatePlanModal({ isOpen, onClose }) {
             value={formik.values.description}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            placeholder="Enter plan description"
             error={formik.touched.description && formik.errors.description}
             isRequired={true}
           />
@@ -336,7 +347,6 @@ function CreatePlanModal({ isOpen, onClose }) {
                 error={formik.touched.features?.[index]?.feature_type_id && formik.errors.features?.[index]?.feature_type_id}
               />
 
-              {/* Dynamic Attributes */}
               {selectedType && feature.properties.length > 0 && (
                 <div className="mt-3 grid grid-cols-1 gap-3 p-3 bg-status-bg rounded-lg">
                   <p className="text-[10px] text-cell-secondary uppercase tracking-wider font-bold">Properties</p>
@@ -388,7 +398,6 @@ function CreatePlanModal({ isOpen, onClose }) {
                 onBlur={formik.handleBlur}
                 error={formik.touched.trial?.trial_days && formik.errors.trial?.trial_days}
                 isRequired={true}
-                placeholder="Enter number of days"
               />
             </div>
           )}
@@ -402,15 +411,14 @@ function CreatePlanModal({ isOpen, onClose }) {
         </div>
       </div>
 
-      {/* Alerts */}
       <ApprovalAlert
         isOpen={showApproval}
         onClose={() => setShowApproval(false)}
-        onConfirm={handleConfirmCreate}
-        title="Create Subscription Plan"
-        message={`Are you sure you want to create the "${formik.values.name}" plan?`}
-        confirmBtnText={isCreating ? "Creating..." : "Yes, Create"}
-        type="info"
+        onConfirm={handleConfirmUpdate}
+        title="Update Subscription Plan"
+        message={`Are you sure you want to update the "${plan?.name}" plan? This will create a new version.`}
+        confirmBtnText={isUpdating ? "Updating..." : "Yes, Update"}
+        type="warning"
       />
 
       <ApiResponseAlert
@@ -423,10 +431,10 @@ function CreatePlanModal({ isOpen, onClose }) {
   );
 }
 
-CreatePlanModal.propTypes = {
+EditPlanModal.propTypes = {
   isOpen: PropTypes.bool,
   onClose: PropTypes.func,
+  plan: PropTypes.object,
 };
 
-export default CreatePlanModal;
-
+export default EditPlanModal;

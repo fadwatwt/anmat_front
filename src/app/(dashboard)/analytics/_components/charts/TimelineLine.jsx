@@ -10,17 +10,7 @@ import {
     Legend
 } from 'recharts';
 
-const data = [
-    { name: '0', expected: 4, actual: 2 },
-    { name: '5', expected: 7, actual: 5 },
-    { name: '10', expected: 5, actual: 6 },
-    { name: '15', expected: 9, actual: 8 },
-    { name: '20', expected: 6, actual: 4 },
-    { name: '25', expected: 11, actual: 9 },
-    { name: '30', expected: 13, actual: 10 },
-];
-
-const TimelineLine = () => {
+const TimelineLine = ({ data = [] }) => {
     return (
         <div className="h-full w-full">
             <p className="text-[10px] text-cell-secondary mb-2 absolute top-0 left-0">Hours</p>
@@ -44,8 +34,6 @@ const TimelineLine = () => {
                         axisLine={false}
                         tickLine={false}
                         tick={{ fontSize: 11, fill: 'var(--text-cell-secondary)' }}
-                        domain={[0, 15]}
-                        ticks={[0, 5, 10, 15]}
                     />
                     <Tooltip
                         contentStyle={{ borderRadius: '10px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
@@ -57,10 +45,9 @@ const TimelineLine = () => {
                         wrapperStyle={{ fontSize: '12px' }}
                     />
 
-                    {/* الخط المتقطع - الوقت المتوقع */}
                     <Line
                         type="monotone"
-                        dataKey="expected"
+                        dataKey="Expected Time"
                         name="Expected Time"
                         stroke="#10B981"
                         strokeWidth={2}
@@ -69,10 +56,9 @@ const TimelineLine = () => {
                         activeDot={{ r: 4 }}
                     />
 
-                    {/* الخط المتصل - الوقت الفعلي */}
                     <Line
                         type="monotone"
-                        dataKey="actual"
+                        dataKey="Actual Time"
                         name="Actual Time"
                         stroke="#3B82F6"
                         strokeWidth={2}

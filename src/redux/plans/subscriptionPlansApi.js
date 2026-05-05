@@ -55,6 +55,34 @@ export const subscriptionPlansApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["SubscriptionPlans"],
         }),
+        updateSubscriptionPlan: builder.mutation({
+            query: ({ id, ...body }) => ({
+                url: `api/admin/subscription-plans/${id}`,
+                method: "PATCH",
+                body,
+            }),
+            invalidatesTags: (result, error, { id }) => [
+                "SubscriptionPlans", 
+                { type: "SubscriptionPlans", id },
+                { type: "SubscriptionPlansHistory", id }
+            ],
+        }),
+        getSubscriptionPlanHistory: builder.query({
+            query: (id) => ({
+                url: `api/admin/subscription-plans/${id}/history`,
+                method: "GET",
+            }),
+            transformResponse: (response) => response.data,
+            providesTags: (result, error, id) => [{ type: "SubscriptionPlansHistory", id }],
+        }),
+        getPublicSubscriptionPlans: builder.query({
+            query: () => ({
+                url: "api/subscription-plans/public",
+                method: "GET",
+            }),
+            transformResponse: (response) => response.data,
+            providesTags: ["SubscriptionPlans"],
+        }),
     }),
 });
 
@@ -66,4 +94,7 @@ export const {
     useDeleteSubscriptionPlanMutation,
     useToggleSubscriptionPlanActiveStatusMutation,
     useToggleSubscriptionPlanTrialStatusMutation,
+    useUpdateSubscriptionPlanMutation,
+    useGetSubscriptionPlanHistoryQuery,
+    useGetPublicSubscriptionPlansQuery,
 } = subscriptionPlansApi;

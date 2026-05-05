@@ -4,12 +4,12 @@ import Link from "next/link";
 
 const VerifyEmail = () => {
     return (
-        <>
-            <div className="relative rounded-xl px-12 py-16 border border-status-border bg-surface">
-                <div className="absolute top-0 left-0 w-full">
-                    <img src="/images/patterns/pattern_rec_top.png" className="w-full h-[120px]" alt="" />
+        <div className="w-full min-h-screen flex items-center justify-center py-12 px-4">
+            <div className="relative rounded-xl px-12 py-16 border border-status-border bg-surface shadow-sm">
+                <div className="absolute top-0 left-0 w-full overflow-hidden rounded-t-xl">
+                    <img src="/images/patterns/pattern_rec_top.png" className="w-full h-[120px] object-cover" alt="" />
                 </div>
-                <div className="flex flex-col items-center justify-center gap-8 w-full h-full">
+                <div className="flex flex-col items-center justify-center gap-8 w-full h-full relative z-10">
                     <div>
                         <svg width="126" height="127" viewBox="0 0 126 127" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M94.5 95C111.897 77.603 111.897 49.397 94.5 32C77.103 14.603 48.897 14.603 31.5 32C14.103 49.397 14.103 77.603 31.5 95C48.897 112.397 77.103 112.397 94.5 95Z" fill="#EBF1FF" />
@@ -39,10 +39,9 @@ const VerifyEmail = () => {
                             {"Return"}
                         </Link>
                     </div>
-
                 </div>
             </div>
-        </>
+        </div>
     );
 };
 

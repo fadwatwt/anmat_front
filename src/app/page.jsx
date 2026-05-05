@@ -1,3 +1,5 @@
+"use client";
+import { useState } from "react";
 import {
   RiBuilding4Line,
   RiCheckboxCircleFill,
@@ -10,11 +12,13 @@ import {
 } from "@remixicon/react";
 import Collapse from "@/components/LandingPage/Collapse.jsx";
 import Link from "next/link";
+import { useGetPublicSubscriptionPlansQuery } from "@/redux/plans/subscriptionPlansApi";
+import { useTranslation } from "react-i18next";
+
 function Desktop2Page() {
-  let isOnSwitch = false;
-  // const handelIsOnSwitch = () => {
-  //   isOnSwitch = !isOnSwitch;
-  // };
+  const { i18n } = useTranslation();
+  const [isOnSwitch, setIsOnSwitch] = useState(false);
+  const { data: plans, isLoading } = useGetPublicSubscriptionPlansQuery();
   return (
     <div
       className={
@@ -299,361 +303,111 @@ function Desktop2Page() {
               </p>
             </div>
             <div className={"flex items-center justify-center gap-3 relative"}>
-              <p>Pay Monthly </p>
+              <p className={!isOnSwitch ? "font-bold text-primary-600" : ""}>Pay Monthly </p>
               <button
-                type={"submit"}
+                type={"button"}
+                onClick={() => setIsOnSwitch(!isOnSwitch)}
                 className={`w-10 h-5 flex items-center dark:shadow-inner dark:drop-shadow shadow-gray-500 dark:border border-gray-700 rounded-full p-0.5 transition-colors ${isOnSwitch
                   ? "bg-primary-500 dark:bg-primary-200"
                   : "bg-[#E2E4E9] dark:bg-gray-800"
                   }`}
               >
                 <div
-                  className={`relative bg-white  dark:shadow-inner  dark:shadow-gray-500 dark:bg-gray-800 w-3.5 h-3.5 rounded-full  transform transition-transform flex items-center justify-center  `}
+                  className={`relative bg-white dark:shadow-inner dark:shadow-gray-500 dark:bg-gray-800 w-3.5 h-3.5 rounded-full transform transition-transform flex items-center justify-center ${isOnSwitch ? (i18n?.language === "ar" ? "-translate-x-5" : "translate-x-5") : ""}`}
                 >
-                  {/* Small Circle Inside */}
                   <div
                     className={`w-1.5 h-1.5 rounded-full dark:shadow-inner drop-shadow shadow-gray-500 `}
                   />
                 </div>
               </button>
-              <p>Pay Yearly</p>
+              <p className={isOnSwitch ? "font-bold text-primary-600" : ""}>Pay Yearly</p>
               <img
                 src="/images/LandingPage/arrowSwitchImage.png"
                 alt={"arrow"}
                 className={"absolute w-[185px] h-[87px] right-[24rem] -top-7"}
               />
             </div>
-            <div className={"w-full flex justify-center items-center gap-5"}>
-              <div
-                className={
-                  "w-1/4 rounded-xl border border-gray-300 shadow-md flex flex-col gap-5 py-8 px-6"
-                }
-              >
-                <div
-                  className={"flex flex-col gap-2 justify-center items-center"}
-                >
-                  <div
-                    className={
-                      "rounded-full w-12 h-12 bg-primary-100 flex items-center justify-center"
-                    }
-                  >
-                    <span
-                      className={
-                        "rounded-full p-1 bg-primary-200 flex items-center justify-center"
-                      }
+            <div className={"w-full flex justify-center items-center gap-6 flex-wrap px-4"}>
+              {isLoading ? (
+                <div className="flex justify-center items-center py-20 w-full text-primary-600 font-bold text-xl">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mr-3"></div>
+                  Loading plans...
+                </div>
+              ) : plans?.filter(p => p.is_active)?.length > 0 ? (
+                plans?.filter(plan => plan.is_active).map((plan) => {
+                  const currentInterval = isOnSwitch ? "year" : "month";
+                  const pricing = plan.pricing?.find(p => p.interval === currentInterval && p.is_active);
+                  const Icon = plan.name?.toLowerCase().includes('enterprise') ? RiBuilding4Line : 
+                               plan.name?.toLowerCase().includes('pro') ? RiCopperDiamondLine : RiFlashlightLine;
+                  
+                  // Highlight professional or middle plans
+                  const isHighlighted = plan.name?.toLowerCase().includes('pro');
+                  
+                  return (
+                    <div
+                      key={plan._id}
+                      className={`
+                        w-full md:w-[45%] lg:w-[30%] xl:w-[28%] rounded-2xl border shadow-lg flex flex-col gap-6 py-10 px-8 transition-all duration-300 hover:-translate-y-2
+                        ${isHighlighted ? 'border-primary-500 bg-primary-50 transform scale-105 shadow-primary-200' : 'border-gray-200 bg-white hover:shadow-xl'}
+                      `}
                     >
-                      <RiFlashlightLine
-                        size={"25"}
-                        className={"text-blue-700"}
-                      />
-                    </span>
-                  </div>
-                  <p className={"text-primary-700 text-2xl"}>Basic plan</p>
-                  <p className={"text-4xl font-bold text-black"}>$10/mth</p>
-                  <p className={"text-gray-400 text-sm"}>
-                    All the basics to get started.
-                  </p>
-                </div>
-                <div className={""}>
-                  <div className={"flex flex-col items-start gap-4"}>
-                    <div className={"flex items-center gap-2 justify-start"}>
-                      <div
-                        className={
-                          "w-7 h-7 flex justify-center items-center p-1 bg-primary-100 rounded-full"
-                        }
-                      >
-                        <RiCheckLine
-                          size={"21"}
-                          className={"text-primary-700"}
-                        />
+                      <div className={"flex flex-col gap-3 justify-center items-center text-center"}>
+                        <div className={`rounded-full w-14 h-14 flex items-center justify-center ${isHighlighted ? 'bg-primary-500' : 'bg-primary-100'}`}>
+                          <span className={`rounded-full p-2 flex items-center justify-center ${isHighlighted ? 'bg-primary-400' : 'bg-primary-200'}`}>
+                            <Icon size={"28"} className={isHighlighted ? "text-white" : "text-primary-700"} />
+                          </span>
+                        </div>
+                        <h3 className={"text-primary-800 text-2xl font-extrabold mt-2"}>{plan.name}</h3>
+                        <div className={"flex items-end justify-center gap-1"}>
+                          <span className={"text-5xl font-black text-gray-900"}>
+                            ${pricing ? pricing.price : '-'}
+                          </span>
+                          <span className="text-gray-500 font-medium mb-1">
+                            /{currentInterval === 'month' ? 'mo' : 'yr'}
+                          </span>
+                        </div>
+                        <p className={"text-gray-500 text-sm h-12 line-clamp-2 mt-2"}>
+                          {plan.description || "Everything you need to manage your business efficiently."}
+                        </p>
                       </div>
-                      <p className={"text-sm"}>
-                        Access to core dashboard features
-                      </p>
-                    </div>
-                    <div className={"flex items-center gap-2 justify-start"}>
-                      <div
-                        className={
-                          "w-7 h-7 flex justify-center items-center p-1 bg-primary-100 rounded-full"
-                        }
-                      >
-                        <RiCheckLine
-                          size={"21"}
-                          className={"text-primary-700"}
-                        />
+                      
+                      <div className={"flex-1 w-full mt-4"}>
+                        <div className={"flex flex-col items-start gap-4"}>
+                          {plan.features?.slice(0, 6).map((feature, fIdx) => (
+                            <div key={fIdx} className={"flex items-center gap-3 w-full"}>
+                              <div className={`w-6 h-6 flex justify-center items-center rounded-full shrink-0 ${isHighlighted ? 'bg-primary-500' : 'bg-primary-100'}`}>
+                                <RiCheckLine size={"16"} className={isHighlighted ? "text-white" : "text-primary-700"} />
+                              </div>
+                              <p className={"text-sm font-medium text-gray-700"}>
+                                {feature.plan_feature?.title || feature.feature_type?.title}
+                                {feature.properties?.[0] && <span className="text-gray-500"> ({feature.properties[0].value})</span>}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                      <p className={"text-sm"}>
-                        Basic task and project management
-                      </p>
-                    </div>
-                    <div className={"flex items-center gap-2 justify-start"}>
-                      <div
-                        className={
-                          "w-7 h-7 flex justify-center items-center p-1 bg-primary-100 rounded-full"
-                        }
+                      
+                      <Link
+                        href={pricing ? `/register/subscriber/email?plan=${plan._id}&interval=${currentInterval}` : '#'}
+                        className={`
+                          rounded-xl w-full py-3.5 text-center font-bold text-lg transition-all
+                          ${!pricing 
+                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
+                            : isHighlighted 
+                              ? 'bg-primary-600 hover:bg-primary-700 text-white shadow-md hover:shadow-lg' 
+                              : 'bg-primary-100 hover:bg-primary-200 text-primary-800'}
+                        `}
                       >
-                        <RiCheckLine
-                          size={"21"}
-                          className={"text-primary-700"}
-                        />
-                      </div>
-                      <p className={"text-sm"}>Up to 5 team members</p>
+                        {pricing ? 'Get started' : 'Not available'}
+                      </Link>
                     </div>
-                    <div className={"flex items-center gap-2 justify-start"}>
-                      <div
-                        className={
-                          "w-7 h-7 flex justify-center items-center p-1 bg-primary-100 rounded-full"
-                        }
-                      >
-                        <RiCheckLine
-                          size={"21"}
-                          className={"text-primary-700"}
-                        />
-                      </div>
-                      <p className={"text-sm"}>10GB cloud storage per user</p>
-                    </div>
-                    <div className={"flex items-center gap-2 justify-start"}>
-                      <div
-                        className={
-                          "w-7 h-7 flex justify-center items-center p-1 bg-primary-100 rounded-full"
-                        }
-                      >
-                        <RiCheckLine
-                          size={"21"}
-                          className={"text-primary-700"}
-                        />
-                      </div>
-                      <p className={"text-sm"}>Email support</p>
-                    </div>
-                  </div>
-                </div>
-                <button
-                  className={
-                    "rounded-[10px] bg-primary-base w-full py-2.5 text-white"
-                  }
-                >
-                  Get started
-                </button>
-              </div>
-              <div
-                className={
-                  "w-1/4 rounded-xl border border-gray-300 shadow-md flex flex-col gap-5 py-8 px-6"
-                }
-              >
-                <div
-                  className={"flex flex-col gap-2 justify-center items-center"}
-                >
-                  <div
-                    className={
-                      "rounded-full w-12 h-12 bg-primary-100 flex items-center justify-center"
-                    }
-                  >
-                    <span
-                      className={
-                        "rounded-full p-1 bg-primary-200 flex items-center justify-center"
-                      }
-                    >
-                      <RiCopperDiamondLine
-                        size={"25"}
-                        className={"text-blue-700"}
-                      />
-                    </span>
-                  </div>
-                  <p className={"text-primary-700 text-2xl"}>
-                    Professional plan
-                  </p>
-                  <p className={"text-4xl font-bold text-black"}>$30/mth</p>
-                  <p className={"text-gray-400 text-sm"}>
-                    Enhanced features for growing teams.
-                  </p>
-                </div>
-                <div className={""}>
-                  <div className={"flex flex-col items-start gap-4"}>
-                    <div className={"flex items-center gap-2 justify-start"}>
-                      <div
-                        className={
-                          "w-7 h-7 flex justify-center items-center p-1 bg-primary-100 rounded-full"
-                        }
-                      >
-                        <RiCheckLine
-                          size={"21"}
-                          className={"text-primary-700"}
-                        />
-                      </div>
-                      <p className={"text-sm"}>Task and team management</p>
-                    </div>
-                    <div className={"flex items-center gap-2 justify-start"}>
-                      <div
-                        className={
-                          "w-7 h-7 flex justify-center items-center p-1 bg-primary-100 rounded-full"
-                        }
-                      >
-                        <RiCheckLine
-                          size={"21"}
-                          className={"text-primary-700"}
-                        />
-                      </div>
-                      <p className={"text-sm"}>
-                        Performance analytics for employees
-                      </p>
-                    </div>
-                    <div className={"flex items-center gap-2 justify-start"}>
-                      <div
-                        className={
-                          "w-7 h-7 flex justify-center items-center p-1 bg-primary-100 rounded-full"
-                        }
-                      >
-                        <RiCheckLine
-                          size={"21"}
-                          className={"text-primary-700"}
-                        />
-                      </div>
-                      <p className={"text-sm"}>Up to 20 team members</p>
-                    </div>
-                    <div className={"flex items-center gap-2 justify-start"}>
-                      <div
-                        className={
-                          "w-7 h-7 flex justify-center items-center p-1 bg-primary-100 rounded-full"
-                        }
-                      >
-                        <RiCheckLine
-                          size={"21"}
-                          className={"text-primary-700"}
-                        />
-                      </div>
-                      <p className={"text-sm"}>50GB cloud storage per user</p>
-                    </div>
-                    <div className={"flex items-center gap-2 justify-start"}>
-                      <div
-                        className={
-                          "w-7 h-7 flex justify-center items-center p-1 bg-primary-100 rounded-full"
-                        }
-                      >
-                        <RiCheckLine
-                          size={"21"}
-                          className={"text-primary-700"}
-                        />
-                      </div>
-                      <p className={"text-sm"}>Priority support</p>
-                    </div>
-                  </div>
-                </div>
-                <button
-                  className={
-                    "rounded-[10px] bg-primary-base w-full py-2.5 text-white"
-                  }
-                >
-                  Get started
-                </button>
-              </div>
-              <div
-                className={
-                  "w-1/4 rounded-xl border border-gray-300 shadow-md flex flex-col gap-5 py-8 px-6"
-                }
-              >
-                <div
-                  className={"flex flex-col gap-2 justify-center items-center"}
-                >
-                  <div
-                    className={
-                      "rounded-full w-12 h-12 bg-primary-100 flex items-center justify-center"
-                    }
-                  >
-                    <span
-                      className={
-                        "rounded-full p-1 bg-primary-200 flex items-center justify-center"
-                      }
-                    >
-                      <RiBuilding4Line
-                        size={"25"}
-                        className={"text-blue-700"}
-                      />
-                    </span>
-                  </div>
-                  <p className={"text-primary-700 text-2xl"}>Enterprise plan</p>
-                  <p className={"text-4xl font-bold text-black"}>$50/mth</p>
-                  <p className={"text-gray-400 text-sm"}>
-                    Complete control for large Enterprise.
-                  </p>
-                </div>
-                <div className={""}>
-                  <div className={"flex flex-col items-start gap-4"}>
-                    <div className={"flex items-center gap-2 justify-start"}>
-                      <div
-                        className={
-                          "w-7 h-7 flex justify-center items-center p-1 bg-primary-100 rounded-full"
-                        }
-                      >
-                        <RiCheckLine
-                          size={"21"}
-                          className={"text-primary-700"}
-                        />
-                      </div>
-                      <p className={"text-sm"}>Advanced custom fields</p>
-                    </div>
-                    <div className={"flex items-center gap-2 justify-start"}>
-                      <div
-                        className={
-                          "w-7 h-7 flex justify-center items-center p-1 bg-primary-100 rounded-full"
-                        }
-                      >
-                        <RiCheckLine
-                          size={"21"}
-                          className={"text-primary-700"}
-                        />
-                      </div>
-                      <p className={"text-sm"}>Unlimited team members</p>
-                    </div>
-                    <div className={"flex items-center gap-2 justify-start"}>
-                      <div
-                        className={
-                          "w-7 h-7 flex justify-center items-center p-1 bg-primary-100 rounded-full"
-                        }
-                      >
-                        <RiCheckLine
-                          size={"21"}
-                          className={"text-primary-700"}
-                        />
-                      </div>
-                      <p className={"text-sm"}>Unlimited storage per user</p>
-                    </div>
-                    <div className={"flex items-center gap-2 justify-start"}>
-                      <div
-                        className={
-                          "w-7 h-7 flex justify-center items-center p-1 bg-primary-100 rounded-full"
-                        }
-                      >
-                        <RiCheckLine
-                          size={"21"}
-                          className={"text-primary-700"}
-                        />
-                      </div>
-                      <p className={"text-sm"}>Personalized account manager</p>
-                    </div>
-                    <div className={"flex items-center gap-2 justify-start"}>
-                      <div
-                        className={
-                          "w-7 h-7 flex justify-center items-center p-1 bg-primary-100 rounded-full"
-                        }
-                      >
-                        <RiCheckLine
-                          size={"21"}
-                          className={"text-primary-700"}
-                        />
-                      </div>
-                      <p className={"text-sm"}>24/7 premium support</p>
-                    </div>
-                  </div>
-                </div>
-                <button
-                  className={
-                    "rounded-[10px] bg-primary-base w-full py-2.5 text-white"
-                  }
-                >
-                  Get started
-                </button>
-              </div>
+                  );
+                })
+              ) : (
+                 <div className="flex justify-center py-20 w-full text-gray-500 text-lg">No active plans available at the moment.</div>
+              )}
             </div>
+
           </div>
         </div>
         <div className={"flex flex-col gap-5 justify-center items-center"}>

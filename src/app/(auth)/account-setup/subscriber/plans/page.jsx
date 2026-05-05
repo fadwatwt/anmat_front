@@ -103,6 +103,7 @@ function Page() {
                             <StripePaymentWrapper
                                 amount={selectedPlanInfo.price}
                                 priceId={selectedPlanInfo.priceId}
+                                planId={selectedPlanInfo.plan._id}
                                 trialDays={selectedPlanInfo.trialDays}
                                 onFinish={() => setIsModalOpen(false)}
                                 userEmail={user?.email}

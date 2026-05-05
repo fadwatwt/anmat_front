@@ -1,31 +1,7 @@
 const { default: ContentCard } = require("@/components/containers/ContentCard");
 const { default: DefaultSelect } = require("@/components/Form/DefaultSelect");
 
-const TopCompaniesList = () => {
-
-    const companies = [
-        {
-            logo: "/images/logo.png",
-            name: "Company Name",
-            url: "company.io"
-        },
-        {
-            logo: "/images/logo.png",
-            name: "Company Name",
-            url: "company.io"
-        },
-        {
-            logo: "/images/logo.png",
-            name: "Company Name",
-            url: "company.io"
-        },
-        {
-            logo: "/images/logo.png",
-            name: "Company Name",
-            url: "company.io"
-        }
-    ];
-
+const TopCompaniesList = ({ companies = [] }) => {
     return (
         <ContentCard
             title={"Top 4 Companies"}
@@ -36,11 +12,14 @@ const TopCompaniesList = () => {
             }
             main={
                 <div className="flex flex-col items-start justify-start gap-4 w-full">
-                    {companies.map(company => {
+                    {companies.length === 0 && (
+                        <span className="text-sm text-cell-secondary">No companies yet.</span>
+                    )}
+                    {companies.map((company, index) => {
                         return (
-                            <div className="flex gap-2 items-start justify-start w-full">
+                            <div key={index} className="flex gap-2 items-start justify-start w-full">
                                 <div className="w-12 h-12 rounded-full overflow-hidden">
-                                    <img src={company.logo} alt="Logo" className="w-full" />
+                                    <img src={company.logo || "/images/logo.png"} alt="Logo" className="w-full" />
                                 </div>
                                 <div className="flex flex-col items-start justify-start gap-1">
                                     <span className="text-md text-table-title">
@@ -50,9 +29,9 @@ const TopCompaniesList = () => {
                                         {company.url}
                                     </span>
                                 </div>
-                            </div>)
-                    })
-                    }
+                            </div>
+                        );
+                    })}
                 </div>
             }
         />

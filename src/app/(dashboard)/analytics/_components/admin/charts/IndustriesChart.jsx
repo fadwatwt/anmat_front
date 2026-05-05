@@ -10,25 +10,29 @@ const COLORS = [
     "#FBBC05", "#0F9D58", "#4285F4", "#DB4437", "#673AB7"
 ];
 
-const IndustriesChart = () => {
-    const { data: industries, isLoading, error } = useGetIndustriesOrganizationsCountQuery();
+const IndustriesChart = ({ industries: industriesProp }) => {
+    const skip = Array.isArray(industriesProp) && industriesProp.length > 0;
+    const { data: fallback, isLoading, error } = useGetIndustriesOrganizationsCountQuery(undefined, { skip });
 
     const chartData = useMemo(() => {
-        if (!industries) return { total: 0, records: [] };
+        const source = skip
+            ? industriesProp.map((i) => ({ name: i.name, organizations_count: i.value ?? i.organizations_count ?? 0 }))
+            : fallback;
+        if (!source) return { total: 0, records: [] };
 
-        const records = industries.map((item, index) => ({
+        const records = source.map((item, index) => ({
             title: item.name,
-            value: item.organizations_count || 0,
+            value: item.organizations_count || item.value || 0,
             color: COLORS[index % COLORS.length]
         }));
 
         const total = records.reduce((acc, curr) => acc + curr.value, 0);
 
         return { total, records };
-    }, [industries]);
+    }, [skip, industriesProp, fallback]);
 
-    if (isLoading) return <div className="h-[400px] flex items-center justify-center bg-white rounded-2xl border border-gray-100 dark:bg-gray-800 dark:border-gray-700">Loading chart...</div>;
-    if (error) return <div className="h-[400px] flex items-center justify-center bg-white rounded-2xl border border-gray-100 text-red-500 dark:bg-gray-800 dark:border-gray-700">Error loading chart data</div>;
+    if (!skip && isLoading) return <div className="h-[400px] flex items-center justify-center bg-white rounded-2xl border border-gray-100 dark:bg-gray-800 dark:border-gray-700">Loading chart...</div>;
+    if (!skip && error) return <div className="h-[400px] flex items-center justify-center bg-white rounded-2xl border border-gray-100 text-red-500 dark:bg-gray-800 dark:border-gray-700">Error loading chart data</div>;
 
     return (
         <DonutChartComponent

@@ -4,23 +4,20 @@ import DefaultSelect from "@/components/Form/DefaultSelect";
 import React from 'react'
 import ContentCard from "@/components/containers/ContentCard";
 import { RiCircleFill } from "@remixicon/react";
-import { ResponsiveContainer, YAxis, Tooltip } from 'recharts';
+import { ResponsiveContainer, YAxis } from 'recharts';
 import { ZAxis } from "recharts/es6/cartesian/ZAxis";
 import { ScatterChart } from "recharts/es6/chart/ScatterChart";
 import { Tooltip as EPCT } from "recharts/es6/component/Tooltip";
 import { Scatter } from "recharts/es6/cartesian/Scatter";
 
 
-const EmployeePerformanceChart = () => {
+const EmployeePerformanceChart = ({ data = [] }) => {
+    const points = data.map((item, idx) => ({ x: idx + 1, y: item.rating ?? 0 }));
 
-    const data = [
-        { x: 1, y: 2 },
-        { x: 2, y: 4 },
-        { x: 3, y: 3 },
-        { x: 4, y: 5 },
-        { x: 5, y: 3.5 },
-        { x: 6, y: 4 },
-    ];
+    const lastDelta =
+        points.length >= 2
+            ? `Employee performance has changed from ${points[points.length - 2].y} to ${points[points.length - 1].y} this month`
+            : "No performance trend yet";
 
     return (
         <ContentCard
@@ -48,12 +45,12 @@ const EmployeePerformanceChart = () => {
                                     left: 0,
                                 }}
                             >
-                                <YAxis ticks={[0, 2, 3, 4, 5, 6]} type="number" dataKey="y" name="weight" />
+                                <YAxis ticks={[0, 1, 2, 3, 4, 5]} domain={[0, 5]} type="number" dataKey="y" name="rating" />
                                 <ZAxis type="number" range={[50]} />
                                 <EPCT cursor={{ strokeDasharray: '3 3' }} />
                                 <Scatter symbolSize={5}
-                                    name="Employee has improved from 2 points to 4 points this month"
-                                    data={data} fill="#FCAA0B" line shape="circle" />
+                                    name="Performance"
+                                    data={points} fill="#FCAA0B" line shape="circle" />
                             </ScatterChart>
                         </ResponsiveContainer>
                     </div>
@@ -62,9 +59,7 @@ const EmployeePerformanceChart = () => {
             footer={
                 <div className="flex gap-1 items-center justify-center">
                     <RiCircleFill size={10} className={`text-[#FCAA0B]`} />
-                    <span className="text-sm text-gray-500">
-                        {"Employee performance has improved from 2 points to 4 points this month"}
-                    </span>
+                    <span className="text-sm text-gray-500">{lastDelta}</span>
                 </div>
             }
         />

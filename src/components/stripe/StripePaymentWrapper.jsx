@@ -6,7 +6,12 @@ import getStripe from "@/lib/stripe-client";
 import CheckoutForm from "./CheckoutForm";
 import { RiLoader4Line } from "@remixicon/react";
 
-const StripePaymentWrapper = ({ amount, onFinish, userEmail, userName, userPhone, priceId, trialDays }) => {
+import { useSelector } from "react-redux";
+import { selectAuth } from "@/redux/auth/authSlice";
+import { RootRoute } from "@/Root.Route";
+
+const StripePaymentWrapper = ({ amount, onFinish, userEmail, userName, userPhone, priceId, trialDays, planId }) => {
+    const { token } = useSelector(selectAuth);
     const [clientSecret, setClientSecret] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -14,30 +19,22 @@ const StripePaymentWrapper = ({ amount, onFinish, userEmail, userName, userPhone
     useEffect(() => {
         // Create PaymentIntent or Subscription as soon as the component mounts
         setLoading(true);
-        fetch("/api/create-payment-intent", {
+        fetch(`${RootRoute}/api/subscriptions/subscriber/create-setup-intent`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                amount,
-                email: userEmail,
-                name: userName,
-                phone: userPhone,
-                priceId,
-                trialDays
-            }),
+            headers: { 
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
         })
             .then((res) => res.json())
-            .then((data) => {
+            .then((result) => {
+                const data = result.data || result;
                 if (data.clientSecret) {
                     setClientSecret(data.clientSecret);
                     setLoading(false);
-                } else if (data.error) {
-                    setError(data.error);
-                    setLoading(false);
-                } else if (data.subscriptionId) {
-                    // This case means no clientSecret was returned by the API
-                    // We'll show an error because we want to force card collection
-                    setError("Unable to initialize secure card collection. Please verify plan details.");
+                } else if (data.error || result.status === 'error') {
+                    const errMsg = typeof data.error === 'string' ? data.error : (data.error?.message || result.message || "Failed to initialize secure checkout.");
+                    setError(errMsg);
                     setLoading(false);
                 } else {
                     setError("Failed to create a payment session.");
@@ -48,7 +45,7 @@ const StripePaymentWrapper = ({ amount, onFinish, userEmail, userName, userPhone
                 setError("Failed to initialize payment.");
                 setLoading(false);
             });
-    }, [amount, userEmail, userName, userPhone, priceId, trialDays, onFinish]);
+    }, [amount, userEmail, userName, userPhone, priceId, trialDays, onFinish, token]);
 
     const appearance = {
         theme: "stripe",
@@ -75,7 +72,7 @@ const StripePaymentWrapper = ({ amount, onFinish, userEmail, userName, userPhone
         return (
             <div className="p-6 bg-red-50 border border-red-200 rounded-xl text-red-600 text-center">
                 <p className="font-bold mb-2">Error</p>
-                <p>{error}</p>
+                <p>{typeof error === 'string' ? error : (error.message || "An unexpected error occurred.")}</p>
             </div>
         );
     }
@@ -92,6 +89,7 @@ const StripePaymentWrapper = ({ amount, onFinish, userEmail, userName, userPhone
                         userEmail={userEmail}
                         userPhone={userPhone}
                         priceId={priceId}
+                        planId={planId}
                         trialDays={trialDays}
                     />
                 </Elements>

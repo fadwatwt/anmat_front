@@ -1,20 +1,41 @@
 "use client";
 import PropTypes from "prop-types";
 import Page from "@/components/Page.jsx";
-import AnalyticsCard from './AnalyticsCard'; // تأكد من تحديث هذا المكون بـ pb-10 والـ Icons
+import AnalyticsCard from './AnalyticsCard';
 
-// استيراد التشارتات
 import PerformanceBar from "@/app/(dashboard)/analytics/_components/charts/PerformanceBar";
 import TimelineLine from "@/app/(dashboard)/analytics/_components/charts/TimelineLine";
 import GaugeChart from "@/app/(dashboard)/analytics/_components/charts/GaugeChart";
 import SimpleLineChart from "@/app/(dashboard)/analytics/_components/charts/SimpleLineChart";
-import DynamicDoughnut from "@/app/(dashboard)/analytics/_components/charts/SummaryDoughnut."; // تأكد من اسم الملف
+import DynamicDoughnut from "@/app/(dashboard)/analytics/_components/charts/SummaryDoughnut.";
 import RecentProjectsList from "@/app/(dashboard)/analytics/_components/charts/RecentProjectsList";
 import ProjectsPerformanceList from "@/app/(dashboard)/analytics/_components/charts/ProjectsPerformanceList";
 import TopEmployeesList from "@/app/(dashboard)/analytics/_components/charts/TopEmployeesList";
 import DepartmentsRankingTable
     from "@/app/(dashboard)/analytics/_components/company_manager/departments/DepartmentsRankingTable";
 import { useGetSubscriberAnalyticsQuery } from "@/redux/analytics/analyticsApi";
+
+const SUMMARY_COLORS = ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#0EA5E9', '#EC4899'];
+const RATING_COLORS = { 'High Rating': '#10B981', 'Medium Rating': '#FBBF24', 'Low Rating': '#EF4444', 'No Ratings': '#9CA3AF' };
+const ATTENDANCE_COLORS = { 'Attended': '#4F46E5', 'Absent': '#FBBF24', 'On Time': '#10B981', 'Late': '#F59E0B' };
+const DEPARTMENT_COLORS = { 'On Time': '#4F46E5', 'Late': '#FBBF24', 'Completed on time': '#10B981', 'Overdue': '#EF4444' };
+
+const decorate = (arr, palette) =>
+    (arr || []).map((item, i) => ({
+        ...item,
+        color: (palette && (palette[item.name] || palette[i])) || SUMMARY_COLORS[i % SUMMARY_COLORS.length],
+    }));
+
+const sumValues = (arr) => (arr || []).reduce((acc, x) => acc + (x.value || 0), 0);
+
+const formatBytes = (bytes) => {
+    if (bytes === 'Unlimited') return 'Unlimited';
+    if (!bytes || bytes === 0) return '0 MB';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+};
 
 function CompanyManagerAnalytics() {
     const { data: analyticsData, isLoading, error } = useGetSubscriberAnalyticsQuery();
@@ -24,61 +45,40 @@ function CompanyManagerAnalytics() {
 
     const data = analyticsData?.data || {};
 
-    // Map tasks summary dynamically
-    const tasksSummaryData = data.tasksSummary?.length > 0 ? data.tasksSummary.map((item, index) => {
-        const colors = ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
-        return { name: item.name, value: item.value, color: colors[index % colors.length] };
-    }) : [
-        { name: 'Active', value: 50, color: '#4F46E5' },
-        { name: 'Completed', value: 50, color: '#10B981' },
-    ];
+    const tasksSummaryData = decorate(data.tasksSummary, SUMMARY_COLORS);
+    const tasksRatingData = decorate(data.tasksRatingData, RATING_COLORS);
+    const employeeAttendance = decorate(data.employeeAttendance, ATTENDANCE_COLORS);
+    const employeeAdherence = decorate(data.employeeAdherence, ATTENDANCE_COLORS);
+    const departmentAdherence = decorate(data.departmentAdherence, DEPARTMENT_COLORS);
+    const departmentPerformance = decorate(data.departmentPerformance, DEPARTMENT_COLORS);
 
-    const tasksRatingData = data.tasksRatingData?.length > 0 ? data.tasksRatingData.map((item, index) => {
-        const colors = ['#4F46E5', '#FBBF24', '#EF4444'];
-        return { name: item.name, value: item.value, color: colors[index % colors.length] };
-    }) : [
-        { name: 'High Rating', value: 150, color: '#4F46E5' },
-        { name: 'Low Rating', value: 50, color: '#FBBF24' },
-    ];
-
-    const projectsProgressData = data.projectsProgress?.length > 0 ? data.projectsProgress : [
-        { name: 'Alpha Project', completedTasks: 75, totalTasks: 100, daysLeft: 2 },
-        { name: 'Beta Project', completedTasks: 40, totalTasks: 100, daysLeft: 5 },
-    ];
-
-    const recentProjectsData = data.recentProjects?.length > 0 ? data.recentProjects : [
-        { name: 'Alpha Project', department: 'Publishing Dep' },
-        { name: 'Beta Project', department: 'Marketing Dep' },
-    ];
-
-    const topEmployeesData = data.topEmployees?.length > 0 ? data.topEmployees : [
-        { name: 'Ali Ali', department: 'Publishing Dep' },
-        { name: 'Rawan Ahmed', department: 'Publishing Dep' },
-        { name: 'Yara Ahmed', department: 'Publishing Dep' },
-    ];
-
-    const employeeAttendanceData = data.employeeAttendance?.length > 0 ? data.employeeAttendance.map((item, index) => {
-        const colors = ['#10B981', '#F59E0B'];
-        return { name: item.name, value: item.value, color: colors[index % colors.length] };
-    }) : [
-        { name: 'On Time', value: 20, color: '#10B981' }, 
-        { name: 'Late', value: 10, color: '#F59E0B' }
-    ];
-
-    const employeeRatingData = [
-        { name: 'W1', rating: 3 }, { name: 'W2', rating: 4 }, { name: 'W3', rating: 3.5 }, { name: 'W4', rating: 4.8 }
-    ];
-
+    const tasksDelay = data.tasksDelay || { percentage: 0, expectedHours: 0, actualHours: 0 };
     const tasksDelayFooter = [
-        { text: 'Employee completed task in 67 hours', color: '#F59E0B' },
-        { text: 'Expected Time was 55 Hours', color: '#E5E7EB' }
+        { text: `Employee completed task in ${tasksDelay.actualHours} hours`, color: '#F59E0B' },
+        { text: `Expected Time was ${tasksDelay.expectedHours} Hours`, color: '#E5E7EB' }
+    ];
+
+    const employeeRatingData = data.employeePerformanceWeeks || [];
+
+    const subUsage = data.subscriptionUsage || {
+        employees: { current: 0, max: 'Unlimited', percentage: 0 },
+        storage: { currentBytes: 0, maxBytes: 'Unlimited', percentage: 0 }
+    };
+
+    const employeesUsageFooter = [
+        { text: `Current Employees: ${subUsage.employees.current}`, color: '#10B981' },
+        { text: `Allowed in Plan: ${subUsage.employees.max}`, color: '#E5E7EB' }
+    ];
+
+    const storageUsageFooter = [
+        { text: `Used Storage: ${formatBytes(subUsage.storage.currentBytes)}`, color: '#4F46E5' },
+        { text: `Plan Limit: ${formatBytes(subUsage.storage.maxBytes)}`, color: '#E5E7EB' }
     ];
 
     return (
         <Page className={"p-0"}>
             <div className="p-8 bg-surface min-h-screen space-y-9">
 
-                {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
                     <h1 className="text-2xl font-bold text-page-title">All Analytics Overview</h1>
                     <div className="flex gap-3">
@@ -91,59 +91,87 @@ function CompanyManagerAnalytics() {
                     </div>
                 </div>
 
-                {/* SECTION 1: Tasks Analytics (صورة 1) */}
                 <section>
-                    <h2 className="text-sm font-bold text-cell-secondary mb-6 uppercase tracking-widest px-1">Tasks Analytics</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <AnalyticsCard title="Tasks Summary">
-                            <DynamicDoughnut data={tasksSummaryData} centerTitle="TASKS" centerValue={data.overview?.totalTasks || "200"} />
+                    <h2 className="text-sm font-bold text-cell-secondary mb-6 uppercase tracking-widest px-1">Subscription Usage</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <AnalyticsCard title="Employees Quota">
+                            <GaugeChart
+                                percentage={subUsage.employees.percentage}
+                                label="EMPLOYEES"
+                                primaryColor="#10B981"
+                                footerData={employeesUsageFooter}
+                            />
                         </AnalyticsCard>
-                        <AnalyticsCard title="Tasks Performance" showDropdowns={true} dropdown1Label="Last 6 months">
-                            <PerformanceBar />
-                        </AnalyticsCard>
-                        <AnalyticsCard title="Tasks Timeline">
-                            <TimelineLine />
-                        </AnalyticsCard>
-                        <AnalyticsCard title="Tasks Rating" showDropdowns={true} dropdown1Label="Department">
-                            <DynamicDoughnut data={tasksRatingData} centerTitle="TASKS" centerValue="200" />
+                        <AnalyticsCard title="Storage Quota">
+                            <GaugeChart
+                                percentage={subUsage.storage.percentage}
+                                label="STORAGE"
+                                primaryColor="#4F46E5"
+                                footerData={storageUsageFooter}
+                            />
                         </AnalyticsCard>
                     </div>
                 </section>
 
-                {/* SECTION 2: Projects Analytics (صورة 1) */}
+                <section>
+                    <h2 className="text-sm font-bold text-cell-secondary mb-6 uppercase tracking-widest px-1">Tasks Analytics</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <AnalyticsCard title="Tasks Summary">
+                            <DynamicDoughnut
+                                data={tasksSummaryData}
+                                centerTitle="TASKS"
+                                centerValue={data.overview?.totalTasks ?? sumValues(tasksSummaryData)}
+                            />
+                        </AnalyticsCard>
+                        <AnalyticsCard title="Tasks Performance" showDropdowns={true} dropdown1Label="Last 6 months">
+                            <PerformanceBar data={data.tasksPerformanceMonthly || []} />
+                        </AnalyticsCard>
+                        <AnalyticsCard title="Tasks Timeline">
+                            <TimelineLine data={data.tasksTimelineMonthly || []} />
+                        </AnalyticsCard>
+                        <AnalyticsCard title="Tasks Rating" showDropdowns={true} dropdown1Label="Department">
+                            <DynamicDoughnut
+                                data={tasksRatingData}
+                                centerTitle="TASKS"
+                                centerValue={sumValues(tasksRatingData)}
+                            />
+                        </AnalyticsCard>
+                    </div>
+                </section>
+
                 <section>
                     <h2 className="text-sm font-bold text-cell-secondary mb-6 uppercase tracking-widest px-1">Projects Analytics</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <AnalyticsCard title="Projects Performance" showDropdowns={true} dropdown1Label="Last 6 months">
-                            <PerformanceBar />
+                            <PerformanceBar data={data.projectsPerformanceMonthly || []} />
                         </AnalyticsCard>
                         <AnalyticsCard title="Project Timeline">
-                            <TimelineLine />
+                            <TimelineLine data={data.projectTimelineMonthly || []} />
                         </AnalyticsCard>
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div className="lg:col-span-2">
                             <AnalyticsCard title="Projects Performance">
-                                <ProjectsPerformanceList projects={projectsProgressData} />
+                                <ProjectsPerformanceList projects={data.projectsProgress || []} />
                             </AnalyticsCard>
                         </div>
                         <div className="lg:col-span-1">
                             <AnalyticsCard title="Last 4 Projects" showDropdowns={true} dropdown1Label="Performance">
-                                <RecentProjectsList projects={recentProjectsData} />
+                                <RecentProjectsList projects={data.recentProjects || []} />
                             </AnalyticsCard>
                         </div>
                     </div>
                 </section>
 
-                {/* SECTION 3: Employees Analytics (صورة 2) */}
                 <section>
                     <h2 className="text-sm font-bold text-cell-secondary mb-6 uppercase tracking-widest px-1">Employees Analytics</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                         <AnalyticsCard title="Employee Attendance" showDropdowns={true} dropdown1Label="Employee Name">
                             <DynamicDoughnut
-                                data={[{ name: 'Attended', value: 25, color: '#4F46E5' }, { name: 'Absent', value: 5, color: '#FBBF24' }]}
-                                centerTitle="DAYS" centerValue="30"
+                                data={employeeAttendance}
+                                centerTitle="DAYS"
+                                centerValue={sumValues(employeeAttendance)}
                             />
                         </AnalyticsCard>
 
@@ -152,47 +180,49 @@ function CompanyManagerAnalytics() {
                         </AnalyticsCard>
 
                         <AnalyticsCard title="Employee Accomplishment" showDropdowns={true} dropdown1Label="Employee Name">
-                            <TimelineLine />
+                            <TimelineLine data={data.accomplishmentMonthly || []} />
                         </AnalyticsCard>
 
                         <AnalyticsCard title="Employee Adherence" showDropdowns={true} dropdown1Label="Employee Name">
                             <DynamicDoughnut
-                                data={employeeAttendanceData}
-                                centerTitle="RECORDS" centerValue={employeeAttendanceData.reduce((acc, curr) => acc + curr.value, 0).toString()}
+                                data={employeeAdherence}
+                                centerTitle="RECORDS"
+                                centerValue={sumValues(employeeAdherence)}
                             />
                         </AnalyticsCard>
 
                         <AnalyticsCard title="Tasks Delay" showDropdowns={true} dropdown1Label="Employee Name">
-                            <GaugeChart percentage={22} label="DELAY" footerData={tasksDelayFooter} />
+                            <GaugeChart percentage={tasksDelay.percentage} label="DELAY" footerData={tasksDelayFooter} />
                         </AnalyticsCard>
 
                         <AnalyticsCard title="Top 3 Employees" showDropdowns={true} dropdown1Label="Performance">
-                            <TopEmployeesList employees={topEmployeesData} />
+                            <TopEmployeesList employees={data.topEmployees || []} />
                         </AnalyticsCard>
                     </div>
                 </section>
 
-                {/* SECTION 4: Department Analytics (صورة 2) */}
                 <section className="pb-10">
                     <h2 className="text-sm font-bold text-cell-secondary mb-6 uppercase tracking-widest px-1">Department Analytics</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <AnalyticsCard title="Department Adherence" showDropdowns={true} dropdown1Label="Department Name">
                             <DynamicDoughnut
-                                data={[{ name: 'On Time', value: 80, color: '#4F46E5' }, { name: 'Late', value: 20, color: '#FBBF24' }]}
-                                centerTitle="Tasks" centerValue="100"
+                                data={departmentAdherence}
+                                centerTitle="Tasks"
+                                centerValue={sumValues(departmentAdherence)}
                             />
                         </AnalyticsCard>
                         <AnalyticsCard title="Department Performance" showDropdowns={true} dropdown1Label="Department Name">
                             <DynamicDoughnut
-                                data={[{ name: 'Completed on time', value: 75, color: '#10B981' }, { name: 'Overdue', value: 25, color: '#EF4444' }]}
-                                centerTitle="TASKS" centerValue="100"
+                                data={departmentPerformance}
+                                centerTitle="TASKS"
+                                centerValue={sumValues(departmentPerformance)}
                             />
                         </AnalyticsCard>
                     </div>
                 </section>
                 <div className="flex pt- flex-col md:flex-row items-stretch gap-4 justify-between w-full">
                     <div className="w-full md:w-full">
-                        <DepartmentsRankingTable />
+                        <DepartmentsRankingTable rows={data.departmentsRanking || []} />
                     </div>
                 </div>
             </div>

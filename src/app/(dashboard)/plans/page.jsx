@@ -9,6 +9,7 @@ import Table from "@/components/Tables/Table";
 import Page from "@/components/Page";
 import { useState } from "react";
 import CreatePlanModal from "./_components/CreatePlan.modal";
+import EditPlanModal from "./_components/EditPlan.modal";
 import { useTranslation } from "react-i18next";
 import StatusActions from "@/components/Dropdowns/StatusActions";
 import { RiDeleteBin7Line } from "react-icons/ri";
@@ -47,9 +48,20 @@ function PlansPage() {
     const [approvalConfig, setApprovalConfig] = useState({ isOpen: false, type: "warning", title: "", message: "", onConfirm: null });
     const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
     const [createPlanModalOpen, setCreatePlanModal] = useState(false);
+    const [editPlanModalOpen, setEditPlanModal] = useState(false);
+    const [selectedPlanForEdit, setSelectedPlanForEdit] = useState(null);
 
     const toggleCreatePlanModalOpen = () => {
         setCreatePlanModal(!createPlanModalOpen);
+    }
+
+    const toggleEditPlanModalOpen = () => {
+        setEditPlanModal(!editPlanModalOpen);
+    }
+
+    const handleEdit = (plan) => {
+        setSelectedPlanForEdit(plan);
+        setEditPlanModal(true);
     }
 
     const handleAction = async (action, plan) => {
@@ -123,11 +135,11 @@ function PlansPage() {
                     router.push(`/plans/${planId}/details`);
                 }
             },
-            // {
-            //     text: "Edit", icon: <RiEditLine className="text-primary-400" />, onClick: () => {
-            //         console.log("Edit", planId)
-            //     },
-            // },
+            {
+                text: "Edit", icon: <RiEditLine className="text-primary-400" />, onClick: () => {
+                    handleEdit(plan)
+                },
+            },
             {
                 text: plan.is_active ? "Deactivate Plan" : "Activate Plan",
                 icon: plan.is_active ? (
@@ -251,6 +263,14 @@ function PlansPage() {
             />
 
             <CreatePlanModal isOpen={createPlanModalOpen} onClose={toggleCreatePlanModalOpen} />
+            <EditPlanModal 
+                isOpen={editPlanModalOpen} 
+                onClose={() => {
+                    setEditPlanModal(false);
+                    setSelectedPlanForEdit(null);
+                }} 
+                plan={selectedPlanForEdit}
+            />
         </Page>
     );
 }

@@ -6,10 +6,12 @@ import { useGetSubscriptionsQuery } from "@/redux/subscriptions/subscriptionsApi
 import DefaultSelect from "@/components/Form/DefaultSelect";
 import BarChartComponent from "@/components/containers/chart/BarChartComponent";
 
-const CompaniesSubscriptionsChart = () => {
-    const { data: subscriptions, isLoading, error } = useGetSubscriptionsQuery();
+const CompaniesSubscriptionsChart = ({ monthlyData: monthlyProp }) => {
+    const skip = Array.isArray(monthlyProp) && monthlyProp.length > 0;
+    const { data: subscriptions, isLoading, error } = useGetSubscriptionsQuery(undefined, { skip });
 
     const chartData = useMemo(() => {
+        if (skip) return monthlyProp;
         if (!subscriptions) return [];
 
         const last12Months = Array.from({ length: 12 }, (_, i) => {
@@ -35,7 +37,7 @@ const CompaniesSubscriptionsChart = () => {
             name: month.name,
             total: month.count
         }));
-    }, [subscriptions]);
+    }, [skip, monthlyProp, subscriptions]);
 
     const bars = [
         {
@@ -47,8 +49,8 @@ const CompaniesSubscriptionsChart = () => {
         }
     ];
 
-    if (isLoading) return <div className="h-[300px] flex items-center justify-center bg-white rounded-2xl border border-gray-100 dark:bg-gray-800 dark:border-gray-700">Loading chart...</div>;
-    if (error) return <div className="h-[300px] flex items-center justify-center bg-white rounded-2xl border border-gray-100 text-red-500 dark:bg-gray-800 dark:border-gray-700">Error loading chart data</div>;
+    if (!skip && isLoading) return <div className="h-[300px] flex items-center justify-center bg-white rounded-2xl border border-gray-100 dark:bg-gray-800 dark:border-gray-700">Loading chart...</div>;
+    if (!skip && error) return <div className="h-[300px] flex items-center justify-center bg-white rounded-2xl border border-gray-100 text-red-500 dark:bg-gray-800 dark:border-gray-700">Error loading chart data</div>;
 
     return (
         <BarChartComponent

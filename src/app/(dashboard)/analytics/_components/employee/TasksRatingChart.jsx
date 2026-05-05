@@ -3,23 +3,16 @@
 import DonutChartComponent from "@/components/containers/chart/DonutChartComponent";
 import DefaultSelect from "@/components/Form/DefaultSelect";
 
-const TasksRatingChart = () => {
+const FALLBACK = {
+    total: 0,
+    records: [
+        { title: "High Rating", value: 0, color: "#375DFB" },
+        { title: "Low Rating", value: 0, color: "#F2AE40" },
+    ],
+};
 
-    const chartData = {
-        total: 200,
-        records: [
-            {
-                title: "High Rating",
-                value: 150,
-                color: "#375DFB"
-            },
-            {
-                title: "Low Rating",
-                value: 50,
-                color: "#F2AE40"
-            }
-        ]
-    };
+const TasksRatingChart = ({ data }) => {
+    const chartData = data && data.records ? data : FALLBACK;
 
     return (
         <DonutChartComponent

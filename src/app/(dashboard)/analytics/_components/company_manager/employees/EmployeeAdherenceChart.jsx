@@ -3,23 +3,16 @@
 import DonutChartComponent from "@/components/containers/chart/DonutChartComponent";
 import DefaultSelect from "@/components/Form/DefaultSelect";
 
-const EmployeeAdherenceChart = () => {
+const FALLBACK = {
+    total: 0,
+    records: [
+        { title: "On Time", value: 0, color: "#375DFB" },
+        { title: "Late", value: 0, color: "#F2AE40" },
+    ],
+};
 
-    const chartData = {
-        total: 30,
-        records: [
-            {
-                title: "On Time",
-                value: 20,
-                color: "#375DFB"
-            },
-            {
-                title: "Late",
-                value: 10,
-                color: "#F2AE40"
-            }
-        ]
-    };
+const EmployeeAdherenceChart = ({ data }) => {
+    const chartData = data && data.records ? data : FALLBACK;
 
     return (
         <DonutChartComponent

@@ -1,16 +1,7 @@
 "use client";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
-const data = [
-    { name: 'Jan', onTime: 60, late: 40 },
-    { name: 'Feb', onTime: 80, late: 50 },
-    { name: 'Mar', onTime: 45, late: 30 },
-    { name: 'Apr', onTime: 70, late: 90 },
-    { name: 'May', onTime: 65, late: 25 },
-    { name: 'Jun', onTime: 75, late: 45 },
-];
-
-const PerformanceBar = () => (
+const PerformanceBar = ({ data = [] }) => (
     <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--status-border)" />

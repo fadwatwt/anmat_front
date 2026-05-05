@@ -7,13 +7,12 @@ import { RiCircleFill } from "@remixicon/react";
 import { t } from "i18next";
 import HalfDonutChart from "@/components/drawers/HalfDonutChartDrawer";
 
-const EmployeeTasksDelayChart = () => {
-
+const EmployeeTasksDelayChart = ({ completed = 0, total = 0 }) => {
+    const remaining = Math.max(0, total - completed);
     const data = [
-        { value: 80, color: '#F17B2C', label: "Completed Tasks" },
-        { value: 20, color: '#E2E4E9', label: "Not-Completed Tasks" }
+        { value: completed, color: '#F17B2C', label: "Completed Tasks" },
+        { value: remaining, color: '#E2E4E9', label: "Not-Completed Tasks" }
     ];
-    const total = 100; // Total tasks for the chart
 
     return (
         <ContentCard
@@ -44,14 +43,14 @@ const EmployeeTasksDelayChart = () => {
             }
             footer={
                 <div className="flex flex-wrap items-center justify-center gap-2">
-                    {data.map(record => {
-                        return (<div className="flex gap-1 items-center justify-center text-center">
-                        <RiCircleFill size={10} className={`text-[${record.color}]`} />
-                        <span className="text-sm text-gray-500">
-                            {`${record.label} (${record.value}/${total})`}
-                        </span>
-                    </div>);
-                    })}
+                    {data.map((record, idx) => (
+                        <div key={idx} className="flex gap-1 items-center justify-center text-center">
+                            <RiCircleFill size={10} style={{ color: record.color }} />
+                            <span className="text-sm text-gray-500">
+                                {`${record.label} (${record.value}/${total})`}
+                            </span>
+                        </div>
+                    ))}
                 </div>
             }
         />

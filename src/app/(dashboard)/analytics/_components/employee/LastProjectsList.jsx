@@ -1,27 +1,7 @@
 const { default: ContentCard } = require("@/components/containers/ContentCard");
 const { default: DefaultSelect } = require("@/components/Form/DefaultSelect");
 
-const LastProjectsList = () => {
-
-    const companies = [
-        {
-            name: "Project Name",
-            desc: "Publishing Dep"
-        },
-        {
-            name: "Project Name",
-            desc: "Publishing Dep"
-        },
-        {
-            name: "Project Name",
-            desc: "Publishing Dep"
-        },
-        {
-            name: "Project Name",
-            desc: "Publishing Dep"
-        }
-    ];
-
+const LastProjectsList = ({ projects = [] }) => {
     return (
         <ContentCard
             title={"Last 4 Projects"}
@@ -32,9 +12,12 @@ const LastProjectsList = () => {
             }
             main={
                 <div className="flex flex-col items-start justify-start gap-4 w-full">
-                    {companies.map((project, index) => {
+                    {projects.length === 0 && (
+                        <span className="text-sm text-gray-500">No projects yet.</span>
+                    )}
+                    {projects.map((project, index) => {
                         return (
-                            <div className="flex gap-2 items-start justify-start w-full">
+                            <div key={index} className="flex gap-2 items-start justify-start w-full">
                                 <div className="w-12 h-12 rounded-full overflow-hidden border border-gray-200 bg-white text-center flex items-center justify-center">
                                     <span className="text-xl">
                                         {index + 1}
@@ -45,12 +28,12 @@ const LastProjectsList = () => {
                                         {project.name}
                                     </span>
                                     <span className="text-sm text-gray-500">
-                                        {project.desc}
+                                        {project.department || project.desc}
                                     </span>
                                 </div>
-                            </div>)
-                    })
-                    }
+                            </div>
+                        );
+                    })}
                 </div>
             }
         />

@@ -3,24 +3,16 @@
 import DonutChartComponent from "@/components/containers/chart/DonutChartComponent";
 import DefaultSelect from "@/components/Form/DefaultSelect";
 
-const CompaniesContactedChart = () => {
+const FALLBACK = {
+    total: 0,
+    records: [
+        { title: "Approached", value: 0, color: "#2D9F75" },
+        { title: "Failed", value: 0, color: "#DF1C41" },
+    ],
+};
 
-    const chartData = {
-        total: 40,
-        records: [
-
-            {
-                title: "Approached",
-                value: 35,
-                color: "#2D9F75"
-            },
-            {
-                title: "Failed",
-                value: 5,
-                color: "#DF1C41"
-            }
-        ]
-    };
+const CompaniesContactedChart = ({ data }) => {
+    const chartData = data && data.records ? data : FALLBACK;
 
     return (
         <DonutChartComponent
