@@ -1,13 +1,17 @@
-const { default: ContentCard } = require("@/components/containers/ContentCard");
-const { default: DefaultSelect } = require("@/components/Form/DefaultSelect");
+import ContentCard from "@/components/containers/ContentCard";
+import ChartSelect from "@/app/(dashboard)/analytics/_components/admin/ChartSelect";
 
 const LastProjectsList = ({ projects = [] }) => {
     return (
         <ContentCard
             title={"Last 4 Projects"}
             toolbar={
-                <div className="w-32 flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end">
-                    <DefaultSelect placeholder="Performance" options={[{ id: 1, value: "Higher" }]} />
+                <div className="flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end w-full sm:w-auto">
+                    <ChartSelect 
+                        options={[{ id: 1, value: "Performance" }]} 
+                        defaultValue="Performance"
+                        className="w-full sm:w-32"
+                    />
                 </div>
             }
             main={

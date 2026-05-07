@@ -1,12 +1,13 @@
 "use client";
 
-import DefaultSelect from "@/components/Form/DefaultSelect";
+import ChartSelect from "@/app/(dashboard)/analytics/_components/admin/ChartSelect";
 import { useMemo } from 'react'
 import ContentCard from "@/components/containers/ContentCard";
 import { RiCircleFill } from "@remixicon/react";
 import { Line, LineChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 
 const RevenuesChart = ({ data = [] }) => {
+    // Check efficiency: ensures data is present
     const chartData = data.length > 0 ? data : [];
 
     const summary = useMemo(() => {
@@ -23,9 +24,11 @@ const RevenuesChart = ({ data = [] }) => {
             title={"Revenues"}
             toolbar={
                 <div className="flex flex-wrap sm:flex-nowrap gap-2 items-center justify-end w-full sm:w-auto">
-                    <div className="w-full sm:w-32">
-                        <DefaultSelect options={[{ id: 1, value: "Last 6 Months" }]} />
-                    </div>
+                    <ChartSelect 
+                        options={[{ id: 1, value: "Last 6 Months" }]} 
+                        defaultValue="Last 6 Months"
+                        className="w-full sm:w-32"
+                    />
                 </div>
             }
             main={

@@ -51,6 +51,14 @@ export const subscriptionsApi = apiSlice.injectEndpoints({
             transformResponse: (response) => response.data,
             providesTags: ["Subscriptions"],
         }),
+        updateExtraFeatures: builder.mutation({
+            query: ({ id, extra_features }) => ({
+                url: `api/subscriptions/admin/${id}/extra-features`,
+                method: "PATCH",
+                body: { extra_features },
+            }),
+            invalidatesTags: ["Subscriptions"],
+        }),
     }),
 });
 
@@ -61,4 +69,5 @@ export const {
     useGetSubscriptionsBasicDetailsQuery,
     useGetMySubscriptionQuery,
     useGetMyPaymentsQuery,
+    useUpdateExtraFeaturesMutation,
 } = subscriptionsApi;

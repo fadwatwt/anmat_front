@@ -169,7 +169,7 @@ const AdminDashboard = () => {
                         classContainer="shadow-sm border border-status-border rounded-[24px]"
                         onRowClick={(index) => {
                             if (subscriptions?.[index]?.subscriber?._id) {
-                                router.push(`/subscribers/${subscriptions[index].subscriber._id}/profile`);
+                                router.push(`/subscribers/${subscriptions[index].subscriber._id}`);
                             }
                         }}
                     />

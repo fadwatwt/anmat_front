@@ -34,6 +34,9 @@ import Switch2 from "@/components/Form/Switch2";
 import SelectWithoutLabel from "@/components/Form/SelectWithoutLabel";
 import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
+import IncreaseFeaturesModal from "@/components/Modal/IncreaseFeaturesModal";
+import { useUpdateExtraFeaturesMutation } from "@/redux/subscriptions/subscriptionsApi";
+
 
 function AdminProfile() {
     const { t, i18n } = useTranslation()
@@ -43,7 +46,10 @@ function AdminProfile() {
     const { data: subscriber, isLoading, error } = useGetSubscriberQuery(slug);
     const { data: subscriptions, isLoading: isSubsLoading } = useGetSubscriptionsQuery({ subscriber_id: slug });
     const [updateSubscriptionStatus, { isLoading: isUpdatingStatus }] = useUpdateSubscriptionStatusMutation();
+    const [updateExtraFeatures, { isLoading: isUpdatingFeatures }] = useUpdateExtraFeaturesMutation();
     const [isDeleteCatalogAert, setIsDeleteCatalogAert] = useState(false);
+    const [isIncreaseFeaturesModal, setIsIncreaseFeaturesModal] = useState(false);
+
 
     // Status update states
     const [isApprovalOpen, setIsApprovalOpen] = useState(false);
@@ -97,6 +103,34 @@ function AdminProfile() {
             setTargetStatus("");
         }
     }
+
+    const handleIncreaseFeatures = async (extraFeatures) => {
+        if (!lastActiveSubscription) return;
+
+        try {
+            const result = await updateExtraFeatures({
+                id: lastActiveSubscription._id,
+                extra_features: extraFeatures.map(f => ({
+                    feature_type_id: f.feature_type_id,
+                    properties: f.properties
+                }))
+            }).unwrap();
+
+            setApiResponse({
+                status: "success",
+                message: result.message || t("Subscription features updated successfully")
+            });
+            setIsIncreaseFeaturesModal(false);
+        } catch (err) {
+            setApiResponse({
+                status: "error",
+                message: err.data?.message || t("Failed to update subscription features")
+            });
+        } finally {
+            setIsResponseOpen(true);
+        }
+    }
+
 
     const headers = [
         { label: "Plan Name", width: "300px" },
@@ -201,12 +235,20 @@ function AdminProfile() {
                                             className={"p-1.5 rounded-lg hidden md:block text-nowrap bg-none border border-status-border text-sm text-cell-primary self-start"}>
                                             {t("Change password")}
                                         </button>
-                                        <button
+                                        {/* <button
                                             onClick={handelEditAdminProfileModal}
                                             className={"p-1.5 rounded-lg hidden md:block text-nowrap bg-none border border-status-border text-sm text-cell-primary self-start"}>
                                             {t("Edit Subscriber Profile")}
-                                        </button>
+                                        </button> */}
+                                        {lastActiveSubscription && (
+                                            <button
+                                                onClick={() => setIsIncreaseFeaturesModal(true)}
+                                                className={"p-1.5 rounded-lg hidden md:block text-nowrap bg-primary-500 text-white text-sm font-medium self-start shadow-sm hover:bg-primary-600 transition-colors"}>
+                                                {t("Increase Features")}
+                                            </button>
+                                        )}
                                     </div>
+
                                     <div className={"flex justify-end items-end"}>
                                         <button
                                             onClick={handleDeleteCatalogAert}
@@ -215,6 +257,52 @@ function AdminProfile() {
                                         </button>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className={"md:px-10 px-4 w-full"}>
+                    <div className={"rounded-2xl p-6 border border-status-border bg-surface grid grid-cols-1 md:grid-cols-2 gap-6 shadow-sm"}>
+                        <div className="flex flex-col gap-4">
+                            <h3 className="text-xl font-bold text-cell-primary">{t("Resource Usage")}</h3>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div className="p-4 rounded-xl border border-status-border bg-gray-50/30 dark:bg-white/5 flex flex-col gap-1">
+                                    <span className="text-xs text-cell-secondary uppercase tracking-wider font-semibold">{t("Employees")}</span>
+                                    <div className="flex items-baseline gap-1">
+                                        <span className="text-2xl font-bold text-primary-500">{subscriber?.total_users || 0}</span>
+                                        <span className="text-sm text-cell-secondary">/ {subscriber?.plan_limits?.employees?.max === 'Unlimited' ? t("unlimited") : (subscriber?.plan_limits?.employees?.max ?? "N/A")}</span>
+                                    </div>
+                                </div>
+                                <div className="p-4 rounded-xl border border-status-border bg-gray-50/30 dark:bg-white/5 flex flex-col gap-1">
+                                    <span className="text-xs text-cell-secondary uppercase tracking-wider font-semibold">{t("Storage Used")}</span>
+                                    <div className="flex items-baseline gap-1">
+                                        <span className="text-2xl font-bold text-primary-500">
+                                            {((subscriber?.organization?.used_storage || 0) / (1024 * 1024)).toFixed(2)} MB
+                                        </span>
+                                        <span className="text-sm text-cell-secondary">
+                                            / {subscriber?.plan_limits?.storage?.maxBytes === 'Unlimited' ? t("unlimited") :
+                                                subscriber?.plan_limits?.storage?.maxBytes ? `${(subscriber.plan_limits.storage.maxBytes / (1024 * 1024)).toFixed(0)} MB` : "N/A"}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="flex flex-col gap-4">
+                            <h3 className="text-xl font-bold text-cell-primary">{t("Quick Actions")}</h3>
+                            <div className="flex flex-wrap gap-3">
+                                <button
+                                    className="px-4 py-2 rounded-lg border border-primary-500 text-primary-500 hover:bg-primary-50 transition-colors text-sm font-medium"
+                                    onClick={() => {/* Send Notification logic */ }}
+                                >
+                                    {t("Send Notification")}
+                                </button>
+                                <button
+                                    className={`px-4 py-2 rounded-lg border ${subscriber?.is_active ? 'border-red-500 text-red-500 hover:bg-red-50' : 'border-green-500 text-green-500 hover:bg-green-50'} transition-colors text-sm font-medium`}
+                                    onClick={() => handleStatusChange(null, subscriber?.is_active ? 'inactive' : 'active')}
+                                >
+                                    {subscriber?.is_active ? t("Deactivate Account") : t("Activate Account")}
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -358,7 +446,15 @@ function AdminProfile() {
 
                 <EditAdminProfileModal isOpen={isEditAdminProfileModal} onClose={handelEditAdminProfileModal} onClick={() => { }} />
                 <ChangePasswordModal isOpen={isChangePasswordModal} onClose={handelChangePasswordModal} onClick={() => { }} />
+                <IncreaseFeaturesModal
+                    isOpen={isIncreaseFeaturesModal}
+                    onClose={() => setIsIncreaseFeaturesModal(false)}
+                    onSubmit={handleIncreaseFeatures}
+                    isSubmitting={isUpdatingFeatures}
+                    currentFeatures={lastActiveSubscription?.extra_features || []}
+                />
                 <CheckAlert
+
                     isOpen={isDeleteCatalogAert}
                     onClose={handleDeleteCatalogAert}
                     type="cancel"

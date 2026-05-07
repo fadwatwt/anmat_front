@@ -1,13 +1,17 @@
-const { default: ContentCard } = require("@/components/containers/ContentCard");
-const { default: DefaultSelect } = require("@/components/Form/DefaultSelect");
+import ContentCard from "@/components/containers/ContentCard";
+import ChartSelect from "@/app/(dashboard)/analytics/_components/admin/ChartSelect";
 
 const TopCompaniesList = ({ companies = [] }) => {
     return (
         <ContentCard
             title={"Top 4 Companies"}
             toolbar={
-                <div className="w-32 flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end">
-                    <DefaultSelect placeholder="Industry" options={[{ id: 1, value: "Design" }]} />
+                <div className="flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end w-full sm:w-auto">
+                    <ChartSelect 
+                        options={[{ id: 1, value: "Industry" }]} 
+                        defaultValue="Industry"
+                        className="w-full sm:w-32"
+                    />
                 </div>
             }
             main={

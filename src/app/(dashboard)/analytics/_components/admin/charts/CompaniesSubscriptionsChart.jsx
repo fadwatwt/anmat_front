@@ -3,12 +3,14 @@
 import { useMemo } from "react";
 import { format, subMonths, startOfMonth, isWithinInterval, endOfMonth } from "date-fns";
 import { useGetSubscriptionsQuery } from "@/redux/subscriptions/subscriptionsApi";
-import DefaultSelect from "@/components/Form/DefaultSelect";
+import ChartSelect from "@/app/(dashboard)/analytics/_components/admin/ChartSelect";
 import BarChartComponent from "@/components/containers/chart/BarChartComponent";
 
 const CompaniesSubscriptionsChart = ({ monthlyData: monthlyProp }) => {
     const skip = Array.isArray(monthlyProp) && monthlyProp.length > 0;
     const { data: subscriptions, isLoading, error } = useGetSubscriptionsQuery(undefined, { skip });
+
+    const currentYear = format(new Date(), "yyyy");
 
     const chartData = useMemo(() => {
         if (skip) return monthlyProp;
@@ -57,15 +59,11 @@ const CompaniesSubscriptionsChart = ({ monthlyData: monthlyProp }) => {
             title={"Monthly Subscriptions"}
             toolbar={
                 <div className="flex flex-wrap sm:flex-nowrap gap-2 items-center justify-end w-full sm:w-auto">
-                    <div className="w-full sm:w-32">
-                        <DefaultSelect
-                            placeholder="Year"
-                            options={[{ id: 1, value: format(new Date(), "yyyy") }]}
-                            value={[{ id: 1, value: format(new Date(), "yyyy") }]}
-                            multi={false}
-                            variant="chart"
-                        />
-                    </div>
+                    <ChartSelect 
+                        options={[{ id: 1, value: currentYear }]} 
+                        defaultValue={currentYear}
+                        className="w-full sm:w-32"
+                    />
                 </div>
             }
             barGab={4}

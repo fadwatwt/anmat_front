@@ -70,10 +70,13 @@ function ProjectDetailsPage() {
     const isAddingComment = isSubAdding || isEmpAdding;
     const isUploadingAttachment = isSubUploading || isEmpUploading;
 
-    const handleUploadAttachment = async (file) => {
+    const handleUploadAttachment = async (file, description) => {
         try {
             const formData = new FormData();
             formData.append('file', file);
+            if (description) {
+                formData.append('description', description);
+            }
             if (authUserType === "Subscriber") {
                 await uploadSubscriberAttachment({ projectId: project._id, formData }).unwrap();
             } else {

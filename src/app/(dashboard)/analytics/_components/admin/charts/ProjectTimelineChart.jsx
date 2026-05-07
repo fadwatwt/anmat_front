@@ -1,9 +1,11 @@
 "use client";
 
-import DefaultSelect from "@/components/Form/DefaultSelect";
+import ChartSelect from "@/app/(dashboard)/analytics/_components/admin/ChartSelect";
 import LineChartComponent from "@/components/containers/chart/LineChartComponent";
 
 const ProjectTimelineChart = ({ data = [] }) => {
+    // Check efficiency: ensures data is present
+    const chartData = data.length > 0 ? data : [];
 
     const lines = [
         {
@@ -18,11 +20,15 @@ const ProjectTimelineChart = ({ data = [] }) => {
         <LineChartComponent
             title={"Project Timeline"}
             toolbar={
-                <div className="w-32 flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end">
-                    <DefaultSelect options={[{ id: 1, value: "Last 6 Months" }]} />
+                <div className="flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end w-full sm:w-auto">
+                    <ChartSelect 
+                        options={[{ id: 1, value: "Last 6 Months" }]} 
+                        defaultValue="Last 6 Months"
+                        className="w-full sm:w-32"
+                    />
                 </div>
             }
-            data={data}
+            data={chartData}
             lines={lines}
         />
     );

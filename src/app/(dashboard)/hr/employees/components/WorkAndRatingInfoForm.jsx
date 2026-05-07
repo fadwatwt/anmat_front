@@ -150,6 +150,14 @@ function WorkAndRatingInfoForm({ formData, updateFormData, isEdit = false }) {
                         name="weekend_days"
                         classNameContainer={"w-full"}
                     />
+                    <InputAndLabel
+                        type="number"
+                        title={t("Storage Quota (MB)")}
+                        isRequired={false}
+                        placeholder={t("Leave empty for unlimited")}
+                        value={formData.employee_detail.storage_quota === null ? "" : formData.employee_detail.storage_quota}
+                        onChange={(e) => updateFormData("storage_quota", e.target.value === '' ? '' : Number(e.target.value), true)}
+                    />
                 </div>
             </div>
         </div>

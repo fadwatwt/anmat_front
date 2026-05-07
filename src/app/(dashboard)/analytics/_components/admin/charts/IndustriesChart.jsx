@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import DonutChartComponent from "@/components/containers/chart/DonutChartComponent";
-import DefaultSelect from "@/components/Form/DefaultSelect";
+import ChartSelect from "@/app/(dashboard)/analytics/_components/admin/ChartSelect";
 import { useGetIndustriesOrganizationsCountQuery } from "@/redux/industries/industriesApi";
 
 const COLORS = [
@@ -39,9 +39,11 @@ const IndustriesChart = ({ industries: industriesProp }) => {
             title={"Industries Organizations"}
             toolbar={
                 <div className="flex flex-wrap sm:flex-nowrap gap-2 items-center justify-end w-full sm:w-auto">
-                    <div className="w-full sm:w-32">
-                        <DefaultSelect options={[{ id: 1, value: "All Time" }]} variant="chart" />
-                    </div>
+                    <ChartSelect 
+                        options={[{ id: 1, value: "All Time" }]} 
+                        defaultValue="All Time"
+                        className="w-full sm:w-32"
+                    />
                 </div>
             }
             subtitle={"ORGANIZATIONS"}

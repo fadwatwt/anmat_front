@@ -53,7 +53,8 @@ function EditAnEmployeeModal({ isOpen, onClose, employeeData }) {
                     yearly_day_offs: employeeData.yearly_day_offs || 0,
                     weekend_days: employeeData.weekend_days || [],
                     date_of_birth: employeeData.date_of_birth ? new Date(employeeData.date_of_birth).toISOString().split('T')[0] : "",
-                    roles_ids: employeeData.roles_ids || []
+                    roles_ids: employeeData.roles_ids || [],
+                    storage_quota: employeeData.storage_quota !== undefined && employeeData.storage_quota !== null ? (employeeData.storage_quota / (1024 * 1024)) : ""
                 }
             });
             setCurrentStep(1);
@@ -100,6 +101,12 @@ function EditAnEmployeeModal({ isOpen, onClose, employeeData }) {
                     yearly_day_offs: Number(formData.employee_detail.yearly_day_offs),
                 }
             };
+
+            if (formData.employee_detail.storage_quota !== "" && formData.employee_detail.storage_quota !== null) {
+                payload.employee_details.storage_quota = Number(formData.employee_detail.storage_quota) * 1024 * 1024;
+            } else {
+                payload.employee_details.storage_quota = null; // null means unlimited
+            }
 
             // Remove nulls and "none" from department/position
             if (!payload.employee_details.department_id || payload.employee_details.department_id === "none") {

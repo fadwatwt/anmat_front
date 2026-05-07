@@ -15,12 +15,33 @@ function Details({ onUpgradeClick }) {
 
     const plan = subscription.plan_id || {};
     
-    // Find user limit feature
-    const userLimitFeature = plan.features?.find(f => 
-        f.feature_type_id?.type === 'users_limit' || 
-        f.feature_type_id?.title?.toLowerCase().includes('user')
-    );
-    const userLimit = userLimitFeature?.properties?.find(p => p.key === 'limit')?.value || "Unlimited";
+    // Find user limit feature — actual DB key: 'max_emp_num', feature type ID: 69d3ce73f265322590686460
+    const EMPLOYEE_FEATURE_ID = '69d3ce73f265322590686460';
+    const STORAGE_FEATURE_ID  = '69d3ce18f265322590686458';
+
+    const userLimitFeature = plan.features?.find(f => {
+        const ftId = f.feature_type_id?._id?.toString() || f.feature_type_id?.toString() || '';
+        const ftType = (f.feature_type_id?.type || '').toLowerCase();
+        const ftTitle = (f.feature_type_id?.title || '').toLowerCase();
+        return ftId === EMPLOYEE_FEATURE_ID ||
+               ftType.includes('user') || ftType.includes('employee') ||
+               ftTitle.includes('user') || ftTitle.includes('employee');
+    });
+    const EMPLOYEE_KEYS = ['max_emp_num', 'limit', 'max', 'count', 'max_employees', 'users_limit'];
+    const userLimitProp = userLimitFeature?.properties?.find(p => EMPLOYEE_KEYS.includes(p.key));
+    const userLimit = userLimitProp?.value ?? 'Unlimited';
+
+    // Find storage feature — actual DB key: 'size' (in MB), feature type ID: 69d3ce18f265322590686458
+    const storageFeature = plan.features?.find(f => {
+        const ftId = f.feature_type_id?._id?.toString() || f.feature_type_id?.toString() || '';
+        const ftType = (f.feature_type_id?.type || '').toLowerCase();
+        const ftTitle = (f.feature_type_id?.title || '').toLowerCase();
+        return ftId === STORAGE_FEATURE_ID || ftType.includes('storage') || ftTitle.includes('storage');
+    });
+    const storageSizeMB = storageFeature?.properties?.find(p => ['size', 'limit', 'max', 'value'].includes(p.key))?.value;
+    const storageLabel = storageSizeMB != null
+        ? storageSizeMB >= 1024 ? `${(storageSizeMB / 1024).toFixed(1)} GB` : `${storageSizeMB} MB`
+        : 'Unlimited';
 
     // Find price (using first active pricing as fallback)
     const activePricing = plan.pricing?.find(p => p.is_active) || plan.pricing?.[0];
@@ -47,8 +68,8 @@ function Details({ onUpgradeClick }) {
                 </div>
 
                 {/* info */}
-                <div className="flex items-start gap-8 justify-between w-full">
-                    <div className="flex flex-col items-start justify-start gap-0 min-w-[15rem]">
+                <div className="flex items-start gap-8 justify-between w-full flex-wrap">
+                    <div className="flex flex-col items-start justify-start gap-0 min-w-[12rem]">
                         <span className="!text-cell-secondary text-sm">
                             {t("Users")}
                         </span>
@@ -56,7 +77,15 @@ function Details({ onUpgradeClick }) {
                             {subscription.usage?.employees || 0} {t("of")} {userLimit} {t("Users")}
                         </span>
                     </div>
-                    <div className="flex flex-col items-start justify-start gap-0 min-w-[15rem]">
+                    <div className="flex flex-col items-start justify-start gap-0 min-w-[12rem]">
+                        <span className="!text-cell-secondary text-sm">
+                            {t("Storage Limit")}
+                        </span>
+                        <span className="!text-table-title text-sm font-bold">
+                            {storageLabel}
+                        </span>
+                    </div>
+                    <div className="flex flex-col items-start justify-start gap-0 min-w-[12rem]">
                         <span className="!text-cell-secondary text-sm">
                             {t("Subscription end date")}
                         </span>
@@ -64,7 +93,7 @@ function Details({ onUpgradeClick }) {
                             {subscription.expires_at ? format(new Date(subscription.expires_at), "MMMM dd, yyyy") : t("N/A")}
                         </span>
                     </div>
-                    <div className="flex flex-col items-start justify-start gap-0 min-w-[15rem]">
+                    <div className="flex flex-col items-start justify-start gap-0 min-w-[12rem]">
                         <span className="!text-cell-secondary text-sm">
                             {t("Price estimate")}
                         </span>
@@ -73,6 +102,7 @@ function Details({ onUpgradeClick }) {
                         </span>
                     </div>
                 </div>
+
 
                 {/* actions */}
                 <div className="flex items-start justify-center gap-4">

@@ -12,6 +12,7 @@ import {RiDeleteBin7Line} from "react-icons/ri";
 import StatusActions from "@/components/Dropdowns/StatusActions";
 import CheckAlert from "@/components/Alerts/CheckِِAlert";
 import {useState} from "react";
+import {useRouter} from "next/navigation";
 import { useGetSubscriptionsBasicDetailsQuery, useUpdateSubscriptionStatusMutation } from "@/redux/subscriptions/subscriptionsApi";
 import { format } from "date-fns";
 
@@ -29,6 +30,7 @@ function AdminCompaniesSubscriptions() {
     const { data: subscriptions, isLoading, error } = useGetSubscriptionsBasicDetailsQuery();
     const [updateStatus] = useUpdateSubscriptionStatusMutation();
     const { t } = useTranslation();
+    const router = useRouter();
 
     const [isDeleteSubAert,setIsDeleteSubAert] = useState(false);
     const [selectedSubscription, setSelectedSubscription] = useState(null);
@@ -129,6 +131,12 @@ function AdminCompaniesSubscriptions() {
                 customActions={(actualRowIndex) => (
                     <SubscriptionActions item={subscriptions?.[actualRowIndex]} />)
                 }
+                onRowClick={(index) => {
+                    const subscriberId = subscriptions?.[index]?.subscriber?._id;
+                    if (subscriberId) {
+                        router.push(`/subscribers/${subscriberId}`);
+                    }
+                }}
             />
             <CheckAlert
                 isOpen={isDeleteSubAert}

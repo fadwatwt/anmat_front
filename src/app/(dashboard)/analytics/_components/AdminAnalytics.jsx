@@ -10,7 +10,6 @@ import TopCompaniesList from "@/app/(dashboard)/analytics/_components/admin/list
 import LastProjectsList from "@/app/(dashboard)/analytics/_components/admin/lists/LastProjectsList";
 import ProjectTimelineChart from "@/app/(dashboard)/analytics/_components/admin/charts/ProjectTimelineChart";
 import RevenuesChart from "@/app/(dashboard)/analytics/_components/admin/charts/RevenuesChart";
-import DefaultSelect from "@/components/Form/DefaultSelect";
 import { useGetAdminAnalyticsQuery } from "@/redux/analytics/analyticsApi";
 
 const AdminAnalytics = () => {
@@ -26,13 +25,13 @@ const AdminAnalytics = () => {
             title="All Analytics Overview"
             isBtn={false}
             otherHeaderActions={
-                <div className="w-full md:w-auto flex flex-col sm:flex-row gap-3 items-center justify-end">
-                    <div className="w-full sm:w-40 md:w-48">
-                        <DefaultSelect placeholder="charts" options={[{ id: 1, value: "All Charts" }]} />
-                    </div>
-                    <div className="w-full sm:w-40 md:w-48">
-                        <DefaultSelect placeholder="sections" options={[{ id: 1, value: "All Sections" }]} />
-                    </div>
+                <div className="flex gap-3">
+                    <select className="bg-status-bg border border-status-border rounded-xl px-4 py-2 text-sm shadow-sm outline-none text-cell-secondary font-medium cursor-pointer">
+                        <option>All Charts</option>
+                    </select>
+                    <select className="bg-status-bg border border-status-border rounded-xl px-4 py-2 text-sm shadow-sm outline-none text-cell-secondary font-medium cursor-pointer">
+                        <option>All Sections</option>
+                    </select>
                 </div>
             }
         >

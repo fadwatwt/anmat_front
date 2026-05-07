@@ -8,15 +8,16 @@ import { translateTime } from "../functions/Days.js";
 
 export const mapBackendLogToFrontend = (log, t) => {
     let type = "add";
-    const action = log.action.toLowerCase();
+    const action = (log.action || "").toLowerCase();
     
     // Formatting title: task.status_changed -> Task Status Changed
     const formatTitle = (str) => {
+        if (!str) return "";
         return str.split('.').join(' ').split('_').join(' ')
             .replace(/\b\w/g, l => l.toUpperCase());
     };
 
-    let title = formatTitle(log.action);
+    let title = formatTitle(log.action || "activity");
     let description = "";
 
     if (action.includes("created") || action.includes("added") || action.includes("uploaded")) type = "add";

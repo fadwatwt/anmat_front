@@ -14,8 +14,8 @@ import { useState, useMemo, use } from "react";
 import { filterAndSortTasks } from "@/functions/functionsForTasks.js";
 import { useRouter } from "next/navigation";
 import { filterOptions, comments, members as defaultMembers, attachments, activityLogs } from "@/functions/FactoryData.jsx";
-import { useGetSubscriberTaskDetailsQuery, useAddSubscriberTaskCommentMutation, useDeleteSubscriberTaskCommentMutation, useEditSubscriberTaskCommentMutation, useEvaluateSubscriberTaskStageMutation, useEvaluateSubscriberTaskMutation } from "@/redux/tasks/subscriberTasksApi";
-import { useGetEmployeeTaskDetailsQuery, useAddEmployeeTaskCommentMutation, useDeleteEmployeeTaskCommentMutation, useEditEmployeeTaskCommentMutation } from "@/redux/tasks/employeeTasksApi";
+import { useGetSubscriberTaskDetailsQuery, useAddSubscriberTaskCommentMutation, useDeleteSubscriberTaskCommentMutation, useEditSubscriberTaskCommentMutation, useEvaluateSubscriberTaskStageMutation, useEvaluateSubscriberTaskMutation, useUploadSubscriberTaskAttachmentMutation, useDeleteSubscriberTaskAttachmentMutation } from "@/redux/tasks/subscriberTasksApi";
+import { useGetEmployeeTaskDetailsQuery, useAddEmployeeTaskCommentMutation, useDeleteEmployeeTaskCommentMutation, useEditEmployeeTaskCommentMutation, useUploadEmployeeTaskAttachmentMutation, useDeleteEmployeeTaskAttachmentMutation } from "@/redux/tasks/employeeTasksApi";
 import useAuthStore from '@/store/authStore.js';
 import { useSelector } from 'react-redux';
 import { selectUser } from '@/redux/auth/authSlice.js';
@@ -46,9 +46,44 @@ function TaskDetailsPage({ params }) {
     const [evaluateStage] = useEvaluateSubscriberTaskStageMutation();
     const [evaluateTask] = useEvaluateSubscriberTaskMutation();
 
+    const [uploadSubscriberAttachment, { isLoading: isSubUploading }] = useUploadSubscriberTaskAttachmentMutation();
+    const [uploadEmployeeAttachment, { isLoading: isEmpUploading }] = useUploadEmployeeTaskAttachmentMutation();
+    const [deleteSubscriberAttachment] = useDeleteSubscriberTaskAttachmentMutation();
+    const [deleteEmployeeAttachment] = useDeleteEmployeeTaskAttachmentMutation();
+
     const [loadingComments, setLoadingComments] = useState({});
 
     const isAddingComment = isSubAdding || isEmpAdding;
+    const isUploadingAttachment = isSubUploading || isEmpUploading;
+
+    const handleUploadAttachment = async (file, description) => {
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            if (description) {
+                formData.append('description', description);
+            }
+            if (authUserType === "Subscriber") {
+                await uploadSubscriberAttachment({ taskId, formData }).unwrap();
+            } else {
+                await uploadEmployeeAttachment({ taskId, formData }).unwrap();
+            }
+        } catch (error) {
+            console.error("Failed to upload attachment: ", error);
+        }
+    };
+
+    const handleDeleteAttachment = async (attachmentId) => {
+        try {
+            if (authUserType === "Subscriber") {
+                await deleteSubscriberAttachment({ taskId, attachmentId }).unwrap();
+            } else {
+                await deleteEmployeeAttachment({ taskId, attachmentId }).unwrap();
+            }
+        } catch (error) {
+            console.error("Failed to delete attachment: ", error);
+        }
+    };
 
     const handleAddComment = async (text) => {
         try {
@@ -177,6 +212,8 @@ function TaskDetailsPage({ params }) {
         }];
     }, [task?.assignee]);
 
+    const canDeleteAttachments = authUserType === "Subscriber" || user?.permissions?.includes('manage_attachments');
+
     if (isLoading) {
         return (
             <Page title={t("Task Details")} isBreadcrumbs={true} breadcrumbs={breadcrumbItems}>
@@ -235,7 +272,12 @@ function TaskDetailsPage({ params }) {
                     <div className={"flex-1 flex flex-col gap-6"}>
                         <ProjectMembers members={assigneeMember} title="Assignee Employee" />
                         {/* Hiding components not yet linked to backend data */}
-                        {true && <AttachmentsList attachments={attachments} />}
+                        {true && <AttachmentsList 
+                            attachments={task.attachments || []} 
+                            onUpload={handleUploadAttachment} 
+                            onDelete={canDeleteAttachments ? handleDeleteAttachment : null}
+                            isUploading={isUploadingAttachment} 
+                        />}
                         {true && <ActivityLogs activityLogs={activityLogs} className={"h-72"} />}
                         {false && <TimeLine />}
                     </div>

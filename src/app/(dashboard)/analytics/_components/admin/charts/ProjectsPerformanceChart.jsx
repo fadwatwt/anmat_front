@@ -1,9 +1,11 @@
 "use client";
 
-import DefaultSelect from "@/components/Form/DefaultSelect";
+import ChartSelect from "@/app/(dashboard)/analytics/_components/admin/ChartSelect";
 import BarChartComponent from "@/components/containers/chart/BarChartComponent";
 
 const ProjectsPerformanceChart = ({ monthlyData = [] }) => {
+    // Check efficiency: ensures data is present
+    const chartData = monthlyData.length > 0 ? monthlyData : [];
 
     const barGab = 4;
     const bars = [
@@ -27,8 +29,12 @@ const ProjectsPerformanceChart = ({ monthlyData = [] }) => {
         <BarChartComponent
             title={"Projects Performance"}
             toolbar={
-                <div className="w-32 flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end">
-                    <DefaultSelect options={[{ id: 1, value: "Last 6 Months" }]} />
+                <div className="flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end w-full sm:w-auto">
+                    <ChartSelect 
+                        options={[{ id: 1, value: "Last 6 Months" }]} 
+                        defaultValue="Last 6 Months"
+                        className="w-full sm:w-32"
+                    />
                 </div>
             }
             barGab={barGab}

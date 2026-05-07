@@ -35,7 +35,7 @@ export const dashboardSideMenuItems = [
         icon: <Category2 />
     },
     {
-        allowed_to: ['Admin', 'Subscriber'],
+        allowed_to: ['Subscriber'],
         title: 'Subscriptions',
         path: '/subscriptions',
         icon: <ReceiptText />
@@ -164,6 +164,12 @@ export const dashboardSideMenuItems = [
         title: 'Settings',
         path: '/setting',
         icon: <Setting />
+    },
+    {
+        allowed_to: ['Admin', 'Subscriber'],
+        title: 'Support Tickets',
+        path: '/support-tickets',
+        icon: <Messages1 />
     },
     // {
     //     allowed_to: ['Subscriber'],

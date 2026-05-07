@@ -11,7 +11,7 @@ import {
     RiGraduationCapLine,
     RiMailLine, RiMoneyDollarCircleLine, RiTimeLine,
     RiUserLine, RiBriefcaseLine, RiBuilding2Line, RiPhoneLine,
-    RiCalendarEventLine
+    RiCalendarEventLine, RiDatabase2Line
 } from "@remixicon/react";
 import { useGetEmployeeProfileQuery, useUpdateEmployeeMutation } from '@/redux/employees/employeesApi';
 import { useGetSubscriberOrganizationQuery } from '@/redux/organizations/organizationsApi';
@@ -115,6 +115,11 @@ function SingleEmployeeProfile() {
     };
 
     const [activeTab, setActiveTab] = useState("Notifications");
+
+    const formatStorage = (bytes) => {
+        if (!bytes) return "0 MB";
+        return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+    };
 
     const handleDeleteRequest = async (id) => {
         if (window.confirm(t("Are you sure you want to delete this request?"))) {
@@ -425,6 +430,17 @@ function SingleEmployeeProfile() {
                                     <div className="flex flex-col">
                                         <span className={"text-cell-secondary text-xs"}>{t("Weekend")}</span>
                                         <p className={"text-cell-primary text-sm font-semibold"}> {employee?.weekend_days?.join(" - ") || "-"}</p>
+                                    </div>
+                                </div>
+                                <div className={"name-profile flex items-center gap-2"}>
+                                    <div className="p-2 bg-indigo-50 dark:bg-indigo-500/10 rounded-lg">
+                                        <RiDatabase2Line size={18} className={"text-indigo-500"} />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className={"text-cell-secondary text-xs"}>{t("Storage")}</span>
+                                        <p className={"text-cell-primary text-sm font-semibold"}>
+                                            {formatStorage(employee?.used_storage)} / {employee?.storage_quota ? formatStorage(employee.storage_quota) : t("Unlimited")}
+                                        </p>
                                     </div>
                                 </div>
                             </div>

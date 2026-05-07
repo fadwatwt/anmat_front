@@ -19,12 +19,15 @@ import { FiEye } from "react-icons/fi";
 import { format } from "date-fns";
 import SendAdminNotificationModal from "@/components/Modal/SendAdminNotificationModal";
 
+import InitialsAvatar from "@/components/InitialsAvatar";
+
 const headers = [
-  { label: "Subscriber", width: "300px" },
-  { label: "Company", width: "300px" },
-  { label: "Plan", width: "300px" },
+  { label: "Subscriber", width: "250px" },
+  { label: "Company", width: "250px" },
+  { label: "Plan", width: "150px" },
   { label: "Industry ", width: "150px" },
   { label: "Subscribed at", width: "150px" },
+  { label: "Expires at", width: "150px" },
   { label: "Users", width: "100px" },
   { label: "Status", width: "125px" },
   { label: "", width: "50px" }
@@ -66,12 +69,7 @@ function Subscribers() {
   // Transform data into the format expected by the Table component
   const rows = subscribers?.map(subscriber => [
     <div key={`${subscriber._id}_subscriber`} className="flex items-center justify-start gap-2">
-      <div className={"flex justify-between items-start"}>
-        <div className={" h-[50px] w-[50px]"}>
-          <img className={"rounded-full h-[50px] w-[50px] max-w-full"}
-            src={"https://randomuser.me/api/portraits/men/1.jpg"} alt={"image-user"} />
-        </div>
-      </div>
+      <InitialsAvatar name={subscriber.name} size="40px" fontSize="text-sm" />
       <div className="flex flex-col items-start justify-start gap-0 overflow-hidden">
         <span
           className="text-sm font-medium text-cell-primary truncate w-full block max-w-[200px]"
@@ -89,12 +87,7 @@ function Subscribers() {
     </div>,
     // Company Name cell
     <div key={`${subscriber._id}_company`} className="flex items-center justify-start gap-2">
-      <div className={"flex justify-between items-start"}>
-        <div className={" h-[50px] w-[50px]"}>
-          <img className={"rounded-full h-[50px] w-[50px] max-w-full"}
-            src={"/images/company.default.logo.png"} alt={"image-user"} />
-        </div>
-      </div>
+      <InitialsAvatar name={subscriber.organization?.name || "C"} size="40px" fontSize="text-sm" className="bg-orange-100 text-orange-600 border-orange-200" />
       <div className="flex flex-col items-start justify-start gap-0 overflow-hidden">
         <span
           className="text-sm font-medium text-cell-primary truncate w-full block max-w-[200px]"
@@ -113,9 +106,9 @@ function Subscribers() {
 
     // Plan Cell
     <div key={`${subscriber._id}_plan`} className="flex items-center justify-start gap-2">
-      <div className="rounded-full p-2 bg-primary-100">
-        <div className="rounded-full p-2 bg-primary-200">
-          <RiFlashlightLine size={18} className="rounded-full text-primary-500 stroke-[5px]" />
+      <div className="rounded-full p-1 bg-primary-100">
+        <div className="rounded-full p-1 bg-primary-200">
+          <RiFlashlightLine size={14} className="rounded-full text-primary-500 stroke-[5px]" />
         </div>
       </div>
       <span className="text-sm font-medium text-cell-primary">
@@ -129,6 +122,9 @@ function Subscribers() {
     </div>,
     <div key={`${subscriber._id}_date`} className="text-sm text-cell-secondary">
       {(subscriber.subscribed_at || subscriber.createdAt) ? format(new Date(subscriber.subscribed_at || subscriber.createdAt), "MMM dd, yyyy") : "N/A"}
+    </div>,
+    <div key={`${subscriber._id}_expiry`} className="text-sm text-cell-secondary">
+      {subscriber.expires_at ? format(new Date(subscriber.expires_at), "MMM dd, yyyy") : "N/A"}
     </div>,
 
     // Users Subscribed cell
@@ -152,7 +148,7 @@ function Subscribers() {
     const statesActions = [
       {
         text: "View", icon: <FiEye className="text-primary-400" />, onClick: () => {
-          router.push(`/subscribers/${subscriber._id}/profile`);
+          router.push(`/subscribers/${subscriber._id}`);
         },
       },
       {
@@ -206,7 +202,7 @@ function Subscribers() {
         industryOptions={industryOptions}
         onRowClick={(index) => {
           if (subscribers?.[index]?._id) {
-            router.push(`/subscribers/${subscribers[index]._id}/profile`);
+            router.push(`/subscribers/${subscribers[index]._id}`);
           }
         }}
       />
