@@ -89,21 +89,25 @@ export const dashboardSideMenuItems = [
                 permission_any_of: ['positions.list'],
             },
             {
+                allowed_to: ['Employee'],
                 title: 'Attendances',
                 path: '/hr/attendances',
                 permission_any_of: ['attendances.track_all', 'attendances.track_department'],
             },
             {
+                allowed_to: ['Employee'],
                 title: 'Leaves',
                 path: '/hr/leaves',
                 permission_any_of: ['leaves.track_all', 'leaves.track_department'],
             },
             {
+                allowed_to: ['Employee'],
                 title: 'Salary',
                 path: '/hr/salary',
                 permission_any_of: ['salary_transactions.track_all', 'salary_transactions.track_department'],
             },
             {
+                allowed_to: ['Employee'],
                 title: 'Requests',
                 path: '/hr/requests',
                 permission_any_of: ['employee_requests.track_all', 'employee_requests.track_department'],

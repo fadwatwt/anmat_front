@@ -3,21 +3,24 @@ import Page from "@/components/Page.jsx";
 import Tabs from "@/components/Tabs.jsx";
 import EmployeesTap from "@/app/(dashboard)/hr/employees/tabs/Employees.tap.jsx";
 import { useState } from "react";
-// import DepartmentsTab from "@/app/(dashboard)/hr/_Tabs/DepartmentsTab.jsx"; // Moved to sidebar
 import RotationTap from "@/app/(dashboard)/hr/_Tabs/RotationTap.jsx";
 import AttendanceTab from "@/app/(dashboard)/hr/employees/tabs/AttendanceTab.jsx";
 import SalaryTab from "@/app/(dashboard)/hr/employees/tabs/SalaryTab.jsx";
 import RequestsTab from "@/app/(dashboard)/hr/employees/tabs/RequestsTab.jsx";
 import LeavesTab from "@/app/(dashboard)/hr/employees/tabs/LeavesTab.jsx";
-// import NewEmployeesTab from "@/app/(dashboard)/hr/employees/tabs/NewEmployeesTab.jsx";
 import CreateADepartmentModal from "@/app/(dashboard)/hr/_modals/CreateADepartmentModal.jsx";
 import InviteEmployeeModal from "@/app/(dashboard)/hr/_modals/InviteEmployeeModal";
 import { usePermission } from "@/Hooks/usePermission";
+import { useSelector } from "react-redux";
+import { selectUserType } from "@/redux/auth/authSlice";
 
 function HRPage() {
     const [isInviteEmployeeModal, setIsInviteEmployeeModal] = useState(false);
     const [isAddDepartmentModal, setIsAddDepartmentModal] = useState(false);
     const [activeTab, setActiveTab] = useState("Employees");
+
+    const authUserType = useSelector(selectUserType);
+    const isEmployee = authUserType === "Employee";
 
     const canViewEmployees = usePermission("employee_details.list");
     const canViewAttendances = usePermission("attendances.track_all") || usePermission("attendances.track_department");
@@ -30,20 +33,19 @@ function HRPage() {
             title: "Employees",
             content: <EmployeesTap />,
         }] : []),
-
-        ...(canViewAttendances ? [{
+        ...(!isEmployee && canViewAttendances ? [{
             title: "Attendances",
             content: <AttendanceTab />,
         }] : []),
-        ...(canViewLeaves ? [{
+        ...(!isEmployee && canViewLeaves ? [{
             title: "Short Leaves",
             content: <LeavesTab />,
         }] : []),
-        ...(canViewRequests ? [{
+        ...(!isEmployee && canViewRequests ? [{
             title: "Requests",
             content: <RequestsTab />,
         }] : []),
-        ...(canViewSalary ? [{
+        ...(!isEmployee && canViewSalary ? [{
             title: "Salary",
             content: <SalaryTab />,
         }] : []),
