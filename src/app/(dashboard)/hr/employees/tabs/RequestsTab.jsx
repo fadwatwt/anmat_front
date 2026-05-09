@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { usePermission } from "@/Hooks/usePermission";
 import Table from "@/components/Tables/Table.jsx";
 import ViewRequestModal from "../modals/ViewRequestModal.jsx";
 import { statusCell as StatusCell } from "@/components/StatusCell";
@@ -16,6 +17,8 @@ import { RiFilter2Line, RiCalendarEventLine } from "@remixicon/react";
 
 function RequestsTab() {
     const { t } = useTranslation();
+    const canUpdate = usePermission("employee_requests.update");
+    const canDelete = usePermission("employee_requests.delete");
     const [activeTab, setActiveTab] = useState("DAY_OFF"); // "DAY_OFF", "SALARY_ADVANCE", "WORK_DELAY"
     const [statusFilter, setStatusFilter] = useState(null);
     const [departmentFilter, setDepartmentFilter] = useState(null);
@@ -170,21 +173,26 @@ function RequestsTab() {
     const customActions = (rowIndex) => {
         const request = currentData[rowIndex];
         const isLocked = ["accepted", "rejected", "cancelled"].includes(request.status);
+        const showViewUpdate = isLocked || canUpdate;
 
         return (
             <div className="flex flex-col bg-surface shadow-xl rounded-xl border border-status-border min-w-40 overflow-hidden py-1">
-                <button
-                    onClick={() => handleEdit(rowIndex)}
-                    className="w-full px-4 py-2 text-sm text-cell-primary flex gap-3 items-center text-left hover:bg-status-bg transition-colors font-medium"
-                >
-                    {isLocked ? t("View Details") : t("Update Status")}
-                </button>
-                <button
-                    onClick={() => handleDelete(rowIndex)}
-                    className="w-full px-4 py-2 text-sm text-left flex items-center text-red-500 gap-3 hover:bg-status-bg transition-colors font-medium"
-                >
-                    {t("Delete")}
-                </button>
+                {showViewUpdate && (
+                    <button
+                        onClick={() => handleEdit(rowIndex)}
+                        className="w-full px-4 py-2 text-sm text-cell-primary flex gap-3 items-center text-left hover:bg-status-bg transition-colors font-medium"
+                    >
+                        {isLocked || !canUpdate ? t("View Details") : t("Update Status")}
+                    </button>
+                )}
+                {canDelete && (
+                    <button
+                        onClick={() => handleDelete(rowIndex)}
+                        className="w-full px-4 py-2 text-sm text-left flex items-center text-red-500 gap-3 hover:bg-status-bg transition-colors font-medium"
+                    >
+                        {t("Delete")}
+                    </button>
+                )}
             </div>
         );
     };

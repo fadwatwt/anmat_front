@@ -8,11 +8,47 @@ import React from "react"
 import { HambergerMenu } from 'iconsax-react';
 import { dashboardSideMenuItems } from '@/config/menuItems.js';
 import { useSelector } from 'react-redux';
-import { selectUserType } from '@/redux/auth/authSlice';
+import { selectUserType, selectPermissions, selectPermissionsLoaded } from '@/redux/auth/authSlice';
 
 const Menu = React.memo(({ isSlidebarOpen, toggleSlidebarOpen }) => {
 
     const authUserType = useSelector(selectUserType);
+    const userPermissions = useSelector(selectPermissions);
+    const permissionsLoaded = useSelector(selectPermissionsLoaded);
+    const hasWildcard = Array.isArray(userPermissions) && userPermissions.includes('*');
+
+    const userHasPermission = (perm) =>
+        Array.isArray(userPermissions) && userPermissions.includes(perm);
+
+    const isItemAllowed = (item) => {
+        if (!item.allowed_to || !item.allowed_to.includes(authUserType)) return false;
+        if (hasWildcard) return true;
+
+        const hasSingle = item.permission ? userHasPermission(item.permission) : null;
+        const hasAny = Array.isArray(item.permission_any_of) && item.permission_any_of.length > 0
+            ? item.permission_any_of.some(userHasPermission)
+            : null;
+
+        // No permission constraint declared → allowed for the user type.
+        if (hasSingle === null && hasAny === null) return true;
+        // Either constraint is enough.
+        return Boolean(hasSingle) || Boolean(hasAny);
+    };
+
+    const filterItem = (item) => {
+        if (!isItemAllowed(item)) return null;
+        if (!Array.isArray(item.children) || item.children.length === 0) return item;
+
+        const visibleChildren = item.children.filter((child) => {
+            // Children inherit allowed_to from parent unless overridden.
+            const merged = { allowed_to: item.allowed_to, ...child };
+            return isItemAllowed(merged);
+        });
+
+        // Hide a parent that ends up with no visible children once it had some.
+        if (item.children.length > 0 && visibleChildren.length === 0) return null;
+        return { ...item, children: visibleChildren };
+    };
 
     // const [authUserType, setAuthUserType] = useState('admin');
     const { t, i18n } = useTranslation()
@@ -52,20 +88,18 @@ const Menu = React.memo(({ isSlidebarOpen, toggleSlidebarOpen }) => {
                 </div>
                 <div className={"flex  flex-col gap-2"}>
                     <div className={"py-5 menu-list sm:py-0 flex flex-col gap-2 text-gray-500"}>
-                        {
-                            dashboardSideMenuItems
-                                .filter(item => item.allowed_to.includes(authUserType))
-                                .map((item, index) => {
-                                    return (
-                                        <MenuItem
-                                            key={index}
-                                            path={item.path}
-                                            icon={item.icon}
-                                            title={item.title}
-                                            children={item.children}
-                                        />
-                                    );
-                                })
+                        {permissionsLoaded && dashboardSideMenuItems
+                            .map(filterItem)
+                            .filter(Boolean)
+                            .map((item, index) => (
+                                <MenuItem
+                                    key={index}
+                                    path={item.path}
+                                    icon={item.icon}
+                                    title={item.title}
+                                    children={item.children}
+                                />
+                            ))
                         }
                     </div>
                 </div>

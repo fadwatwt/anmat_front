@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { usePermission } from "@/Hooks/usePermission";
 import { format, parse } from "date-fns";
 import Table from "@/components/Tables/Table";
 import { GoPlus } from "react-icons/go";
@@ -17,6 +18,8 @@ import { useProcessing } from "@/app/providers";
 function LeavesTab() {
     const { t } = useTranslation();
     const { showProcessing, hideProcessing } = useProcessing();
+    const canCreate = usePermission("leaves.create");
+    const canDelete = usePermission("leaves.delete");
     const { data: leavesData, isLoading } = useGetLeavesQuery();
     const [deleteLeave] = useDeleteLeaveMutation();
 
@@ -100,12 +103,12 @@ function LeavesTab() {
         setDeleteApiResponse(prev => ({ ...prev, isOpen: false }));
     };
 
-    const headerActions = (
+    const headerActions = canCreate ? (
         <button onClick={handleAddLeave} className="flex items-center gap-2 bg-primary-base hover:opacity-90 text-white px-5 py-2.5 rounded-xl transition-all text-sm font-bold shadow-lg shadow-primary-500/20 active:scale-[0.98]">
             <GoPlus size={20} />
             {t("Add Short Leave")}
         </button>
-    );
+    ) : null;
 
     return (
         <div className="flex flex-col gap-6">
@@ -120,8 +123,8 @@ function LeavesTab() {
                     showListOfDepartments={true}
                     showStatusFilter={true}
                     showDatePicker={true}
-                    isActions={true}
-                    handelDelete={handleDelete}
+                    isActions={canDelete}
+                    handelDelete={canDelete ? handleDelete : undefined}
                     headerActions={headerActions}
                 />
             </div>

@@ -14,12 +14,17 @@ import CreatePositionModal from "./modals/CreatePositionModal.jsx";
 import EditPositionModal from "./modals/EditPositionModal.jsx";
 
 import { useGetPositionsQuery, useDeletePositionMutation } from "@/redux/positions/positionsApi";
+import { usePermission } from "@/Hooks/usePermission";
 
 function PositionsPage() {
     const { t } = useTranslation();
     const { showProcessing, hideProcessing } = useProcessing();
     const { data: positions = [], isLoading } = useGetPositionsQuery();
     const [deletePosition] = useDeletePositionMutation();
+
+    const canCreatePosition = usePermission("positions.create");
+    const canUpdatePosition = usePermission("positions.update");
+    const canDeletePosition = usePermission("positions.delete");
 
     const [selectedPosition, setSelectedPosition] = useState(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -84,12 +89,12 @@ function PositionsPage() {
         </span>,
     ]);
 
-    const headerActions = (
+    const headerActions = canCreatePosition ? (
         <button onClick={handleCreatePosition} className="flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg transition-all text-sm font-semibold shadow-sm">
             <GoPlus size={18} />
             {t("Create a Position")}
         </button>
-    );
+    ) : null;
 
     return (
         <Page title={t("HR - Positions Management")}>
@@ -103,22 +108,24 @@ function PositionsPage() {
                         isTitle={true}
                         classContainer="w-full"
                         isActions={false}
-                        customActions={(index) => (
-                            <StatusActions
-                                states={[
-                                    // {
-                                    //     text: t("Edit"),
-                                    //     icon: <RiEditLine className="text-primary-base" />,
-                                    //     onClick: () => handleEdit(index),
-                                    // },
-                                    {
-                                        text: t("Delete"),
-                                        icon: <RiDeleteBin7Line className="text-red-500" />,
-                                        onClick: () => handleDelete(index),
-                                    },
-                                ]}
-                            />
-                        )}
+                        customActions={(index) => {
+                            const states = [];
+                            if (canUpdatePosition) {
+                                states.push({
+                                    text: t("Edit"),
+                                    icon: <RiEditLine className="text-primary-base" />,
+                                    onClick: () => handleEdit(index),
+                                });
+                            }
+                            if (canDeletePosition) {
+                                states.push({
+                                    text: t("Delete"),
+                                    icon: <RiDeleteBin7Line className="text-red-500" />,
+                                    onClick: () => handleDelete(index),
+                                });
+                            }
+                            return states.length > 0 ? <StatusActions states={states} /> : null;
+                        }}
                         headerActions={headerActions}
                         showControlBar={false}
                         hideSearchInput={false}

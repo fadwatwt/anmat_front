@@ -14,9 +14,11 @@ import { filterAndSortTasks } from "@/functions/functionsForTasks.js";
 import { useParams } from "next/navigation";
 import { useGetEmployeeProjectDetailsQuery, useAddEmployeeProjectCommentMutation, useDeleteEmployeeProjectCommentMutation, useEditEmployeeProjectCommentMutation, useUploadEmployeeProjectAttachmentMutation, useDeleteEmployeeProjectAttachmentMutation, useEvaluateEmployeeProjectMutation } from "@/redux/projects/employeeProjectsApi.js";
 import { useUpdateTaskStatusMutation } from "@/redux/tasks/employeeTasksApi.js";
-import useAuthStore from '@/store/authStore.js';
 import { useSelector } from 'react-redux';
 import { selectUser } from '@/redux/auth/authSlice.js';
+import { usePermission } from '@/Hooks/usePermission';
+import CreateTeamModal from "@/app/(dashboard)/projects/_modal/CreateTeamModal";
+import { RiGroupFill } from "react-icons/ri";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 
 function EmployeeProjectDetailsPage() {
@@ -37,9 +39,13 @@ function EmployeeProjectDetailsPage() {
     const [updateTaskStatus] = useUpdateTaskStatusMutation();
 
     const [loadingComments, setLoadingComments] = useState({});
-
     const [alertInfo, setAlertInfo] = useState({ isOpen: false, status: 'success', message: '' });
     const [filterTasks, setFilterTasks] = useState([]);
+    const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
+
+    const canDeleteAttachments = usePermission("attachments.delete");
+    const canEvaluate = usePermission("projects.evaluate");
+    const canManageTeam = usePermission("tasks.manage_participants");
 
     const mappedTasks = project?.tasks?.map(task => {
         // For employees, assignees might be formatted differently or we use the project's assignees
@@ -203,10 +209,7 @@ function EmployeeProjectDetailsPage() {
 
     const comments = project?.comments || [];
     const attachments = project?.attachments || [];
-    const activityLogs = []; // Placeholder for activity logs
-
-    const canDeleteAttachments = authUserType === "Subscriber" || user?.permissions?.includes('manage_attachments');
-    const canEvaluate = authUserType === "Subscriber" || user?.permissions?.includes('evaluate');
+    const activityLogs = [];
 
     return (
         <Page title={t("Project Details")} isBreadcrumbs={true} breadcrumbs={breadcrumbItems}>
@@ -249,16 +252,35 @@ function EmployeeProjectDetailsPage() {
                     </div>}
                 </div>
                 <div className={"flex-1 flex flex-col gap-6"}>
-                    <ProjectMembers members={projectMembers} />
-                    <AttachmentsList 
-                        attachments={attachments} 
-                        onUpload={handleUploadAttachment} 
+                    <div className="flex flex-col gap-3">
+                        <ProjectMembers members={projectMembers} />
+                        {canManageTeam && (
+                            <button
+                                onClick={() => setIsTeamModalOpen(true)}
+                                className="flex items-center gap-2 px-4 py-2 bg-primary-base text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity w-fit"
+                            >
+                                <RiGroupFill size={16} />
+                                {t("Manage Team")}
+                            </button>
+                        )}
+                    </div>
+                    <AttachmentsList
+                        attachments={attachments}
+                        onUpload={handleUploadAttachment}
                         onDelete={canDeleteAttachments ? handleDeleteAttachment : null}
-                        isUploading={isUploadingAttachment} 
+                        isUploading={isUploadingAttachment}
                     />
                     <ActivityLogs activityLogs={activityLogs} className={"h-72"} />
                 </div>
             </div>
+
+            {canManageTeam && (
+                <CreateTeamModal
+                    isOpen={isTeamModalOpen}
+                    onClose={() => setIsTeamModalOpen(false)}
+                />
+            )}
+
             {alertInfo.isOpen && (
                 <ApiResponseAlert
                     isOpen={alertInfo.isOpen}

@@ -2,6 +2,7 @@
 import { useState } from "react";
 
 import { useTranslation } from "react-i18next";
+import { usePermission } from "@/Hooks/usePermission";
 import { format, parse } from "date-fns";
 import Table from "@/components/Tables/Table";
 import {
@@ -54,6 +55,8 @@ export const StatusBadge = ({ status }) => {
 function AttendanceTab() {
   const { t } = useTranslation();
   const { showProcessing, hideProcessing } = useProcessing();
+  const canCreate = usePermission("attendances.create");
+  const canDelete = usePermission("attendances.delete");
   const { data: attendancesData, isLoading } = useGetAttendancesQuery();
   const [deleteAttendance] = useDeleteAttendanceMutation();
 
@@ -148,12 +151,12 @@ function AttendanceTab() {
     setDeleteApiResponse(prev => ({ ...prev, isOpen: false }));
   };
 
-  const headerActions = (
+  const headerActions = canCreate ? (
     <button onClick={handleAddAttendance} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all text-sm font-medium shadow-sm">
       <GoPlus size={18} />
       {t("Add an Attendance")}
     </button>
-  );
+  ) : null;
 
   return (
     <div className="flex flex-col gap-6">
@@ -168,8 +171,8 @@ function AttendanceTab() {
           showListOfDepartments={true}
           showStatusFilter={true}
           showDatePicker={true}
-          isActions={true}
-          handelDelete={handleDelete}
+          isActions={canDelete}
+          handelDelete={canDelete ? handleDelete : undefined}
           headerActions={headerActions}
         />
       </div>

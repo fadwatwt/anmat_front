@@ -28,12 +28,19 @@ import StarRating from "@/components/StarRating";
 import { useProcessing } from "@/app/providers";
 import { RiCheckboxCircleFill, RiFileCopyLine, RiTimerLine, RiUserReceived2Line, RiCheckLine } from "@remixicon/react";
 import { toast } from "react-toastify";
+import { usePermission } from "@/Hooks/usePermission";
 
 function EmployeesTap() {
   const { t } = useTranslation();
   const router = useRouter();
   const { showProcessing, hideProcessing } = useProcessing();
   const dispatch = useDispatch();
+
+  const canCreateEmployee = usePermission("employee_details.create");
+  const canUpdateEmployee = usePermission("employee_details.update");
+  const canDeleteEmployee = usePermission("employee_details.delete");
+  const canSendNotification = usePermission("notifications.create");
+  const canInitiateChat = usePermission("chats.initiate");
 
   const { data: employees = [], error, isLoading } = useGetEmployeesQuery();
   const { data: chatsData } = useGetChatsQuery();
@@ -90,61 +97,73 @@ function EmployeesTap() {
     const employee = filteredEmployees[actualRowIndex];
     const hasDepartment = !!(employee?.department || employee?.department_id);
 
-    const statesActions = [
-      {
+    const statesActions = [];
+    if (canUpdateEmployee) {
+      statesActions.push({
         text: t("Edit"),
         icon: <RiEditLine className="text-primary-400" />,
         onClick: () => {
           setSelectedEmployee(employee);
           setIsOpenEditModal(true);
         },
-      },
-      {
+      });
+    }
+    if (canSendNotification) {
+      statesActions.push({
         text: t("Send Notification"),
         icon: <RiNotification4Line className="text-primary-400" />,
         onClick: () => {
           setSelectedEmployee(employee);
           setIsOpenSendNotifyModal(true);
         }
-      },
-      {
+      });
+    }
+    if (canUpdateEmployee) {
+      statesActions.push({
         text: hasDepartment ? t("Change Department") : t("Assign Department"),
         icon: <RiBuilding2Line className="text-green-500" />,
         onClick: () => {
           setSelectedAssignEmployee(employee);
           setIsOpenAssignDeptModal(true);
         },
-      },
-      // Conditional unassign department action
-      ...(hasDepartment ? [{
-        text: t("Unassign Department"),
-        icon: <RiLogoutBoxLine className="text-orange-500" />,
-        onClick: () => handleUnassignDepartment(employee),
-      }] : []),
-      {
+      });
+      if (hasDepartment) {
+        statesActions.push({
+          text: t("Unassign Department"),
+          icon: <RiLogoutBoxLine className="text-orange-500" />,
+          onClick: () => handleUnassignDepartment(employee),
+        });
+      }
+      statesActions.push({
         text: employee.user?.is_active ? t("Deactivate") : t("Activate"),
         icon: employee.user?.is_active ? <RiToggleFill className="text-orange-500" /> : <RiToggleLine className="text-green-500" />,
         onClick: () => handleToggleActivity(employee),
-      },
-      {
+      });
+    }
+    if (canInitiateChat) {
+      statesActions.push({
         text: t("Chat"),
         icon: <RiMessage2Line className="text-blue-500" />,
         onClick: () => handleChatWithEmployee(employee),
-      },
-      ...(employee.registration_status === 'registered' ? [{
+      });
+    }
+    if (canUpdateEmployee && employee.registration_status === 'registered') {
+      statesActions.push({
         text: t("Complete Registration"),
         icon: <RiCheckLine className="text-blue-500" />,
         onClick: () => {
           setSelectedEmployee(employee);
           setIsOpenEditModal(true);
         },
-      }] : []),
-      {
+      });
+    }
+    if (canDeleteEmployee) {
+      statesActions.push({
         text: t("Delete"),
         icon: <RiDeleteBin7Line className="text-red-500" />,
         onClick: () => handleDeleteEmployee(employee),
-      }
-    ];
+      });
+    }
     return (
       <StatusActions states={statesActions} className={`${i18n.language === "ar" ? "left-0" : "right-0"
         }`} />
@@ -393,22 +412,27 @@ function EmployeesTap() {
             rows={EmployeeRowTable(employees)}
             headerActions={
               <div className="flex gap-2">
-                {/* ربط أزرار الهيدر بالحالات */}
-                <button
-                  onClick={() => setIsOpenSendNotifyModal(true)}
-                  className="bg-[#EEF2FF] text-[#375DFB] px-4 py-2 rounded-lg text-sm font-medium">
-                  {t("Send Notification")}
-                </button>
-                <button
-                  onClick={() => setIsOpenInviteModal(true)}
-                  className="border border-gray-200 px-4 py-2 rounded-lg text-sm font-medium">
-                  {t("Invite Employee")}
-                </button>
-                <button
-                  onClick={() => setIsOpenCreateModal(true)}
-                  className="bg-[#375DFB] text-white px-4 py-2 rounded-lg text-sm font-medium">
-                  {t("Add New Employee")}
-                </button>
+                {canSendNotification && (
+                  <button
+                    onClick={() => setIsOpenSendNotifyModal(true)}
+                    className="bg-[#EEF2FF] text-[#375DFB] px-4 py-2 rounded-lg text-sm font-medium">
+                    {t("Send Notification")}
+                  </button>
+                )}
+                {canCreateEmployee && (
+                  <button
+                    onClick={() => setIsOpenInviteModal(true)}
+                    className="border border-gray-200 px-4 py-2 rounded-lg text-sm font-medium">
+                    {t("Invite Employee")}
+                  </button>
+                )}
+                {canCreateEmployee && (
+                  <button
+                    onClick={() => setIsOpenCreateModal(true)}
+                    className="bg-[#375DFB] text-white px-4 py-2 rounded-lg text-sm font-medium">
+                    {t("Add New Employee")}
+                  </button>
+                )}
               </div>
             }
           />

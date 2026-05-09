@@ -9,8 +9,9 @@ import "../globals.css";
 import PropTypes from "prop-types";
 import DashboardSideMenu from "@/components/DashboardSideMenu";
 import { useSelector, useDispatch } from "react-redux";
-import { selectAuth, loadAuthState, logout, setUser } from "@/redux/auth/authSlice";
+import { selectAuth, loadAuthState, logout, setUser, setPermissions } from "@/redux/auth/authSlice";
 import { useLazyGetUserQuery } from "@/redux/auth/authAPI";
+import { useLazyGetMyPermissionsQuery } from "@/redux/permissions/subscriberPermissionsApi";
 import useDarkMode from "@/Hooks/useDarkMode";
 
 const MainLayout = ({ children }) => {
@@ -25,8 +26,9 @@ const MainLayout = ({ children }) => {
         setMounted(true);
     }, []);
 
-    const { isAuthenticated, token, user } = useSelector(selectAuth);
+    const { isAuthenticated, token, user, permissionsLoaded } = useSelector(selectAuth);
     const [getUser, { isLoading: isFetchingUser }] = useLazyGetUserQuery();
+    const [getMyPermissions] = useLazyGetMyPermissionsQuery();
 
     // التحقق مما إذا كنا في صفحة الإعدادات أو الاشتراكات
     const isSettingsPage = pathname === "/setting";
@@ -109,6 +111,19 @@ const MainLayout = ({ children }) => {
 
         fetchUser();
     }, [token, user, getUser, dispatch, router]);
+
+    // Fetch the authenticated user's permissions once user is loaded
+    useEffect(() => {
+        if (user && !permissionsLoaded) {
+            getMyPermissions()
+                .unwrap()
+                .then((perms) => dispatch(setPermissions(perms)))
+                .catch((err) => {
+                    console.error("Failed to fetch permissions:", err);
+                    dispatch(setPermissions([]));
+                });
+        }
+    }, [user, permissionsLoaded, getMyPermissions, dispatch]);
 
     useEffect(() => {
         const updateDirectionAndFont = () => {

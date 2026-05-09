@@ -32,6 +32,7 @@ function SyncSubscriberPermissionsModal({ isOpen, onClose, roleId, roleName, cur
             permissionsResponse?.map((permission) => ({
                 id: permission._id,
                 name: permission.name,
+                title: permission.title,
             })) || [],
         [permissionsResponse]
     );
@@ -184,7 +185,7 @@ function SyncSubscriberPermissionsModal({ isOpen, onClose, roleId, roleName, cur
                                                     className="w-4 h-4 text-primary-base bg-gray-100 border-gray-300 rounded focus:ring-primary-base dark:focus:ring-primary-base focus:ring-2 dark:bg-gray-700 dark:border-gray-600 checkbox-custom"
                                                 />
                                                 <span className="text-sm text-gray-700 dark:text-gray-300">
-                                                    {permission.name}
+                                                    {permission.title || permission.name}
                                                 </span>
                                             </label>
                                         );

@@ -27,11 +27,17 @@ import {
 import { useGetProjectTemplatesQuery, useDeleteProjectTemplateMutation } from "@/redux/projects/subscriberProjectTemplatesApi";
 import Loading from "@/components/Loading";
 import dayjs from "dayjs";
+import { usePermission } from "@/Hooks/usePermission";
 
 function TemplatesTab() {
     const { t } = useTranslation();
     const router = useRouter();
     const dispatch = useDispatch();
+
+    const canCreateProject = usePermission("projects.create");
+    const canEditTemplate = usePermission("project_templates.update");
+    const canDeleteTemplate = usePermission("project_templates.delete");
+    const canViewTemplate = usePermission("project_templates.view");
 
     const { data: projectTemplates, isLoading, isError } = useGetProjectTemplatesQuery();
     const [deleteTemplate] = useDeleteProjectTemplateMutation();
@@ -101,38 +107,48 @@ function TemplatesTab() {
 
     const customActions = (index) => (
         <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 border border-gray-200 dark:border-gray-700 p-1 flex flex-col">
-            <button
-                onClick={() => handleViewTemplate(index)}
-                className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left rounded-md"
-            >
-                <RiEyeLine size={16} className="text-blue-500" /> {t("View")}
-            </button>
-            <button
-                onClick={() => handleEditTemplate(index)}
-                className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left rounded-md"
-            >
-                <RiPencilLine size={16} className="text-blue-500" /> {t("Edit")}
-            </button>
+            {canViewTemplate && (
+                <button
+                    onClick={() => handleViewTemplate(index)}
+                    className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left rounded-md"
+                >
+                    <RiEyeLine size={16} className="text-blue-500" /> {t("View")}
+                </button>
+            )}
+            {canEditTemplate && (
+                <button
+                    onClick={() => handleEditTemplate(index)}
+                    className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left rounded-md"
+                >
+                    <RiPencilLine size={16} className="text-blue-500" /> {t("Edit")}
+                </button>
+            )}
             <button className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left rounded-md">
                 <RiDownload2Line size={16} className="text-blue-500" /> {t("Download Attachs")}
             </button>
-            <button
-                onClick={() => handleDeleteTemplate(index)}
-                className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left rounded-md"
-            >
-                <RiDeleteBinLine size={16} className="text-red-500" /> {t("Delete")}
-            </button>
-
-            <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div>
-
-            <div className="px-2 py-1 mt-1">
+            {canDeleteTemplate && (
                 <button
-                    onClick={() => handlePublishProject(index)}
-                    className="w-full bg-blue-50 text-blue-600 py-1.5 rounded-md text-sm font-medium hover:bg-blue-100 transition-colors"
+                    onClick={() => handleDeleteTemplate(index)}
+                    className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left rounded-md"
                 >
-                    {t("Publish Project")}
+                    <RiDeleteBinLine size={16} className="text-red-500" /> {t("Delete")}
                 </button>
-            </div>
+            )}
+
+            {canCreateProject && (
+                <>
+                    <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div>
+
+                    <div className="px-2 py-1 mt-1">
+                        <button
+                            onClick={() => handlePublishProject(index)}
+                            className="w-full bg-blue-50 text-blue-600 py-1.5 rounded-md text-sm font-medium hover:bg-blue-100 transition-colors"
+                        >
+                            {t("Publish Project")}
+                        </button>
+                    </div>
+                </>
+            )}
         </div>
     );
 
@@ -191,8 +207,8 @@ function TemplatesTab() {
                 isActions={false}
                 customActions={customActions}
                 isCheckInput={true}
-                handelEdit={handleEditTemplate}
-                handelDelete={handleDeleteTemplate}
+                handelEdit={canEditTemplate ? handleEditTemplate : undefined}
+                handelDelete={canDeleteTemplate ? handleDeleteTemplate : undefined}
                 className="min-w-[2400px] table-fixed"
             />
 

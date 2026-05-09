@@ -32,6 +32,7 @@ import ActivityLogs from "@/components/ActivityLogs.jsx";
 import { RiDeleteBin7Line, RiErrorWarningLine, RiBellLine, RiInformationLine, RiNotification4Line } from "@remixicon/react";
 import { useGetSentSubscriberNotificationsQuery } from "@/redux/subscriber-notifications/subscriberNotificationsApi";
 import SendNotificationModal from "@/app/(dashboard)/hr/employees/modals/SendNotification.modal";
+import { usePermission } from "@/Hooks/usePermission";
 
 // Map icon name strings from backend to actual icon components
 const ICON_MAP = {
@@ -45,13 +46,6 @@ const COLOR_MAP = {
     yellow: "text-yellow-500 bg-yellow-50 dark:bg-yellow-500/10",
     blue: "text-blue-500 bg-blue-50 dark:bg-blue-500/10",
 };
-
-const tabsList = [
-    { title: "Notifications" },
-    { title: "Leave" },
-    { title: "Delay" },
-    { title: "Financial" },
-];
 
 function SingleEmployeeProfile() {
 
@@ -74,8 +68,21 @@ function SingleEmployeeProfile() {
     const activityLogs = employeeLogsData?.data || [];
 
     const [isOpenSendNotifyModal, setIsOpenSendNotifyModal] = useState(false);
-
     const [isUpdating, setIsUpdating] = useState(false);
+    const [isEditRatingModalOpen, setIsEditRatingModalOpen] = useState(false);
+
+    const canViewLeaves = usePermission("leaves.track_all") || usePermission("leaves.track_department");
+    const canViewRequests = usePermission("employee_requests.track_all") || usePermission("employee_requests.track_department");
+    const canViewSalary = usePermission("salary_transactions.track_all") || usePermission("salary_transactions.track_department");
+
+    const tabsList = [
+        { title: "Notifications" },
+        ...(canViewLeaves ? [{ title: "Leave" }] : []),
+        ...(canViewRequests ? [{ title: "Delay" }] : []),
+        ...(canViewSalary ? [{ title: "Financial" }] : []),
+    ];
+
+    const [activeTab, setActiveTab] = useState("Notifications");
 
     const handleUpdateRating = async (rating) => {
         try {
@@ -92,8 +99,6 @@ function SingleEmployeeProfile() {
             setIsUpdating(false);
         }
     };
-
-    const [isEditRatingModalOpen, setIsEditRatingModalOpen] = useState(false);
 
     const handleUpdateFullRating = async (data) => {
         try {
@@ -113,8 +118,6 @@ function SingleEmployeeProfile() {
         if (!dob) return "-";
         return dayjs().diff(dayjs(dob), 'year');
     };
-
-    const [activeTab, setActiveTab] = useState("Notifications");
 
     const formatStorage = (bytes) => {
         if (!bytes) return "0 MB";
@@ -214,8 +217,6 @@ function SingleEmployeeProfile() {
         });
     };
 
-
-
     const renderTabContent = () => {
         switch (activeTab) {
             case "Notifications":
@@ -290,7 +291,6 @@ function SingleEmployeeProfile() {
                 return null;
         }
     };
-
 
     if (isLoading) return <div className="text-center py-10">{t("Loading...")}</div>;
     if (error) return <div className="text-center py-10 text-red-500">{t("Error loading profile")}</div>;

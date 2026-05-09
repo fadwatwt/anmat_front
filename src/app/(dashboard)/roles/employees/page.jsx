@@ -19,11 +19,16 @@ import StatusActions from "@/components/Dropdowns/StatusActions";
 import { useTranslation } from "react-i18next";
 import { RiDeleteBin7Line } from "react-icons/ri";
 import { useProcessing } from "@/app/providers";
+import { usePermission } from "@/Hooks/usePermission";
 
 function PermissionsPage() {
     const { data: rolesData, isLoading, isError, error } = useGetSubscriberRolesQuery();
     const [deleteRole, { isLoading: isDeleting }] = useDeleteSubscriberRoleMutation();
     const { showProcessing, hideProcessing } = useProcessing();
+
+    const canCreateRole = usePermission("roles.create");
+    const canUpdateRole = usePermission("roles.update");
+    const canDeleteRole = usePermission("roles.delete");
 
     const [addRoleModalOpen, setAddRoleModalOpen] = useState(false);
     const [syncPermissionsModalOpen, setSyncPermissionsModalOpen] = useState(false);
@@ -54,9 +59,9 @@ function PermissionsPage() {
                         <span
                             key={index}
                             className="bg-badge-bg text-badge-text text-xs text-center px-3 py-1 rounded-2xl truncate border border-status-border"
-                            title={permission.name}
+                            title={permission.title || permission.name}
                         >
-                            {permission.name}
+                            {permission.title || permission.name}
                         </span>
                     ))
                 }
@@ -68,20 +73,23 @@ function PermissionsPage() {
         const { t, i18n } = useTranslation();
         const role = rolesData[actualRowIndex];
 
-        const statesActions = [
-            {
+        const statesActions = [];
+        if (canUpdateRole) {
+            statesActions.push({
                 text: "Sync Permissions", icon: <RiEditLine className="text-primary-400" />, onClick: () => {
                     setSelectedRole(role);
                     setSyncPermissionsModalOpen(true);
                 },
-            },
-            {
+            });
+        }
+        if (canDeleteRole) {
+            statesActions.push({
                 text: "Delete", icon: <RiDeleteBin7Line className="text-red-500" />, onClick: () => {
                     setSelectedRole(role);
                     setIsDeleteRoleAlert(true);
                 },
-            }
-        ]
+            });
+        }
         return (
             <StatusActions states={statesActions} className={`${i18n.language === "ar" ? "left-0" : "right-0"
                 }`} />
@@ -135,7 +143,7 @@ function PermissionsPage() {
     }
 
     return (
-        <Page title={"Roles"} isBtn={true} btnTitle={"Add Role"} btnOnClick={toggleAddRoleModal} >
+        <Page title={"Roles"} isBtn={canCreateRole} btnTitle={"Add Role"} btnOnClick={toggleAddRoleModal} >
             <div className={"flex flex-col gap-6"}>
                 <div className="flex flex-col gap-2 h-full">
                     <Table className="custom-class" title={"All Roles"}

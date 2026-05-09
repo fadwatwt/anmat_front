@@ -14,12 +14,14 @@ import { format } from "date-fns";
 import CreateRequestModal from "./_components/CreateRequestModal";
 import { Add } from "iconsax-react";
 import { useProcessing } from "@/app/providers";
+import { usePermission } from "@/Hooks/usePermission";
 
 function EmployeeRequestsPage() {
     const { t } = useTranslation();
     const { showProcessing, hideProcessing } = useProcessing();
     const [activeTab, setActiveTab] = useState("DAY_OFF"); // "DAY_OFF", "SALARY_ADVANCE", "WORK_DELAY"
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const canCreateRequest = usePermission("employee_requests.create");
 
     // API Hooks
     const { data: requestsData, isLoading } = useGetEmployeeAuthRequestsQuery();
@@ -161,13 +163,15 @@ function EmployeeRequestsPage() {
                     </button>
                 ))}
             </div>
-            <button
-                onClick={() => setIsCreateModalOpen(true)}
-                className="flex items-center gap-2 px-6 py-2.5 bg-primary-base text-white dark:bg-primary-200 dark:text-black rounded-xl text-sm font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-primary-500/20"
-            >
-                <Add size={20} variant="Bold" />
-                {t("New Request")}
-            </button>
+            {canCreateRequest && (
+                <button
+                    onClick={() => setIsCreateModalOpen(true)}
+                    className="flex items-center gap-2 px-6 py-2.5 bg-primary-base text-white dark:bg-primary-200 dark:text-black rounded-xl text-sm font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-primary-500/20"
+                >
+                    <Add size={20} variant="Bold" />
+                    {t("New Request")}
+                </button>
+            )}
         </div>
     );
 

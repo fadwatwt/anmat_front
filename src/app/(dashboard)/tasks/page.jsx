@@ -8,6 +8,7 @@ import Page from "@/components/Page.jsx";
 import Table from "@/components/Tables/Table.jsx";
 import { useSelector } from "react-redux";
 import { selectUserType } from "@/redux/auth/authSlice";
+import { usePermission } from "@/Hooks/usePermission";
 import { convertToSlug } from "@/functions/AnotherFunctions";
 import { translateDate } from "@/functions/Days";
 import { RiEyeLine, RiDeleteBinLine, RiEditLine } from "react-icons/ri";
@@ -37,6 +38,9 @@ function TasksPage() {
   const authUserType = useSelector(selectUserType);
   const isEmployee = authUserType === "Employee";
   const isSubscriber = authUserType === "Subscriber";
+  const canCreateTask = usePermission("tasks.create");
+  const canEditTask = usePermission("tasks.update");
+  const canDeleteTask = usePermission("tasks.delete");
 
   const { data: subscriberTasks = [], isLoading: isSubscriberLoading, isError: isSubscriberError } = useGetSubscriberTasksQuery(undefined, { skip: !isSubscriber });
   const { data: employeeTasks = [], isLoading: isEmployeeLoading, isError: isEmployeeError } = useGetEmployeeTasksQuery(undefined, { skip: !isEmployee });
@@ -155,13 +159,14 @@ function TasksPage() {
 
     const actions = [];
 
-    if (!isEmployee) {
+    actions.push({
+      text: t("View"),
+      icon: <RiEyeLine size={16} className="text-blue-500" />,
+      onClick: () => router.push(`/tasks/${task._id}-${convertToSlug(task.title)}/details`),
+    });
+
+    if (canEditTask) {
       actions.push(
-        {
-          text: t("View"),
-          icon: <RiEyeLine size={16} className="text-blue-500" />,
-          onClick: () => router.push(`/tasks/${task._id}-${convertToSlug(task.title)}/details`),
-        },
         {
           text: t("Edit"),
           icon: <RiEditLine size={16} className="text-primary-500" />,
@@ -171,18 +176,21 @@ function TasksPage() {
           text: t("Change Status"),
           icon: <RiEditLine size={16} className="text-primary-500" />,
           onClick: () => handleOpenStatusModal(task),
-        },
-        {
-          text: t("Delete"),
-          icon: <RiDeleteBinLine size={16} className="text-red-500" />,
-          onClick: () => handleDeleteConfirmation(task),
         }
       );
-    } else {
+    } else if (isEmployee) {
       actions.push({
         text: t("Change Status"),
         icon: <RiEditLine size={16} className="text-primary-500" />,
         onClick: () => handleOpenStatusModal(task),
+      });
+    }
+
+    if (canDeleteTask) {
+      actions.push({
+        text: t("Delete"),
+        icon: <RiDeleteBinLine size={16} className="text-red-500" />,
+        onClick: () => handleDeleteConfirmation(task),
       });
     }
 
@@ -261,7 +269,7 @@ function TasksPage() {
     <>
       <Page
         title={t("Tasks")}
-        {...(authUserType === "Subscriber" ? { isBtn: true, btnOnClick: handleCreateTask, btnTitle: t("Create a Task") } : {})}
+        {...(canCreateTask ? { isBtn: true, btnOnClick: handleCreateTask, btnTitle: t("Create a Task") } : {})}
       >
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-2 h-full">

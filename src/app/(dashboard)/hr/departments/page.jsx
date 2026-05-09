@@ -16,11 +16,18 @@ import StarRating from "@/components/StarRating";
 import ProcessingOverlay from "@/components/Feedback/ProcessingOverlay.jsx";
 
 import { useGetDepartmentsQuery, useDeleteDepartmentMutation } from "@/redux/departments/departmentsApi";
+import { usePermission } from "@/Hooks/usePermission";
 
 function DepartmentsPage() {
     const { t } = useTranslation();
     const { data: departments = [], isLoading: isDepartmentsLoading } = useGetDepartmentsQuery();
     const [deleteDepartment, { isLoading: isDeleting }] = useDeleteDepartmentMutation();
+
+    const canCreateDepartment = usePermission("departments.create");
+    const canUpdateDepartment = usePermission("departments.update");
+    const canDeleteDepartment = usePermission("departments.delete");
+    const canViewDepartment = usePermission("departments.view");
+    const canSendNotification = usePermission("notifications.create");
 
     const [isOpenEditModal, setIsOpenEditModal] = useState(false);
     const [isOpenCreateModal, setIsOpenCreateModal] = useState(false);
@@ -47,51 +54,51 @@ function DepartmentsPage() {
         const { t, i18n } = useTranslation();
         const department = departments[actualRowIndex];
 
-        const statesActions = [
-            {
+        const statesActions = [];
+        if (canViewDepartment) {
+            statesActions.push({
                 text: t("View Profile"),
                 icon: <RiUserLine size={20} className="text-primary-400" />,
                 onClick: () => {
                     window.location.href = `/hr/departments/${department._id}/profile`;
                 },
-            },
-            {
+            });
+        }
+        if (canUpdateDepartment) {
+            statesActions.push({
                 text: t("Edit"),
                 icon: <RiEditLine size={20} className="text-primary-400" />,
                 onClick: () => {
                     setSelectedDepartment(department);
                     setIsOpenEditModal(true);
                 },
-            },
-            {
+            });
+        }
+        if (canSendNotification) {
+            statesActions.push({
                 text: t("Send Notification"),
                 icon: <RiNotification4Line size={20} className="text-primary-400" />,
                 onClick: () => {
                     setSelectedDepartment(department);
                     setIsOpenSendNotifyModal(true);
                 }
-            },
-            {
-                text: t("Create Team"),
-                icon: <RiGroupLine size={20} className="text-primary-400" />,
-                onClick: () => {
-                    console.log("Create Team for:", department.name);
-                }
-            },
-            {
-                text: t("Create Chat Group"),
-                icon: <RiChat1Line size={20} className="text-primary-400" />,
-                onClick: () => {
-                    setSelectedDepartment(department);
-                    setIsOpenCreateChatGroupModal(true);
-                }
-            },
-            {
+            });
+        }
+        statesActions.push({
+            text: t("Create Chat Group"),
+            icon: <RiChat1Line size={20} className="text-primary-400" />,
+            onClick: () => {
+                setSelectedDepartment(department);
+                setIsOpenCreateChatGroupModal(true);
+            }
+        });
+        if (canDeleteDepartment) {
+            statesActions.push({
                 text: t("Delete"),
                 icon: <RiDeleteBin7Line size={20} className="text-red-500" />,
                 onClick: () => handleDeleteDepartment(department),
-            }
-        ]
+            });
+        }
         return (
             <StatusActions states={statesActions} className={`${i18n.language === "ar" ? "left-0" : "right-0"
                 }`} />
@@ -169,16 +176,20 @@ function DepartmentsPage() {
                         rows={DepartmentRowTable(departments)}
                         headerActions={
                             <div className="flex gap-2">
-                                <button
-                                    onClick={() => setIsOpenSendNotifyModal(true)}
-                                    className="bg-badge-bg text-primary-500 hover:bg-opacity-80 px-4 py-2 rounded-lg text-sm font-semibold transition-all">
-                                    {t("Send Notification")}
-                                </button>
-                                <button
-                                    onClick={() => setIsOpenCreateModal(true)}
-                                    className="bg-primary-500 text-white hover:bg-primary-600 px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm">
-                                    {t("Create a Department")}
-                                </button>
+                                {canSendNotification && (
+                                    <button
+                                        onClick={() => setIsOpenSendNotifyModal(true)}
+                                        className="bg-badge-bg text-primary-500 hover:bg-opacity-80 px-4 py-2 rounded-lg text-sm font-semibold transition-all">
+                                        {t("Send Notification")}
+                                    </button>
+                                )}
+                                {canCreateDepartment && (
+                                    <button
+                                        onClick={() => setIsOpenCreateModal(true)}
+                                        className="bg-primary-500 text-white hover:bg-primary-600 px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm">
+                                        {t("Create a Department")}
+                                    </button>
+                                )}
                             </div>
                         }
                     />

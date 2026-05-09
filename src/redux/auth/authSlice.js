@@ -7,6 +7,8 @@ const initialState = {
   isLoading: false,
   error: null,
   isAuthenticated: false, // Added authentication flag
+  permissions: [], // Permission names for current user; ['*'] = full access
+  permissionsLoaded: false,
 };
 
 const authSlice = createSlice({
@@ -39,6 +41,8 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
+      state.permissions = [];
+      state.permissionsLoaded = false;
 
       // Clear localStorage on logout
       if (typeof window !== "undefined") {
@@ -46,6 +50,10 @@ const authSlice = createSlice({
         localStorage.removeItem("userId");
         localStorage.removeItem("userData");
       }
+    },
+    setPermissions: (state, action) => {
+      state.permissions = action.payload || [];
+      state.permissionsLoaded = true;
     },
     // Add this to load auth state from localStorage on page refresh
     loadAuthState: (state) => {
@@ -76,6 +84,7 @@ export const {
   logout,
   loadAuthState,
   setUser,
+  setPermissions,
   clearError,
 } = authSlice.actions;
 
@@ -85,5 +94,7 @@ export const selectUserType = (state) => state.auth.user?.type;
 export const selectUser = (state) => state.auth.user;
 export const selectIsAuthenticated = (state) => state.auth.isAuthenticated;
 export const selectAuth = (state) => state.auth;
+export const selectPermissions = (state) => state.auth.permissions;
+export const selectPermissionsLoaded = (state) => state.auth.permissionsLoaded;
 
 export default authSlice.reducer;

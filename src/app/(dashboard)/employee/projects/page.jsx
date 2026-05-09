@@ -9,6 +9,8 @@ import { GoCheckCircleFill, GoClockFill, GoAlertFill } from "react-icons/go";
 import { User, Calendar } from "iconsax-react";
 import { useGetMyProjectsQuery } from "@/redux/projects/employeeProjectsApi";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { usePermission } from "@/Hooks/usePermission";
 
 // Dynamic imports
 const Table = dynamic(() => import("@/components/Tables/Table"), { ssr: false });
@@ -102,6 +104,8 @@ ProgressIndicator.propTypes = {
 /* ─── Main Page Component ────────────────────────────────────────── */
 const EmployeeProjectsPage = () => {
   const { t } = useTranslation();
+  const router = useRouter();
+  const canCreateProject = usePermission("projects.create");
   const { data: projects, isLoading } = useGetMyProjectsQuery();
 
   const headers = [
@@ -168,7 +172,12 @@ const EmployeeProjectsPage = () => {
   }, [projects, t]);
 
   return (
-    <Page title={t("My Projects")}>
+    <Page
+      title={t("My Projects")}
+      isBtn={false} //canCreateProject
+      btnTitle={t("Create a Project")}
+      btnOnClick={() => router.push("/projects/create")}
+    >
       {isLoading && <ProcessingOverlay message={t("Loading your projects...")} />}
 
       <div className="flex flex-col gap-6">

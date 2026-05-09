@@ -23,6 +23,9 @@ import { useUpdateTaskStatusMutation } from "@/redux/tasks/employeeTasksApi.js";
 import useAuthStore from '@/store/authStore.js';
 import { useSelector } from 'react-redux';
 import { selectUser } from '@/redux/auth/authSlice.js';
+import { usePermission } from '@/Hooks/usePermission';
+import CreateTeamModal from "@/app/(dashboard)/projects/_modal/CreateTeamModal";
+import { RiGroupFill } from "react-icons/ri";
 import { useGetProjectLogsQuery } from "@/redux/activity-logs/activityLogsApi";
 
 function ProjectDetailsPage() {
@@ -141,8 +144,13 @@ function ProjectDetailsPage() {
         }
     };
 
-    const [isOpenEditModal, setIsOpenEditModal] = useState(false)
+    const [isOpenEditModal, setIsOpenEditModal] = useState(false);
     const [filterTasks, setFilterTasks] = useState([]);
+    const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
+
+    const canDeleteAttachments = usePermission("attachments.delete");
+    const canEvaluate = usePermission("projects.evaluate");
+    const canManageTeam = usePermission("tasks.manage_participants");
 
     const mappedTasks = project?.tasks?.map(task => {
         const assignee = project.assignees?.find(m => m._id === task.assignee_id);
@@ -220,9 +228,6 @@ function ProjectDetailsPage() {
     const comments = project?.comments || [];
     const attachments = project?.attachments || [];
 
-    const canDeleteAttachments = authUserType === "Subscriber" || user?.permissions?.includes('manage_attachments');
-    const canEvaluate = authUserType === "Subscriber" || user?.permissions?.includes('evaluate');
-
     const filterOptions = [
         { id: "deadLine", name: "dead line" },
         { id: "startDate", name: "start date" },
@@ -290,13 +295,24 @@ function ProjectDetailsPage() {
                     </div>}
                 </div>
                 <div className={"flex-1 flex flex-col gap-6"}>
-                    {true && <ProjectMembers members={projectMembers} />}
+                    <div className="flex flex-col gap-3">
+                        {true && <ProjectMembers members={projectMembers} />}
+                        {canManageTeam && (
+                            <button
+                                onClick={() => setIsTeamModalOpen(true)}
+                                className="flex items-center gap-2 px-4 py-2 bg-primary-base text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity w-fit"
+                            >
+                                <RiGroupFill size={16} />
+                                {t("Manage Team")}
+                            </button>
+                        )}
+                    </div>
                     {/* Hiding components not yet linked to backend data */}
-                    {true && <AttachmentsList 
-                        attachments={attachments} 
-                        onUpload={handleUploadAttachment} 
+                    {true && <AttachmentsList
+                        attachments={attachments}
+                        onUpload={handleUploadAttachment}
                         onDelete={canDeleteAttachments ? handleDeleteAttachment : null}
-                        isUploading={isUploadingAttachment} 
+                        isUploading={isUploadingAttachment}
                     />}
                     {true && <ActivityLogs activityLogs={activityLogs} isRawLogs={true} className={"h-72"} />}
                     {false && <TimeLine />}
@@ -304,6 +320,12 @@ function ProjectDetailsPage() {
 
             </div>
             <EditProjectModal project={project} isOpen={isOpenEditModal} onClose={handelEditModal} />
+            {canManageTeam && (
+                <CreateTeamModal
+                    isOpen={isTeamModalOpen}
+                    onClose={() => setIsTeamModalOpen(false)}
+                />
+            )}
         </Page>
     );
 }

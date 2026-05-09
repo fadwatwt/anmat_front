@@ -24,6 +24,8 @@ import {
 import { format } from "date-fns";
 import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
+import PermissionGuard from "@/components/PermissionGuard";
+import { usePermission } from "@/Hooks/usePermission";
 
 const headers = [
     { label: "Plan", width: "250px" },
@@ -35,9 +37,15 @@ const headers = [
     { label: "", width: "50px" }
 ];
 
-function PlansPage() {
+function PlansPageContent() {
     const router = useRouter();
     const { data: plans, isLoading, error } = useGetSubscriptionPlansQuery();
+
+    const canCreate = usePermission("admin.subscription_plans.create");
+    const canUpdate = usePermission("admin.subscription_plans.update");
+    const canDelete = usePermission("admin.subscription_plans.delete");
+    const canToggleActivity = usePermission("admin.subscription_plans.toggle_activity");
+    const canManageTrial = usePermission("admin.subscription_plans.manage_trial");
 
     // Mutations
     const [deletePlan] = useDeleteSubscriptionPlanMutation();
@@ -135,12 +143,12 @@ function PlansPage() {
                     router.push(`/plans/${planId}/details`);
                 }
             },
-            {
+            canUpdate && {
                 text: "Edit", icon: <RiEditLine className="text-primary-400" />, onClick: () => {
                     handleEdit(plan)
                 },
             },
-            {
+            canToggleActivity && {
                 text: plan.is_active ? "Deactivate Plan" : "Activate Plan",
                 icon: plan.is_active ? (
                     <RiCloseCircleLine className="text-orange-500" />
@@ -149,15 +157,15 @@ function PlansPage() {
                 ),
                 onClick: () => handleAction("toggle-status", plan)
             },
-            {
+            canManageTrial && {
                 text: isTrialActive ? "Stop Free Trial" : "Start Free Trial",
                 icon: <RiFlashlightLine className={isTrialActive ? "text-red-500" : "text-blue-500"} />,
                 onClick: () => handleAction("toggle-trial", plan)
             },
-            {
+            canDelete && {
                 text: "Delete", icon: <RiDeleteBin7Line className="text-red-500" />, onClick: () => handleAction("delete", plan)
             }
-        ]
+        ].filter(Boolean);
         return (
             <StatusActions states={statesActions} className={`${i18n.language === "ar" ? "left-0" : "right-0"
                 }`} />
@@ -241,7 +249,7 @@ function PlansPage() {
     if (error) return <div className="flex justify-center items-center h-full p-10 text-red-500">Error loading plans.</div>;
 
     return (
-        <Page title="Plans" isBtn={true} btnTitle="Add Plan" btnOnClick={toggleCreatePlanModalOpen}>
+        <Page title="Plans" isBtn={canCreate} btnTitle="Add Plan" btnOnClick={toggleCreatePlanModalOpen}>
             <Table
                 classContainer={"rounded-2xl px-8"}
                 title="All Plans"
@@ -283,4 +291,10 @@ function PlansPage() {
     );
 }
 
-export default PlansPage;
+export default function PlansPage() {
+    return (
+        <PermissionGuard permission="admin.subscription_plans.list">
+            <PlansPageContent />
+        </PermissionGuard>
+    );
+}

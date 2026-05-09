@@ -19,6 +19,9 @@ import { useGetEmployeeTaskDetailsQuery, useAddEmployeeTaskCommentMutation, useD
 import useAuthStore from '@/store/authStore.js';
 import { useSelector } from 'react-redux';
 import { selectUser } from '@/redux/auth/authSlice.js';
+import { usePermission } from '@/Hooks/usePermission';
+import CreateTeamModal from "@/app/(dashboard)/projects/_modal/CreateTeamModal";
+import { RiGroupFill } from "react-icons/ri";
 
 function TaskDetailsPage({ params }) {
     const { t } = useTranslation();
@@ -212,7 +215,9 @@ function TaskDetailsPage({ params }) {
         }];
     }, [task?.assignee]);
 
-    const canDeleteAttachments = authUserType === "Subscriber" || user?.permissions?.includes('manage_attachments');
+    const canDeleteAttachments = usePermission("attachments.delete");
+    const canManageTeam = usePermission("tasks.manage_participants");
+    const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
 
     if (isLoading) {
         return (
@@ -236,6 +241,13 @@ function TaskDetailsPage({ params }) {
 
     return (
         <>
+            {canManageTeam && (
+                <CreateTeamModal
+                    isOpen={isTeamModalOpen}
+                    onClose={() => setIsTeamModalOpen(false)}
+                    taskId={taskId}
+                />
+            )}
             <Page title={t("Task Details")} isBreadcrumbs={true} breadcrumbs={breadcrumbItems}>
                 <div className={"w-full flex items-start gap-8 flex-col md:flex-row h-full"}>
                     <div className={"flex flex-col gap-6 md:w-[60%] w-full "}>
@@ -270,13 +282,24 @@ function TaskDetailsPage({ params }) {
                         </div>}
                     </div>
                     <div className={"flex-1 flex flex-col gap-6"}>
-                        <ProjectMembers members={assigneeMember} title="Assignee Employee" />
+                        <div className="flex flex-col gap-3">
+                            <ProjectMembers members={assigneeMember} title="Assignee Employee" />
+                            {canManageTeam && (
+                                <button
+                                    onClick={() => setIsTeamModalOpen(true)}
+                                    className="flex items-center gap-2 px-4 py-2 bg-primary-base text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity w-fit"
+                                >
+                                    <RiGroupFill size={16} />
+                                    {t("Manage Team")}
+                                </button>
+                            )}
+                        </div>
                         {/* Hiding components not yet linked to backend data */}
-                        {true && <AttachmentsList 
-                            attachments={task.attachments || []} 
-                            onUpload={handleUploadAttachment} 
+                        {true && <AttachmentsList
+                            attachments={task.attachments || []}
+                            onUpload={handleUploadAttachment}
                             onDelete={canDeleteAttachments ? handleDeleteAttachment : null}
-                            isUploading={isUploadingAttachment} 
+                            isUploading={isUploadingAttachment}
                         />}
                         {true && <ActivityLogs activityLogs={activityLogs} className={"h-72"} />}
                         {false && <TimeLine />}

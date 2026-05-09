@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { usePermission } from "@/Hooks/usePermission";
 import Table from "@/components/Tables/Table";
 import {
   useGetSalaryTransactionsQuery,
@@ -15,6 +16,8 @@ import { useProcessing } from "@/app/providers";
 export default function SalaryTab() {
   const { t } = useTranslation();
   const { showProcessing, hideProcessing } = useProcessing();
+  const canCreate = usePermission("salary_transactions.create");
+  const canDelete = usePermission("salary_transactions.delete");
   const { data: transactions = [], isLoading: isTransactionsLoading, error } = useGetSalaryTransactionsQuery();
 
   const [createTransaction] = useCreateSalaryTransactionMutation();
@@ -151,9 +154,9 @@ export default function SalaryTab() {
           isCheckInput={true}
           isTitle={true}
           classContainer="w-full"
-          isActions={true}
-          handelDelete={handleDelete}
-          isEdit={false} // Disable edit as it's not requested for transactions
+          isActions={canDelete}
+          handelDelete={canDelete ? handleDelete : undefined}
+          isEdit={false}
 
           // Filters
           showDatePicker={true}
@@ -167,13 +170,15 @@ export default function SalaryTab() {
           onDepartmentChange={(val) => setSelectedDepartment(val)}
 
           headerActions={
-            <button
-              className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-              onClick={() => setIsAddModalOpen(true)}
-            >
-              <GoPlus size={18} />
-              {t("Add Transaction")}
-            </button>
+            canCreate ? (
+              <button
+                className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                onClick={() => setIsAddModalOpen(true)}
+              >
+                <GoPlus size={18} />
+                {t("Add Transaction")}
+              </button>
+            ) : null
           }
         />
       </div>

@@ -12,38 +12,45 @@ import LeavesTab from "@/app/(dashboard)/hr/employees/tabs/LeavesTab.jsx";
 // import NewEmployeesTab from "@/app/(dashboard)/hr/employees/tabs/NewEmployeesTab.jsx";
 import CreateADepartmentModal from "@/app/(dashboard)/hr/_modals/CreateADepartmentModal.jsx";
 import InviteEmployeeModal from "@/app/(dashboard)/hr/_modals/InviteEmployeeModal";
+import { usePermission } from "@/Hooks/usePermission";
 
 function HRPage() {
     const [isInviteEmployeeModal, setIsInviteEmployeeModal] = useState(false);
     const [isAddDepartmentModal, setIsAddDepartmentModal] = useState(false);
     const [activeTab, setActiveTab] = useState("Employees");
 
+    const canViewEmployees = usePermission("employee_details.list");
+    const canViewAttendances = usePermission("attendances.track_all") || usePermission("attendances.track_department");
+    const canViewLeaves = usePermission("leaves.track_all") || usePermission("leaves.track_department");
+    const canViewRequests = usePermission("employee_requests.track_all") || usePermission("employee_requests.track_department");
+    const canViewSalary = usePermission("salary_transactions.track_all") || usePermission("salary_transactions.track_department");
+
     const tabsData = [
-        {
+        ...(canViewEmployees ? [{
             title: "Employees",
             content: <EmployeesTap />,
-        },
+        }] : []),
 
-        {
+        ...(canViewAttendances ? [{
             title: "Attendances",
             content: <AttendanceTab />,
-        },
-        {
+        }] : []),
+        ...(canViewLeaves ? [{
             title: "Short Leaves",
             content: <LeavesTab />,
-        },
-        {
+        }] : []),
+        ...(canViewRequests ? [{
             title: "Requests",
             content: <RequestsTab />,
-        },
-        {
+        }] : []),
+        ...(canViewSalary ? [{
             title: "Salary",
             content: <SalaryTab />,
-        },
-        {
+        }] : []),
+        ...(canViewAttendances ? [{
             title: "Rotations",
             content: <RotationTap />,
-        },
+        }] : []),
     ];
 
     const handleInviteEmployeeModal = () => {

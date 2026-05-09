@@ -10,6 +10,7 @@ import Page from "@/components/Page.jsx";
 import Table from "@/components/Tables/Table.jsx";
 import EmployeeProjectStates from "@/app/(dashboard)/_components/EmployeeStates";
 import useAuthStore from '@/store/authStore.js';
+import { usePermission } from "@/Hooks/usePermission";
 import { convertToSlug } from "@/functions/AnotherFunctions";
 import { translateDate } from "@/functions/Days";
 
@@ -41,8 +42,10 @@ function CompanyManagerTasksPage() {
     const [isOpenDeleteAlert, setIsOpenDeleteAlert] = useState(false);
     const [taskToDelete, setTaskToDelete] = useState(null);
 
-    // Define authUserType (e.g., from context or state management)
     const { authUserType } = useAuthStore();
+    const canCreateTask = usePermission("tasks.create");
+    const canEditTask = usePermission("tasks.update");
+    const canDeleteTask = usePermission("tasks.delete");
 
     // ✅ Fetch tasks only if needed
     useEffect(() => {
@@ -88,16 +91,16 @@ function CompanyManagerTasksPage() {
                 icon: <RiEyeLine size={16} className="text-blue-500" />,
                 onClick: () => router.push(`/tasks/${task._id}-${convertToSlug(task.title)}/details`),
             },
-            {
+            ...(canEditTask ? [{
                 text: t("Edit"),
                 icon: <RiEditLine size={16} className="text-primary-500" />,
                 onClick: () => router.push(`/tasks/${task._id}-${convertToSlug(task.title)}/edit`),
-            },
-            {
+            }] : []),
+            ...(canDeleteTask ? [{
                 text: t("Delete"),
                 icon: <RiDeleteBinLine size={16} className="text-red-500" />,
                 onClick: () => handleDeleteConfirmation(task),
-            },
+            }] : []),
         ];
 
         return (
@@ -145,7 +148,7 @@ function CompanyManagerTasksPage() {
         <>
             <Page
                 title={t("Tasks")}
-                {...(authUserType === "Subscriber" ? { isBtn: true, btnOnClick: handleCreateTask, btnTitle: t("Create a Task") } : {})}
+                {...(authUserType === "Subscriber" || canCreateTask ? { isBtn: true, btnOnClick: handleCreateTask, btnTitle: t("Create a Task") } : {})}
             >
                 <div className="flex flex-col gap-6">
                     <div className="flex flex-col gap-2 h-full">

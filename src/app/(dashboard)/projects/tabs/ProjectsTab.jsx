@@ -21,6 +21,7 @@ import {
 } from "@/redux/projects/subscriberProjectsApi";
 import { useSelector } from "react-redux";
 import { defaultPhoto } from "@/Root.Route.js";
+import { usePermission } from "@/Hooks/usePermission";
 import {
     RiLayoutGridFill,
     RiPencilLine,
@@ -33,8 +34,9 @@ import dayjs from "dayjs";
 
 function ProjectsTab() {
     const { t } = useTranslation();
-    const user = useSelector((state) => state.auth.user);
-    const canEvaluate = user?.type === "Subscriber" || user?.permissions?.includes("evaluate");
+    const canEvaluate = usePermission("projects.evaluate");
+    const canEditProject = usePermission("projects.update");
+    const canDeleteProject = usePermission("projects.delete");
 
     const { data: projectsData, isLoading, isError, error } = useGetSubscriberProjectsQuery();
     const projects = projectsData || [];
@@ -142,17 +144,22 @@ function ProjectsTab() {
                 icon: <RiEyeLine className="text-blue-500" />,
                 onClick: () => handleViewProject(project),
             },
-            {
-                text: t("Edit Project"),
-                icon: <RiPencilLine className="text-primary-500" />,
-                onClick: () => handleEditProject(project),
-            },
-            {
-                text: t("Change Status"),
-                icon: <RiLayoutGridFill className="text-amber-500" />,
-                onClick: () => handleOpenStatusModal(project),
-            },
         ];
+
+        if (canEditProject) {
+            actions.push(
+                {
+                    text: t("Edit Project"),
+                    icon: <RiPencilLine className="text-primary-500" />,
+                    onClick: () => handleEditProject(project),
+                },
+                {
+                    text: t("Change Status"),
+                    icon: <RiLayoutGridFill className="text-amber-500" />,
+                    onClick: () => handleOpenStatusModal(project),
+                }
+            );
+        }
 
         if (canEvaluate) {
             actions.push({
@@ -162,18 +169,19 @@ function ProjectsTab() {
             });
         }
 
-        actions.push(
-            {
+        if (canEditProject) {
+            actions.push({
                 text: t("Save as Template"),
                 icon: <RiFileCopy2Line className="text-amber-500" />,
                 onClick: () => handleSaveAsTemplate(project),
-            },
-            {
-                text: t("Download Attachs"),
-                icon: <RiDownload2Line className="text-blue-500" />,
-                onClick: () => {},
-            }
-        );
+            });
+        }
+
+        actions.push({
+            text: t("Download Attachs"),
+            icon: <RiDownload2Line className="text-blue-500" />,
+            onClick: () => {},
+        });
 
         return <StatusActions states={actions} />;
     };
@@ -254,8 +262,8 @@ function ProjectsTab() {
                 isActions={false}
                 customActions={customActions}
                 isCheckInput={true}
-                handelEdit={handleEditProject}
-                handelDelete={handleDeleteProject}
+                handelEdit={canEditProject ? handleEditProject : undefined}
+                handelDelete={canDeleteProject ? handleDeleteProject : undefined}
                 className="min-w-[2000px] table-fixed"
             />
 

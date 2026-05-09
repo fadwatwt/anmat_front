@@ -6,9 +6,11 @@ import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert.jsx";
 import { useState, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { selectUser } from "@/redux/auth/authSlice";
+import { usePermission } from "@/Hooks/usePermission";
 import { useTranslation } from "react-i18next";
+import CreateTeamModal from "@/app/(dashboard)/projects/_modal/CreateTeamModal";
 import { translateDate } from "@/functions/Days.js";
-import { RiArrowDownSLine, RiFlag2Line, RiStackLine } from "react-icons/ri";
+import { RiArrowDownSLine, RiFlag2Line, RiStackLine, RiGroupFill } from "react-icons/ri";
 import { FaStar } from "react-icons/fa";
 import { useEvaluateSubscriberTaskStageMutation, useEvaluateSubscriberTaskMutation, useUploadSubscriberTaskAttachmentMutation, useDeleteSubscriberTaskAttachmentMutation } from "@/redux/tasks/subscriberTasksApi";
 import { useUploadEmployeeTaskAttachmentMutation, useDeleteEmployeeTaskAttachmentMutation } from "@/redux/tasks/employeeTasksApi";
@@ -117,11 +119,13 @@ function TasksList({ tasks = [], isAssignedDate = false, isEmployeeView = false,
     const [activeStatusId, setActiveStatusId] = useState(null);
     const [expandedTaskId, setExpandedTaskId] = useState(null);
     const [alertConfig, setAlertConfig] = useState({ isOpen: false, status: "", message: "" });
+    const [teamModalTaskId, setTeamModalTaskId] = useState(null);
 
     const { t } = useTranslation()
     const user = useSelector(selectUser);
-    const canDeleteAttachments = user?.type === "Subscriber" || user?.permissions?.includes('manage_attachments');
-    const canEvaluate = user?.type === "Subscriber" || user?.permissions?.includes('evaluate');
+    const canDeleteAttachments = usePermission("attachments.delete");
+    const canEvaluate = usePermission("tasks.evaluate");
+    const canManageTeam = usePermission("tasks.manage_participants");
 
     const [evaluateStage] = useEvaluateSubscriberTaskStageMutation();
     const [evaluateTask] = useEvaluateSubscriberTaskMutation();
@@ -313,6 +317,15 @@ function TasksList({ tasks = [], isAssignedDate = false, isEmployeeView = false,
                             </div>
 
                             <div className="flex gap-4 items-center">
+                                {canManageTeam && (
+                                    <button
+                                        onClick={() => setTeamModalTaskId(task._id)}
+                                        className="flex items-center gap-1 text-xs font-medium text-primary-base border border-primary-base rounded-md px-2 py-0.5 hover:bg-primary-base hover:text-white transition-colors"
+                                    >
+                                        <RiGroupFill size={12} />
+                                        <span>{t("Team")}</span>
+                                    </button>
+                                )}
                                 <button
                                     onClick={() => setExpandedTaskId(expandedTaskId === task._id ? null : task._id)}
                                     className="flex items-center gap-1.5 text-xs font-medium text-primary-base hover:opacity-80 transition-opacity"
@@ -389,6 +402,15 @@ function TasksList({ tasks = [], isAssignedDate = false, isEmployeeView = false,
                     task={selectedTask}
                     onClose={() => setSelectedTask(null)}
                     onSubmit={handleStageRatingSubmit}
+                />
+            )}
+
+            {/* Team Modal */}
+            {teamModalTaskId && (
+                <CreateTeamModal
+                    isOpen={!!teamModalTaskId}
+                    onClose={() => setTeamModalTaskId(null)}
+                    taskId={teamModalTaskId}
                 />
             )}
 

@@ -44,18 +44,24 @@ import { translateDate } from '@/functions/Days';
 import dayjs from 'dayjs';
 import ContentCard from "@/components/containers/ContentCard";
 
-const tabsList = [
-    { title: "Notifications" },
-    { title: "Leave" },
-    { title: "Delay" },
-    { title: "Financial" },
-];
+import { usePermission } from "@/Hooks/usePermission";
 
 function EmployeeProfile() {
 
     const { t, i18n } = useTranslation()
     const user = useSelector(selectUser);
     const employeeDetail = user?.employee_detail || {};
+
+    const canCreateLeave = usePermission("leaves.create"); // Or check for list if it exists
+    const canCreateRequest = usePermission("employee_requests.create");
+    const canViewSalary = usePermission("salary_transactions.track_all") || usePermission("salary_transactions.track_department") || true; // Usually can always see own
+
+    const tabsList = [
+        { title: "Notifications" },
+        ...(canCreateLeave ? [{ title: "Leave" }] : []),
+        ...(canCreateRequest ? [{ title: "Delay" }] : []),
+        { title: "Financial" },
+    ];
 
     const { data: requests = [], isLoading: isLoadingRequests } = useGetEmployeeAuthRequestsQuery();
     const [cancelRequest] = useCancelEmployeeRequestMutation();

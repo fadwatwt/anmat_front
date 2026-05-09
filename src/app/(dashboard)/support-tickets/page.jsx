@@ -10,12 +10,14 @@ import { useRouter } from "next/navigation";
 import CreateTicketModal from "./_modals/CreateTicketModal";
 import { useSelector } from "react-redux";
 import { selectUser } from "@/redux/auth/authSlice";
+import { usePermission } from "@/Hooks/usePermission";
 
 function SupportTicketsPage() {
     const { t } = useTranslation();
     const router = useRouter();
     const user = useSelector(selectUser);
     const isAdmin = user?.type === 'Admin';
+    const canCreateTicket = usePermission("support_tickets.create");
     const { data: response, isLoading } = useGetSupportTicketsQuery();
     const tickets = response?.data || [];
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -59,7 +61,7 @@ function SupportTicketsPage() {
     return (
         <Page
             title={t("Support Tickets")}
-            isBtn={!isAdmin}
+            isBtn={!isAdmin && canCreateTicket}
             btnTitle={t("Open Ticket")}
             btnOnClick={() => setIsCreateModalOpen(true)}
         >
