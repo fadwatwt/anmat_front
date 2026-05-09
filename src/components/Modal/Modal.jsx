@@ -2,10 +2,13 @@ import PropTypes from "prop-types";
 import { IoClose } from "react-icons/io5";
 import { useTranslation } from "react-i18next";
 import DefaultButton from "../Form/DefaultButton.jsx";
+import { useIsAlertOpen } from "@/store/alertStore";
 
-const Modal = ({ isOpen, onClose, children, title, className, isHideCancel, isBtns, customBtns, classNameOpacity, btnApplyTitle, onClick, classNameBtns, disabled }) => {
+const Modal = ({ isOpen, onClose, children, title, className, isHideCancel, isBtns, customBtns, classNameOpacity, btnApplyTitle, onClick, classNameBtns, disabled, bypassAlertHide }) => {
     const { t } = useTranslation()
+    const isAlertOpen = useIsAlertOpen();
     if (!isOpen) return null;
+    if (isAlertOpen && !bypassAlertHide) return null;
     return (
         <div
             className={`fixed inset-0  bg-black/30 dark:bg-black/60 backdrop-blur-sm flex items-center overflow-hidden justify-center z-50 ${classNameOpacity ? classNameOpacity : ""}`}
@@ -66,6 +69,7 @@ Modal.propTypes = {
     customBtns: PropTypes.element,
     classNameBtns: PropTypes.string,
     isHideCancel: PropTypes.bool,
-    disabled: PropTypes.bool
+    disabled: PropTypes.bool,
+    bypassAlertHide: PropTypes.bool,
 }
 export default Modal;

@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { setActiveChat } from "@/redux/conversations/conversationsSlice";
 import { useRouter } from "next/navigation";
+import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 
 function CreateChatGroupModal({ isOpen, onClose, departmentData }) {
     const { t } = useTranslation();
@@ -27,6 +28,7 @@ function CreateChatGroupModal({ isOpen, onClose, departmentData }) {
     const [groupName, setGroupName] = useState("");
     const [selectedMembers, setSelectedMembers] = useState([]);
     const [description, setDescription] = useState("");
+    const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
     useEffect(() => {
         if (departmentData) {
@@ -44,12 +46,12 @@ function CreateChatGroupModal({ isOpen, onClose, departmentData }) {
 
     const handleCreateGroup = async () => {
         if (!groupName.trim()) {
-            alert(t("Please enter a group name"));
+            setApiResponse({ isOpen: true, status: "error", message: t("Please enter a group name") });
             return;
         }
 
         if (selectedMembers.length === 0) {
-            alert(t("Please select at least one member"));
+            setApiResponse({ isOpen: true, status: "error", message: t("Please select at least one member") });
             return;
         }
 
@@ -75,13 +77,18 @@ function CreateChatGroupModal({ isOpen, onClose, departmentData }) {
             }
         } catch (error) {
             console.error("Failed to create group chat:", error);
-            alert(t("Failed to create group chat. Please try again."));
+            setApiResponse({
+                isOpen: true,
+                status: "error",
+                message: error?.data?.message || t("Failed to create group chat. Please try again."),
+            });
         } finally {
             hideProcessing();
         }
     };
 
     return (
+        <>
         <Modal
             isOpen={isOpen}
             onClose={onClose}
@@ -120,6 +127,14 @@ function CreateChatGroupModal({ isOpen, onClose, departmentData }) {
                 </div>
             </div>
         </Modal>
+
+        <ApiResponseAlert
+            isOpen={apiResponse.isOpen}
+            status={apiResponse.status}
+            message={apiResponse.message}
+            onClose={() => setApiResponse({ isOpen: false, status: "", message: "" })}
+        />
+        </>
     );
 }
 

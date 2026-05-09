@@ -19,11 +19,8 @@ function CommentInput({ onSend, isLoading, initialValue = "", onCancel }) {
         setShowEmojis(false); // إخفاء قائمة الإيموجيات بعد اختيار إيموجي
     };
 
-    const handleFileUpload = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            alert(`تم اختيار الملف: ${file.name}`); // رسالة لإظهار اسم الملف
-        }
+    const handleFileUpload = () => {
+        // Hook for an upload pipeline; no user feedback needed at selection time.
     };
 
     const handleSend = () => {

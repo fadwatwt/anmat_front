@@ -32,7 +32,7 @@ function SelectWithoutLabel({
           className={`w-full p-2 text-sub-500 dark:text-gray-400 text-sm bg-transparent border rounded-lg appearance-none transition-all
             ${error
               ? "border-red-500 focus:ring-red-500"
-              : "border-soft-200 dark:border-gray-600 focus:ring-primary"
+              : " focus:ring-primary"
             }`}
         >
           <option value="" disabled>

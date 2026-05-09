@@ -27,7 +27,6 @@ import { RiMessage2Line } from "@remixicon/react";
 import StarRating from "@/components/StarRating";
 import { useProcessing } from "@/app/providers";
 import { RiCheckboxCircleFill, RiFileCopyLine, RiTimerLine, RiUserReceived2Line, RiCheckLine } from "@remixicon/react";
-import { toast } from "react-toastify";
 import { usePermission } from "@/Hooks/usePermission";
 
 function EmployeesTap() {
@@ -70,6 +69,9 @@ function EmployeesTap() {
   const [selectedToggleEmployee, setSelectedToggleEmployee] = useState(null);
   const [isToggleApprovalOpen, setIsToggleApprovalOpen] = useState(false);
   const [toggleApiResponse, setToggleApiResponse] = useState({ isOpen: false, status: "", message: "" });
+
+  // Copy invitation link feedback
+  const [copyApiResponse, setCopyApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -387,11 +389,11 @@ function EmployeesTap() {
 
     navigator.clipboard.writeText(link)
       .then(() => {
-        toast.success(t("Invitation link copied to clipboard"));
+        setCopyApiResponse({ isOpen: true, status: "success", message: t("Invitation link copied to clipboard") });
       })
       .catch((err) => {
         console.error("Failed to copy link:", err);
-        toast.error(t("Failed to copy link"));
+        setCopyApiResponse({ isOpen: true, status: "error", message: t("Failed to copy link") });
       });
   };
 
@@ -524,6 +526,13 @@ function EmployeesTap() {
         status={toggleApiResponse.status}
         message={toggleApiResponse.message}
         onClose={() => setToggleApiResponse(prev => ({ ...prev, isOpen: false }))}
+      />
+
+      <ApiResponseAlert
+        isOpen={copyApiResponse.isOpen}
+        status={copyApiResponse.status}
+        message={copyApiResponse.message}
+        onClose={() => setCopyApiResponse({ isOpen: false, status: "", message: "" })}
       />
 
       <ApprovalAlert

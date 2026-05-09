@@ -7,6 +7,7 @@ import TagInput from "@/components/Form/TagInput";
 import Switch2 from "@/components/Form/Switch2";
 import { useState } from "react";
 import { useCreateAdminMutation, useGetAdminRolesQuery } from "@/redux/system-admins/systemAdminsAPI";
+import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 
 function CreateAdminModal({ isOpen, onClose, onShowSuccess }) {
     const [createAdmin, { isLoading }] = useCreateAdminMutation();
@@ -19,6 +20,7 @@ function CreateAdminModal({ isOpen, onClose, onShowSuccess }) {
         rules: [],
         is_active: true
     });
+    const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
     const { data: rolesResponse } = useGetAdminRolesQuery();
     const suggestions = rolesResponse?.data?.map(role => ({
@@ -37,7 +39,7 @@ function CreateAdminModal({ isOpen, onClose, onShowSuccess }) {
 
     const handleSubmit = async () => {
         if (formData.password !== formData.confirmPassword) {
-            alert("Passwords do not match!");
+            setApiResponse({ isOpen: true, status: "error", message: "Passwords do not match!" });
             return;
         }
         try {
@@ -63,10 +65,16 @@ function CreateAdminModal({ isOpen, onClose, onShowSuccess }) {
             });
         } catch (error) {
             console.error("Failed to create admin:", error);
+            setApiResponse({
+                isOpen: true,
+                status: "error",
+                message: error?.data?.message || "Failed to create admin",
+            });
         }
     };
 
     return (
+        <>
         <Modal isOpen={isOpen} onClose={onClose} isBtns={true} title={"Add User"}
             btnApplyTitle={isLoading ? "Adding..." : "Add"}
             classNameBtns={"mt-5"}
@@ -120,6 +128,14 @@ function CreateAdminModal({ isOpen, onClose, onShowSuccess }) {
 
             </div>
         </Modal>
+
+        <ApiResponseAlert
+            isOpen={apiResponse.isOpen}
+            status={apiResponse.status}
+            message={apiResponse.message}
+            onClose={() => setApiResponse({ isOpen: false, status: "", message: "" })}
+        />
+        </>
     )
 }
 

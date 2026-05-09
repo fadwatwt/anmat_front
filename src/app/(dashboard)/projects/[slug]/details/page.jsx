@@ -297,7 +297,7 @@ function ProjectDetailsPage() {
                 <div className={"flex-1 flex flex-col gap-6"}>
                     <div className="flex flex-col gap-3">
                         {true && <ProjectMembers members={projectMembers} />}
-                        {canManageTeam && (
+                        {(canManageTeam && false) && (
                             <button
                                 onClick={() => setIsTeamModalOpen(true)}
                                 className="flex items-center gap-2 px-4 py-2 bg-primary-base text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity w-fit"
@@ -320,7 +320,7 @@ function ProjectDetailsPage() {
 
             </div>
             <EditProjectModal project={project} isOpen={isOpenEditModal} onClose={handelEditModal} />
-            {canManageTeam && (
+            {(canManageTeam && false) && (
                 <CreateTeamModal
                     isOpen={isTeamModalOpen}
                     onClose={() => setIsTeamModalOpen(false)}

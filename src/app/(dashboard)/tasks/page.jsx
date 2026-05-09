@@ -25,7 +25,6 @@ import { useProcessing } from "@/app/providers";
 
 // ✅ Lazy-loaded components
 const NameAndDescription = dynamic(() => import("@/app/(dashboard)/projects/_components/TableInfo/NameAndDescription"), { ssr: false });
-const AccountDetails = dynamic(() => import("@/app/(dashboard)/projects/_components/TableInfo/AccountDetails"), { ssr: false });
 const Priority = dynamic(() => import("@/app/(dashboard)/projects/_components/TableInfo/Priority"), { ssr: false });
 const Status = dynamic(() => import("@/app/(dashboard)/projects/_components/TableInfo/Status"), { ssr: false });
 const Alert = dynamic(() => import("@/components/Alerts/Alert"), { ssr: false });
@@ -65,19 +64,19 @@ function TasksPage() {
 
   // Headers matching the design and important info
   const headers = useMemo(() => [
-    { label: t("Tasks"), width: "250px" },
+    { label: t("Tasks"), width: "220px" },
     ...(!isEmployee ? [
-      { label: t("Project"), width: "150px" },
-      { label: t("Department"), width: "150px" },
-      { label: t("Assignee"), width: "150px" },
-      { label: t("Creator"), width: "150px" },
+      { label: t("Project"), width: "110px" },
+      { label: t("Department"), width: "130px" },
+      { label: t("Assignee"), width: "130px" },
+      { label: t("Creator"), width: "130px" },
     ] : []),
-    { label: t("Priority"), width: "100px" },
-    { label: t("Status"), width: "100px" },
-    { label: t("Progress"), width: "120px" },
-    { label: t("Rating"), width: "120px" },
-    { label: t("Due Date"), width: "120px" },
-    { label: "", width: "50px" },
+    { label: t("Priority"), width: "90px" },
+    { label: t("Status"), width: "110px" },
+    { label: t("Progress"), width: "110px" },
+    { label: t("Rating"), width: "100px" },
+    { label: t("Due Date"), width: "100px" },
+    { label: "", width: "40px" },
   ], [isEmployee, t]);
 
   const handleCreateTask = () => router.push("/tasks/create");
@@ -208,26 +207,28 @@ function TasksPage() {
         description={task.description}
       />,
       ...(!isEmployee ? [
-        <p title={task.project?.name} key={`project-${task._id}`} className="text-sm text-cell-secondary truncate max-w-[140px]">
+        <p title={task.project?.name} key={`project-${task._id}`} className="text-sm text-cell-secondary truncate max-w-[100px]">
           {task.project?.name || t("No Project")}
         </p>,
-        <p title={task.department?.name} key={`dept-${task._id}`} className="text-sm text-cell-secondary truncate max-w-[140px]">
+        <p title={task.department?.name} key={`dept-${task._id}`} className="text-sm text-cell-secondary truncate max-w-[120px]">
           {task.department?.name || t("No Department")}
         </p>,
-        <AccountDetails
-          key={`assignee-${task._id}`}
-          account={{
-            name: task.assignee?.name || t("Unassigned"),
-            imageProfile: task.assignee?.imageProfile || `https://ui-avatars.com/api/?name=${encodeURIComponent(task.assignee?.name || "U")}`,
-          }}
-        />,
-        <AccountDetails
-          key={`creator-${task._id}`}
-          account={{
-            name: task.creator?.name || t("Unknown"),
-            imageProfile: task.creator?.imageProfile || `https://ui-avatars.com/api/?name=${encodeURIComponent(task.creator?.name || "C")}`,
-          }}
-        />,
+        <div key={`assignee-${task._id}`} className="flex items-center gap-1.5 max-w-[120px]" title={task.assignee?.name || t("Unassigned")}>
+          <img
+            className="w-7 h-7 rounded-full shrink-0 object-cover"
+            src={task.assignee?.imageProfile || `https://ui-avatars.com/api/?name=${encodeURIComponent(task.assignee?.name || "U")}&size=28`}
+            alt=""
+          />
+          <span className="text-xs text-cell-primary truncate">{task.assignee?.name || t("Unassigned")}</span>
+        </div>,
+        <div key={`creator-${task._id}`} className="flex items-center gap-1.5 max-w-[120px]" title={task.creator?.name || t("Unknown")}>
+          <img
+            className="w-7 h-7 rounded-full shrink-0 object-cover"
+            src={task.creator?.imageProfile || `https://ui-avatars.com/api/?name=${encodeURIComponent(task.creator?.name || "C")}&size=28`}
+            alt=""
+          />
+          <span className="text-xs text-cell-primary truncate">{task.creator?.name || t("Unknown")}</span>
+        </div>,
       ] : []),
       <Priority key={`priority-${task._id}`} type={task.priority} />,
       <Status key={`status-${task._id}`} type={task.status} />,

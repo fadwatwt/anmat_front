@@ -5,7 +5,7 @@ import ReadMore from "@/functions/ReadMore.jsx";
 import ProjectProgress from "@/app/(dashboard)/projects/[slug]/_components/ProjectProgress.jsx";
 import { FaTasks } from "react-icons/fa";
 import { FaCircleCheck } from "react-icons/fa6";
-import { HiOutlineCalendarDateRange } from "react-icons/hi2";
+import { HiOutlineCalendarDateRange, HiOutlineBuildingOffice2 } from "react-icons/hi2";
 import PropTypes from "prop-types";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -48,15 +48,19 @@ function InfoCard({ type, data, handelEditAction, rate, onRate }) {
 
     return (
         <div className={"flex flex-col p-4 w-full bg-surface rounded-2xl gap-3"}>
-            <div className={"title-header re w-full flex justify-between items-center"}>
-                <div className={"flex gap-2 items-center"}>
+            <div className={"title-header re w-full flex justify-between items-center flex-wrap gap-2"}>
+                <div className={"flex gap-2 items-center flex-wrap"}>
                     <p className={"text-xl text-table-title"}>{name}</p>
                     <Status type={status} title={status} />
                     {rate !== undefined && (
                         <StarRating rating={rate} onClickRate={onRate} />
                     )}
+                    <span className={"inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-badge-bg text-cell-primary text-xs font-medium border border-status-border"}>
+                        <HiOutlineBuildingOffice2 className={"text-primary-base"} size={14} />
+                        {data?.department || t("No Department")}
+                    </span>
                 </div>
-                <div className="relative cursor-pointer flex-1 flex justify-end dropdown-container" onClick={handleDropdownToggle}>
+                <div className="relative cursor-pointer dropdown-container" onClick={handleDropdownToggle}>
                     <PiDotsThreeVerticalBold />
                     {dropdownOpen && <ActionsBtns className={"mt-5"} isDeleteBtn={false} handleEdit={handelEditAction} />}
                 </div>
@@ -65,11 +69,6 @@ function InfoCard({ type, data, handelEditAction, rate, onRate }) {
             <div className={"description flex flex-col gap-1 items-start"}>
                 <p className={"text-sm text-cell-primary"}>{t("Description")}:</p>
                 <p className={"text-xs text-cell-secondary text-start"}>{description}</p>
-            </div>
-
-            <div className={"department flex flex-col gap-1 items-start"}>
-                <p className={"text-sm text-cell-primary"}>{t("Department")}:</p>
-                <p className={"text-xs text-cell-secondary text-start"}>{data?.department || t("No Department")}</p>
             </div>
 
             {type === "project" && (

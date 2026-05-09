@@ -5,6 +5,7 @@ import Page from "@/components/Page.jsx";
 import { Mic, Paperclip, Copy, Edit2, Save, X } from "lucide-react";
 import "./hide-scrollbar.css";
 import ChatInput from "./ChatInput";
+import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 
 // Remove GeminiIcon if not used elsewhere
 
@@ -56,6 +57,7 @@ const AssistantPage = () => {
   const [audioChunks, setAudioChunks] = useState([]);
   const [openImageUrl, setOpenImageUrl] = useState(null);
   const [stagedFiles, setStagedFiles] = useState([]); // New state for staged files
+  const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
   const onRemoveStagedFile = (indexToRemove) => {
     setStagedFiles(prev => prev.filter((_, index) => index !== indexToRemove));
@@ -288,7 +290,11 @@ const AssistantPage = () => {
         mediaRecorder.start();
         setIsRecording(true);
       } catch (err) {
-        alert("Microphone access denied or not available.");
+        setApiResponse({
+          isOpen: true,
+          status: "error",
+          message: "Microphone access denied or not available.",
+        });
       }
     }
   };
@@ -721,6 +727,13 @@ const AssistantPage = () => {
             </div>
           </div>
         )}
+
+        <ApiResponseAlert
+          isOpen={apiResponse.isOpen}
+          status={apiResponse.status}
+          message={apiResponse.message}
+          onClose={() => setApiResponse({ isOpen: false, status: "", message: "" })}
+        />
       </Page>
   );
 };

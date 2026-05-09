@@ -3,7 +3,9 @@ import Modal from "../Modal/Modal.jsx";
 import { IoCheckmarkCircle, IoWarning, IoTrash } from "react-icons/io5"; // استيراد أيقونة الحذف
 import { RiCloseCircleFill, RiFlashlightLine, RiCheckboxCircleFill, RiDeleteBin7Fill } from "@remixicon/react";
 import PropTypes from "prop-types";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useAlertStore } from "@/store/alertStore";
 
 function Alert({
     type = "success",
@@ -20,6 +22,14 @@ function Alert({
     hideConfirmBtn = false
 }) {
     const { t } = useTranslation();
+    const open = useAlertStore((s) => s.open);
+    const close = useAlertStore((s) => s.close);
+
+    useEffect(() => {
+        if (!isOpen) return;
+        open();
+        return close;
+    }, [isOpen, open, close]);
 
     const handleSubmit = () => {
         onSubmit?.(true);
@@ -79,6 +89,7 @@ function Alert({
             onClose={onClose}
             className={`rounded-3xl w-11/12  ${currentConfig.modalSize}`}
             title={t(title)}
+            bypassAlertHide={true}
         >
             <div className="flex flex-col gap-4 justify-center items-center">
                 <div className={`p-1 rounded-full text-center ${currentConfig.bg}`}>

@@ -9,7 +9,6 @@ import { RiFlashlightLine, RiCheckboxCircleFill } from "@remixicon/react";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import Switch2 from "@/components/Form/Switch2";
-import CheckAlert from "@/components/Alerts/CheckِِAlert";
 import Modal from "@/components/Modal/Modal";
 import StripePaymentWrapper from "@/components/stripe/StripePaymentWrapper";
 import { selectUser } from "@/redux/auth/authSlice";
@@ -232,20 +231,6 @@ function Pricing() {
                 )}
             </Modal>
 
-            <CheckAlert
-                isOpen={false}
-                onClose={() => {}}
-                type="success"
-                title={t("Success")}
-                description={
-                    <span>
-                        {t("Congratulations, you have successfully subscribed to the plan.")}
-                    </span>
-                }
-                confirmBtnText={t("Done")}
-                hideConfirmBtn={true}
-                onSubmit={() => {}}
-            />
         </div>
     );
 }

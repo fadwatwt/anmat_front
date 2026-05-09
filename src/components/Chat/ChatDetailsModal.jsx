@@ -1,21 +1,23 @@
 "use client";
 import React, { useState } from "react";
 import { X, Users, Download, Archive, UserPlus, UserMinus, Shield } from "lucide-react";
-import { 
-  useArchiveChatMutation, 
-  useAddParticipantsMutation, 
-  useRemoveParticipantMutation 
+import {
+  useArchiveChatMutation,
+  useAddParticipantsMutation,
+  useRemoveParticipantMutation
 } from "@/redux/conversations/conversationsAPI";
 import { useSelector } from "react-redux";
 import { selectUser } from "@/redux/auth/authSlice";
 import { RootRoute } from "@/Root.Route";
-import { toast } from "react-toastify";
+import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
+import { useIsAlertOpen } from "@/store/alertStore";
 
 const ChatDetailsModal = ({ activeChat, onClose }) => {
   const currentUser = useSelector(selectUser);
   const [archiveChat, { isLoading: isArchiving }] = useArchiveChatMutation();
   const [removeParticipant] = useRemoveParticipantMutation();
-  // We would normally fetch all system users to add participants, 
+  const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
+  // We would normally fetch all system users to add participants,
   // but for simplicity we'll just show the UI structure here.
 
   const isSubscriber = currentUser?.type === "Subscriber" || currentUser?.role === "Admin";
@@ -26,13 +28,13 @@ const ChatDetailsModal = ({ activeChat, onClose }) => {
       await archiveChat({ chatId: activeChat._id, is_archived: !activeChat.is_archived }).unwrap();
       onClose();
     } catch (err) {
-      toast.error("Failed to archive chat");
+      setApiResponse({ isOpen: true, status: "error", message: "Failed to archive chat" });
     }
   };
 
   const handleExport = () => {
     if (!isSubscriber) {
-      toast.error("You don't have permission to export chats.");
+      setApiResponse({ isOpen: true, status: "error", message: "You don't have permission to export chats." });
       return;
     }
     // Trigger download
@@ -44,11 +46,15 @@ const ChatDetailsModal = ({ activeChat, onClose }) => {
     try {
       await removeParticipant({ chatId: activeChat._id, userId }).unwrap();
     } catch (err) {
-      toast.error("Failed to remove participant");
+      setApiResponse({ isOpen: true, status: "error", message: "Failed to remove participant" });
     }
   };
 
+  const isAlertOpen = useIsAlertOpen();
+
   return (
+    <>
+    {!isAlertOpen && (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 animate-in fade-in duration-200">
       <div className="bg-surface rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         <div className="p-4 border-b border-status-border flex items-center justify-between">
@@ -139,6 +145,15 @@ const ChatDetailsModal = ({ activeChat, onClose }) => {
         </div>
       </div>
     </div>
+    )}
+
+    <ApiResponseAlert
+      isOpen={apiResponse.isOpen}
+      status={apiResponse.status}
+      message={apiResponse.message}
+      onClose={() => setApiResponse({ isOpen: false, status: "", message: "" })}
+    />
+    </>
   );
 };
 

@@ -2,6 +2,8 @@ import Modal from "@/components/Modal/Modal";
 import { useTranslation } from "react-i18next";
 import { RiDeleteBin7Fill, RiInformationLine, RiErrorWarningLine } from "@remixicon/react";
 import PropTypes from "prop-types";
+import { useEffect } from "react";
+import { useAlertStore } from "@/store/alertStore";
 
 function ApprovalAlert({
     isOpen,
@@ -14,6 +16,14 @@ function ApprovalAlert({
     type = "warning", // 'warning', 'danger', 'info'
 }) {
     const { t } = useTranslation();
+    const open = useAlertStore((s) => s.open);
+    const close = useAlertStore((s) => s.close);
+
+    useEffect(() => {
+        if (!isOpen) return;
+        open();
+        return close;
+    }, [isOpen, open, close]);
 
     const configs = {
         warning: {
@@ -41,6 +51,7 @@ function ApprovalAlert({
             onClose={onClose}
             className="rounded-3xl lg:w-[28%] md:w-7/12 sm:w-6/12 w-11/12"
             title={t(title)}
+            bypassAlertHide={true}
         >
             <div className="flex flex-col justify-center items-center mt-6">
                 <div className={`p-4 rounded-full ${config.iconBg}`}>

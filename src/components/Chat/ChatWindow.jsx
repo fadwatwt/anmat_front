@@ -17,7 +17,7 @@ import ThreadSidebar from "./ThreadSidebar";
 import CreatePollModal from "./CreatePollModal";
 import ChatDetailsModal from "./ChatDetailsModal";
 import { Phone, Video, Info, ArrowLeft, Search, X } from "lucide-react";
-import { toast } from "react-toastify";
+import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 
 const ChatWindow = ({ activeChat, onBack }) => {
   const currentUserId = useSelector((state) => state.auth.user?._id || state.auth.user?.id);
@@ -40,6 +40,7 @@ const ChatWindow = ({ activeChat, onBack }) => {
 
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
   useEffect(() => {
     if (activeChat?._id) {
@@ -73,7 +74,7 @@ const ChatWindow = ({ activeChat, onBack }) => {
     try {
       await editMessage({ messageId, content }).unwrap();
     } catch (err) {
-      toast.error("Failed to edit message");
+      setApiResponse({ isOpen: true, status: "error", message: "Failed to edit message" });
     }
   };
 
@@ -81,7 +82,7 @@ const ChatWindow = ({ activeChat, onBack }) => {
     try {
       await deleteMessage(messageId).unwrap();
     } catch (err) {
-      toast.error("Failed to delete message");
+      setApiResponse({ isOpen: true, status: "error", message: "Failed to delete message" });
     }
   };
 
@@ -89,7 +90,7 @@ const ChatWindow = ({ activeChat, onBack }) => {
     try {
       await addReaction({ messageId, emoji }).unwrap();
     } catch (err) {
-      // toast.error("Failed to add reaction");
+      // Reaction failures are silent — user can simply retry
     }
   };
 
@@ -255,6 +256,13 @@ const ChatWindow = ({ activeChat, onBack }) => {
           onClose={() => setShowDetailsModal(false)}
         />
       )}
+
+      <ApiResponseAlert
+        isOpen={apiResponse.isOpen}
+        status={apiResponse.status}
+        message={apiResponse.message}
+        onClose={() => setApiResponse({ isOpen: false, status: "", message: "" })}
+      />
     </div>
   );
 };

@@ -241,7 +241,7 @@ function TaskDetailsPage({ params }) {
 
     return (
         <>
-            {canManageTeam && (
+            {(canManageTeam && false) && (
                 <CreateTeamModal
                     isOpen={isTeamModalOpen}
                     onClose={() => setIsTeamModalOpen(false)}
@@ -284,7 +284,7 @@ function TaskDetailsPage({ params }) {
                     <div className={"flex-1 flex flex-col gap-6"}>
                         <div className="flex flex-col gap-3">
                             <ProjectMembers members={assigneeMember} title="Assignee Employee" />
-                            {canManageTeam && (
+                            {(canManageTeam && false) && (
                                 <button
                                     onClick={() => setIsTeamModalOpen(true)}
                                     className="flex items-center gap-2 px-4 py-2 bg-primary-base text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity w-fit"

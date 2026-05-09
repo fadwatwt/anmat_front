@@ -1,6 +1,8 @@
 import Modal from "@/components/Modal/Modal";
 import { useTranslation } from "react-i18next";
 import { RiCloseCircleFill, RiFlashlightLine, RiCheckboxCircleFill } from "@remixicon/react";
+import { useEffect } from "react";
+import { useAlertStore } from "@/store/alertStore";
 
 function CheckAlert({
                         isOpen,
@@ -15,6 +17,14 @@ function CheckAlert({
                         hideConfirmBtn = false
                     }) {
     const { t } = useTranslation();
+    const open = useAlertStore((s) => s.open);
+    const close = useAlertStore((s) => s.close);
+
+    useEffect(() => {
+        if (!isOpen) return;
+        open();
+        return close;
+    }, [isOpen, open, close]);
 
     const designConfigs = {
         cancel: {
@@ -48,6 +58,7 @@ function CheckAlert({
             onClose={onClose}
             className="rounded-3xl lg:w-[28%] md:w-7/12 sm:w-6/12 w-11/12"
             title={t(title)}
+            bypassAlertHide={true}
         >
             <div className="flex flex-col justify-center items-center mt-4">
                 <div className={`p-2 rounded-full ${config.iconBg}`}>

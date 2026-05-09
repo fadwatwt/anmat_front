@@ -317,7 +317,7 @@ function TasksList({ tasks = [], isAssignedDate = false, isEmployeeView = false,
                             </div>
 
                             <div className="flex gap-4 items-center">
-                                {canManageTeam && (
+                                {(canManageTeam && false) && (
                                     <button
                                         onClick={() => setTeamModalTaskId(task._id)}
                                         className="flex items-center gap-1 text-xs font-medium text-primary-base border border-primary-base rounded-md px-2 py-0.5 hover:bg-primary-base hover:text-white transition-colors"

@@ -1,26 +1,36 @@
 "use client"
+import { useState } from "react";
 import DropdownMenu from "@/components/Dropdowns/DropdownMenu";
 import { useGetPaymentMethodsQuery, useSetDefaultPaymentMethodMutation } from "@/redux/payment-methods/paymentMethodsApi";
 import { RiMastercardFill, RiVisaFill, RiBankCardFill } from "@remixicon/react";
 import { useTranslation } from "react-i18next";
 import { PiDotsThreeVerticalBold } from "react-icons/pi";
-import { toast } from "react-toastify";
+import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 
 function PaymentMethods() {
     const { t } = useTranslation();
     const { data: cardData = [], isLoading } = useGetPaymentMethodsQuery();
     const [setDefaultPm] = useSetDefaultPaymentMethodMutation();
+    const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
     const getAttr = (attributes, key) => attributes?.find(a => a.key === key)?.value || "";
 
     const handleSetDefault = async (id) => {
         try {
             await setDefaultPm(id).unwrap();
-            toast.success(t("Default payment method updated"));
+            setApiResponse({ isOpen: true, status: "success", message: t("Default payment method updated") });
         } catch (error) {
-            toast.error(t("Failed to update default payment method"));
+            setApiResponse({
+                isOpen: true,
+                status: "error",
+                message: error?.data?.message || t("Failed to update default payment method"),
+            });
         }
     }
+
+    const handleResponseClose = () => {
+        setApiResponse({ isOpen: false, status: "", message: "" });
+    };
 
     if (isLoading) return <div className="p-10 text-center">{t("Loading payment methods...")}</div>;
 
@@ -141,6 +151,13 @@ function PaymentMethods() {
                     )
                 }
             </div>
+
+            <ApiResponseAlert
+                isOpen={apiResponse.isOpen}
+                status={apiResponse.status}
+                message={apiResponse.message}
+                onClose={handleResponseClose}
+            />
         </>
     );
 }

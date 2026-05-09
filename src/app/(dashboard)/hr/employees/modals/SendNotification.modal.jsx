@@ -10,7 +10,7 @@ import {
     useGetSubscriberNotificationTypesQuery,
     useSendSubscriberNotificationMutation,
 } from "@/redux/subscriber-notifications/subscriberNotificationsApi";
-import { toast } from "react-toastify";
+import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import {
     RiErrorWarningLine,
     RiBellLine,
@@ -45,6 +45,7 @@ function SendNotificationModal({ isOpen, onClose, employeeData, departmentData }
     const [title, setTitle] = useState("");
     const [message, setMessage] = useState("");
     const [selectedEmployeeIds, setSelectedEmployeeIds] = useState([]);
+    const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
     // Sync state when modal opens
     useEffect(() => {
@@ -82,15 +83,15 @@ function SendNotificationModal({ isOpen, onClose, employeeData, departmentData }
 
     const handleSend = async () => {
         if (!selectedTypeId) {
-            toast.error(t("Please select a notification type"));
+            setApiResponse({ isOpen: true, status: "error", message: t("Please select a notification type") });
             return;
         }
         if (!title.trim()) {
-            toast.error(t("Please enter a title"));
+            setApiResponse({ isOpen: true, status: "error", message: t("Please enter a title") });
             return;
         }
         if (!message.trim()) {
-            toast.error(t("Please enter a message"));
+            setApiResponse({ isOpen: true, status: "error", message: t("Please enter a message") });
             return;
         }
 
@@ -121,10 +122,13 @@ function SendNotificationModal({ isOpen, onClose, employeeData, departmentData }
                 employee_ids,
             }).unwrap();
 
-            toast.success(t("Notification sent successfully"));
-            handleClose();
+            setApiResponse({ isOpen: true, status: "success", message: t("Notification sent successfully") });
         } catch (error) {
-            toast.error(error?.data?.message || t("Failed to send notification"));
+            setApiResponse({
+                isOpen: true,
+                status: "error",
+                message: error?.data?.message || t("Failed to send notification"),
+            });
         }
     };
 
@@ -132,7 +136,14 @@ function SendNotificationModal({ isOpen, onClose, employeeData, departmentData }
         onClose();
     };
 
+    const handleResponseClose = () => {
+        const wasSuccess = apiResponse.status === "success";
+        setApiResponse({ isOpen: false, status: "", message: "" });
+        if (wasSuccess) handleClose();
+    };
+
     return (
+        <>
         <Modal
             title={t("Send Notification")}
             isOpen={isOpen}
@@ -230,6 +241,14 @@ function SendNotificationModal({ isOpen, onClose, employeeData, departmentData }
                 />
             </div>
         </Modal>
+
+        <ApiResponseAlert
+            isOpen={apiResponse.isOpen}
+            status={apiResponse.status}
+            message={apiResponse.message}
+            onClose={handleResponseClose}
+        />
+        </>
     );
 }
 
