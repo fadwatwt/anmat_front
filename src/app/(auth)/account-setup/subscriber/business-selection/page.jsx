@@ -43,17 +43,17 @@ const SelectYourBusiness = () => {
             <div
                 key={id}
                 onClick={() => !isBusy && setSelectedId(id)}
-                className={`flex items-center justify-start gap-3 px-4 py-5 rounded-xl w-[20rem] shadow-sm group transition-all duration-200 border-2
+                className={`flex items-center justify-start gap-3 px-4 py-3.5 rounded-lg w-full shadow-sm group transition-all duration-200 border
                 ${isBusy ? "cursor-not-allowed opacity-80" : "cursor-pointer"}
                 ${isSelected
-                        ? "bg-primary-500 text-primary-50 border-primary-500 shadow-md transform scale-[1.02]"
+                        ? "bg-primary-500 text-primary-50 border-primary-500 shadow-md"
                         : "bg-surface text-primary-500 border-status-border hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:border-primary-100"
                     }`}
             >
                 <div className={`${isSelected ? "text-primary-50" : "text-primary-500 group-hover:text-primary-600"}`}>
-                    <IconComponent size={24} color="currentColor" variant={isSelected ? "Bold" : "Bulk"} />
+                    <IconComponent size={20} color="currentColor" variant={isSelected ? "Bold" : "Bulk"} />
                 </div>
-                <span className={`text-xl font-semibold transition-colors ${isSelected ? "text-primary-50" : "text-cell-primary group-hover:text-primary-600"}`}>
+                <span className={`text-sm font-medium transition-colors ${isSelected ? "text-primary-50" : "text-cell-primary group-hover:text-primary-600"}`}>
                     {title}
                 </span>
             </div>
@@ -73,26 +73,26 @@ const SelectYourBusiness = () => {
 
     return (
         <>
-            <div className="flex flex-col items-center justify-start gap-8 p-8 w-full overflow-hidden">
+            <div className="flex flex-col items-center justify-start gap-8 p-8 w-full max-w-3xl overflow-hidden">
                 <div className="flex flex-col items-center justify-start gap-6 w-full">
-                    <div className="flex flex-col items-center justify-start gap-4 text-center">
-                        <span className="text-3xl font-bold text-cell-primary">
+                    <div className="flex flex-col items-center justify-start gap-2 text-center">
+                        <span className="text-xl font-semibold text-cell-primary">
                             {t("Welcome, {{name}}! What kind of work do you do?", { name: username })}
                         </span>
-                        <span className="text-md text-cell-secondary max-w-2xl font-medium">
+                        <span className="text-sm text-cell-secondary max-w-2xl">
                             {t("Choose the best fit for your team. We'll help you get started.")}
                         </span>
                     </div>
-                    <div className="flex flex-wrap gap-4 justify-center md:w-full max-w-[65rem]">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
                         {industries.map(industry => typeCard(industry._id, industry.icon_name || industry.logo, industry.name))}
                     </div>
                 </div>
-                <div className="flex gap-8">
+                <div className="flex gap-4">
                     <button
                         onClick={handleNext}
                         disabled={!selectedId || isBusy}
-                        className={`bg-primary-500 text-white text-sm w-32 py-2.5 rounded-xl transition-all font-bold shadow-lg shadow-primary-500/10 active:scale-95
-                        ${(!selectedId || isBusy) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary-600 cursor-pointer hover:shadow-primary-500/20'}`}
+                        className={`bg-primary-500 text-white text-sm w-28 py-2.5 rounded-lg transition-all font-semibold shadow-sm active:scale-95
+                        ${(!selectedId || isBusy) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary-600 cursor-pointer'}`}
                     >
                         {isNavigating ? t("Loading...") : t("Next")}
                     </button>

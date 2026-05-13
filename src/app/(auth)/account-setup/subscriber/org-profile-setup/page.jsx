@@ -12,6 +12,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useCreateOrganizationForSubscriberMutation } from "@/redux/organizations/organizationsApi";
 import { selectSelectedIndustryId, clearSelectedIndustryId } from "@/redux/industries/industriesSlice";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
+import { getCountryOptions, getCityOptions } from "@/data/countriesAndCities";
 
 const SetupCompanyProfile = () => {
     const { t } = useTranslation();
@@ -99,21 +100,8 @@ const SetupCompanyProfile = () => {
         }
     };
 
-    const countries = [
-        { _id: "Palestine", name: t("Palestine") },
-        { _id: "Syria", name: t("Syria") },
-        { _id: "Jordan", name: t("Jordan") },
-        { _id: "Lebanon", name: t("Lebanon") },
-        { _id: "Egypt", name: t("Egypt") }
-    ];
-    const cities = [
-        { _id: "Gaza", name: t("Gaza") },
-        { _id: "Ramallah", name: t("Ramallah") },
-        { _id: "Damascus", name: t("Damascus") },
-        { _id: "Amman", name: t("Amman") },
-        { _id: "Beirut", name: t("Beirut") },
-        { _id: "Cairo", name: t("Cairo") }
-    ];
+    const countries = getCountryOptions();
+    const cities = getCityOptions(formik.values.country);
 
     if (isChecking) {
         return (
@@ -203,7 +191,10 @@ const SetupCompanyProfile = () => {
                             title="Country"
                             name="country"
                             value={formik.values.country}
-                            onChange={(val) => formik.setFieldValue("country", val)}
+                            onChange={(val) => {
+                                formik.setFieldValue("country", val);
+                                formik.setFieldValue("city", "");
+                            }}
                             onBlur={formik.handleBlur}
                             options={countries}
                             error={formik.touched.country && formik.errors.country ? formik.errors.country : ""}

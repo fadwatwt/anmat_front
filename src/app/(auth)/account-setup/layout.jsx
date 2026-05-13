@@ -117,28 +117,28 @@ function AccountSetupLayout({ children }) {
 
     return (
         <div className="flex flex-col h-screen bg-main-900 overflow-hidden">
-            <header className="flex items-center justify-between px-9 py-7 flex-shrink-0">
-                <div className="flex items-center gap-3">
+            <header className="flex items-center justify-between px-9 py-5 flex-shrink-0">
+                <div className="flex items-center gap-2">
                     <Image
-                        className="w-12 h-12 rounded-full"
+                        className="w-10 h-10 rounded-full"
                         src="/images/logo.png"
                         alt="Company Logo"
-                        width={48}
-                        height={48}
+                        width={40}
+                        height={40}
                     />
-                    <div className="text-sm text-sub-500 text-start dark:text-sub-300">
-                        <h1 className="font-bold text-xl uppercase tracking-wider">ANMAT</h1>
-                        <h3 className="text-xs">{t("Organizations Management")}</h3>
+                    <div className="flex flex-col gap-1 justify-center">
+                        <p className="text-sm text-cell-primary dark:text-white">{t("Employees Management")}</p>
+                        <p className="text-xs text-gray-500 dark:text-white">{t("Employees & HR Management")}</p>
                     </div>
                 </div>
-                <div className="flex items-center gap-6">
-                    <div className="flex flex-col items-end">
-                        <span className="text-sm text-gray-400">{t("Welcome back,")}</span>
-                        <span className="text-md font-bold text-gray-900 dark:text-white">{user?.name}</span>
+                <div className="flex items-center gap-4">
+                    <div className="flex flex-col items-end gap-1">
+                        <span className="text-xs text-gray-500 dark:text-white">{t("Welcome back,")}</span>
+                        <span className="text-sm text-cell-primary dark:text-white">{user?.name}</span>
                     </div>
                     <button
                         onClick={handleLogout}
-                        className="bg-red-50 text-red-600 px-6 py-2 rounded-xl text-sm font-bold border border-red-100 hover:bg-red-600 hover:text-white transition-all duration-200"
+                        className="text-red-500 text-sm font-medium hover:text-red-600 transition-colors duration-200"
                     >
                         {t("Logout")}
                     </button>

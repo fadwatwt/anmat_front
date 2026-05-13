@@ -63,18 +63,17 @@ function AuthLayout({ children }) {
         <div className="w-full flex justify-start py-1 bg-white dark:bg-[#161922]">
             <div className="flex flex-col w-[40%] h-screen overflow-hidden gap-8 px-9 py-7 bg-transparent">
                 {/* Logo Section */}
-                <div className="flex items-center justify-start gap-3 mb-8">
+                <div className="flex items-center justify-start gap-2 mb-8">
                     <Image
-                        className="w-12 h-12 rounded-full"
+                        className="w-10 h-10 rounded-full"
                         src="/images/logo.png"
                         alt="Company Logo"
-                        width={48}
-                        height={48}
+                        width={40}
+                        height={40}
                     />
-                    <div className="text-sm text-cell-secondary text-start">
-                        <h1 className="font-bold text-xl text-cell-primary">ANMAT</h1>
-                        <h3 className="">Organizations Management</h3>
-                        {/*<h3 className="font-semibold">Management System</h3>*/}
+                    <div className="flex flex-col gap-1 justify-center">
+                        <p className="text-sm text-cell-primary dark:text-white">Employees Management</p>
+                        <p className="text-xs text-gray-500 dark:text-white">Employees & HR Management</p>
                     </div>
                 </div>
 
