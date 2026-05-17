@@ -1,5 +1,6 @@
 "use client";
 
+
 import React, { useState, useEffect } from "react";
 import {
     PaymentElement,
@@ -202,7 +203,7 @@ const CheckoutForm = ({ amount, onFinish, clientSecret, userName, userEmail, use
             {!elementReady && (
                 <div className="flex flex-col items-center justify-center p-12 gap-4">
                     <RiLoader4Line className="animate-spin text-primary-base" size={40} />
-                    <p className="text-gray-400 font-medium italic">Loading secure card form...</p>
+                    <p className="text-gray-400 font-medium italic">Loading secure payment...</p>
                 </div>
             )}
 

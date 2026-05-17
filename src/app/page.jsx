@@ -1,4 +1,5 @@
 "use client";
+import { ImSpinner2 } from "react-icons/im";
 import { useState } from "react";
 import {
   RiBuilding4Line,
@@ -330,9 +331,7 @@ function Desktop2Page() {
             <div className={"w-full flex justify-center items-center gap-6 flex-wrap px-4"}>
               {isLoading ? (
                 <div className="flex justify-center items-center py-20 w-full text-primary-600 font-bold text-xl">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mr-3"></div>
-                  Loading plans...
-                </div>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mr-3"></div> <div className="flex items-center justify-center w-full p-4"><ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} /></div> </div>
               ) : plans?.filter(p => p.is_active)?.length > 0 ? (
                 plans?.filter(plan => plan.is_active).map((plan) => {
                   const currentInterval = isOnSwitch ? "year" : "month";

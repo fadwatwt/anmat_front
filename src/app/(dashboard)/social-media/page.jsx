@@ -1,4 +1,5 @@
 "use client";
+import { ImSpinner2 } from "react-icons/im";
 import { RiFacebookFill } from "react-icons/ri";
 import { FaTwitter  } from "react-icons/fa";
 import { IoLogoInstagram } from "react-icons/io";
@@ -9,12 +10,12 @@ import Page from "../../../components/Page.jsx";
 import dynamic from "next/dynamic";
 
 const FacebookTab = dynamic(() => import("@/app/(dashboard)/social-media/_Tabs/Facebook.tab.jsx"), {
-    loading: () => <p>Loading Facebook...</p>,
+    loading: () => <p> <div className="flex items-center justify-center w-full p-4"><ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} /></div> </p>,
     ssr: false,
 });
 
 const TweeterTab = dynamic(() => import("@/app/(dashboard)/social-media/_Tabs/Tweeter.tab.jsx"), {
-    loading: () => <p>Loading Twitter...</p>,
+    loading: () => <p> <div className="flex items-center justify-center w-full p-4"><ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} /></div> </p>,
     ssr: false,
 });
 

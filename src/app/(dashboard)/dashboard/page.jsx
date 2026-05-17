@@ -1,4 +1,5 @@
 "use client";
+import { ImSpinner2 } from "react-icons/im";
 
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
@@ -21,12 +22,12 @@ const DashboardPage = () => {
         return Promise.resolve({ default: () => <div>Unknown User Type</div> });
     }
   }, {
-    loading: () => <div className="text-center py-4">Loading dashboard...</div>,
+    loading: () => <div className="text-center py-4"> <div className="flex items-center justify-center w-full p-4"><ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} /></div> </div>,
     ssr: false, // Disable SSR to avoid hydration mismatches
   });
 
   return (
-    <Suspense fallback={<div className="text-center py-4">Loading dashboard...</div>}>
+    <Suspense fallback={<div className="text-center py-4"> <div className="flex items-center justify-center w-full p-4"><ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} /></div> </div>}>
       <DynamicComponent />
     </Suspense>
   );

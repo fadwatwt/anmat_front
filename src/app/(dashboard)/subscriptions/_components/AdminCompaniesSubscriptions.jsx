@@ -1,4 +1,5 @@
 "use client";
+import { ImSpinner2 } from "react-icons/im";
 
 import {
      RiCheckboxCircleLine, RiCloseCircleLine, RiEditLine,
@@ -115,7 +116,7 @@ function AdminCompaniesSubscriptions() {
         );
     }
 
-    if (isLoading) return <div className="p-10 text-center">Loading subscriptions...</div>;
+    if (isLoading) return <div className="p-10 text-center"> <div className="flex items-center justify-center w-full p-4"><ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} /></div> </div>;
     if (error) return <div className="p-10 text-center text-red-500">Error loading subscriptions</div>;
 
     return (

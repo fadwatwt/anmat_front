@@ -1,4 +1,5 @@
 "use client";
+import { ImSpinner2 } from "react-icons/im";
 
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
@@ -20,12 +21,12 @@ const ProfilePage = () => {
         return Promise.resolve({ default: () => <div>Unknown User Type</div> });
     }
   }, {
-    loading: () => <div className="text-center py-4">Loading profile...</div>,
+    loading: () => <div className="text-center py-4"> <div className="flex items-center justify-center w-full p-4"><ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} /></div> </div>,
     ssr: false,
   });
 
   return (
-    <Suspense fallback={<div className="text-center py-4">Loading profile...</div>}>
+    <Suspense fallback={<div className="text-center py-4"> <div className="flex items-center justify-center w-full p-4"><ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} /></div> </div>}>
       <DynamicComponent />
     </Suspense>
   );

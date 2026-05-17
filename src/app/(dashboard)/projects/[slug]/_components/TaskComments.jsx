@@ -1,9 +1,9 @@
+import { ImSpinner2 } from "react-icons/im";
 import PropTypes from "prop-types";
 import { useState } from "react";
 import 'dayjs/locale/ar';
 import {translateTime} from "@/functions/Days.js";
 import { RiDeleteBinLine, RiEdit2Line } from "react-icons/ri";
-import { ImSpinner2 } from "react-icons/im";
 import CommentInput from "@/components/CommentInput";
 
 function TaskComments({comments, currentUserId, authUserType, onDeleteComment, onEditComment, loadingComments = {}}) {

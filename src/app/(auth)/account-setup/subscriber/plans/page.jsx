@@ -1,4 +1,5 @@
 "use client"
+
 import { useState } from "react";
 import Switch2 from "@/components/Form/Switch2";
 import PlanCard from "@/components/containers/PlanCard";
@@ -30,7 +31,7 @@ function Page() {
         return (
             <div className="flex flex-col items-center justify-center min-h-[400px] w-full gap-4">
                 <RiLoader4Line className="animate-spin text-primary-base" size={48} />
-                <p className="text-cell-secondary font-medium">Loading subscription plans...</p>
+                <p className="text-cell-secondary font-medium">Loading plans...</p>
             </div>
         );
     }

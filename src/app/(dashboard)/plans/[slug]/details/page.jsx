@@ -1,4 +1,5 @@
 "use client";
+import { ImSpinner2 } from "react-icons/im";
 import { useParams, useRouter } from 'next/navigation';
 import Page from "@/components/Page.jsx";
 import { useTranslation } from "react-i18next";
@@ -38,7 +39,7 @@ function PlanDetails() {
     const { data: plan, isLoading, error } = useGetSubscriptionPlanQuery(slug);
     const { data: history, isLoading: isLoadingHistory } = useGetSubscriptionPlanHistoryQuery(slug);
 
-    if (isLoading) return <div className="flex justify-center items-center h-screen">Loading plan details...</div>;
+    if (isLoading) return <div className="flex justify-center items-center h-screen"> <div className="flex items-center justify-center w-full p-4"><ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} /></div> </div>;
     if (error) return <div className="flex justify-center items-center h-screen text-red-500">Error loading plan.</div>;
     if (!plan) return <div className="flex justify-center items-center h-screen">Plan not found.</div>;
 
@@ -282,4 +283,4 @@ function PlanDetails() {
     );
 }
 
-export default PlanDetails;
+export default PlanDetails;

@@ -1,4 +1,5 @@
 "use client"
+import { ImSpinner2 } from "react-icons/im";
 import {
     RiBriefcaseLine,
     RiBuilding2Line,
@@ -166,7 +167,7 @@ function AdminProfile() {
         statusCell(subscription.status, subscription._id)
     ]);
     // const employeeId = slug ? slug.split('-')[0] : null;
-    if (isLoading || isSubsLoading) return <div className="flex justify-center items-center h-full p-10">Loading profile...</div>;
+    if (isLoading || isSubsLoading) return <div className="flex justify-center items-center h-full p-10"> <div className="flex items-center justify-center w-full p-4"><ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} /></div> </div>;
     if (error) return <div className="flex justify-center items-center h-full p-10 text-red-500">Error loading profile.</div>;
 
     return (

@@ -1,4 +1,5 @@
 "use client";
+import { ImSpinner2 } from "react-icons/im";
 
 import { useMemo } from "react";
 import { format, subMonths, startOfMonth, isWithinInterval, endOfMonth } from "date-fns";
@@ -51,7 +52,7 @@ const CompaniesSubscriptionsChart = ({ monthlyData: monthlyProp }) => {
         }
     ];
 
-    if (!skip && isLoading) return <div className="h-[300px] flex items-center justify-center bg-white rounded-2xl border border-gray-100 dark:bg-gray-800 dark:border-gray-700">Loading chart...</div>;
+    if (!skip && isLoading) return <div className="h-[300px] flex items-center justify-center bg-white rounded-2xl border border-gray-100 dark:bg-gray-800 dark:border-gray-700"> <div className="flex items-center justify-center w-full p-4"><ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} /></div> </div>;
     if (!skip && error) return <div className="h-[300px] flex items-center justify-center bg-white rounded-2xl border border-gray-100 text-red-500 dark:bg-gray-800 dark:border-gray-700">Error loading chart data</div>;
 
     return (

@@ -1,5 +1,6 @@
 "use client";
 
+
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import i18n from "i18next";
@@ -160,9 +161,7 @@ const MainLayout = ({ children }) => {
             <div className="h-screen w-screen flex items-center justify-center bg-status-bg">
                 <div className="flex flex-col items-center gap-4">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-base"></div>
-                    <p className="text-cell-secondary font-medium">
-                        Loading session...
-                    </p>
+                    <p className="text-cell-secondary font-medium">Initializing session...</p>
                 </div>
             </div>
         );

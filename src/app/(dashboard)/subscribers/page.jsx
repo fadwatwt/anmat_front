@@ -1,4 +1,5 @@
 "use client";
+import { ImSpinner2 } from "react-icons/im";
 
 import {
   RiCheckboxCircleLine, RiCloseCircleLine, RiEditLine,
@@ -182,7 +183,7 @@ function Subscribers() {
     );
   }
 
-  if (isLoading) return <div className="flex justify-center items-center h-full p-10">Loading subscribers...</div>;
+  if (isLoading) return <div className="flex justify-center items-center h-full p-10"> <div className="flex items-center justify-center w-full p-4"><ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} /></div> </div>;
   if (error) return <div className="flex justify-center items-center h-full p-10 text-red-500">Error loading subscribers. Please try again later.</div>;
 
   return (

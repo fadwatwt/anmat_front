@@ -1,4 +1,5 @@
 "use client";
+import { ImSpinner2 } from "react-icons/im";
 
 import { useMemo } from "react";
 import DonutChartComponent from "@/components/containers/chart/DonutChartComponent";
@@ -31,7 +32,7 @@ const IndustriesChart = ({ industries: industriesProp }) => {
         return { total, records };
     }, [skip, industriesProp, fallback]);
 
-    if (!skip && isLoading) return <div className="h-[400px] flex items-center justify-center bg-white rounded-2xl border border-gray-100 dark:bg-gray-800 dark:border-gray-700">Loading chart...</div>;
+    if (!skip && isLoading) return <div className="h-[400px] flex items-center justify-center bg-white rounded-2xl border border-gray-100 dark:bg-gray-800 dark:border-gray-700"> <div className="flex items-center justify-center w-full p-4"><ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} /></div> </div>;
     if (!skip && error) return <div className="h-[400px] flex items-center justify-center bg-white rounded-2xl border border-gray-100 text-red-500 dark:bg-gray-800 dark:border-gray-700">Error loading chart data</div>;
 
     return (

@@ -1,3 +1,4 @@
+import { ImSpinner2 } from "react-icons/im";
 import { useGetTaskLogsQuery } from "@/redux/activity-logs/activityLogsApi";
 import ActivityLogs from "@/components/ActivityLogs";
 import PropTypes from "prop-types";
@@ -6,7 +7,7 @@ function TaskLogsViewer({ taskId }) {
     const { data: logsData, isLoading } = useGetTaskLogsQuery({ taskId, limit: 5 }, { skip: !taskId });
     
     if (isLoading) {
-        return <div className="text-xs text-soft-400 p-2">Loading logs...</div>;
+        return <div className="text-xs text-soft-400 p-2"> <div className="flex items-center justify-center w-full p-4"><ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} /></div> </div>;
     }
 
     const rawLogs = logsData?.data || [];

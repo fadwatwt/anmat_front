@@ -1,4 +1,5 @@
 "use client";
+import { ImSpinner2 } from "react-icons/im";
 import React, { useState, useRef, useEffect } from "react";
 import { format } from "date-fns";
 import { X, Send, Paperclip, Smile } from "lucide-react";
@@ -82,7 +83,7 @@ const ThreadSidebar = ({ message, onClose }) => {
         </div>
         
         {isLoading ? (
-          <div className="text-center text-sm text-sub-300 py-4">Loading replies...</div>
+          <div className="text-center text-sm text-sub-300 py-4"> <div className="flex items-center justify-center w-full p-4"><ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} /></div> </div>
         ) : (
           replies.map((reply) => {
             const isMe = reply.sent_by?._id === currentUserId || reply.sent_by === currentUserId;

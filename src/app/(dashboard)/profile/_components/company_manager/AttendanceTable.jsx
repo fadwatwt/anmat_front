@@ -1,4 +1,5 @@
 "use client";
+import { ImSpinner2 } from "react-icons/im";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
@@ -171,7 +172,7 @@ function AttendanceTable() {
     });
   };
 
-  // if (loading) return <div>Loading...</div>;
+  // if (loading) return <div> <div className="flex items-center justify-center w-full p-4"><ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} /></div> </div>;
   // if (error) return <div className="text-red-500 p-4">Error: {error}</div>;
 
   return (

@@ -1,4 +1,5 @@
 "use client"
+import { ImSpinner2 } from "react-icons/im";
 
 import Page from "@/components/Page";
 import ProjectsPerformanceChart from "@/app/(dashboard)/analytics/_components/employee/ProjectsPerformanceChart";
@@ -31,7 +32,7 @@ const toDoughnutData = (records, palette) => {
 const EmployeeAnalytics = () => {
     const { data: employeeData, isLoading, error } = useGetEmployeeAnalyticsQuery();
 
-    if (isLoading) return <div className="text-center py-20">Loading analytics...</div>;
+    if (isLoading) return <div className="text-center py-20"> <div className="flex items-center justify-center w-full p-4"><ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} /></div> </div>;
     if (error) return <div className="p-8 text-red-500 text-center">Error loading employee analytics.</div>;
 
     const data = employeeData?.data || {};

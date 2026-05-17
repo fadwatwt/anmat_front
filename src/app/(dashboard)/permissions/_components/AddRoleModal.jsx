@@ -1,4 +1,5 @@
 "use client"
+import { ImSpinner2 } from "react-icons/im";
 import { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -129,7 +130,7 @@ function AddRoleModal({ isOpen, onClose }) {
             <div className="flex flex-col gap-2">
               <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Permissions</label>
               {isLoadingPermissions ? (
-                <p className="text-sm text-gray-500">Loading permissions...</p>
+                <p className="text-sm text-gray-500"> <div className="flex items-center justify-center w-full p-4"><ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} /></div> </p>
               ) : (
                 <div className="flex flex-col gap-3 max-h-60 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-md p-3">
                   {permissionsSuggestions.map((permission) => {

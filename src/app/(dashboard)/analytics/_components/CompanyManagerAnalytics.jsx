@@ -1,4 +1,5 @@
 "use client";
+import { ImSpinner2 } from "react-icons/im";
 import PropTypes from "prop-types";
 import Page from "@/components/Page.jsx";
 import AnalyticsCard from './AnalyticsCard';
@@ -40,7 +41,7 @@ const formatBytes = (bytes) => {
 function CompanyManagerAnalytics() {
     const { data: analyticsData, isLoading, error } = useGetSubscriberAnalyticsQuery();
 
-    if (isLoading) return <div className="text-center py-20">Loading analytics...</div>;
+    if (isLoading) return <div className="text-center py-20"> <div className="flex items-center justify-center w-full p-4"><ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} /></div> </div>;
     if (error) return <div className="p-8 text-red-500 text-center">Error loading analytics data.</div>;
 
     const data = analyticsData?.data || {};
