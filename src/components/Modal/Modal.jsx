@@ -8,10 +8,9 @@ const Modal = ({ isOpen, onClose, children, title, className, isHideCancel, isBt
     const { t } = useTranslation()
     const isAlertOpen = useIsAlertOpen();
     if (!isOpen) return null;
-    if (isAlertOpen && !bypassAlertHide) return null;
     return (
         <div
-            className={`fixed inset-0  bg-black/30 dark:bg-black/60 backdrop-blur-sm flex items-center overflow-hidden justify-center z-50 ${classNameOpacity ? classNameOpacity : ""}`}
+            className={`fixed inset-0  bg-black/30 dark:bg-black/60 backdrop-blur-sm flex items-center overflow-hidden justify-center z-50 ${classNameOpacity ? classNameOpacity : ""} ${isAlertOpen && !bypassAlertHide ? "hidden" : ""}`}
             onClick={onClose}
         >
             <div

@@ -1,125 +1,188 @@
+"use client";
+
 import { useState } from "react";
 import { BsImage } from "react-icons/bs";
-import { TfiVideoClapper } from "react-icons/tfi";
-import { MdOutlineSell } from "react-icons/md";
+import { useTranslation } from "react-i18next";
 import DefaultButton from "../../../../Form/DefaultButton.jsx";
-import StatusBool from "../../../../Subcomponents/StatusBool.jsx";
-import {useTranslation} from "react-i18next";
+import AccountPicker from "../../../SocialMedia/AccountPicker.jsx";
+import ApiResponseAlert from "../../../../Alerts/ApiResponseAlert.jsx";
+import { useProcessing } from "@/app/providers";
+import { usePostTweetSingleMutation } from "@/redux/socialMedia/twitterAccountsApi";
 
 function PostManuallyMethod() {
-    const {t} = useTranslation()
-    const [uploadedFile, setUploadedFile] = useState(null); // لتخزين الملف الذي تم رفعه
-    const [uploadError, setUploadError] = useState(false); // لتحديد حالة نجاح أو فشل التحميل
+    const { t } = useTranslation();
+    const [postTweet, { isLoading }] = usePostTweetSingleMutation();
+    const { showProcessing, hideProcessing } = useProcessing();
 
-    // دالة لتحميل الملف
-    const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            // نحاول رفع الملف، وإذا فشل التحميل نحول حالة الخطأ إلى true
-            const isUploadSuccessful = Math.random() > 0.5; // محاكاة حالة التحميل (نجاح/فشل)
-            if (isUploadSuccessful) {
-                setUploadedFile(file);
-                setUploadError(false); // تم التحميل بنجاح
+    const [accounts, setAccounts] = useState([]);
+    const [text, setText] = useState("");
+    const [images, setImages] = useState([]);
+    const [apiResponse, setApiResponse] = useState({
+        isOpen: false,
+        status: null,
+        message: "",
+    });
+
+    const handleImage = (e) => {
+        const files = Array.from(e.target.files || []);
+        setImages((prev) => [...prev, ...files]);
+        e.target.value = "";
+    };
+
+    const removeImage = (idx) => {
+        setImages((prev) => prev.filter((_, i) => i !== idx));
+    };
+
+    const reset = () => {
+        setAccounts([]);
+        setText("");
+        setImages([]);
+    };
+
+    const handleSubmit = async () => {
+        if (accounts.length === 0) {
+            setApiResponse({
+                isOpen: true,
+                status: "error",
+                message: t("Please select at least one account"),
+            });
+            return;
+        }
+        if (!text.trim()) {
+            setApiResponse({
+                isOpen: true,
+                status: "error",
+                message: t("Tweet text is required"),
+            });
+            return;
+        }
+
+        showProcessing(t("Posting tweet..."));
+        try {
+            // Endpoint accepts one account at a time; loop on the client to fan out.
+            const results = await Promise.allSettled(
+                accounts.map(async (accountName) => {
+                    const fd = new FormData();
+                    fd.append("account", accountName);
+                    fd.append("tweet", text);
+                    images.forEach((img) => fd.append("images", img));
+                    return postTweet(fd).unwrap();
+                }),
+            );
+
+            const failed = results.filter((r) => r.status === "rejected").length;
+            const succeeded = results.length - failed;
+
+            if (failed === 0) {
+                setApiResponse({
+                    isOpen: true,
+                    status: "success",
+                    message: t("Tweet posted to {{count}} account(s)", { count: succeeded }),
+                });
+                reset();
+            } else if (succeeded === 0) {
+                setApiResponse({
+                    isOpen: true,
+                    status: "error",
+                    message: t("Failed to post on all selected accounts"),
+                });
             } else {
-                setUploadedFile(null);
-                setUploadError(true); // فشل التحميل
+                setApiResponse({
+                    isOpen: true,
+                    status: "warning",
+                    message: t("Posted on {{succeeded}} account(s). {{failed}} failed.", {
+                        succeeded,
+                        failed,
+                    }),
+                });
             }
+        } finally {
+            hideProcessing();
         }
     };
 
-    // دالة لتنسيق حجم الملف
-    const formatFileSize = (size) => {
-        if (size < 1024) return `${size} Bytes`;
-        if (size < 1024 * 1024) return `${(size / 1024).toFixed(2)} KB`;
-        return `${(size / (1024 * 1024)).toFixed(2)} MB`;
-    };
-
     return (
-        <div className={"flex flex-col items-start gap-3 "}>
-            <div className={"bg-gray-100 w-full flex justify-start p-2 dark:bg-gray-900 text-sm rounded-md"}>
-                <p className={"dark:text-gray-200 text-xs"}>Account Name 1</p>
-            </div>
-            <div className={"flex flex-col gap-2 items-start w-full"}>
-                <div className={"flex flex-col gap-1 w-full items-start"}>
-                <label className={"text-black dark:text-gray-300 text-sm"}>{t("Post description")}</label>
+        <div className="flex flex-col items-start gap-3">
+            <AccountPicker selected={accounts} onChange={setAccounts} title="Post from accounts" />
+
+            <div className="flex flex-col gap-1 w-full items-start">
+                <label className="text-cell-primary text-sm font-medium">
+                    {t("Post description")} <span className="text-red-500">*</span>
+                </label>
                 <textarea
-                    placeholder={t("Placeholder text..")}
-                    className={"rounded-xl p-2 text-xs border-2 w-full focus:outline-none dark:bg-gray-800 dark:border-gray-700 dark:text-primary-150  focus:border-blue-500"}
-                    rows={5}
-                ></textarea>
-                </div>
-                <div className={"flex flex-col gap-3 items-start w-full pl-2"}>
-                    <div className={"icons-post flex justify-start gap-3"}>
-                        {/* أيقونات تحميل الملفات */}
-                        <label>
-                            <BsImage
-                                className={"dark:text-primary-200 text-primary-500 rounded-md cursor-pointer"}
-                                size={20}
-                            />
-                            <input
-                                type="file"
-                                accept="image/*"
-                                className="hidden"
-                                onChange={handleFileChange}
-                            />
-                        </label>
-                        <label>
-                            <TfiVideoClapper
-                                className={"dark:text-primary-200 text-primary-500 rounded-md cursor-pointer"}
-                                size={20}
-                            />
-                            <input
-                                type="file"
-                                accept="video/*"
-                                className="hidden"
-                                onChange={handleFileChange}
-                            />
-                        </label>
-                        <label>
-                            <MdOutlineSell
-                                className={"dark:text-primary-200 text-primary-500 cursor-pointer"}
-                                size={20}
-                            />
-                            <input
-                                type="file"
-                                className="hidden"
-                                onChange={handleFileChange}
-                            />
-                        </label>
-                    </div>
-                    <div className={"state-post-file w-full"}>
-                        {/* عرض حالة التحميل */}
-                        {uploadError ? (
-                            <div className="flex flex-col w-full items-start gap-1">
-                                <StatusBool status={false} titleFalse={"Failed to upload to the file"} />
-                                <span className="text-sm text-red-500 cursor-pointer">{t("Try Again")}</span>
-                            </div>
-                        ) : uploadedFile ? (
-                            <div className="w-full flex items-center justify-between">
-                                <StatusBool status={true} titleTrue={t("Uploaded")} />
-                                <div className={"flex gap-2 items-center border-2 rounded-lg px-2 py-1"}>
-                                    {uploadedFile.type.startsWith("image/") && (
-                                        <img
-                                            src={URL.createObjectURL(uploadedFile)}
-                                            alt="Uploaded"
-                                            className="w-5 h-5 rounded-lg object-cover"
-                                        />
-                                    )}
-                                    <span className="text-sm text-gray-700">
-                    Size: {formatFileSize(uploadedFile.size)}
-                  </span>
-                                </div>
-                            </div>
-                        ) : (
-                            <StatusBool status={false} titleFalse={t("No file uploaded")} />
-                        )}
-                    </div>
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                    placeholder={`${t("What's happening?")}...`}
+                    className="rounded-xl p-2 text-xs border-2 border-status-border w-full focus:outline-none bg-status-bg text-cell-primary focus:border-primary-400"
+                    rows={4}
+                    maxLength={280}
+                />
+                <div className="flex justify-between w-full text-xs text-cell-secondary">
+                    <span>{text.length}/280</span>
                 </div>
             </div>
-            <div className={"flex gap-2 w-full"}>
-                <DefaultButton type={'button'} title={"Cancel"} className={"font-medium dark:text-gray-200 "} />
-                <DefaultButton type={'button'} title={"Apply"} className={"bg-primary-500 font-medium dark:bg-primary-200 dark:text-black text-white"} />
+
+            <div className="flex flex-col gap-2 items-start w-full">
+                <label className="cursor-pointer flex items-center gap-2 text-primary-500 text-sm">
+                    <BsImage size={18} />
+                    <span>{t("Add image")}</span>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        multiple
+                        onChange={handleImage}
+                    />
+                </label>
+
+                {images.length > 0 && (
+                    <div className="flex flex-wrap gap-2 w-full">
+                        {images.map((img, idx) => (
+                            <div
+                                key={idx}
+                                className="relative w-16 h-16 rounded-lg overflow-hidden border border-status-border"
+                            >
+                                <img
+                                    src={URL.createObjectURL(img)}
+                                    alt={img.name}
+                                    className="w-full h-full object-cover"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => removeImage(idx)}
+                                    className="absolute top-0 right-0 bg-red-500 text-white w-5 h-5 flex items-center justify-center text-xs rounded-bl-lg"
+                                >
+                                    ×
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
+
+            <div className="flex gap-2 w-full pt-2">
+                <DefaultButton
+                    type="button"
+                    title="Cancel"
+                    onClick={reset}
+                    className="font-medium text-cell-secondary"
+                    disabled={isLoading}
+                />
+                <DefaultButton
+                    type="button"
+                    title={isLoading ? "Posting..." : "Apply"}
+                    onClick={handleSubmit}
+                    disabled={isLoading || accounts.length === 0 || !text.trim()}
+                    className="bg-primary-500 font-medium text-white hover:bg-primary-600 transition-colors"
+                />
+            </div>
+
+            <ApiResponseAlert
+                isOpen={apiResponse.isOpen}
+                status={apiResponse.status}
+                message={apiResponse.message}
+                onClose={() => setApiResponse({ isOpen: false, status: null, message: "" })}
+            />
         </div>
     );
 }

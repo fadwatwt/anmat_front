@@ -37,6 +37,10 @@ import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import IncreaseFeaturesModal from "@/components/Modal/IncreaseFeaturesModal";
 import { useUpdateExtraFeaturesMutation } from "@/redux/subscriptions/subscriptionsApi";
+import { useGetSubscriberSocialMediaQuotaQuery } from "@/redux/socialMedia/socialMediaQuotaApi";
+import SetSocialMediaQuotaModal from "@/components/Modal/SocialMedia/SetSocialMediaQuotaModal";
+import PermissionGuard from "@/components/PermissionGuard";
+import { Share } from "iconsax-react";
 
 
 function AdminProfile() {
@@ -50,6 +54,10 @@ function AdminProfile() {
     const [updateExtraFeatures, { isLoading: isUpdatingFeatures }] = useUpdateExtraFeaturesMutation();
     const [isDeleteCatalogAert, setIsDeleteCatalogAert] = useState(false);
     const [isIncreaseFeaturesModal, setIsIncreaseFeaturesModal] = useState(false);
+    const [isSocialMediaQuotaModal, setIsSocialMediaQuotaModal] = useState(false);
+
+    const { data: socialQuota, isLoading: isSocialQuotaLoading } =
+        useGetSubscriberSocialMediaQuotaQuery(slug, { skip: !slug });
 
 
     // Status update states
@@ -287,6 +295,29 @@ function AdminProfile() {
                                         </span>
                                     </div>
                                 </div>
+                                <PermissionGuard permission="admin.social_media_quota.view" fallback={null}>
+                                    <div className="p-4 rounded-xl border border-status-border bg-gray-50/30 dark:bg-white/5 flex flex-col gap-1 sm:col-span-2">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-xs text-cell-secondary uppercase tracking-wider font-semibold flex items-center gap-1">
+                                                <Share size={12} className="text-primary-500" />
+                                                {t("Twitter Accounts")}
+                                            </span>
+                                            {socialQuota?.source && (
+                                                <span className="text-[10px] text-cell-secondary uppercase">
+                                                    {t("source")}: {socialQuota.source}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <div className="flex items-baseline gap-1">
+                                            <span className="text-2xl font-bold text-primary-500">
+                                                {isSocialQuotaLoading ? "…" : (socialQuota?.used ?? 0)}
+                                            </span>
+                                            <span className="text-sm text-cell-secondary">
+                                                / {socialQuota?.unlimited ? t("unlimited") : (socialQuota?.limit ?? 0)}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </PermissionGuard>
                             </div>
                         </div>
                         <div className="flex flex-col gap-4">
@@ -304,6 +335,15 @@ function AdminProfile() {
                                 >
                                     {subscriber?.is_active ? t("Deactivate Account") : t("Activate Account")}
                                 </button>
+                                <PermissionGuard permission="admin.social_media_quota.update" fallback={null}>
+                                    <button
+                                        className="px-4 py-2 rounded-lg border border-primary-500 text-primary-500 hover:bg-primary-50 transition-colors text-sm font-medium flex items-center gap-2"
+                                        onClick={() => setIsSocialMediaQuotaModal(true)}
+                                    >
+                                        <Share size={14} />
+                                        {t("Set Social Media Quota")}
+                                    </button>
+                                </PermissionGuard>
                             </div>
                         </div>
                     </div>
@@ -485,6 +525,13 @@ function AdminProfile() {
                     onClose={() => setIsResponseOpen(false)}
                     status={apiResponse.status}
                     message={apiResponse.message}
+                />
+
+                <SetSocialMediaQuotaModal
+                    isOpen={isSocialMediaQuotaModal}
+                    onClose={() => setIsSocialMediaQuotaModal(false)}
+                    subscriberId={slug}
+                    currentQuota={socialQuota}
                 />
             </div>
         </Page>

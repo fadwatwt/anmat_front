@@ -14,11 +14,13 @@ import conversationsReducer from "./conversations/conversationsSlice";
 import industriesReducer from "./industries/industriesSlice";
 import notificationsReducer from "./notifications/notificationsSlice";
 import { apiSlice } from "./api/apiSlice";
+import { twitterAccountsApi } from "./socialMedia/twitterAccountsApi";
 
 export const store = configureStore({
   reducer: {
     [apiSlice.reducerPath]: apiSlice.reducer, // Single API Reducer
     [conversationsAPI.reducerPath]: conversationsAPI.reducer, // Keeping this if it uses a totally different URL/setup
+    [twitterAccountsApi.reducerPath]: twitterAccountsApi.reducer, // tweetAPI lives on a different origin
     auth: authReducer,
     projects: projectReducer,
     employees: employeeReduce,
@@ -36,6 +38,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
       apiSlice.middleware,
-      conversationsAPI.middleware
+      conversationsAPI.middleware,
+      twitterAccountsApi.middleware
     ),
 });

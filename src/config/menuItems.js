@@ -216,6 +216,13 @@ export const dashboardSideMenuItems = [
         icon: <Messages1 />
     },
     {
+        allowed_to: ['Subscriber', 'Employee'],
+        title: 'Social Media',
+        path: '/social-media',
+        icon: <Share />,
+        permission_any_of: ['social_media_accounts.list'],
+    },
+    {
         allowed_to: ['Admin', 'Subscriber', 'Employee'],
         title: 'Settings',
         path: '/setting',
