@@ -4,7 +4,8 @@ import { ImSpinner2 } from "react-icons/im";
 import {
     RiCheckboxCircleLine,
     RiCloseCircleLine, RiEditLine, RiEyeLine,
-    RiFlashlightLine
+    RiFlashlightLine,
+    RiSparklingLine,
 } from "@remixicon/react";
 import Table from "@/components/Tables/Table";
 import Page from "@/components/Page";
@@ -27,6 +28,8 @@ import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import PermissionGuard from "@/components/PermissionGuard";
 import { usePermission } from "@/Hooks/usePermission";
+import Tabs from "@/components/Tabs";
+import AIPlansTab from "./_components/AIPlansTab";
 
 const headers = [
     { label: "Plan", width: "250px" },
@@ -38,15 +41,10 @@ const headers = [
     { label: "", width: "50px" }
 ];
 
-function PlansPageContent() {
+function SubscriptionPlansTab({ canCreate, canUpdate, canDelete, canToggleActivity, canManageTrial }) {
     const router = useRouter();
+    const { t, i18n } = useTranslation();
     const { data: plans, isLoading, error } = useGetSubscriptionPlansQuery();
-
-    const canCreate = usePermission("admin.subscription_plans.create");
-    const canUpdate = usePermission("admin.subscription_plans.update");
-    const canDelete = usePermission("admin.subscription_plans.delete");
-    const canToggleActivity = usePermission("admin.subscription_plans.toggle_activity");
-    const canManageTrial = usePermission("admin.subscription_plans.manage_trial");
 
     // Mutations
     const [deletePlan] = useDeleteSubscriptionPlanMutation();
@@ -134,7 +132,6 @@ function PlansPageContent() {
     };
 
     const PlanActions = ({ plan }) => {
-        const { i18n } = useTranslation();
         const planId = plan._id;
         const isTrialActive = plan.trial?.is_active;
 
@@ -250,7 +247,18 @@ function PlansPageContent() {
     if (error) return <div className="flex justify-center items-center h-full p-10 text-red-500">Error loading plans.</div>;
 
     return (
-        <Page title="Plans" isBtn={canCreate} btnTitle="Add Plan" btnOnClick={toggleCreatePlanModalOpen}>
+        <div>
+            {canCreate && (
+                <div className="flex justify-end mb-4 px-2">
+                    <button
+                        onClick={toggleCreatePlanModalOpen}
+                        className="bg-primary-base dark:bg-primary-200 flex gap-1 items-center px-3 py-2 rounded-lg text-sm"
+                    >
+                        <span className="text-white dark:text-black font-medium">+ {t("Add Plan")}</span>
+                    </button>
+                </div>
+            )}
+
             <Table
                 classContainer={"rounded-2xl px-8"}
                 title="All Plans"
@@ -288,6 +296,49 @@ function PlansPageContent() {
                 }} 
                 plan={selectedPlanForEdit}
             />
+        </div>
+    );
+}
+
+function PlansPageContent() {
+    const { t } = useTranslation();
+
+    const canCreate = usePermission("admin.subscription_plans.create");
+    const canUpdate = usePermission("admin.subscription_plans.update");
+    const canDelete = usePermission("admin.subscription_plans.delete");
+    const canToggleActivity = usePermission("admin.subscription_plans.toggle_activity");
+    const canManageTrial = usePermission("admin.subscription_plans.manage_trial");
+
+    const tabs = [
+        {
+            title: t("Subscription Plans"),
+            icon: RiFlashlightLine,
+            content: (
+                <SubscriptionPlansTab
+                    canCreate={canCreate}
+                    canUpdate={canUpdate}
+                    canDelete={canDelete}
+                    canToggleActivity={canToggleActivity}
+                    canManageTrial={canManageTrial}
+                />
+            ),
+        },
+        {
+            title: t("AI Token Plans"),
+            icon: RiSparklingLine,
+            content: (
+                <AIPlansTab
+                    canCreate={canCreate}
+                    canUpdate={canUpdate}
+                    canDelete={canDelete}
+                />
+            ),
+        },
+    ];
+
+    return (
+        <Page title="Plans">
+            <Tabs tabs={tabs} />
         </Page>
     );
 }

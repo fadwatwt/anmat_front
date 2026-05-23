@@ -2,12 +2,21 @@
 
 import React, { useState, useRef, useLayoutEffect, useEffect } from "react";
 import Page from "@/components/Page.jsx";
-import { Mic, Paperclip, Copy, Edit2, Save, X } from "lucide-react";
+import { Mic, Paperclip, Copy, Edit2, Save, X, Check, AlertTriangle, Plus, Trash2, CreditCard, History, ChevronRight } from "lucide-react";
 import "./hide-scrollbar.css";
 import ChatInput from "./ChatInput";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
-
-// Remove GeminiIcon if not used elsewhere
+import { useRouter } from "next/navigation";
+import {
+  useGetTokensBalanceQuery,
+  useListConversationsQuery,
+  useGetConversationMessagesQuery,
+  useSendMessageMutation,
+  useConfirmPendingActionMutation,
+  useCancelPendingActionMutation,
+  useRenameConversationMutation,
+  useDeleteConversationMutation,
+} from "@/redux/api/aiApi";
 
 const suggestions = [
   "What should I work on next ?",
@@ -33,6 +42,17 @@ const isDocument = (type, name) => {
 };
 
 const AssistantPage = () => {
+  const router = useRouter();
+
+  // RTK Query hooks
+  const { data: balanceData, isLoading: balanceLoading } = useGetTokensBalanceQuery();
+  const { data: conversations, isLoading: loadingConversations } = useListConversationsQuery();
+  const [sendMessageMutation] = useSendMessageMutation();
+  const [confirmPendingAction] = useConfirmPendingActionMutation();
+  const [cancelPendingAction] = useCancelPendingActionMutation();
+  const [renameConversation] = useRenameConversationMutation();
+  const [deleteConversation] = useDeleteConversationMutation();
+
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]); // Chat messages state
   const [loading, setLoading] = useState(false); // Loading state for AI response
@@ -40,7 +60,6 @@ const AssistantPage = () => {
   const [editingIdx, setEditingIdx] = useState(null); // Index of message being edited
   const [editValue, setEditValue] = useState("");
   const fileInputRef = useRef(null);
-  // const navigate = useNavigate(); // Not used in Next.js
   const userBubbleRef = useRef(null);
   const aiBubbleRef = useRef(null);
   const [userBubbleDims, setUserBubbleDims] = useState({ width: undefined, height: undefined });
@@ -49,7 +68,6 @@ const AssistantPage = () => {
   const aiEditRefs = useRef({});
   const [editDims, setEditDims] = useState({});
   const [thinking, setThinking] = useState(false); // Track if AI is thinking
-  const [thinkingBubbles, setThinkingBubbles] = useState([]); // Track thinking bubbles for display
   const chatContainerRef = useRef(null); // Ref for chat container
   const inputRef = useRef(null); // Ref for input field
   const [isRecording, setIsRecording] = useState(false);
@@ -58,17 +76,43 @@ const AssistantPage = () => {
   const [openImageUrl, setOpenImageUrl] = useState(null);
   const [stagedFiles, setStagedFiles] = useState([]); // New state for staged files
   const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
+  const [conversationId, setConversationId] = useState(null);
+
+  // Sidebar editing states
+  const [editingConvId, setEditingConvId] = useState(null);
+  const [editConvTitle, setEditConvTitle] = useState("");
+
+  // Fetch and sync conversation messages
+  const { data: fetchedMessagesData, isFetching: loadingMessages } = useGetConversationMessagesQuery(
+    conversationId,
+    { skip: !conversationId }
+  );
+
+  useEffect(() => {
+    if (conversationId && fetchedMessagesData) {
+      const mapped = fetchedMessagesData.messages.map((m) => {
+        if (m.role === "user") {
+          return {
+            sender: "user",
+            text: m.content || "",
+            files: (m.attachment_urls || []).map((url) => ({
+              name: url.split("/").pop() || "Attached File",
+              type: url.match(/\.(jpeg|jpg|gif|png)$/i) ? "image/png" : "application/octet-stream",
+              url,
+            })),
+          };
+        } else {
+          return buildAiMessageFromResponse(m);
+        }
+      });
+      setMessages(mapped);
+      setHasStarted(true);
+    }
+  }, [fetchedMessagesData, conversationId]);
 
   const onRemoveStagedFile = (indexToRemove) => {
     setStagedFiles(prev => prev.filter((_, index) => index !== indexToRemove));
   };
-
-  const aiThoughts = [
-    'Analyzing your request...',
-    'Checking agenda templates...',
-    'Summarizing points...',
-    'Almost ready...'
-  ];
 
   useLayoutEffect(() => {
     if (editingIdx === messages.length - 2 && userBubbleRef.current) {
@@ -119,7 +163,6 @@ const AssistantPage = () => {
   };
 
   const handleMicClick = () => {
-    // Placeholder for mic functionality
     console.log("mic clicked");
   };
 
@@ -142,7 +185,8 @@ const AssistantPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!input.trim() && stagedFiles.length === 0) return; // Allow sending only files
+    if (loading) return;
+    if (!input.trim() && stagedFiles.length === 0) return;
 
     setHasStarted(true);
 
@@ -164,85 +208,102 @@ const AssistantPage = () => {
       }
     }, 0);
 
-    // Simulate AI response with file/image demo
-    setTimeout(() => {
+    try {
+      const data = await sendMessageMutation({
+        message: userMessage.text,
+        conversation_id: conversationId || undefined,
+        attachment_urls: (userMessage.files || []).map((f) => f.url).filter(Boolean),
+      }).unwrap();
+
+      if (data?.conversation_id && !conversationId) {
+        setConversationId(data.conversation_id);
+      }
+
+      const aiMsg = buildAiMessageFromResponse(data?.assistant_message);
+      setMessages((prev) => [...prev, aiMsg]);
+    } catch (err) {
+      const message =
+        err?.data?.message ||
+        err?.message ||
+        "AI assistant is unavailable right now.";
+      setApiResponse({ isOpen: true, status: "error", message });
+      setMessages((prev) => [
+        ...prev,
+        { sender: "ai", text: `Sorry, I couldn't process that: ${message}` },
+      ]);
+    } finally {
       setThinking(false);
       setLoading(false);
-      let aiMsg;
-      const text = userMessage.text.toLowerCase();
-      // Check if the message contains files or text related to files/images
-      if (userMessage.files && userMessage.files.length > 0 || text.includes('agenda') || text.includes('file') || text.includes('document')) {
-        aiMsg = {
-          sender: "ai",
-          text: "I received your file(s). How can I help you with them?",
-          files: userMessage.files && userMessage.files.length > 0 ? userMessage.files : [{
-            name: "Project kick off agenda.svg",
-            type: "image/svg+xml",
-            url: "/images/file.svg"
-          }]
-        };
-      } else if (text.includes('image') || text.includes('picture') || text.includes('photo')) {
-        aiMsg = {
-          sender: "ai",
-          text: "Here is the image you requested:",
-          file: {
-            name: "ai-image.png",
-            type: "image/png",
-            url: "/images/users/user1.png"
-          }
-        };
-      } else if (text.includes('reference') || text.includes('link')) {
-        aiMsg = {
-          sender: "ai",
-          text: "Here is your reference:",
-          links: [
-            { label: "View reference", url: "https://nextjs.org" }
-          ]
-        };
-      } else if (text.includes('assignee') || text.includes('assigned') || text.includes('echo') || text.includes('voice command')) {
-        aiMsg = {
-          sender: "ai",
-          text: 'Got it, the assignees of Echo "AI Assistant: Voice Command Setup" task is',
-          assignees: [
-            { name: "Ali Mohamed", avatar: "/images/users/user1.png", profileUrl: "#" },
-            { name: "Ali Mohamed", avatar: "/images/users/user1.png", profileUrl: "#" },
-            { name: "Ali Mohamed", avatar: "/images/users/user1.png", profileUrl: "#" }
-          ],
-          hasReference: true
-        };
-      } else if (text.includes('table') || text.includes('tasks')) {
-        aiMsg = {
-          sender: "ai",
-          text: "Here is your task table:",
-          table: {
-            headers: ["Assigned to", "Manager", "Assigned - Due Date", "Priority", "Status"],
-            rows: [
-              ["Zainab Al-Hakim", "Fatma Ahmed Mohamed", "15 Nov, 2024 - 16 Jan, 2025", "Urgent", "Active"],
-              ["Layla Al-Farsi", "Fatma Ahmed Mohamed", "15 Nov, 2024 - 16 Jan, 2025", "Low", "Inactive"],
-              ["Sophia Williams", "James Brown", "15 Nov, 2024 - 16 Jan, 2025", "High", "Active"],
-              ["Ali Mohamed", "Sophia Williams", "15 Nov, 2024 - 16 Jan, 2025", "Medium", "Delayed"]
-            ]
-          }
-        };
-      } else {
-        aiMsg = {
-          sender: "ai",
-          thought: "Analyzing your request... lorem ipsum dummy text lorem ipsum dummy text lorem ipsum dummy text lorem ipsum dummy text. ",
-          text: "Got it, lorem ipsum dummy text ."
-        };
-      }
-      setMessages(prev => [
-        ...prev,
-        aiMsg
-      ]);
-
-      // Refocus input after AI response
       setTimeout(() => {
-        if (inputRef.current) {
-          inputRef.current.focus();
-        }
+        if (inputRef.current) inputRef.current.focus();
       }, 0);
-    }, 1200);
+    }
+  };
+
+  const buildAiMessageFromResponse = (assistant) => {
+    if (!assistant) {
+      return { sender: "ai", text: "(empty response)" };
+    }
+    const base = {
+      sender: "ai",
+      messageId: assistant._id,
+      text: assistant.content || "",
+    };
+    if (assistant.thought) {
+      base.thought = assistant.thought;
+    }
+    if (assistant.pending_action) {
+      base.pendingAction = { ...assistant.pending_action };
+    }
+    if (assistant.ui_payload?.table) base.table = assistant.ui_payload.table;
+    if (assistant.ui_payload?.links) base.links = assistant.ui_payload.links;
+    if (assistant.ui_payload?.assignees) base.assignees = assistant.ui_payload.assignees;
+    return base;
+  };
+
+  const updateMessageAt = (idx, updater) => {
+    setMessages((prev) =>
+      prev.map((m, i) => (i === idx ? { ...m, ...updater(m) } : m))
+    );
+  };
+
+  const handleConfirmPending = async (idx, pendingActionId) => {
+    updateMessageAt(idx, () => ({ pendingActionLoading: true }));
+    setThinking(true);
+    setLoading(true);
+    try {
+      const data = await confirmPendingAction({ pending_action_id: pendingActionId }).unwrap();
+      updateMessageAt(idx, (m) => ({
+        pendingActionLoading: false,
+        pendingAction: { ...m.pendingAction, status: "confirmed" },
+      }));
+      const followUp = buildAiMessageFromResponse(data?.assistant_message);
+      setMessages((prev) => [...prev, followUp]);
+    } catch (err) {
+      const message =
+        err?.data?.message || err?.message || "Failed to execute the action.";
+      setApiResponse({ isOpen: true, status: "error", message });
+      updateMessageAt(idx, () => ({ pendingActionLoading: false }));
+    } finally {
+      setThinking(false);
+      setLoading(false);
+    }
+  };
+
+  const handleCancelPending = async (idx, pendingActionId) => {
+    updateMessageAt(idx, () => ({ pendingActionLoading: true }));
+    try {
+      await cancelPendingAction({ pending_action_id: pendingActionId }).unwrap();
+      updateMessageAt(idx, (m) => ({
+        pendingActionLoading: false,
+        pendingAction: { ...m.pendingAction, status: "cancelled" },
+      }));
+    } catch (err) {
+      const message =
+        err?.data?.message || err?.message || "Failed to cancel the action.";
+      setApiResponse({ isOpen: true, status: "error", message });
+      updateMessageAt(idx, () => ({ pendingActionLoading: false }));
+    }
   };
 
   const handleCopy = (text) => {
@@ -267,10 +328,8 @@ const AssistantPage = () => {
   // Audio recording logic
   const handleRecordToggle = async () => {
     if (isRecording) {
-      // Stop recording
       mediaRecorderRef.current.stop();
     } else {
-      // Start recording
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         const mediaRecorder = new window.MediaRecorder(stream);
@@ -303,39 +362,316 @@ const AssistantPage = () => {
     if (!isRecording) setAudioChunks([]);
   }, [isRecording]);
 
+  // Sidebar actions
+  const handleNewChat = () => {
+    setConversationId(null);
+    setMessages([]);
+    setHasStarted(false);
+    setInput("");
+    if (inputRef.current) inputRef.current.focus();
+  };
+
+  const handleSelectConversation = (id) => {
+    setConversationId(id);
+  };
+
+  const handleStartRename = (e, conv) => {
+    e.stopPropagation();
+    setEditingConvId(conv._id);
+    setEditConvTitle(conv.title || "Untitled Chat");
+  };
+
+  const handleSaveRename = async (e, id) => {
+    e.stopPropagation();
+    if (!editConvTitle.trim()) return;
+    try {
+      await renameConversation({ id, title: editConvTitle.trim() }).unwrap();
+      setEditingConvId(null);
+    } catch (err) {
+      setApiResponse({
+        isOpen: true,
+        status: "error",
+        message: err?.data?.message || "Failed to rename conversation",
+      });
+    }
+  };
+
+  const handleDeleteConv = async (e, id) => {
+    e.stopPropagation();
+    if (!confirm("Are you sure you want to delete this conversation?")) return;
+    try {
+      await deleteConversation(id).unwrap();
+      if (conversationId === id) {
+        handleNewChat();
+      }
+    } catch (err) {
+      setApiResponse({
+        isOpen: true,
+        status: "error",
+        message: err?.data?.message || "Failed to delete conversation",
+      });
+    }
+  };
+
+  // Group conversations chronologically
+  const getGroupedConversations = () => {
+    if (!conversations || conversations.length === 0) return {};
+    const groups = {
+      Today: [],
+      Yesterday: [],
+      "Last 7 Days": [],
+      Older: [],
+    };
+
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    const yesterday = new Date(now);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const sevenDaysAgo = new Date(now);
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    conversations.forEach((c) => {
+      const date = new Date(c.last_message_at || c.created_at || new Date());
+      date.setHours(0, 0, 0, 0);
+
+      if (date.getTime() === now.getTime()) {
+        groups.Today.push(c);
+      } else if (date.getTime() === yesterday.getTime()) {
+        groups.Yesterday.push(c);
+      } else if (date.getTime() >= sevenDaysAgo.getTime()) {
+        groups["Last 7 Days"].push(c);
+      } else {
+        groups.Older.push(c);
+      }
+    });
+
+    return Object.keys(groups).reduce((acc, key) => {
+      if (groups[key].length > 0) acc[key] = groups[key];
+      return acc;
+    }, {});
+  };
+
+  const groupedConversations = getGroupedConversations();
+  const hasUnlimitedAiAccess = Boolean(balanceData?.is_unlimited);
+  const freeTokensRemaining = Math.max(
+    0,
+    (balanceData?.free_limit || 0) - (balanceData?.free_consumed || 0)
+  );
+  const paidTokensRemaining = Math.max(0, balanceData?.balance || 0);
+  const isGated = balanceData
+    ? !hasUnlimitedAiAccess && freeTokensRemaining <= 0 && paidTokensRemaining <= 0
+    : false;
+
   return (
     <Page isTitle={false}>
-      <div className="flex flex-col items-center bg-gray-50 dark:bg-gray-900">
-        <div className="flex flex-col w-full max-w-3xl mx-auto h-[80vh] max-h-[700px]">
-          <div className="flex-1 overflow-y-auto hide-scrollbar p-8 gap-8 flex flex-col" ref={chatContainerRef}>
-            {/* Hide welcome and suggestions after chat starts */}
-            {!hasStarted && (
-              <>
-                <div className="flex flex-col items-center gap-4 mt-12">
-                  <img src="/images/AiAssistant/file.svg" alt="Assistant Logo" style={{ width: '96px', height: '96px' }} />
-                  <h2 className="text-2xl font-semibold text-center text-table-title mt-2">
-                    Welcome <span className="text-primary-500 font-bold">Mai Haggag</span>,<br />
-                    <span className="font-normal">Start your journey with <span className="font-semibold text-table-title">AI Assistant</span></span>
-                  </h2>
-                  <p className="text-gray-400 text-center text-base max-w-xl">Lorem ipsum dummy text Lorem ipsum dummy text</p>
+      <div className="flex h-[calc(100vh-140px)] min-h-[550px] w-full bg-white dark:bg-gray-950 overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm">
+        
+        {/* Left Sidebar: Chat History & Token usage */}
+        <div className="w-80 flex-shrink-0 border-r border-gray-200 dark:border-gray-800 flex flex-col bg-gray-50/50 dark:bg-gray-900/30">
+          
+          {/* New Chat CTA */}
+          <div className="p-4 border-b border-gray-200 dark:border-gray-800">
+            <button
+              onClick={handleNewChat}
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-semibold shadow-sm transition-all duration-200 hover:shadow-md hover:scale-[1.01]"
+            >
+              <Plus size={18} />
+              <span>New Chat</span>
+            </button>
+          </div>
+
+          {/* Chronological Chat List */}
+          <div className="flex-1 overflow-y-auto hide-scrollbar p-3 space-y-4">
+            {loadingConversations ? (
+              <div className="flex justify-center py-8">
+                <div className="w-6 h-6 border-2 border-gray-300 border-t-primary-500 rounded-full animate-spin"></div>
+              </div>
+            ) : Object.keys(groupedConversations).length === 0 ? (
+              <div className="text-center text-gray-400 py-8 text-sm">
+                No recent conversations
+              </div>
+            ) : (
+              Object.entries(groupedConversations).map(([groupName, groupConvs]) => (
+                <div key={groupName} className="space-y-1">
+                  <h3 className="px-3 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
+                    {groupName}
+                  </h3>
+                  {groupConvs.map((conv) => {
+                    const isActive = conversationId === conv._id;
+                    const isEditing = editingConvId === conv._id;
+
+                    return (
+                      <div
+                        key={conv._id}
+                        onClick={() => !isEditing && handleSelectConversation(conv._id)}
+                        className={`group relative flex items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-150 ${
+                          isActive
+                            ? "bg-primary-50 dark:bg-primary-950/20 text-primary-600 dark:text-primary-400 font-medium"
+                            : "hover:bg-gray-100/70 dark:hover:bg-gray-800/40 text-gray-700 dark:text-gray-300"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5 flex-1 min-w-0 pr-8">
+                          <img
+                            src="/images/AiAssistant/file.svg"
+                            alt="Chat icon"
+                            className="w-4 h-4 opacity-60 shrink-0"
+                          />
+                          {isEditing ? (
+                            <input
+                              type="text"
+                              value={editConvTitle}
+                              onChange={(e) => setEditConvTitle(e.target.value)}
+                              onBlur={(e) => handleSaveRename(e, conv._id)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") handleSaveRename(e, conv._id);
+                                if (e.key === "Escape") setEditingConvId(null);
+                              }}
+                              autoFocus
+                              onClick={(e) => e.stopPropagation()}
+                              className="w-full text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded px-1.5 py-0.5 focus:outline-none focus:border-primary-500 text-gray-900 dark:text-white"
+                            />
+                          ) : (
+                            <span className="text-sm truncate">
+                              {conv.title || "Untitled Chat"}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Inline Actions */}
+                        {!isEditing && (
+                          <div className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 flex items-center gap-1 transition-opacity">
+                            <button
+                              onClick={(e) => handleStartRename(e, conv)}
+                              className="p-1 text-gray-400 hover:text-primary-500 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+                              title="Rename"
+                            >
+                              <Edit2 size={13} />
+                            </button>
+                            <button
+                              onClick={(e) => handleDeleteConv(e, conv._id)}
+                              className="p-1 text-gray-400 hover:text-red-500 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+                              title="Delete"
+                            >
+                              <Trash2 size={13} />
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
-                <div className="flex flex-row gap-4 justify-center mt-8 mb-12 w-full">
+              ))
+            )}
+          </div>
+
+          {/* Bottom Card: Token Tracker */}
+          <div className="p-4 border-t border-gray-200 dark:border-gray-800 bg-gray-50/80 dark:bg-gray-900/50">
+            {balanceLoading ? (
+              <div className="flex items-center justify-center py-4">
+                <div className="w-5 h-5 border-2 border-gray-300 border-t-primary-500 rounded-full animate-spin"></div>
+              </div>
+            ) : hasUnlimitedAiAccess ? (
+              <div className="bg-white dark:bg-gray-800 border border-gray-200/60 dark:border-gray-700/60 rounded-2xl p-4 flex flex-col gap-2 shadow-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">AI Access</span>
+                  <span className="text-xs font-bold text-primary-600 dark:text-primary-400">Unlimited</span>
+                </div>
+                <div className="w-full h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                  <div className="bg-gradient-to-r from-blue-500 to-indigo-600 h-full rounded-full w-full"></div>
+                </div>
+                <p className="text-[11px] text-gray-400">
+                  Admin accounts are not limited by token balance.
+                </p>
+              </div>
+            ) : (
+              <div className="bg-white dark:bg-gray-800 border border-gray-200/60 dark:border-gray-700/60 rounded-2xl p-4 flex flex-col gap-3 shadow-sm">
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Free Tokens Remaining</span>
+                    <span className="text-xs font-bold text-primary-600 dark:text-primary-400">
+                      {freeTokensRemaining.toLocaleString()}
+                    </span>
+                  </div>
+                  {/* Progress Bar */}
+                  <div className="w-full h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                    <div
+                      className="bg-gradient-to-r from-blue-500 to-indigo-600 h-full rounded-full transition-all duration-500"
+                      style={{
+                        width: `${Math.min(100, Math.max(0, (freeTokensRemaining / (balanceData?.free_limit || 5000)) * 100))}%`,
+                      }}
+                    ></div>
+                  </div>
+                  <div className="flex justify-between text-[10px] text-gray-400 mt-1">
+                    <span>0</span>
+                    <span>Limit: {balanceData?.free_limit?.toLocaleString() || "5,000"}</span>
+                  </div>
+
+                  {balanceData?.balance > 0 && (
+                    <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100 dark:border-gray-700/60">
+                      <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Paid Tokens</span>
+                      <span className="text-xs font-bold text-green-600 dark:text-green-400">
+                        {balanceData.balance.toLocaleString()}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  onClick={() => router.push("/ai/pricing")}
+                  className="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-primary-600 to-indigo-600 hover:from-primary-700 hover:to-indigo-700 text-white font-semibold text-xs shadow-sm transition-all duration-200 hover:scale-[1.02] flex items-center justify-center gap-1.5"
+                >
+                  <CreditCard size={14} />
+                  <span>Buy Tokens</span>
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Right Chat Panel */}
+        <div className="flex-1 flex flex-col h-full bg-white dark:bg-gray-900 relative">
+          
+          {/* Active Chat Header */}
+          <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
+            <h1 className="text-lg font-bold text-gray-800 dark:text-gray-100">
+              {conversationId
+                ? (conversations?.find((c) => c._id === conversationId)?.title || "Active Chat")
+                : "AI Assistant"}
+            </h1>
+          </div>
+
+          {/* Messages Scroll Area */}
+          <div className="flex-1 overflow-y-auto hide-scrollbar p-6 space-y-6 flex flex-col" ref={chatContainerRef}>
+            {loadingMessages ? (
+              <div className="flex flex-col items-center justify-center h-full gap-3">
+                <div className="w-8 h-8 border-4 border-gray-200 border-t-primary-500 rounded-full animate-spin"></div>
+                <span className="text-sm text-gray-500">Loading conversation...</span>
+              </div>
+            ) : !hasStarted ? (
+              <div className="flex flex-col items-center justify-center h-full max-w-xl mx-auto text-center gap-6">
+                <img src="/images/AiAssistant/file.svg" alt="Assistant Logo" style={{ width: '80px', height: '80px' }} />
+                <div>
+                  <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-2">
+                    Welcome to AI Assistant
+                  </h2>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">
+                    Ask questions, check agenda templates, summarize points, or manage your company's tasks.
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2.5 justify-center w-full mt-2">
                   {suggestions.map((s, i) => (
                     <button
                       key={i}
-                      className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-6 py-3 text-table-title shadow-sm hover:bg-primary-50 dark:hover:bg-primary-900 transition text-base font-medium"
-                      onClick={() => setInput(s)}
+                      className="bg-gray-50 dark:bg-gray-800 hover:bg-primary-50 dark:hover:bg-primary-950/20 border border-gray-200 dark:border-gray-700 rounded-xl px-5 py-2.5 text-sm text-gray-700 dark:text-gray-300 shadow-sm transition font-medium"
+                      onClick={() => handleSuggestionClick(s)}
                     >
                       {s}
                     </button>
                   ))}
                 </div>
-              </>
-            )}
-            {/* Chat message list, only show after chat starts */}
-            {hasStarted && messages.length > 0 && (
-              <div className="w-full max-w-3xl flex flex-col gap-6">
-                {/* Show all chat bubbles in order */}
+              </div>
+            ) : (
+              <div className="w-full max-w-3xl mx-auto flex flex-col gap-6">
                 {messages.map((msg, idx) => (
                   <React.Fragment key={idx}>
                     {msg.sender === "user" ? (
@@ -343,7 +679,7 @@ const AssistantPage = () => {
                         <img
                           src={USER_AVATAR}
                           alt="User"
-                          className="w-10 h-10 rounded-full object-cover border border-gray-200"
+                          className="w-10 h-10 rounded-full object-cover border border-gray-200 shrink-0"
                         />
                         <div className="flex flex-col items-start w-full max-w-[70%]">
                           {editingIdx === idx ? (
@@ -387,109 +723,29 @@ const AssistantPage = () => {
                                           onClick={() => setOpenImageUrl(file.url)}
                                         />
                                       ) : (
-                                        <div key={fileIdx} className="rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow flex items-center w-[492px] h-[68px] px-5 py-4 gap-2.5">
-                                          {/* Left icon */}
+                                        <div key={fileIdx} className="rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow flex items-center w-full sm:w-[492px] h-[68px] px-5 py-4 gap-2.5">
                                           {isDocument(file.type, file.name) ? (
-                                            <span className="inline-flex items-center justify-center w-8 h-8 bg-primary-50 rounded-lg">
+                                            <span className="inline-flex items-center justify-center w-8 h-8 bg-primary-50 rounded-lg shrink-0">
                                               <img src="/images/AiAssistant/document-text.svg" alt="Document" className="w-6 h-6" />
                                             </span>
                                           ) : (
-                                            <span className="inline-flex items-center justify-center w-8 h-8 bg-primary-50 rounded-lg">
+                                            <span className="inline-flex items-center justify-center w-8 h-8 bg-primary-50 rounded-lg shrink-0">
                                               <img src="/images/AiAssistant/file.svg" alt="File" className="w-6 h-6" />
                                             </span>
                                           )}
-                                          {/* File name center */}
                                           <div className="flex-1 min-w-0">
                                             <div className="font-semibold text-lg text-gray-900 dark:text-gray-100 truncate">{file.name}</div>
                                           </div>
-                                          {/* Download icon right */}
-                                          <a href={file.url} download={file.name} className="flex items-center justify-center text-primary-500 hover:text-primary-700" title="Download">
+                                          <a href={file.url} download={file.name} className="flex items-center justify-center text-primary-500 hover:text-primary-700 shrink-0" title="Download">
                                             <img src="/images/AiAssistant/lucide_download.svg" alt="Download" className="w-6 h-6" style={{ width: 24, height: 24 }} />
                                           </a>
                                         </div>
                                       )
                                     ))}
-                                  </div>
-                                )}
-
-                                {msg.files && msg.files.length > 0 && (
-                                  <div className="mt-4 flex flex-col gap-2">
-                                    {msg.files.map((file, fileIdx) => (
-                                      file.type.startsWith('image') ? (
-                                        <img
-                                          key={fileIdx}
-                                          src={file.url}
-                                          alt={file.name}
-                                          className="max-w-full rounded-xl shadow border border-gray-100 cursor-pointer"
-                                          style={{ maxHeight: '400px' }}
-                                          onClick={() => setOpenImageUrl(file.url)}
-                                        />
-                                      ) : (
-                                        <div key={fileIdx} className="rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow flex items-center w-[492px] h-[68px] px-5 py-4 gap-2.5">
-                                          {/* Left icon */}
-                                          {isDocument(file.type, file.name) ? (
-                                            <span className="inline-flex items-center justify-center w-8 h-8 bg-primary-50 rounded-lg">
-                                              <img src="/images/AiAssistant/document-text.svg" alt="Document" className="w-6 h-6" />
-                                            </span>
-                                          ) : (
-                                            <span className="inline-flex items-center justify-center w-8 h-8 bg-primary-50 rounded-lg">
-                                              <img src="/images/AiAssistant/file.svg" alt="File" className="w-6 h-6" />
-                                            </span>
-                                          )}
-                                          {/* File name center */}
-                                          <div className="flex-1 min-w-0">
-                                            <div className="font-semibold text-lg text-cell-primary truncate">{file.name}</div>
-                                          </div>
-                                          {/* Download icon right */}
-                                          <a href={file.url} download={file.name} className="flex items-center justify-center text-primary-500 hover:text-primary-700" title="Download">
-                                            <img src="/images/AiAssistant/lucide_download.svg" alt="Download" className="w-6 h-6" style={{ width: 24, height: 24 }} />
-                                          </a>
-                                        </div>
-                                      )
-                                    ))}
-                                  </div>
-                                )}
-
-                                {msg.links && Array.isArray(msg.links) && msg.links.length > 0 && (
-                                  <div className="flex flex-row gap-3 mt-4">
-                                    {msg.links.map((link, i) => (
-                                      <a
-                                        key={i}
-                                        href={link.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary-500 text-white font-semibold shadow hover:bg-primary-600 transition text-base"
-                                      >
-                                        {/* Optionally add an icon here */}
-                                        {link.label}
-                                      </a>
-                                    ))}
-                                  </div>
-                                )}
-                                {msg.table && (
-                                  <div className="mt-4 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow overflow-x-auto">
-                                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                      <thead className="bg-gray-50 dark:bg-gray-800">
-                                        <tr>
-                                          {msg.table.headers.map((header, i) => (
-                                            <th key={i} className="px-6 py-3 text-left text-xs font-bold text-cell-primary uppercase tracking-wider">{header}</th>
-                                          ))}
-                                        </tr>
-                                      </thead>
-                                      <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-                                        {msg.table.rows.map((row, i) => (
-                                          <tr key={i}>
-                                            {row.map((cell, j) => (
-                                              <td key={j} className="px-6 py-4 whitespace-nowrap text-sm text-cell-primary">{cell}</td>
-                                            ))}
-                                          </tr>
-                                        ))}
-                                      </tbody>
-                                    </table>
                                   </div>
                                 )}
                               </div>
-                              {(!msg.file && !msg.files) && (
+                              {(!msg.audio && !msg.files) && (
                                 <div className="flex gap-2 mt-1">
                                   <button onClick={() => handleEdit(idx, msg.text)} title="Edit" className="text-gray-400 hover:text-primary-500"><img src="/images/AiAssistant/edit.svg" alt="Edit" className="w-5 h-5" /></button>
                                   <button onClick={() => handleCopy(msg.text)} title="Copy" className="text-gray-400 hover:text-primary-500"><img src="/images/AiAssistant/copy.svg" alt="Copy" className="w-5 h-5" /></button>
@@ -501,7 +757,7 @@ const AssistantPage = () => {
                       </div>
                     ) : (
                       <div className="flex justify-start items-start gap-3">
-                        <span className="inline-block w-12 h-12 flex items-center justify-center">
+                        <span className="inline-block w-12 h-12 flex items-center justify-center shrink-0">
                           <svg width="48" height="48" viewBox="0 0 61 61" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <g filter="url(#filter0_di_33_14814)">
                               <rect x="6" y="2" width="49" height="49" rx="24.5" fill="#375DFB" />
@@ -552,7 +808,7 @@ const AssistantPage = () => {
                               )}
                               {msg.thought && <hr className="my-2 border-gray-200" />}
                               <textarea
-                                className="text-base text-gray-900 w-full font-sans font-semibold leading-relaxed box-border text-left outline-none border-none mb-2 resize-none"
+                                className="text-base text-gray-900 w-full font-sans font-semibold leading-relaxed box-border text-left outline-none border-none mb-2 resize-none bg-transparent"
                                 style={{
                                   wordBreak: 'break-word',
                                   width: editDims[idx]?.width ? editDims[idx].width + 'px' : '100%',
@@ -614,6 +870,56 @@ const AssistantPage = () => {
                                   </div>
                                 )}
                               </div>
+                              {msg.pendingAction && (
+                                <div className="mt-4 w-full rounded-xl border border-amber-200 bg-amber-50 dark:bg-amber-900/20 dark:border-amber-700 p-4">
+                                  <div className="flex items-start gap-3">
+                                    <AlertTriangle className="text-amber-600 mt-0.5 shrink-0" size={20} />
+                                    <div className="flex-1">
+                                      <div className="text-sm font-semibold text-amber-900 dark:text-amber-200 mb-1">
+                                        Confirm action: {msg.pendingAction.tool_name}
+                                      </div>
+                                      <div className="text-sm text-amber-800 dark:text-amber-100 mb-3 whitespace-pre-wrap">
+                                        {msg.pendingAction.summary}
+                                      </div>
+                                      {msg.pendingAction.status === "pending" && (
+                                        <div className="flex gap-2">
+                                          <button
+                                            disabled={msg.pendingActionLoading}
+                                            onClick={() => handleConfirmPending(idx, msg.pendingAction._id)}
+                                            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white text-sm font-medium"
+                                          >
+                                            <Check size={16} />
+                                            Confirm
+                                          </button>
+                                          <button
+                                            disabled={msg.pendingActionLoading}
+                                            onClick={() => handleCancelPending(idx, msg.pendingAction._id)}
+                                            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 text-gray-700 dark:text-gray-200 text-sm font-medium"
+                                          >
+                                            <X size={16} />
+                                            Cancel
+                                          </button>
+                                        </div>
+                                      )}
+                                      {msg.pendingAction.status === "confirmed" && (
+                                        <div className="text-xs text-emerald-700 dark:text-emerald-300 font-medium">
+                                          Action confirmed and executed.
+                                        </div>
+                                      )}
+                                      {msg.pendingAction.status === "cancelled" && (
+                                        <div className="text-xs text-gray-500 font-medium">
+                                          Action cancelled.
+                                        </div>
+                                      )}
+                                      {msg.pendingAction.status === "failed" && (
+                                        <div className="text-xs text-red-600 font-medium">
+                                          Action failed during execution.
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
                               <div className="flex gap-2 mt-1">
                                 <button onClick={() => handleEdit(idx, msg.text)} title="Edit" className="text-gray-400 hover:text-primary-500"><img src="/images/AiAssistant/edit.svg" alt="Edit" className="w-5 h-5" /></button>
                                 <button onClick={() => handleCopy(msg.text)} title="Copy" className="text-gray-400 hover:text-primary-500"><img src="/images/AiAssistant/copy.svg" alt="Copy" className="w-5 h-5" /></button>
@@ -623,7 +929,6 @@ const AssistantPage = () => {
                         </div>
                       </div>
                     )}
-                    {/* Add line between AI messages */}
                     {msg.sender === "ai" && idx < messages.length - 1 && messages[idx + 1]?.sender === "ai" && (
                       <hr className="my-4 border-gray-200 dark:border-gray-700" />
                     )}
@@ -631,12 +936,12 @@ const AssistantPage = () => {
                 ))}
               </div>
             )}
+
             {/* Thinking and answer bubbles */}
-            {hasStarted && (loading || thinkingBubbles.length > 0) && (
-              <div className="w-full max-w-3xl flex flex-col gap-6 mb-4">
-                {/* AI thinking bubble with modern animation */}
+            {hasStarted && (loading || thinking) && (
+              <div className="w-full max-w-3xl mx-auto flex flex-col gap-6 mb-4">
                 <div className="flex justify-start items-start gap-3">
-                  <span className="inline-block w-12 h-12 flex items-center justify-center">
+                  <span className="inline-block w-12 h-12 flex items-center justify-center shrink-0">
                     <svg width="48" height="48" viewBox="0 0 61 61" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <g filter="url(#filter0_di_33_14814)">
                         <rect x="6" y="2" width="49" height="49" rx="24.5" fill="#375DFB" />
@@ -677,7 +982,7 @@ const AssistantPage = () => {
                       </defs>
                     </svg>
                   </span>
-                  <div className="rounded-xl px-6 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 shadow-lg">
+                  <div className="rounded-xl px-6 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 shadow-sm shrink-0">
                     <div className="flex items-center gap-3">
                       <div className="flex gap-1">
                         <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
@@ -686,15 +991,13 @@ const AssistantPage = () => {
                       </div>
                       <span className="text-blue-700 font-medium">Thinking...</span>
                     </div>
-                    <div className="mt-2 flex items-center gap-2 text-xs text-blue-600">
-                      <div className="w-1 h-1 bg-blue-400 rounded-full animate-pulse"></div>
-                      <span>Processing your request</span>
-                    </div>
                   </div>
                 </div>
               </div>
             )}
           </div>
+
+          {/* Message Input container */}
           <ChatInput
             input={input}
             setInput={setInput}
@@ -709,9 +1012,12 @@ const AssistantPage = () => {
             onRecordToggle={handleRecordToggle}
             stagedFiles={stagedFiles}
             onRemoveStagedFile={onRemoveStagedFile}
+            isGated={isGated}
+            onUpgradeClick={() => router.push("/ai/pricing")}
           />
         </div>
       </div>
+
       {/* Image Modal */}
       {openImageUrl && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 dark:bg-black/60 backdrop-blur-sm" onClick={() => setOpenImageUrl(null)}>

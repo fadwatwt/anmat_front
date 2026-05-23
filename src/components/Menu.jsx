@@ -68,7 +68,7 @@ const Menu = React.memo(({ isSlidebarOpen, toggleSlidebarOpen }) => {
                         <MenuItem path={"/dashboard/social-media"} icon={<Share />} title={"Social Media"} />
                         <MenuItem path={"/dashboard/time-line"} icon={<Edit />} title={"Timeline"} />
                         <MenuItem path={"/dashboard/setting"} icon={<Setting />} title={"Settings"} />
-                        <MenuItem path={"/ai-assistant"} icon={<Cpu />} title={"AI Assistant"} />
+                        <MenuItem path={"/ai"} icon={<Cpu />} title={"AI Assistant"} />
                     </div>
                 </div>
                 {/*<BriefTimeLine tweet={tweet} myAccount={myAccount}/>*/}

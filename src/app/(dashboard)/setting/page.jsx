@@ -9,10 +9,14 @@ import TasksTab from "./Tabs/TasksTab/Tasks.tab.jsx";
 import ProfileSecurityTab from "./Tabs/Profile&SecurityTab/ProfileSecurity.tab.jsx";
 import NotificationsTab from "./Tabs/NotificationsTab/NotificationsTab.jsx";
 import AddPermissionTab from "./Tabs/AddPermissionTab/AddPermissionTab.jsx";
+import AiSettingsTab from "./Tabs/AiSettings.tab.jsx";
 import { RiSettings3Line } from "@remixicon/react";
+import { useSelector } from "react-redux";
 
 function SettingPage() {
   const { t } = useTranslation();
+  const user = useSelector((state) => state.auth.user);
+
   const tabsData = [
     {
       title: "General Settings",
@@ -43,6 +47,14 @@ function SettingPage() {
       content: <AddPermissionTab />,
     },
   ];
+
+  if (user?.type === "Admin") {
+    tabsData.push({
+      title: "AI Assistant",
+      content: <AiSettingsTab />,
+    });
+  }
+
   return (
     <>
       <div

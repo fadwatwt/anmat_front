@@ -146,7 +146,19 @@ export const dashboardSideMenuItems = [
         title: 'Plans',
         path: '/plans',
         icon: <PercentageCircle />,
-        permission: 'admin.subscription_plans.list'
+        permission: 'admin.subscription_plans.list',
+        children: [
+            {
+                title: 'Subscription Plans',
+                path: '/plans',
+                permission: 'admin.subscription_plans.list',
+            },
+            {
+                title: 'AI Token Plans',
+                path: '/plans/ai-plans',
+                permission: 'admin.subscription_plans.list',
+            },
+        ]
     },
     {
         allowed_to: ['Admin'],
@@ -221,6 +233,12 @@ export const dashboardSideMenuItems = [
         path: '/social-media',
         icon: <Share />,
         permission_any_of: ['social_media_accounts.list'],
+    },
+    {
+        allowed_to: ['Admin', 'Subscriber', 'Employee'],
+        title: 'AI Assistant',
+        path: '/ai',
+        icon: <Cpu />
     },
     {
         allowed_to: ['Admin', 'Subscriber', 'Employee'],
