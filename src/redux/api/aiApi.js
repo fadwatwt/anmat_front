@@ -34,6 +34,14 @@ export const aiApi = apiSlice.injectEndpoints({
             }),
             transformResponse: (response) => response.data || response,
         }),
+        confirmTokenCheckout: builder.mutation({
+            query: ({ session_id }) => ({
+                url: "api/ai/tokens/confirm",
+                method: "POST",
+                body: { session_id },
+            }),
+            transformResponse: (response) => response.data || response,
+        }),
         listConversations: builder.query({
             query: () => ({
                 url: "api/ai/conversations",
@@ -68,7 +76,7 @@ export const aiApi = apiSlice.injectEndpoints({
         }),
         confirmPendingAction: builder.mutation({
             query: ({ pending_action_id }) => ({
-                url: "api/ai/confirm",
+                url: "api/ai/pending-actions/confirm",
                 method: "POST",
                 body: { pending_action_id },
             }),
@@ -77,7 +85,7 @@ export const aiApi = apiSlice.injectEndpoints({
         }),
         cancelPendingAction: builder.mutation({
             query: ({ pending_action_id }) => ({
-                url: "api/ai/cancel",
+                url: "api/ai/pending-actions/cancel",
                 method: "POST",
                 body: { pending_action_id },
             }),
@@ -136,6 +144,7 @@ export const {
     useGetTokenHistoryQuery,
     useGetTokenPackagesQuery,
     useCreateTokenCheckoutMutation,
+    useConfirmTokenCheckoutMutation,
     useListConversationsQuery,
     useGetConversationMessagesQuery,
     useSendMessageMutation,

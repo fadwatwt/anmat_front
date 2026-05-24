@@ -23,8 +23,12 @@ function HRPage() {
 
   const canListEmployees = usePermission("employee_details.list");
   const canListDepartments = usePermission("departments.list");
-  const canViewAttendances = usePermission("attendances.track_all") || usePermission("attendances.track_department");
-  const canViewFinancials = usePermission("salary_transactions.track_all") || usePermission("salary_transactions.track_department");
+  const canTrackAllAttendances = usePermission("attendances.track_all");
+  const canTrackDeptAttendances = usePermission("attendances.track_department");
+  const canViewAttendances = canTrackAllAttendances || canTrackDeptAttendances;
+  const canTrackAllFinancials = usePermission("salary_transactions.track_all");
+  const canTrackDeptFinancials = usePermission("salary_transactions.track_department");
+  const canViewFinancials = canTrackAllFinancials || canTrackDeptFinancials;
 
   const tabsData = [
     ...(canListEmployees ? [{

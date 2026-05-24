@@ -13,7 +13,8 @@ import InfoCard from "@/app/(dashboard)/_components/InfoCard.jsx";
 import { useState, useMemo, use } from "react";
 import { filterAndSortTasks } from "@/functions/functionsForTasks.js";
 import { useRouter } from "next/navigation";
-import { filterOptions, comments, members as defaultMembers, attachments, activityLogs } from "@/functions/FactoryData.jsx";
+import { filterOptions } from "@/functions/FactoryData.jsx";
+import { useGetTaskLogsQuery } from "@/redux/activity-logs/activityLogsApi";
 import { useGetSubscriberTaskDetailsQuery, useAddSubscriberTaskCommentMutation, useDeleteSubscriberTaskCommentMutation, useEditSubscriberTaskCommentMutation, useEvaluateSubscriberTaskStageMutation, useEvaluateSubscriberTaskMutation, useUploadSubscriberTaskAttachmentMutation, useDeleteSubscriberTaskAttachmentMutation } from "@/redux/tasks/subscriberTasksApi";
 import { useGetEmployeeTaskDetailsQuery, useAddEmployeeTaskCommentMutation, useDeleteEmployeeTaskCommentMutation, useEditEmployeeTaskCommentMutation, useUploadEmployeeTaskAttachmentMutation, useDeleteEmployeeTaskAttachmentMutation } from "@/redux/tasks/employeeTasksApi";
 import useAuthStore from '@/store/authStore.js';
@@ -39,6 +40,12 @@ function TaskDetailsPage({ params }) {
     const { data: task, isLoading, isError } = useGetDetails(taskId, {
         skip: !taskId
     });
+
+    const { data: taskLogsData, isLoading: isLogsLoading } = useGetTaskLogsQuery(
+        { taskId, limit: 10 },
+        { skip: !taskId }
+    );
+    const taskActivityLogs = taskLogsData?.data || [];
 
     const [addSubscriberComment, { isLoading: isSubAdding }] = useAddSubscriberTaskCommentMutation();
     const [addEmployeeComment, { isLoading: isEmpAdding }] = useAddEmployeeTaskCommentMutation();
@@ -301,7 +308,12 @@ function TaskDetailsPage({ params }) {
                             onDelete={canDeleteAttachments ? handleDeleteAttachment : null}
                             isUploading={isUploadingAttachment}
                         />}
-                        {true && <ActivityLogs activityLogs={activityLogs} className={"h-72"} />}
+                        <ActivityLogs
+                            activityLogs={taskActivityLogs}
+                            isRawLogs={true}
+                            isLoading={isLogsLoading}
+                            className={"h-72"}
+                        />
                         {false && <TimeLine />}
                     </div>
                 </div>

@@ -6,6 +6,7 @@ import PropTypes from "prop-types";
 import { Provider } from "react-redux";
 import { store } from "@/redux/store";
 import NotificationListener from '@/components/NotificationListener';
+import ProcessingOverlay from '@/components/Feedback/ProcessingOverlay';
 
 export const ThemeContext = createContext();
 export const ProcessingContext = createContext();
@@ -58,8 +59,6 @@ const ThemeProvider = ({ children }) => {
         </ThemeContext.Provider>
     );
 };
-
-import ProcessingOverlay from '@/components/Feedback/ProcessingOverlay';
 
 const ProcessingProvider = ({ children }) => {
     const [isProcessing, setIsProcessing] = useState(false);

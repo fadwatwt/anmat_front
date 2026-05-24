@@ -2,11 +2,16 @@
 
 import React, { useState, useRef, useLayoutEffect, useEffect } from "react";
 import Page from "@/components/Page.jsx";
-import { Mic, Paperclip, Copy, Edit2, Save, X, Check, AlertTriangle, Plus, Trash2, CreditCard, History, ChevronRight } from "lucide-react";
+import { Copy, Edit2, Save, X, Check, AlertTriangle, Plus, Trash2, CreditCard, History, PanelLeftClose } from "lucide-react";
 import "./hide-scrollbar.css";
 import ChatInput from "./ChatInput";
+import AiMessageContent from "./AiMessageContent";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
-import { useRouter } from "next/navigation";
+import UserChatAvatar from "@/components/UserChatAvatar";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useSelector } from "react-redux";
+import { selectUser } from "@/redux/auth/authSlice";
+import { useTranslation } from "react-i18next";
 import {
   useGetTokensBalanceQuery,
   useListConversationsQuery,
@@ -16,6 +21,7 @@ import {
   useCancelPendingActionMutation,
   useRenameConversationMutation,
   useDeleteConversationMutation,
+  useConfirmTokenCheckoutMutation,
 } from "@/redux/api/aiApi";
 
 const suggestions = [
@@ -23,8 +29,6 @@ const suggestions = [
   "What are my urgent tasks?",
   "What tasks are created & closed by me ?"
 ];
-
-const USER_AVATAR = "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500";
 
 // Helper to check if a file is a document
 const isDocument = (type, name) => {
@@ -42,7 +46,11 @@ const isDocument = (type, name) => {
 };
 
 const AssistantPage = () => {
+  const { t } = useTranslation();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const user = useSelector(selectUser);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
   // RTK Query hooks
   const { data: balanceData, isLoading: balanceLoading } = useGetTokensBalanceQuery();
@@ -77,6 +85,7 @@ const AssistantPage = () => {
   const [stagedFiles, setStagedFiles] = useState([]); // New state for staged files
   const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
   const [conversationId, setConversationId] = useState(null);
+  const typingTimeoutsRef = useRef([]);
 
   // Sidebar editing states
   const [editingConvId, setEditingConvId] = useState(null);
@@ -90,21 +99,27 @@ const AssistantPage = () => {
 
   useEffect(() => {
     if (conversationId && fetchedMessagesData) {
-      const mapped = fetchedMessagesData.messages.map((m) => {
-        if (m.role === "user") {
-          return {
-            sender: "user",
-            text: m.content || "",
-            files: (m.attachment_urls || []).map((url) => ({
-              name: url.split("/").pop() || "Attached File",
-              type: url.match(/\.(jpeg|jpg|gif|png)$/i) ? "image/png" : "application/octet-stream",
-              url,
-            })),
-          };
-        } else {
-          return buildAiMessageFromResponse(m);
-        }
-      });
+      const mapped = fetchedMessagesData.messages
+        .filter((m) => {
+          // Skip empty assistant messages that only carried tool calls
+          if (m.role === "assistant" && !m.content && !m.thought && !m.ui_payload) return false;
+          return true;
+        })
+        .map((m) => {
+          if (m.role === "user") {
+            return {
+              sender: "user",
+              text: m.content || "",
+              files: (m.attachment_urls || []).map((url) => ({
+                name: url.split("/").pop() || "Attached File",
+                type: url.match(/\.(jpeg|jpg|gif|png)$/i) ? "image/png" : "application/octet-stream",
+                url,
+              })),
+            };
+          } else {
+            return buildAiMessageFromResponse(m);
+          }
+        });
       setMessages(mapped);
       setHasStarted(true);
     }
@@ -112,6 +127,11 @@ const AssistantPage = () => {
 
   const onRemoveStagedFile = (indexToRemove) => {
     setStagedFiles(prev => prev.filter((_, index) => index !== indexToRemove));
+  };
+
+  const clearTypingAnimation = () => {
+    typingTimeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId));
+    typingTimeoutsRef.current = [];
   };
 
   useLayoutEffect(() => {
@@ -220,7 +240,7 @@ const AssistantPage = () => {
       }
 
       const aiMsg = buildAiMessageFromResponse(data?.assistant_message);
-      setMessages((prev) => [...prev, aiMsg]);
+      await animateAssistantMessage(aiMsg);
     } catch (err) {
       const message =
         err?.data?.message ||
@@ -261,6 +281,48 @@ const AssistantPage = () => {
     return base;
   };
 
+  const animateAssistantMessage = (finalMessage) =>
+    new Promise((resolve) => {
+      clearTypingAnimation();
+
+      let placeholderIndex = -1;
+      setMessages((prev) => {
+        placeholderIndex = prev.length;
+        return [...prev, { sender: "ai", text: "", isStreaming: true }];
+      });
+
+      const fullText = finalMessage?.text || "";
+      if (!fullText) {
+        updateMessageAt(placeholderIndex, () => ({ ...finalMessage, isStreaming: false }));
+        resolve();
+        return;
+      }
+
+      let cursor = 0;
+      const chunkSize = Math.min(8, Math.max(2, Math.ceil(fullText.length / 40)));
+
+      const typeNextChunk = () => {
+        cursor = Math.min(fullText.length, cursor + chunkSize);
+
+        updateMessageAt(placeholderIndex, () => ({
+          ...finalMessage,
+          text: fullText.slice(0, cursor),
+          isStreaming: cursor < fullText.length,
+        }));
+
+        if (cursor >= fullText.length) {
+          resolve();
+          return;
+        }
+
+        const timeoutId = setTimeout(typeNextChunk, 22);
+        typingTimeoutsRef.current.push(timeoutId);
+      };
+
+      const initialTimeoutId = setTimeout(typeNextChunk, 180);
+      typingTimeoutsRef.current.push(initialTimeoutId);
+    });
+
   const updateMessageAt = (idx, updater) => {
     setMessages((prev) =>
       prev.map((m, i) => (i === idx ? { ...m, ...updater(m) } : m))
@@ -278,7 +340,7 @@ const AssistantPage = () => {
         pendingAction: { ...m.pendingAction, status: "confirmed" },
       }));
       const followUp = buildAiMessageFromResponse(data?.assistant_message);
-      setMessages((prev) => [...prev, followUp]);
+      await animateAssistantMessage(followUp);
     } catch (err) {
       const message =
         err?.data?.message || err?.message || "Failed to execute the action.";
@@ -362,17 +424,21 @@ const AssistantPage = () => {
     if (!isRecording) setAudioChunks([]);
   }, [isRecording]);
 
+  useEffect(() => () => clearTypingAnimation(), []);
+
   // Sidebar actions
   const handleNewChat = () => {
     setConversationId(null);
     setMessages([]);
     setHasStarted(false);
     setInput("");
+    setIsHistoryOpen(false);
     if (inputRef.current) inputRef.current.focus();
   };
 
   const handleSelectConversation = (id) => {
     setConversationId(id);
+    setIsHistoryOpen(false);
   };
 
   const handleStartRename = (e, conv) => {
@@ -461,16 +527,63 @@ const AssistantPage = () => {
   const isGated = balanceData
     ? !hasUnlimitedAiAccess && freeTokensRemaining <= 0 && paidTokensRemaining <= 0
     : false;
+  const hasStreamingMessage = messages.some((msg) => msg.sender === "ai" && msg.isStreaming);
+
+  const [confirmTokenCheckout] = useConfirmTokenCheckoutMutation();
+
+  // Handle Stripe checkout callback
+  useEffect(() => {
+    const checkout = searchParams?.get("checkout");
+    const sessionId = searchParams?.get("session_id");
+    if (checkout === "success" && sessionId) {
+      confirmTokenCheckout({ session_id: sessionId })
+        .unwrap()
+        .then((res) => {
+          setApiResponse({ isOpen: true, status: "success", message: res?.message || "Tokens added to your account!" });
+        })
+        .catch((err) => {
+          setApiResponse({ isOpen: true, status: "error", message: err?.data?.message || "Failed to confirm payment. Tokens will be added shortly." });
+        });
+    } else if (checkout === "cancelled") {
+      setApiResponse({ isOpen: true, status: "info", message: "Payment was cancelled. You can try again anytime." });
+    }
+  }, [searchParams, confirmTokenCheckout]);
 
   return (
     <Page isTitle={false}>
-      <div className="flex h-[calc(100vh-140px)] min-h-[550px] w-full bg-white dark:bg-gray-950 overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm">
-        
-        {/* Left Sidebar: Chat History & Token usage */}
-        <div className="w-80 flex-shrink-0 border-r border-gray-200 dark:border-gray-800 flex flex-col bg-gray-50/50 dark:bg-gray-900/30">
+      <div className="relative flex h-[calc(100vh-140px)] min-h-[550px] w-full bg-white dark:bg-gray-950 overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm">
+
+        {/* Backdrop when history drawer is open (mobile) */}
+        {isHistoryOpen && (
+          <button
+            type="button"
+            aria-label="Close chat history"
+            className="absolute inset-0 z-20 bg-black/30 md:bg-black/10 md:pointer-events-none"
+            onClick={() => setIsHistoryOpen(false)}
+          />
+        )}
+
+        {/* Left Sidebar: Chat History & Token usage (hidden until toggled) */}
+        <aside
+          className={`absolute md:absolute inset-y-0 left-0 z-30 w-80 max-w-[85vw] flex-shrink-0 border-r border-gray-200 dark:border-gray-800 flex flex-col bg-gray-50/95 dark:bg-gray-900/95 backdrop-blur-sm shadow-xl transition-transform duration-300 ease-out ${
+            isHistoryOpen ? "translate-x-0" : "-translate-x-full pointer-events-none"
+          }`}
+        >
           
-          {/* New Chat CTA */}
-          <div className="p-4 border-b border-gray-200 dark:border-gray-800">
+          {/* Sidebar header */}
+          <div className="p-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between gap-2">
+            <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100">{t("Chat History")}</h2>
+            <button
+              type="button"
+              onClick={() => setIsHistoryOpen(false)}
+              className="p-2 rounded-lg text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
+              title="Close history"
+            >
+              <PanelLeftClose size={18} />
+            </button>
+          </div>
+
+          <div className="px-4 pb-3">
             <button
               onClick={handleNewChat}
               className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-semibold shadow-sm transition-all duration-200 hover:shadow-md hover:scale-[1.01]"
@@ -626,18 +739,57 @@ const AssistantPage = () => {
               </div>
             )}
           </div>
-        </div>
+        </aside>
 
         {/* Right Chat Panel */}
-        <div className="flex-1 flex flex-col h-full bg-white dark:bg-gray-900 relative">
+        <div className="flex-1 flex flex-col h-full bg-white dark:bg-gray-900 relative min-w-0">
           
           {/* Active Chat Header */}
-          <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
-            <h1 className="text-lg font-bold text-gray-800 dark:text-gray-100">
-              {conversationId
-                ? (conversations?.find((c) => c._id === conversationId)?.title || "Active Chat")
-                : "AI Assistant"}
-            </h1>
+          <div className="px-4 sm:px-6 py-3 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 min-w-0">
+              <button
+                type="button"
+                onClick={() => setIsHistoryOpen(true)}
+                className="p-2 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors shrink-0"
+                title={t("Chat history")}
+              >
+                <History size={20} />
+              </button>
+              <button
+                type="button"
+                onClick={handleNewChat}
+                className="p-2 rounded-xl text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-950/30 transition-colors shrink-0"
+                title={t("New chat")}
+              >
+                <Plus size={20} />
+              </button>
+              <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100 truncate">
+                {conversationId
+                  ? (conversations?.find((c) => c._id === conversationId)?.title || t("Active Chat"))
+                  : t("AI Assistant")}
+              </h1>
+            </div>
+
+            {!isHistoryOpen && !balanceLoading && (
+              <div className="flex items-center gap-2 shrink-0">
+                {hasUnlimitedAiAccess ? (
+                  <span className="hidden sm:inline text-xs font-semibold text-primary-600 dark:text-primary-400 px-2 py-1 rounded-lg bg-primary-50 dark:bg-primary-950/30">
+                    {t("Unlimited")}
+                  </span>
+                ) : (
+                  <span className="hidden sm:inline text-xs font-medium text-gray-500 dark:text-gray-400 px-2 py-1 rounded-lg bg-gray-100 dark:bg-gray-800">
+                    {freeTokensRemaining.toLocaleString()} {t("tokens")}
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={() => router.push("/ai/pricing")}
+                  className="text-xs font-semibold text-primary-600 hover:text-primary-700 dark:text-primary-400 px-2.5 py-1.5 rounded-lg border border-primary-200 dark:border-primary-800 hover:bg-primary-50 dark:hover:bg-primary-950/20 transition-colors"
+                >
+                  {t("Buy Tokens")}
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Messages Scroll Area */}
@@ -651,7 +803,7 @@ const AssistantPage = () => {
               <div className="flex flex-col items-center justify-center h-full max-w-xl mx-auto text-center gap-6">
                 <img src="/images/AiAssistant/file.svg" alt="Assistant Logo" style={{ width: '80px', height: '80px' }} />
                 <div>
-                  <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-2">
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                     Welcome to AI Assistant
                   </h2>
                   <p className="text-gray-500 dark:text-gray-400 text-sm">
@@ -676,11 +828,7 @@ const AssistantPage = () => {
                   <React.Fragment key={idx}>
                     {msg.sender === "user" ? (
                       <div className="flex justify-start items-start gap-3">
-                        <img
-                          src={USER_AVATAR}
-                          alt="User"
-                          className="w-10 h-10 rounded-full object-cover border border-gray-200 shrink-0"
-                        />
+                        <UserChatAvatar user={user} size="40px" fontSize="text-sm" />
                         <div className="flex flex-col items-start w-full max-w-[70%]">
                           {editingIdx === idx ? (
                             <div className="flex flex-col w-full">
@@ -705,7 +853,7 @@ const AssistantPage = () => {
                             </div>
                           ) : (
                             <>
-                              <div ref={el => userEditRefs.current[idx] = el} className="text-base text-cell-primary w-full font-sans font-semibold leading-relaxed box-border text-left" style={{ wordBreak: 'break-word' }}>
+                              <div ref={el => userEditRefs.current[idx] = el} className="text-base text-cell-primary w-full font-sans font-semibold leading-relaxed box-border text-left whitespace-pre-wrap" style={{ wordBreak: 'break-word' }} dir="auto">
                                 {msg.text}
                                 {msg.audio && (
                                   <audio controls src={msg.audio} className="mt-2" />
@@ -834,8 +982,21 @@ const AssistantPage = () => {
                                 </div>
                               )}
                               {msg.thought && <hr className="my-2 border-gray-200" />}
-                              <div ref={el => aiEditRefs.current[idx] = el} className="text-cell-primary text-[18px] w-full font-['Almarai'] font-[400] leading-[150%] tracking-[0%] text-left" style={{ wordBreak: 'break-word', gap: '12px' }}>
-                                {msg.text}
+                              <div ref={el => aiEditRefs.current[idx] = el} className="w-full text-left" style={{ wordBreak: 'break-word' }}>
+                                {msg.isStreaming && !msg.text ? (
+                                  <span className="inline-flex items-center gap-1.5 text-primary-500">
+                                    <span className="w-2 h-2 rounded-full bg-current animate-bounce [animation-delay:-0.2s]"></span>
+                                    <span className="w-2 h-2 rounded-full bg-current animate-bounce [animation-delay:-0.1s]"></span>
+                                    <span className="w-2 h-2 rounded-full bg-current animate-bounce"></span>
+                                  </span>
+                                ) : (
+                                  <>
+                                    <AiMessageContent text={msg.text} />
+                                    {msg.isStreaming && (
+                                      <span className="inline-block w-0.5 h-5 ml-1 align-middle bg-primary-500 animate-pulse"></span>
+                                    )}
+                                  </>
+                                )}
                                 {msg.audio && (
                                   <audio controls src={msg.audio} className="mt-2" />
                                 )}
@@ -878,8 +1039,8 @@ const AssistantPage = () => {
                                       <div className="text-sm font-semibold text-amber-900 dark:text-amber-200 mb-1">
                                         Confirm action: {msg.pendingAction.tool_name}
                                       </div>
-                                      <div className="text-sm text-amber-800 dark:text-amber-100 mb-3 whitespace-pre-wrap">
-                                        {msg.pendingAction.summary}
+                                      <div className="text-sm text-amber-800 dark:text-amber-100 mb-3">
+                                        <AiMessageContent text={msg.pendingAction.summary} />
                                       </div>
                                       {msg.pendingAction.status === "pending" && (
                                         <div className="flex gap-2">
@@ -920,10 +1081,12 @@ const AssistantPage = () => {
                                   </div>
                                 </div>
                               )}
-                              <div className="flex gap-2 mt-1">
-                                <button onClick={() => handleEdit(idx, msg.text)} title="Edit" className="text-gray-400 hover:text-primary-500"><img src="/images/AiAssistant/edit.svg" alt="Edit" className="w-5 h-5" /></button>
-                                <button onClick={() => handleCopy(msg.text)} title="Copy" className="text-gray-400 hover:text-primary-500"><img src="/images/AiAssistant/copy.svg" alt="Copy" className="w-5 h-5" /></button>
-                              </div>
+                              {!msg.isStreaming && (
+                                <div className="flex gap-2 mt-1">
+                                  <button onClick={() => handleEdit(idx, msg.text)} title="Edit" className="text-gray-400 hover:text-primary-500"><img src="/images/AiAssistant/edit.svg" alt="Edit" className="w-5 h-5" /></button>
+                                  <button onClick={() => handleCopy(msg.text)} title="Copy" className="text-gray-400 hover:text-primary-500"><img src="/images/AiAssistant/copy.svg" alt="Copy" className="w-5 h-5" /></button>
+                                </div>
+                              )}
                             </>
                           )}
                         </div>
@@ -938,7 +1101,7 @@ const AssistantPage = () => {
             )}
 
             {/* Thinking and answer bubbles */}
-            {hasStarted && (loading || thinking) && (
+            {hasStarted && (loading || thinking) && !hasStreamingMessage && (
               <div className="w-full max-w-3xl mx-auto flex flex-col gap-6 mb-4">
                 <div className="flex justify-start items-start gap-3">
                   <span className="inline-block w-12 h-12 flex items-center justify-center shrink-0">

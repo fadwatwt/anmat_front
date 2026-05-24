@@ -54,7 +54,8 @@ function EmployeeProfile() {
 
     const canCreateLeave = usePermission("leaves.create"); // Or check for list if it exists
     const canCreateRequest = usePermission("employee_requests.create");
-    const canViewSalary = usePermission("salary_transactions.track_all") || usePermission("salary_transactions.track_department") || true; // Usually can always see own
+    // Employees can always view their own salary on the profile page
+    const canViewSalary = true;
 
     const tabsList = [
         { title: "Notifications" },

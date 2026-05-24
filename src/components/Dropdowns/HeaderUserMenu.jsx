@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { RiUser3Line, RiLogoutBoxLine } from "@remixicon/react";
-import Avatar from "./Avatar";
+import UserChatAvatar from "@/components/UserChatAvatar";
 import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
@@ -84,14 +84,8 @@ const HeaderUserMenu = () => {
                     : "bg-gray-100 dark:bg-gray-900"
                     }`}
             >
-                <div className={"p-1"}>
-                    <img
-                        src={
-                            user?.avatar || "/images/userProfile.dark.png"
-                        }
-                        className={"w-8 h-8 rounded-full"}
-                        alt={"image-profile"}
-                    />
+                <div className="p-1">
+                    <UserChatAvatar user={user} size="32px" fontSize="text-xs" />
                 </div>
                 <p className={"dark:text-gray-400 text-sm sm:block hidden"}>
                     {user?.name || "N/A"}

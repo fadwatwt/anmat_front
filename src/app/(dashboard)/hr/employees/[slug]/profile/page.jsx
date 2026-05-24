@@ -71,9 +71,15 @@ function SingleEmployeeProfile() {
     const [isUpdating, setIsUpdating] = useState(false);
     const [isEditRatingModalOpen, setIsEditRatingModalOpen] = useState(false);
 
-    const canViewLeaves = usePermission("leaves.track_all") || usePermission("leaves.track_department");
-    const canViewRequests = usePermission("employee_requests.track_all") || usePermission("employee_requests.track_department");
-    const canViewSalary = usePermission("salary_transactions.track_all") || usePermission("salary_transactions.track_department");
+    const canTrackAllLeaves = usePermission("leaves.track_all");
+    const canTrackDeptLeaves = usePermission("leaves.track_department");
+    const canViewLeaves = canTrackAllLeaves || canTrackDeptLeaves;
+    const canTrackAllRequests = usePermission("employee_requests.track_all");
+    const canTrackDeptRequests = usePermission("employee_requests.track_department");
+    const canViewRequests = canTrackAllRequests || canTrackDeptRequests;
+    const canTrackAllSalary = usePermission("salary_transactions.track_all");
+    const canTrackDeptSalary = usePermission("salary_transactions.track_department");
+    const canViewSalary = canTrackAllSalary || canTrackDeptSalary;
 
     const tabsList = [
         { title: "Notifications" },

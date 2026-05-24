@@ -7,10 +7,19 @@ import { translateTime } from "../functions/Days.js";
 
 
 export const mapBackendLogToFrontend = (log, t) => {
+    // Already formatted (e.g. legacy mock data with description, no action field)
+    if (log.description && !log.action) {
+        return {
+            type: log.type || "add",
+            title: log.title || t("Activity"),
+            description: log.description,
+            timeAgo: log.created_at || log.timeAgo,
+        };
+    }
+
     let type = "add";
     const action = (log.action || "").toLowerCase();
-    
-    // Formatting title: task.status_changed -> Task Status Changed
+
     const formatTitle = (str) => {
         if (!str) return "";
         return str.split('.').join(' ').split('_').join(' ')
@@ -31,10 +40,13 @@ export const mapBackendLogToFrontend = (log, t) => {
     if (action.includes("done") || action.includes("completed")) type = "check";
 
     const actor = log.meta?.actor_name || log.actor_type || t("System");
-    const target = log.meta?.name || log.meta?.title || log.target_type || log.module;
+    const targetName = log.meta?.title || log.meta?.name || "";
+    const target = targetName || (log.target_type && log.target_type !== "Task" ? log.target_type : "");
     const project = log.meta?.project_name ? ` ${t("in project")} ${log.meta.project_name}` : "";
 
-    if (action === "task.comment_added") {
+    if (action === "task.created") {
+        description = `${actor} ${t("created task")} "${log.meta?.title || t("Untitled")}"${project}.`;
+    } else if (action === "task.comment_added") {
         description = `${actor} ${t("added a comment to task")} "${target}"${project}.`;
     } else if (action === "project.comment_added") {
         description = `${actor} ${t("added a comment to project")} "${target}".`;
@@ -46,7 +58,8 @@ export const mapBackendLogToFrontend = (log, t) => {
     } else if (action === "task.attachment_uploaded") {
         description = `${actor} ${t("uploaded attachment")} "${log.meta?.name}" ${t("to task")} "${target}"${project}.`;
     } else if (type === "add") {
-        description = `${actor} ${t("created new")} ${t(target)}.`;
+        const label = targetName || (target ? t(target) : t("item"));
+        description = `${actor} ${t("created new")} ${label}.`;
     } else if (type === "update") {
         description = `${actor} ${t("updated")} ${t(target)}.`;
     } else if (type === "delete") {
@@ -150,7 +163,7 @@ function ActivityLogs({ activityLogs, className, isRawLogs = true, isLoading = f
                         
                         <div className="flex flex-col gap-0">
                             {logsToRender.map((activityLog, index) => (
-                                <div key={index} className="group flex gap-4 items-start relative z-10 pb-6 last:pb-0">
+                                <div key={activityLog.timeAgo + (activityLog.description || "") + index} className="group flex gap-4 items-start relative z-10 pb-6 last:pb-0">
                                     <div className="flex-shrink-0 bg-white">
                                         {getTypeActivityIcons(activityLog.type)}
                                     </div>
