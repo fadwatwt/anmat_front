@@ -116,7 +116,7 @@ function EditFinancialModal({ isOpen, onClose, financialId, employeeId }) {
             value={formik.values.salary}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            icon={<span className="text-gray-500">$</span>}
+            icon={<span className="text-gray-500 dark:text-gray-400">$</span>}
             placeholder="0"
             isRequired={true}
             error={formik.touched.salary && formik.errors.salary}
@@ -129,7 +129,7 @@ function EditFinancialModal({ isOpen, onClose, financialId, employeeId }) {
             value={formik.values.bonuses}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            icon={<span className="text-gray-500">$</span>}
+            icon={<span className="text-gray-500 dark:text-gray-400">$</span>}
             placeholder="0"
             error={formik.touched.bonuses && formik.errors.bonuses}
           />
@@ -141,7 +141,7 @@ function EditFinancialModal({ isOpen, onClose, financialId, employeeId }) {
             value={formik.values.deductions}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            icon={<span className="text-gray-500">$</span>}
+            icon={<span className="text-gray-500 dark:text-gray-400">$</span>}
             placeholder="0"
             error={formik.touched.deductions && formik.errors.deductions}
           />

@@ -202,20 +202,20 @@ const CheckoutForm = ({ amount, onFinish, clientSecret, userName, userEmail, use
         <div className="w-full max-w-md mx-auto">
             {!elementReady && (
                 <div className="flex flex-col items-center justify-center p-12 gap-4">
-                    <RiLoader4Line className="animate-spin text-primary-base" size={40} />
-                    <p className="text-gray-400 font-medium italic">Loading secure payment...</p>
+                    <RiLoader4Line className="animate-spin text-primary-base dark:text-primary-200" size={40} />
+                    <p className="text-gray-400 font-medium italic dark:text-gray-500">Loading secure payment...</p>
                 </div>
             )}
 
             <form
                 id="payment-form"
                 onSubmit={handleSubmit}
-                className={`p-6 bg-white rounded-2xl shadow-xl border border-gray-100 transition-opacity duration-300 ${elementReady ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden'}`}
+                className={`p-6 bg-white rounded-2xl shadow-xl border border-gray-100 transition-opacity duration-300 dark:bg-gray-800 dark:border-gray-700 ${elementReady ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden'}`}
             >
                 <div className="mb-6 text-center">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-2">Complete Payment</h2>
-                    <p className="text-gray-500">Securely pay using Stripe</p>
-                    <div className="mt-4 text-3xl font-extrabold text-primary-base">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-2 dark:text-gray-100">Complete Payment</h2>
+                    <p className="text-gray-500 dark:text-gray-400">Securely pay using Stripe</p>
+                    <div className="mt-4 text-3xl font-extrabold text-primary-base dark:text-primary-200">
                         ${amount}
                     </div>
                 </div>
@@ -229,7 +229,7 @@ const CheckoutForm = ({ amount, onFinish, clientSecret, userName, userEmail, use
                 <button
                     disabled={isLoading || !stripe || !elements}
                     id="submit"
-                    className={`mt-8 w-full py-4 px-6 rounded-xl font-bold text-white transition-all duration-300 flex items-center justify-center gap-2 ${isLoading ? "bg-gray-400 cursor-not-allowed" : "bg-primary-base hover:bg-primary-700 shadow-lg hover:shadow-primary-100"
+                    className={`mt-8 w-full py-4 px-6 rounded-xl font-bold text-white transition-all duration-300 flex items-center justify-center gap-2 ${isLoading ? "bg-gray-400 cursor-not-allowed dark:bg-gray-600" : "bg-primary-base hover:bg-primary-700 shadow-lg hover:shadow-primary-100 dark:bg-primary-200 dark:text-black"
                         }`}
                 >
                     {isLoading ? (
@@ -240,7 +240,7 @@ const CheckoutForm = ({ amount, onFinish, clientSecret, userName, userEmail, use
                 </button>
 
                 {message && (
-                    <div id="payment-message" className="mt-4 p-3 rounded-lg text-center text-sm font-medium bg-red-50 text-red-500 border border-red-100 animate-fade-in">
+                    <div id="payment-message" className="mt-4 p-3 rounded-lg text-center text-sm font-medium bg-red-50 text-red-500 border border-red-100 animate-fade-in dark:bg-red-900/30 dark:text-red-400 dark:border-red-800">
                         {message}
                     </div>
                 )}

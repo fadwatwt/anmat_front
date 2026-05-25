@@ -122,7 +122,7 @@ const VerifyEmail = () => {
                         <button
                             onClick={handleResend}
                             disabled={timeLeft > 0 || isLoading}
-                            className="bg-primary-500 text-white font-bold text-nowrap text-md px-12 py-3 rounded-xl cursor-pointer shadow-lg shadow-primary-500/10 active:scale-95
+                            className="bg-primary-500 dark:bg-primary-200 text-white dark:text-black font-bold text-nowrap text-md px-12 py-3 rounded-xl cursor-pointer shadow-lg shadow-primary-500/10 active:scale-95
                                         hover:bg-primary-600 text-center disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                         >
                             {isLoading ? "Sending..." : "Send New Email"}
@@ -131,7 +131,7 @@ const VerifyEmail = () => {
                              <span className="block text-cell-secondary text-xs uppercase tracking-widest font-bold">
                                 resend after
                             </span>
-                            <span className="text-primary-500 text-2xl font-black uppercase tabular-nums">
+                            <span className="text-primary-500 dark:text-primary-400 text-2xl font-black uppercase tabular-nums">
                                 {formatTimeSpaced(timeLeft)}
                             </span>
                         </div>

@@ -67,7 +67,7 @@ function StageRatingModal({ stage, task, onClose, onSubmit }) {
             className="lg:w-[500px] md:w-8/12 sm:w-10/12 w-11/12 p-6"
         >
             <div className="flex flex-col gap-6 py-2">
-                <div className="space-y-6 bg-gray-50/50 dark:bg-white/5 p-4 rounded-xl border border-status-border">
+                <div className="space-y-6 bg-gray-50/50 dark:bg-gray-900 p-4 rounded-xl border border-status-border">
                     <StarRatingInput
                         title={t("Time & Deadlines")}
                         value={ratings.time}
@@ -282,7 +282,7 @@ function TasksList({ tasks = [], isAssignedDate = false, isEmployeeView = false,
                                                                 <button
                                                                     key={opt.id}
                                                                     onClick={() => handleStatusChange(task._id, opt.id)}
-                                                                    className={`w-full text-left px-3 py-1.5 text-xs hover:bg-status-bg transition-colors ${(task.delivery || task.status) === opt.id ? 'text-primary-500 font-semibold' : 'text-cell-primary'
+                                                                    className={`w-full text-left px-3 py-1.5 text-xs hover:bg-status-bg transition-colors ${(task.delivery || task.status) === opt.id ? 'text-primary-500 dark:text-primary-400 font-semibold' : 'text-cell-primary'
                                                                         }`}
                                                                 >
                                                                     {t(opt.name)}
@@ -320,7 +320,7 @@ function TasksList({ tasks = [], isAssignedDate = false, isEmployeeView = false,
                                 {(canManageTeam && false) && (
                                     <button
                                         onClick={() => setTeamModalTaskId(task._id)}
-                                        className="flex items-center gap-1 text-xs font-medium text-primary-base border border-primary-base rounded-md px-2 py-0.5 hover:bg-primary-base hover:text-white transition-colors"
+                                        className="flex items-center gap-1 text-xs font-medium text-primary-base dark:text-primary-200 border border-primary-base rounded-md px-2 py-0.5 hover:bg-primary-base dark:hover:bg-primary-200 hover:text-white dark:hover:text-black transition-colors"
                                     >
                                         <RiGroupFill size={12} />
                                         <span>{t("Team")}</span>
@@ -328,7 +328,7 @@ function TasksList({ tasks = [], isAssignedDate = false, isEmployeeView = false,
                                 )}
                                 <button
                                     onClick={() => setExpandedTaskId(expandedTaskId === task._id ? null : task._id)}
-                                    className="flex items-center gap-1.5 text-xs font-medium text-primary-base hover:opacity-80 transition-opacity"
+                                    className="flex items-center gap-1.5 text-xs font-medium text-primary-base dark:text-primary-200 hover:opacity-80 transition-opacity"
                                 >
                                     <RiStackLine size={14} />
                                     <span>{task.stages?.length || 0} {t("Stages")}</span>
@@ -364,7 +364,7 @@ function TasksList({ tasks = [], isAssignedDate = false, isEmployeeView = false,
                                                 <div className="flex items-center gap-2">
                                                     <RiFlag2Line size={12} className={stage.status === 'completed' ? 'text-green-500' : 'text-soft-400'} />
                                                     <span className="text-xs text-cell-primary font-medium">{stage.name}</span>
-                                                    <span className={`text-[9px] px-1 rounded capitalize font-bold ${stage.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
+                                                    <span className={`text-[9px] px-1 rounded capitalize font-bold ${stage.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'
                                                         }`}>
                                                         {t(stage.status)}
                                                     </span>

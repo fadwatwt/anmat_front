@@ -108,30 +108,30 @@ function EditSalaryModal({ isOpen, onClose, onSubmit, data }) {
                         type="number"
                         value={formik.values.salary}
                         onChange={formik.handleChange}
-                        icon={<span className="text-gray-500">$</span>}
-                        placeholder="0"
-                        isRequired={true}
-                        error={formik.touched.salary && formik.errors.salary}
-                    />
+icon={<span className="text-gray-500 dark:text-gray-400">$</span>}
+                            placeholder="0"
+                            isRequired={true}
+                            error={formik.touched.salary && formik.errors.salary}
+                        />
 
-                    <InputWithIcon
-                        title="Bonus Amount"
-                        name="bonuses"
-                        type="number"
-                        value={formik.values.bonuses}
-                        onChange={formik.handleChange}
-                        icon={<span className="text-gray-500 w-3">$</span>}
-                        placeholder="0"
-                        error={formik.touched.bonuses && formik.errors.bonuses}
-                    />
+                        <InputWithIcon
+                            title="Bonus Amount"
+                            name="bonuses"
+                            type="number"
+                            value={formik.values.bonuses}
+                            onChange={formik.handleChange}
+                            icon={<span className="text-gray-500 dark:text-gray-400 w-3">$</span>}
+                            placeholder="0"
+                            error={formik.touched.bonuses && formik.errors.bonuses}
+                        />
 
-                    <InputWithIcon
-                        title="Discount Amount"
-                        name="deductions"
-                        type="number"
-                        value={formik.values.deductions}
-                        onChange={formik.handleChange}
-                        icon={<span className="text-gray-500">$</span>}
+                        <InputWithIcon
+                            title="Discount Amount"
+                            name="deductions"
+                            type="number"
+                            value={formik.values.deductions}
+                            onChange={formik.handleChange}
+                            icon={<span className="text-gray-500 dark:text-gray-400">$</span>}
                         placeholder="0"
                         error={formik.touched.deductions && formik.errors.deductions}
                     />

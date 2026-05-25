@@ -31,8 +31,8 @@ function ToDoList({list,isActions,isFilter,className}) {
                         )
                     }
                     <div className={"flex gap-1 items-center cursor-pointer"} onClick={handelAddToDoListModal}>
-                        <FiPlus className={"text-primary-base"} size={15} />
-                        <span className={"text-primary-base"}>{t("Add")}</span>
+                        <FiPlus className={"text-primary-base dark:text-primary-200"} size={15} />
+                        <span className={"text-primary-base dark:text-primary-200"}>{t("Add")}</span>
                     </div>
                 </div>
             </div>

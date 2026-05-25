@@ -13,7 +13,7 @@ function BtnAddOutline({title,onClick,icon = null}) {
             {
                 icon ?
                 icon && React.cloneElement(icon, {
-                    className:  "text-gray-500 w-10"
+                    className:  "text-gray-500 dark:text-gray-400 w-10"
                 })
                     :
                     <FiPlus className={"text-primary-base dark:text-primary-200"} size={13}/>

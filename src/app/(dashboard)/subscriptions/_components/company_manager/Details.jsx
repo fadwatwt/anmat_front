@@ -54,14 +54,14 @@ function Details({ onUpgradeClick }) {
                 <div className="flex items-start gap-2 w-full">
                     <div className="rounded-full p-2 bg-primary-100">
                         <div className="rounded-full p-3 bg-primary-200">
-                            <RiVipDiamondLine size={25} className="rounded-full text-primary-500 stroke-[2px] border-2 border-primary-500 p-1" />
+                            <RiVipDiamondLine size={25} className="rounded-full text-primary-500 dark:text-primary-400 stroke-[2px] border-2 border-primary-500 p-1" />
                         </div>
                     </div>
                     <div className="flex flex-col items-start justify-start gap-1">
                         <span className="!text-cell-secondary text-md">
                             {t("You're subscribed on")}
                         </span>
-                        <span className="!text-primary-base text-lg font-bold">
+                        <span className="!text-primary-base dark:!text-primary-200 text-lg font-bold">
                             {plan.name || t("Unknown Plan")}
                         </span>
                     </div>
@@ -69,7 +69,7 @@ function Details({ onUpgradeClick }) {
 
                 {/* info */}
                 <div className="flex items-start gap-8 justify-between w-full flex-wrap">
-                    <div className="flex flex-col items-start justify-start gap-0 min-w-[12rem]">
+                    <div className="flex flex-col items-start justify-start gap-0 min-w-0 sm:min-w-[12rem]">
                         <span className="!text-cell-secondary text-sm">
                             {t("Users")}
                         </span>
@@ -77,7 +77,7 @@ function Details({ onUpgradeClick }) {
                             {subscription.usage?.employees || 0} {t("of")} {userLimit} {t("Users")}
                         </span>
                     </div>
-                    <div className="flex flex-col items-start justify-start gap-0 min-w-[12rem]">
+                    <div className="flex flex-col items-start justify-start gap-0 min-w-0 sm:min-w-[12rem]">
                         <span className="!text-cell-secondary text-sm">
                             {t("Storage Limit")}
                         </span>
@@ -85,7 +85,7 @@ function Details({ onUpgradeClick }) {
                             {storageLabel}
                         </span>
                     </div>
-                    <div className="flex flex-col items-start justify-start gap-0 min-w-[12rem]">
+                    <div className="flex flex-col items-start justify-start gap-0 min-w-0 sm:min-w-[12rem]">
                         <span className="!text-cell-secondary text-sm">
                             {t("Subscription end date")}
                         </span>
@@ -93,7 +93,7 @@ function Details({ onUpgradeClick }) {
                             {subscription.expires_at ? format(new Date(subscription.expires_at), "MMMM dd, yyyy") : t("N/A")}
                         </span>
                     </div>
-                    <div className="flex flex-col items-start justify-start gap-0 min-w-[12rem]">
+                    <div className="flex flex-col items-start justify-start gap-0 min-w-0 sm:min-w-[12rem]">
                         <span className="!text-cell-secondary text-sm">
                             {t("Price estimate")}
                         </span>
@@ -130,8 +130,8 @@ function Details({ onUpgradeClick }) {
                 confirmBtnText="Yes, Stop"
                 description={
                     <p>
-                        Are you sure you want to <span className="font-bold text-black">cancel renewal</span> of the
-                        <span className="font-bold text-black"> {plan.name}</span> with <span className="font-bold text-black">${price}/mth</span>?
+                        Are you sure you want to <span className="font-bold text-black dark:text-gray-100">cancel renewal</span> of the
+                        <span className="font-bold text-black dark:text-gray-100"> {plan.name}</span> with <span className="font-bold text-black dark:text-gray-100">${price}/mth</span>?
                     </p>
                 }
                 onSubmit={() => {}}

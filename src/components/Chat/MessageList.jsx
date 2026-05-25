@@ -89,7 +89,7 @@ const MessageList = ({ messages, isLoading, onEdit, onDelete, onReact, onReply }
 
                   <div
                     className={`px-4 py-2 rounded-2xl text-sm shadow-sm border ${isMe
-                        ? "bg-primary-500 text-white rounded-tr-none border-transparent"
+                        ? "bg-primary-500 dark:bg-primary-200 dark:text-black text-white rounded-tr-none border-transparent"
                         : "rounded-tl-none text-cell-primary"
                       }`}
                     style={{
@@ -123,7 +123,7 @@ const MessageList = ({ messages, isLoading, onEdit, onDelete, onReact, onReply }
                             rel="noopener noreferrer"
                             className="flex items-center gap-3 p-3 hover:bg-weak-100 transition-colors no-underline"
                           >
-                            <div className="p-2 bg-primary-50 text-primary-500 rounded-lg">
+                            <div className="p-2 bg-primary-50 dark:bg-primary-950/20 text-primary-500 dark:text-primary-400 rounded-lg">
                               <Paperclip size={20} />
                             </div>
                             <div className="flex-1 min-w-0">
@@ -159,7 +159,7 @@ const MessageList = ({ messages, isLoading, onEdit, onDelete, onReact, onReply }
                     {format(new Date(message.created_at || Date.now()), "HH:mm")}
                     {isMe && (
                       message.read_by?.some((id) => id !== currentUserId)
-                        ? <CheckCheck size={11} className="text-primary-500" />
+                        ? <CheckCheck size={11} className="text-primary-500 dark:text-primary-400" />
                         : <Check size={11} className="text-sub-300" />
                     )}
                   </span>

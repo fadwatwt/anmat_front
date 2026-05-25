@@ -162,7 +162,7 @@ function ElementsSelect({
                         calculateDropdownPosition();
                     }}
                     ref={selectTriggerRef}
-                    className="flex items-center gap-2 min-h-[40px] bg-status-bg border border-status-border rounded-[10px] p-[10px] box-border text-xs cursor-pointer focus-within:ring-2 focus-within:ring-primary-500 transition-colors"
+                    className="flex items-center gap-2 min-h-[40px] bg-status-bg border border-status-border rounded-[10px] p-[10px] box-border text-xs cursor-pointer focus-within:ring-2 focus-within:ring-primary-500 dark:focus-within:border-primary-500 dark:focus-within:ring-primary-500 transition-colors"
                 >
                     <div className="flex-1 flex gap-1 overflow-x-auto whitespace-nowrap overflow-y-hidden custom-scrollbar">
                         {selectedOptions.length > 0 ? (
@@ -182,7 +182,7 @@ function ElementsSelect({
                                         {option.element}
                                         {isMultiple && isRemoveBtn && (
                                             <FaTimes
-                                                className="ml-1 cursor-pointer text-gray-500 hover:text-red-500"
+                                                className="ml-1 cursor-pointer text-gray-500 dark:text-gray-400 hover:text-red-500"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     toggleOptions(option);

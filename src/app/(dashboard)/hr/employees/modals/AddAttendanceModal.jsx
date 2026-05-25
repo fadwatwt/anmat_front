@@ -162,7 +162,7 @@ function AddAttendanceModal({ isOpen, onClose }) {
                             <p className="text-red-500 text-xs mt-[-10px]">{formik.errors.date}</p>
                         )}
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <TimeInput
                                 title={t("Start Time")}
                                 name="start_time"

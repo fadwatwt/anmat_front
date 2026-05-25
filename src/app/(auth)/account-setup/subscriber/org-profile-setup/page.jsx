@@ -124,7 +124,7 @@ const SetupCompanyProfile = () => {
             <div className="flex flex-col items-start justify-start gap-8 p-8 rounded-2xl shadow-xl bg-surface border border-status-border w-full max-w-xl">
                 {/* Title */}
                 <div className="flex flex-col items-center text-center justify-start gap-2 w-full">
-                    <span className="text-primary-500 font-bold uppercase tracking-wider text-xs">
+                    <span className="text-primary-500 dark:text-primary-400 font-bold uppercase tracking-wider text-xs">
                         {t("Organization Profile")}
                     </span>
                     <h1 className="text-3xl font-bold text-cell-primary">
@@ -226,7 +226,7 @@ const SetupCompanyProfile = () => {
                             disabled={isBusy}
                         />
                         {formik.values.logo && (
-                            <div className="mt-2 text-xs text-primary-500 font-medium">
+                            <div className="mt-2 text-xs text-primary-500 dark:text-primary-400 font-medium">
                                 {t("Selected file:")} {formik.values.logo.name}
                             </div>
                         )}
@@ -245,7 +245,7 @@ const SetupCompanyProfile = () => {
                         <button
                             type="submit"
                             disabled={isBusy}
-                            className={`flex-[2] bg-primary-500 text-white text-md py-3 rounded-xl font-bold shadow-lg shadow-primary-500/10 transition-all active:scale-95
+                            className={`flex-[2] bg-primary-500 dark:bg-primary-200 text-white dark:text-black text-md py-3 rounded-xl font-bold shadow-lg shadow-primary-500/10 transition-all active:scale-95
                             ${isBusy ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary-600'}`}
                         >
                             {isBusy ? t("Saving...") : t("Save Company Profile")}

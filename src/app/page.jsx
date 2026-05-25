@@ -28,21 +28,21 @@ function Desktop2Page() {
     >
       <div
         className={
-          "w-full flex justify-center bg-gradient-to-t to-primary-500 from-primary-900 via-primary-600 pt-5"
+          "w-full flex justify-center bg-gradient-to-t to-primary-500 from-primary-900 via-primary-600 pt-5 px-4"
         }
       >
-        <div className={"flex flex-col gap-8 max-w-[87rem] w-[87rem]"}>
-          <div className={"flex justify-between"}>
-            <div className={"flex gap-6 items-center"}>
+        <div className={"flex flex-col gap-8 w-full max-w-[87rem]"}>
+          <div className={"flex justify-between items-center"}>
+            <div className={"flex gap-4 md:gap-6 items-center"}>
               <div className={"flex items-center gap-2"}>
                 <img
                   src="/images/LandingPage/logoBlue.png"
                   alt={"logo"}
                   className={"w-8 h-8"}
                 />
-                <p className={" text-white"}>Anmat</p>
+                <p className={"text-white"}>Anmat</p>
               </div>
-              <nav className={"flex gap-6 text-white"}>
+              <nav className={"hidden md:flex gap-6 text-white"}>
                 <li className={"list-none "}>Home</li>
                 <li className={"list-none "}>Features</li>
                 <li className={"list-none "}>Pricing</li>
@@ -50,24 +50,24 @@ function Desktop2Page() {
               </nav>
             </div>
             <div className={"flex items-center gap-3"}>
-              <p className={" text-white"}>
+              <p className={"text-white text-sm md:text-base"}>
                 {" "}
                 <Link href="sign-in"> {"Login"}</Link>
               </p>
-              <Link href={"/register/subscriber/email"} className={"bg-white py-1.5 px-3 rounded-md "}>
+              <Link href={"/register/subscriber/email"} className={"bg-white py-1.5 px-3 rounded-md text-sm md:text-base"}>
                 Sign up
               </Link>
             </div>
           </div>
-          <div className={"w-full flex flex-col items-center gap-3"}>
+          <div className={"w-full flex flex-col items-center gap-3 px-4 text-center"}>
             <p
               className={
-                "text-5xl max-w-3xl font-bold bg-gradient-to-r from-primary-400 to-primary-400 via-primary-100 bg-clip-text text-transparent text-wrap "
+                "text-3xl sm:text-4xl md:text-5xl max-w-3xl font-bold bg-gradient-to-r from-primary-400 to-primary-400 via-primary-100 bg-clip-text text-transparent text-wrap "
               }
             >
               Your Ultimate Management Dashboard
             </p>
-            <p className={"text-primary-200 max-w-3xl"}>
+            <p className={"text-primary-200 max-w-3xl text-sm sm:text-base"}>
               All the tools you need for collaboration, analytics, and
               decision-making in one place.
             </p>
@@ -80,25 +80,25 @@ function Desktop2Page() {
               <a href="/sign-in"> Login</a>{" "}
             </p>
           </div>
-          <div className={"flex justify-center w-full"}>
+          <div className={"flex justify-center w-full px-4"}>
             <img
               src="/images/LandingPage/dashboardImage.png"
               alt={"dashboard image"}
-              className={"w-8/12"}
+              className={"w-full sm:w-10/12 md:w-8/12"}
             />
           </div>
         </div>
       </div>
       <div
         className={
-          "max-w-[87rem] w-[87rem] flex flex-col justify-center items-center gap-10"
+          "w-full max-w-[87rem] flex flex-col justify-center items-center gap-10 px-4"
         }
       >
-        <div className={"flex flex-col py-10"}>
+        <div className={"flex flex-col py-10 text-center"}>
           <p className={"text-blue-500 text-sm"}>Main Features</p>
-          <p className={"text-4xl font-bold text-black "}>Key Features</p>
+          <p className={"text-3xl sm:text-4xl font-bold text-black "}>Key Features</p>
         </div>
-        <div className={" w-full grid grid-cols-2 gap-6"}>
+        <div className={"w-full grid grid-cols-1 md:grid-cols-2 gap-6"}>
           <div
             className={
               "bg-gradient-to-tr from-[#FED2CC] to-[#FFDFDB80] py-0 w-full rounded-xl"
@@ -119,18 +119,18 @@ function Desktop2Page() {
               </div>
               <div
                 className={
-                  "relative w-full h-72 flex justify-end pr-10 py-0 overflow-hidden"
+                  "relative w-full h-56 sm:h-72 flex justify-center sm:justify-end px-4 sm:pr-10 py-0 overflow-hidden"
                 }
               >
                 <img
                   src="/images/LandingPage/pioChart.png"
                   alt={"chart1"}
-                  className={"w-72 absolute right-10 top-11"}
+                  className={"w-48 sm:w-72 absolute sm:right-10 top-11"}
                 />
                 <img
                   src="/images/LandingPage/chart1.png"
                   alt={"chart1"}
-                  className={"w-72 absolute right-64 -top-4"}
+                  className={"w-48 sm:w-72 absolute sm:right-64 -top-4 hidden sm:block"}
                 />
               </div>
             </div>
@@ -143,7 +143,7 @@ function Desktop2Page() {
             <div className={"flex flex-col gap-2 items-start "}>
               <div
                 className={
-                  " pt-10 px-10 pb-4 flex-col items-start gap-2 text-start"
+                  " pt-10 px-6 sm:px-10 pb-4 flex-col items-start gap-2 text-start"
                 }
               >
                 <p className={"text-lg font-bold text-black"}>
@@ -155,13 +155,13 @@ function Desktop2Page() {
               </div>
               <div
                 className={
-                  "relative w-full h-72 flex justify-center pr-10 py-0 overflow-hidden"
+                  "relative w-full h-56 sm:h-72 flex justify-center px-4 sm:pr-10 py-0 overflow-hidden"
                 }
               >
                 <img
                   src="/images/LandingPage/notifications.png"
                   alt={"notifications image"}
-                  className={"w-96 absolute -top-3"}
+                  className={"w-64 sm:w-96 absolute -top-3"}
                 />
               </div>
             </div>
@@ -174,7 +174,7 @@ function Desktop2Page() {
             <div className={"flex flex-col gap-2 items-start "}>
               <div
                 className={
-                  " pt-10 px-10 pb-4 flex-col items-start gap-2 text-start"
+                  " pt-10 px-6 sm:px-10 pb-4 flex-col items-start gap-2 text-start"
                 }
               >
                 <p className={"text-lg font-bold text-black"}>
@@ -186,18 +186,18 @@ function Desktop2Page() {
               </div>
               <div
                 className={
-                  "relative w-full h-72 flex justify-end pr-10 py-0 overflow-hidden"
+                  "relative w-full h-56 sm:h-72 flex justify-center sm:justify-end px-4 sm:pr-10 py-0 overflow-hidden"
                 }
               >
                 <img
                   src="/images/LandingPage/fileInputImage.png"
                   alt={"chart1"}
-                  className={"w-72 absolute right-64 -top-4"}
+                  className={"w-48 sm:w-72 absolute sm:right-64 -top-4 hidden sm:block"}
                 />
                 <img
                   src="/images/LandingPage/followAndUnfollowModalImage.png"
                   alt={"chart1"}
-                  className={"w-72 absolute right-10 top-11"}
+                  className={"w-48 sm:w-72 absolute sm:right-10 top-11"}
                 />
               </div>
             </div>
@@ -210,7 +210,7 @@ function Desktop2Page() {
             <div className={"flex flex-col gap-2 items-start "}>
               <div
                 className={
-                  " pt-10 px-10 pb-4 flex-col items-start gap-2 text-start"
+                  " pt-10 px-6 sm:px-10 pb-4 flex-col items-start gap-2 text-start"
                 }
               >
                 <p className={"text-lg font-bold text-black"}>
@@ -222,18 +222,18 @@ function Desktop2Page() {
               </div>
               <div
                 className={
-                  "relative w-full h-72 flex justify-end pr-10 py-0 overflow-hidden"
+                  "relative w-full h-56 sm:h-72 flex justify-center sm:justify-end px-4 sm:pr-10 py-0 overflow-hidden"
                 }
               >
                 <img
                   src="/images/LandingPage/taskStagesImage.png"
                   alt={"chart1"}
-                  className={"w-96 absolute right-52 top-11"}
+                  className={"w-64 sm:w-96 absolute sm:right-52 top-11"}
                 />
                 <img
                   src="/images/LandingPage/projectDetailsImage.png"
                   alt={"chart1"}
-                  className={"w-72 absolute right-0 -top-4"}
+                  className={"w-48 sm:w-72 absolute sm:right-0 -top-4 hidden sm:block"}
                 />
               </div>
             </div>
@@ -241,41 +241,41 @@ function Desktop2Page() {
         </div>
         <div
           className={
-            "bg-primary-700 w-full rounded-xl flex items-start justify-between gap-3"
+            "bg-primary-700 w-full rounded-xl flex flex-col md:flex-row items-center md:items-start justify-between gap-6 md:gap-3 px-6 md:px-0"
           }
         >
           <div
             className={
-              "flex flex-col items-start justify-start gap-6 py-10 pl-10"
+              "flex flex-col items-center md:items-start justify-start gap-6 py-8 md:py-10 px-0 md:pl-10 text-center md:text-start"
             }
           >
-            <p className={"text-white text-3xl font-bold"}>
+            <p className={"text-white text-2xl md:text-3xl font-bold"}>
               Connect with your team
             </p>
-            <div className={"flex flex-col gap-8"}>
-              <div className={"flex gap-1"}>
-                <RiCheckboxCircleFill size={"30"} className={"text-white"} />
-                <p className={"text-lg text-white"}>
+            <div className={"flex flex-col gap-6"}>
+              <div className={"flex gap-1 items-center md:items-start"}>
+                <RiCheckboxCircleFill size={"24"} className={"text-white shrink-0"} />
+                <p className={"text-base md:text-lg text-white"}>
                   Seamless Communication & Collaboration
                 </p>
               </div>
-              <div className={"flex gap-1"}>
-                <RiCheckboxCircleFill size={"30"} className={"text-white"} />
-                <p className={"text-lg text-white"}>Real-time messaging</p>
+              <div className={"flex gap-1 items-center md:items-start"}>
+                <RiCheckboxCircleFill size={"24"} className={"text-white shrink-0"} />
+                <p className={"text-base md:text-lg text-white"}>Real-time messaging</p>
               </div>
-              <div className={"flex gap-1"}>
-                <RiCheckboxCircleFill size={"30"} className={"text-white"} />
-                <p className={"text-lg text-white"}>
+              <div className={"flex gap-1 items-center md:items-start"}>
+                <RiCheckboxCircleFill size={"24"} className={"text-white shrink-0"} />
+                <p className={"text-base md:text-lg text-white"}>
                   Effortless meeting scheduling
                 </p>
               </div>
-              <div className={"flex gap-1"}>
-                <RiCheckboxCircleFill size={"30"} className={"text-white"} />
-                <p className={"text-lg text-white"}>
+              <div className={"flex gap-1 items-center md:items-start"}>
+                <RiCheckboxCircleFill size={"24"} className={"text-white shrink-0"} />
+                <p className={"text-base md:text-lg text-white"}>
                   Stay organized & on track
                 </p>
               </div>
-              <div className={"w-1/2"}>
+              <div className={"w-full md:w-1/2"}>
                 <button
                   className={
                     "py-2 rounded-xl w-full bg-primary-100 text-primary-900"
@@ -287,11 +287,11 @@ function Desktop2Page() {
               </div>
             </div>
           </div>
-          <div className={"py-8"}>
+          <div className={"py-8 px-4 md:px-0"}>
             <img
               src="/images/LandingPage/companyImag1.png"
               alt={"company"}
-              className={" max-w-[480px]"}
+              className={"w-full max-w-[320px] md:max-w-[480px]"}
             />
           </div>
         </div>
@@ -325,7 +325,7 @@ function Desktop2Page() {
               <img
                 src="/images/LandingPage/arrowSwitchImage.png"
                 alt={"arrow"}
-                className={"absolute w-[185px] h-[87px] right-[24rem] -top-7"}
+                className={"absolute w-[120px] md:w-[185px] h-[50px] md:h-[87px] right-[8rem] md:right-[24rem] -top-7 hidden md:block"}
               />
             </div>
             <div className={"w-full flex justify-center items-center gap-6 flex-wrap px-4"}>
@@ -409,46 +409,46 @@ function Desktop2Page() {
 
           </div>
         </div>
-        <div className={"flex flex-col gap-5 justify-center items-center"}>
-          <p className={"text-lg text-gray-400"}>Trusted by X companies</p>
-          <div className={"flex items-center max-w-full px-10 gap-8"}>
+        <div className={"flex flex-col gap-5 justify-center items-center w-full px-4"}>
+          <p className={"text-base sm:text-lg text-gray-400"}>Trusted by X companies</p>
+          <div className={"flex flex-wrap items-center justify-center max-w-full px-4 sm:px-10 gap-6 sm:gap-8"}>
             <img
               src="/images/LandingPage/Companys/company1.png"
               alt={""}
-              className={"w-44"}
+              className={"w-28 sm:w-36 md:w-44"}
             />
             <img
               src="/images/LandingPage/Companys/company2.png"
               alt={""}
-              className={"w-44"}
+              className={"w-28 sm:w-36 md:w-44"}
             />
             <img
               src="/images/LandingPage/Companys/company3.png"
               alt={""}
-              className={"w-44"}
+              className={"w-28 sm:w-36 md:w-44"}
             />
             <img
               src="/images/LandingPage/Companys/company4.png"
               alt={""}
-              className={"w-44"}
+              className={"w-28 sm:w-36 md:w-44"}
             />
             <img
               src="/images/LandingPage/Companys/company5.png"
               alt={""}
-              className={"w-44"}
+              className={"w-28 sm:w-36 md:w-44"}
             />
           </div>
         </div>
-        <div className={"flex flex-col gap-5 w-1/2  "}>
-          <div className={"flex flex-col gap-5"}>
-            <p className={"text-black text-2xl font-bold"}>
+        <div className={"flex flex-col gap-5 w-full md:w-3/4 lg:w-1/2 px-4"}>
+          <div className={"flex flex-col gap-5 text-center md:text-start"}>
+            <p className={"text-black text-xl sm:text-2xl font-bold"}>
               Frequently asked questions
             </p>
-            <p className={"text-gray-500"}>
+            <p className={"text-gray-500 text-sm sm:text-base"}>
               Everything you need to know about managing your dashboard.
             </p>
           </div>
-          <div className={"flex flex-col px-20 gap-5 "}>
+          <div className={"flex flex-col px-0 md:px-10 lg:px-20 gap-5 "}>
             <Collapse
               title={"Can I customize permissions for my team?"}
               text={
@@ -485,23 +485,23 @@ function Desktop2Page() {
                 "Yes, the dashboard allows you to set and customize permissions based on roles, ensuring secure and efficient task delegation."
               }
             />
-            <div className={"flex flex-col items-center gap-5 pt-10 pb-16"}>
-              <div className={"flex relative justify-center"}>
-                <div className={"p-1 rounded-full w-13 h-13 "}>
+            <div className={"flex flex-col items-center gap-5 pt-10 pb-16 text-center"}>
+              <div className={"flex justify-center"}>
+                <div className={"p-1 rounded-full"}>
                   <img
                     src="/images/users/user1.png"
                     alt={"user1"}
                     className={"rounded-full w-10 h-10"}
                   />
                 </div>
-                <div className={"p-1 rounded-full w-13 h-13 absolute -top-1"}>
+                <div className={"p-1 rounded-full -ml-2"}>
                   <img
                     src="/images/users/user2.png"
                     alt={"user2"}
                     className={"rounded-full w-10 h-10"}
                   />
                 </div>
-                <div className={"p-1 rounded-full w-13 h-13"}>
+                <div className={"p-1 rounded-full -ml-2"}>
                   <img
                     src="/images/users/user3.png"
                     alt={"user3"}
@@ -526,7 +526,7 @@ function Desktop2Page() {
       </div>
       <div
         className={
-          "footer w-full flex justify-between items-center bg-gray-700 px-7 py-12"
+          "footer w-full flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-0 bg-gray-700 px-4 sm:px-7 py-8 sm:py-12 text-center sm:text-start"
         }
       >
         <div className={"icons flex items-center gap-3"}>
@@ -542,7 +542,7 @@ function Desktop2Page() {
           />
           <p className={"text-gray-200"}>Management</p>
         </div>
-        <p className={"text-gray-200"}>
+        <p className={"text-gray-200 text-sm"}>
           © 2025 Management. All rights reserved.
         </p>
       </div>

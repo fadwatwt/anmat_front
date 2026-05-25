@@ -109,7 +109,7 @@ const SetupSubscriberProfile = () => {
             {/* Form */}
             <form onSubmit={formik.handleSubmit} className="flex flex-col w-full gap-4">
                 {error && (
-                    <div className="w-full p-3 text-sm text-red-500 bg-red-100 rounded-lg">
+                    <div className="w-full p-3 text-sm text-red-500 dark:text-red-400 bg-red-100 dark:bg-red-500/10 rounded-lg">
                         {error}
                     </div>
                 )}
@@ -189,7 +189,7 @@ const SetupSubscriberProfile = () => {
                     {formik.values.avatar && (
                         <div className="mt-4 flex flex-col items-center gap-2">
                             <span className="text-xs text-cell-secondary">{t("Avatar Preview:")}</span>
-                            <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-primary-100 shadow-sm relative group">
+                            <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-primary-100 dark:border-primary-800 shadow-sm relative group">
                                 <img
                                     src={URL.createObjectURL(formik.values.avatar)}
                                     alt="Avatar Preview"
@@ -217,7 +217,7 @@ const SetupSubscriberProfile = () => {
                     <button
                         type="submit"
                         disabled={isBusy}
-                        className="bg-primary-500 text-primary-50 text-md w-full md:w-64 py-3 rounded-xl cursor-pointer
+                        className="bg-primary-500 dark:bg-primary-200 text-primary-50 dark:text-black text-md w-full md:w-64 py-3 rounded-xl cursor-pointer
                         hover:bg-primary-600 text-center disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {isBusy ? t("Processing...") : t("Complete Registration")}

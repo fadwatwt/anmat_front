@@ -13,7 +13,7 @@ function SearchInput() {
                     </div>
 
                     <input
-                        className="w-full bg-transparent placeholder:text-cell-secondary/50 text-cell-primary text-sm border border-status-border rounded-md pl-10 pr-3 py-2 transition duration-300 ease focus:outline-none focus:border-primary-400 hover:border-primary-300 shadow-sm focus:shadow "
+                        className="w-full bg-transparent placeholder:text-cell-secondary/50 dark:placeholder-gray-400 text-cell-primary text-sm border border-status-border rounded-md pl-10 pr-3 py-2 transition duration-300 ease focus:outline-none focus:border-primary-400 dark:focus:border-primary-500 dark:focus:ring-primary-500 hover:border-primary-300 shadow-sm focus:shadow "
                         placeholder={t("Search..")}
                     />
                 </div>

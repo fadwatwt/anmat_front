@@ -103,7 +103,7 @@ function AddSalaryModal({ isOpen, onClose, onSubmit }) {
                                     formik.handleChange(e);
                                 }
                             }}
-                            icon={<span className="text-gray-500">$</span>}
+                            icon={<span className="text-gray-500 dark:text-gray-400">$</span>}
                             placeholder="0"
                             isRequired={true}
                             error={formik.touched.amount && formik.errors.amount}
@@ -120,7 +120,7 @@ function AddSalaryModal({ isOpen, onClose, onSubmit }) {
                                     formik.handleChange(e);
                                 }
                             }}
-                            icon={<span className="text-gray-500 w-3">$</span>}
+                            icon={<span className="text-gray-500 dark:text-gray-400 w-3">$</span>}
                             placeholder="0"
                             error={formik.touched.bonus && formik.errors.bonus}
                         />
@@ -136,7 +136,7 @@ function AddSalaryModal({ isOpen, onClose, onSubmit }) {
                                     formik.handleChange(e);
                                 }
                             }}
-                            icon={<span className="text-gray-500">$</span>}
+                            icon={<span className="text-gray-500 dark:text-gray-400">$</span>}
                             placeholder="0"
                             error={formik.touched.discount && formik.errors.discount}
                         />

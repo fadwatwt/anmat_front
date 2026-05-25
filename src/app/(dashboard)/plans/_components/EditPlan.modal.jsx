@@ -248,7 +248,7 @@ function EditPlanModal({ isOpen, onClose, plan }) {
                 )}
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3 mb-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
               <InputAndLabel
                 title="Price"
                 name={`pricing.${index}.price`}
@@ -270,7 +270,7 @@ function EditPlanModal({ isOpen, onClose, plan }) {
                 isRequired={true}
               />
             </div>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               <InputAndLabel
                 title="Interval Count"
                 name={`pricing.${index}.interval_count`}

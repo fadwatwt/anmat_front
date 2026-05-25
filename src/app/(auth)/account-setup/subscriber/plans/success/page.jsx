@@ -64,7 +64,7 @@ const SuccessPage = () => {
             <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6 gap-4">
                 <RiLoader4Line className="animate-spin text-primary-base" size={48} />
                 <div className="space-y-2">
-                    <p className="text-gray-700 font-bold text-lg italic">Finalizing your subscription...</p>
+                    <p className="text-gray-700 dark:text-gray-200 font-bold text-lg italic">Finalizing your subscription...</p>
                     <p className="text-gray-400 text-sm">We're verifying your payment with our secure servers.</p>
                 </div>
             </div>
@@ -72,18 +72,18 @@ const SuccessPage = () => {
     }
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6 animate-fade-in text-gray-900">
+        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6 animate-fade-in text-gray-900 dark:text-gray-100">
             <div className="bg-green-100 p-4 rounded-full mb-6 shadow-sm">
                 <RiCheckboxCircleFill className="text-green-600" size={64} />
             </div>
             <h1 className="text-3xl font-bold mb-2">Payment Successful!</h1>
-            <p className="text-gray-600 text-lg mb-8 max-w-md">
+            <p className="text-gray-600 dark:text-gray-300 text-lg mb-8 max-w-md">
                 Thank you for your subscription. Your account is now fully active, and you have complete access to all features.
             </p>
             <div className="flex flex-col gap-4">
                 <button
                     onClick={handleGoToDashboard}
-                    className="bg-primary-base text-white px-10 py-4 rounded-xl font-bold shadow-xl hover:bg-primary-700 transition-all transform hover:scale-105"
+                    className="bg-primary-base dark:bg-primary-200 text-white dark:text-black px-10 py-4 rounded-xl font-bold shadow-xl hover:bg-primary-700 transition-all transform hover:scale-105"
                 >
                     Go to Dashboard
                 </button>

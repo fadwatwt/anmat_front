@@ -55,7 +55,7 @@ const PollBubble = ({ message, isMe }) => {
   };
 
   return (
-    <div className={`mt-2 w-64 rounded-xl border overflow-hidden ${isMe ? 'bg-primary-500/10 border-primary/20 text-cell-primary' : 'bg-surface border-status-border text-cell-primary'}`}>
+    <div className={`mt-2 w-64 rounded-xl border overflow-hidden ${isMe ? 'bg-primary-500/10 dark:bg-primary-200/10 border-primary/20 dark:border-primary-200/20 text-cell-primary' : 'bg-surface border-status-border text-cell-primary'}`}>
       <div className="p-3 border-b border-status-border flex items-start gap-2 bg-weak-50">
         <BarChart2 size={16} className={isMe ? "text-primary" : "text-sub-500"} />
         <div className="flex-1">

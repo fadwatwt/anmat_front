@@ -83,7 +83,7 @@ function EmployeeInfoForm({ formData, updateFormData, isEdit = false }) {
 
             <div className="bg-surface p-4 rounded-xl border border-status-border shadow-sm flex flex-col gap-4">
                 <h3 className="text-sm font-bold text-cell-primary mb-1 border-l-4 border-primary-base pl-2">{t("Location")}</h3>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <ElementsSelect
                         title={t("Country")}
                         options={countryOptions}

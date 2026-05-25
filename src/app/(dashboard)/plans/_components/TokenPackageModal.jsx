@@ -145,7 +145,7 @@ function TokenPackageModal({ isOpen, onClose, editPackage = null }) {
                 <div className={"w-full py-[6px] bg-weak-100 text-start text-xs dark:bg-weak-800 text-weak-800 dark:text-weak-100 px-4"}>
                     {t("Pricing & Tokens")}:
                 </div>
-                <div className={"px-4 grid grid-cols-2 gap-4"}>
+                <div className={"px-4 grid grid-cols-1 sm:grid-cols-2 gap-4"}>
                     <InputAndLabel
                         title="Price (cents)"
                         name="price_cents"
@@ -168,7 +168,7 @@ function TokenPackageModal({ isOpen, onClose, editPackage = null }) {
                         isRequired={true}
                     />
                 </div>
-                <div className={"px-4 grid grid-cols-2 gap-4"}>
+                <div className={"px-4 grid grid-cols-1 sm:grid-cols-2 gap-4"}>
                     <InputAndLabel
                         title="Number of Tokens"
                         name="tokens"

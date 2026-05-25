@@ -19,14 +19,14 @@ function TextAreaWithLabel({ title, placeholder, className, value, name, onChang
                 rows={rows}
                 maxLength={maxLength}
                 placeholder={`${t(placeholder)}...`}
-                className={`py-3 px-2 text-sm bg-status-bg border-status-border border-2 rounded-xl w-full focus:outline-none focus:border-primary-400 text-cell-primary placeholder:text-cell-secondary/50 resize-none ${error ? 'border-red-500' : ''}`}
+                className={`py-3 px-2 text-sm bg-status-bg border-status-border border-2 rounded-xl w-full focus:outline-none focus:border-primary-400 dark:focus:border-primary-500 dark:focus:ring-primary-500 text-cell-primary placeholder:text-cell-secondary/50 dark:placeholder-gray-400 resize-none ${error ? 'border-red-500' : ''}`}
                 {...rest}
             >
             </textarea>
             <div className="w-full flex justify-between items-center">
                 {error ? <p className="text-red-500 text-xs mt-1">{error}</p> : <div></div>}
                 {maxLength && (
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-gray-400 dark:text-gray-500">
                         {value?.length || 0}/{maxLength}
                     </span>
                 )}

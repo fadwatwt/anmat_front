@@ -14,7 +14,7 @@ const MailInvitation = () => {
                         <img src="/images/logo.png" className="w-full h-full rounded-full" alt="logo" />
                     </div>
 
-                    <div className="flex flex-col items-center justify-start gap-8 w-[30rem]">
+                    <div className="flex flex-col items-center justify-start gap-8 w-full max-w-[30rem]">
                         <span className="text-gray-900 dark:text-gray-50 block text-center text-2xl">
                             {"Welcome to [Company Name]! Your New Journey Begins!"}
                         </span>

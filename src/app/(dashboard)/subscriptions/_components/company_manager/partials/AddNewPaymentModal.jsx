@@ -72,7 +72,7 @@ function AddNewPaymentModal({ isOpen, onClose }) {
           />
 
           <div className="flex items-start gap-4 justify-between">
-            <div className="w-1/2">
+            <div className="w-full md:w-1/2">
               <DateInput
                 title="Expiration Date"
                 name="expirationDate"
@@ -89,7 +89,7 @@ function AddNewPaymentModal({ isOpen, onClose }) {
               />
             </div>
 
-            <div className="w-1/2">
+            <div className="w-full md:w-1/2">
               <InputAndLabel
                 title="CVV"
                 name="cvv"
@@ -110,10 +110,10 @@ function AddNewPaymentModal({ isOpen, onClose }) {
           <div className="flex gap-2 items-start">
             <input type="checkbox" className="mt-1" />
             <div className="flex flex-col gap-0">
-              <span className="text-sm text-gray-700">
+              <span className="text-sm text-gray-700 dark:text-gray-200">
                 Save this method as default
               </span>
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-gray-500 dark:text-gray-400">
                 It will save your payment method as the default option.
               </span>
             </div>

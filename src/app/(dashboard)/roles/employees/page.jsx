@@ -53,7 +53,7 @@ function PermissionsPage() {
             </span>
         </div>,
         <div key="permissions" className="flex items-center justify-start gap-2 px-4">
-            <div className={"grid grid-cols-3 gap-2 w-full"}>
+            <div className={"grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 w-full"}>
                 {
                     role.permissions_ids?.map((permission, index) => (
                         <span
@@ -126,7 +126,7 @@ function PermissionsPage() {
         return (
             <Page title={"Roles"}>
                 <div className="flex items-center justify-center h-64">
-                    <div className="text-primary-500 animate-pulse font-medium">{t("Loading roles...")}</div>
+                    <div className="text-primary-500 dark:text-primary-400 animate-pulse font-medium">{t("Loading roles...")}</div>
                 </div>
             </Page>
         );

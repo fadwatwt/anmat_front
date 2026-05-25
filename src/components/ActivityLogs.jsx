@@ -86,38 +86,38 @@ function ActivityLogs({ activityLogs, className, isRawLogs = true, isLoading = f
         switch (type) {
             case "add":
                 return (
-                    <div className={"p-2 rounded-full bg-cyan-50 border border-cyan-100 shadow-sm"}>
-                        <FaCirclePlus size={16} className={"text-cyan-600"} />
+                    <div className={"p-2 rounded-full bg-cyan-50 border border-cyan-100 shadow-sm dark:bg-cyan-900/30 dark:border-cyan-800"}>
+                        <FaCirclePlus size={16} className={"text-cyan-600 dark:text-cyan-400"} />
                     </div>
                 )
             case "check":
                 return (
-                    <div className={"p-2 rounded-full bg-green-50 border border-green-100 shadow-sm"}>
-                        <FaCheckCircle size={16} className={"text-green-600"} />
+                    <div className={"p-2 rounded-full bg-green-50 border border-green-100 shadow-sm dark:bg-green-900/30 dark:border-green-800"}>
+                        <FaCheckCircle size={16} className={"text-green-600 dark:text-green-400"} />
                     </div>
                 )
             case "uploaded":
                 return (
-                    <div className={"p-2 rounded-full bg-blue-50 border border-blue-100 shadow-sm"}>
-                        <IoDocument size={16} className={"text-blue-600"} />
+                    <div className={"p-2 rounded-full bg-blue-50 border border-blue-100 shadow-sm dark:bg-blue-900/30 dark:border-blue-800"}>
+                        <IoDocument size={16} className={"text-blue-600 dark:text-blue-400"} />
                     </div>
                 )
             case "update":
                 return (
-                    <div className={"p-2 rounded-full bg-amber-50 border border-amber-100 shadow-sm"}>
-                        <FaEdit size={16} className={"text-amber-600"} />
+                    <div className={"p-2 rounded-full bg-amber-50 border border-amber-100 shadow-sm dark:bg-amber-900/30 dark:border-amber-800"}>
+                        <FaEdit size={16} className={"text-amber-600 dark:text-amber-400"} />
                     </div>
                 )
             case "delete":
                 return (
-                    <div className={"p-2 rounded-full bg-red-50 border border-red-100 shadow-sm"}>
-                        <FaTrash size={16} className={"text-red-600"} />
+                    <div className={"p-2 rounded-full bg-red-50 border border-red-100 shadow-sm dark:bg-red-900/30 dark:border-red-800"}>
+                        <FaTrash size={16} className={"text-red-600 dark:text-red-400"} />
                     </div>
                 )
             default:
                 return (
-                    <div className={"p-2 rounded-full bg-slate-50 border border-slate-100 shadow-sm"}>
-                        <FaCirclePlus size={16} className={"text-slate-600"} />
+                    <div className={"p-2 rounded-full bg-slate-50 border border-slate-100 shadow-sm dark:bg-slate-900/30 dark:border-slate-800"}>
+                        <FaCirclePlus size={16} className={"text-slate-600 dark:text-slate-400"} />
                     </div>
                 )
         }
@@ -126,11 +126,11 @@ function ActivityLogs({ activityLogs, className, isRawLogs = true, isLoading = f
     const logsToRender = isRawLogs ? (activityLogs || []).map(log => mapBackendLogToFrontend(log, t)) : activityLogs;
     
     return (
-        <div className={"flex flex-col w-full p-6 rounded-3xl items-start gap-4 bg-white border border-slate-100 shadow-sm transition-all hover:shadow-md"}>
+        <div className={"flex flex-col w-full p-6 rounded-3xl items-start gap-4 bg-white border border-slate-100 shadow-sm transition-all hover:shadow-md dark:bg-gray-800 dark:border-gray-700 dark:hover:shadow-gray-900/50"}>
             <div className="flex justify-between items-center w-full">
-                <p className={"text-xl font-bold text-slate-800 tracking-tight"}>{t("Activity Logs")}</p>
+                <p className={"text-xl font-bold text-slate-800 tracking-tight dark:text-gray-100"}>{t("Activity Logs")}</p>
                 {!isLoading && logsToRender.length > 0 && (
-                    <span className="px-2 py-0.5 text-[10px] font-medium bg-slate-100 text-slate-500 rounded-full">
+                    <span className="px-2 py-0.5 text-[10px] font-medium bg-slate-100 text-slate-500 rounded-full dark:bg-gray-700 dark:text-gray-400">
                         {logsToRender.length} {t("Recent")}
                     </span>
                 )}
@@ -141,43 +141,43 @@ function ActivityLogs({ activityLogs, className, isRawLogs = true, isLoading = f
                     <div className="flex flex-col gap-6 w-full py-4">
                         {[1, 2, 3, 4].map((i) => (
                             <div key={i} className="flex gap-4 animate-pulse">
-                                <div className="w-10 h-10 bg-slate-100 rounded-full flex-shrink-0"></div>
+                                <div className="w-10 h-10 bg-slate-100 rounded-full flex-shrink-0 dark:bg-gray-700"></div>
                                 <div className="flex flex-col gap-2 flex-1 pt-1">
-                                    <div className="h-4 bg-slate-100 rounded w-1/3"></div>
-                                    <div className="h-3 bg-slate-100 rounded w-full"></div>
+                                    <div className="h-4 bg-slate-100 rounded w-1/3 dark:bg-gray-700"></div>
+                                    <div className="h-3 bg-slate-100 rounded w-full dark:bg-gray-700"></div>
                                 </div>
                             </div>
                         ))}
                     </div>
                 ) : logsToRender.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-12 w-full gap-2 opacity-60">
-                        <div className="p-3 bg-slate-50 rounded-full">
-                            <IoDocument size={24} className="text-slate-300" />
+                        <div className="p-3 bg-slate-50 rounded-full dark:bg-gray-900">
+                            <IoDocument size={24} className="text-slate-300 dark:text-gray-500" />
                         </div>
-                        <p className="text-sm text-slate-400 font-medium">{t("No recent activity")}</p>
+                        <p className="text-sm text-slate-400 font-medium dark:text-gray-500">{t("No recent activity")}</p>
                     </div>
                 ) : (
                     <div className="relative">
                         {/* The vertical timeline line */}
-                        <div className="absolute left-[19px] top-4 bottom-4 w-[1px] bg-slate-100 z-0"></div>
+                        <div className="absolute left-[19px] top-4 bottom-4 w-[1px] bg-slate-100 z-0 dark:bg-gray-700"></div>
                         
                         <div className="flex flex-col gap-0">
                             {logsToRender.map((activityLog, index) => (
                                 <div key={activityLog.timeAgo + (activityLog.description || "") + index} className="group flex gap-4 items-start relative z-10 pb-6 last:pb-0">
-                                    <div className="flex-shrink-0 bg-white">
+                                    <div className="flex-shrink-0 bg-white dark:bg-gray-800">
                                         {getTypeActivityIcons(activityLog.type)}
                                     </div>
                                     
                                     <div className="flex flex-col items-start gap-1 pt-1.5 flex-1 min-w-0">
                                         <div className="flex justify-between items-center w-full gap-2">
-                                            <p className="text-sm font-semibold text-slate-800 truncate group-hover:text-cyan-600 transition-colors">
+                                            <p className="text-sm font-semibold text-slate-800 truncate group-hover:text-cyan-600 transition-colors dark:text-gray-100">
                                                 {activityLog.title}
                                             </p>
-                                            <span className="text-[10px] font-medium text-slate-400 whitespace-nowrap bg-slate-50 px-1.5 py-0.5 rounded">
+                                            <span className="text-[10px] font-medium text-slate-400 whitespace-nowrap bg-slate-50 px-1.5 py-0.5 rounded dark:text-gray-500 dark:bg-gray-900">
                                                 {translateTime(activityLog.timeAgo)}
                                             </span>
                                         </div>
-                                        <p className="text-[13px] text-slate-500 leading-relaxed text-start">
+                                        <p className="text-[13px] text-slate-500 leading-relaxed text-start dark:text-gray-400">
                                             {activityLog.description}
                                         </p>
                                     </div>

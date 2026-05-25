@@ -62,7 +62,7 @@ function ResetPasswordPage() {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="*"
-                                    className="w-full py-3 px-2 outline-none bg-transparent text-cell-primary"
+                                    className="w-full py-3 px-2 outline-none bg-transparent dark:bg-gray-800 text-cell-primary dark:text-gray-100"
                                     required
                                 />
                             </div>
@@ -76,18 +76,18 @@ function ResetPasswordPage() {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="*"
-                                    className="w-full py-3 px-2 outline-none bg-transparent text-cell-primary"
+                                    className="w-full py-3 px-2 outline-none bg-transparent dark:bg-gray-800 text-cell-primary dark:text-gray-100"
                                     required
                                 />
                             </div>
                         </div>
 
-                        {error && <p className="text-red-500 text-sm">{error}</p>}
+                        {error && <p className="text-red-500 dark:text-red-400 text-sm">{error}</p>}
 
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full rounded-lg bg-primary-base text-white py-1.5"
+                            className="w-full rounded-lg bg-primary-base dark:bg-primary-200 text-white dark:text-black py-1.5"
                         >
                             {isLoading ? "Loading..." : "Reset"}
                         </button>

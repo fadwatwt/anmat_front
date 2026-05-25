@@ -3,7 +3,7 @@
 const VerifyEmail = () => {
     return (
         <>
-            <div className="relative rounded-xl px-12 py-16 border">
+            <div className="relative rounded-xl px-4 sm:px-6 md:px-12 py-10 md:py-16 border">
                 <div className="absolute top-0 left-0 w-full">
                     <img src="/images/patterns/pattern_rec_top.png" className="w-full h-[120px]" alt="" />
                 </div>
@@ -18,8 +18,8 @@ const VerifyEmail = () => {
                         </svg>
                     </div>
 
-                    <div className="flex flex-col items-center justify-start gap-8 text-center w-[30rem]">
-                        <div className="flex flex-col gap-1 text-2xl w-full">
+                    <div className="flex flex-col items-center justify-start gap-8 text-center w-full max-w-[30rem]">
+                        <div className="flex flex-col gap-1 text-xl sm:text-2xl w-full">
                             <span className="text-table-title">
                                 {"Welcome to [Company Name]!"}
                             </span>
@@ -30,14 +30,14 @@ const VerifyEmail = () => {
 
                         <span className="block text-cell-secondary text-lg text-wrap">
                             You’ve entered
-                            <span className="text-gray-700 m-1 font-semibold">{"mai.maged@company.com"}</span>
+                            <span className="text-gray-700 dark:text-gray-200 m-1 font-semibold">{"mai.maged@company.com"}</span>
                             as the company email address for your account, please verify this email address by clicking button below.
                         </span>
 
                         <button
                             type="submit"
-                            className="bg-primary-500 text-primary-50 text-nowrap text-md px-12 py-2 rounded-lg cursor-pointer
-                                        hover:bg-primary-600 text-center"
+className="bg-primary-500 dark:bg-primary-200 text-primary-50 dark:text-black text-nowrap text-md px-12 py-2 rounded-lg cursor-pointer
+                                         hover:bg-primary-600 text-center"
                         >
                             {"Verify Email"}
                         </button>

@@ -118,7 +118,7 @@ const MessageInput = ({ onSendMessage, onTyping, editMessageData, onCancelEdit, 
 
       {selectedFile && (
         <div className="flex items-center gap-3 p-3 mx-4 mt-4 bg-weak-50 rounded-xl border border-status-border animate-in slide-in-from-bottom-2 duration-200">
-          <div className="p-2 bg-main rounded-lg text-primary-500">
+          <div className="p-2 bg-main rounded-lg text-primary-500 dark:text-primary-400">
             {selectedFile.type.startsWith('image/') ? <ImageIcon size={20} /> : <FileIcon size={20} />}
           </div>
           <div className="flex-1 min-w-0">
@@ -154,7 +154,7 @@ const MessageInput = ({ onSendMessage, onTyping, editMessageData, onCancelEdit, 
           type="button"
           title="Attach file"
           onClick={() => fileInputRef.current?.click()}
-          className={`p-2 transition-colors rounded-full ${selectedFile ? 'text-primary-500 bg-primary-50' : 'text-sub-500 hover:bg-weak-100'}`}
+          className={`p-2 transition-colors rounded-full ${selectedFile ? 'text-primary-500 dark:text-primary-400 bg-primary-50 dark:bg-primary-950/20' : 'text-sub-500 hover:bg-weak-100'}`}
         >
           <Paperclip size={20} />
         </button>
@@ -171,7 +171,7 @@ const MessageInput = ({ onSendMessage, onTyping, editMessageData, onCancelEdit, 
             <button
               type="button"
               onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-              className={`transition-colors ${showEmojiPicker ? 'text-primary-500' : 'text-sub-500 hover:text-primary-500'}`}
+              className={`transition-colors ${showEmojiPicker ? 'text-primary-500 dark:text-primary-400' : 'text-sub-500 hover:text-primary-500'}`}
             >
               <Smile size={18} />
             </button>
@@ -193,7 +193,7 @@ const MessageInput = ({ onSendMessage, onTyping, editMessageData, onCancelEdit, 
           disabled={(!message.trim() && !selectedFile) || isUploading}
           className={`p-3 rounded-2xl transition-all ${
             (message.trim() || selectedFile) && !isUploading
-              ? "bg-primary-500 text-white shadow-lg shadow-primary-500/30 scale-100 hover:scale-105 active:scale-95"
+              ? "bg-primary-500 dark:bg-primary-200 dark:text-black text-white shadow-lg shadow-primary-500/30 scale-100 hover:scale-105 active:scale-95"
               : "bg-main text-sub-500 scale-100"
           }`}
         >

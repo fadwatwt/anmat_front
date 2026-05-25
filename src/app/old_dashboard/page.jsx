@@ -262,7 +262,7 @@ const TaskManagementDashboard = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-4 gap-4 text-center">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
             <div>
               <div className="text-indigo-600 font-semibold">
                 {taskSummaryData.active}

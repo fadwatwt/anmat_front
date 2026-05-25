@@ -5,7 +5,7 @@ function Switch2({ isOn, handleToggle, className }) {
             type={"button"}
             onClick={handleToggle}
             className={` flex items-center border border-status-border rounded-full ${className ? className : "h-5 w-10"} p-0.5 transition-colors ${isOn
-                    ? "bg-primary-500"
+                    ? "bg-primary-500 dark:bg-primary-200 dark:text-black"
                     : "bg-status-bg"
                 }`}
         >

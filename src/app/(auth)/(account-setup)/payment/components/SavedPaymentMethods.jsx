@@ -8,7 +8,7 @@ const SavedMethodCard = ({ method, isSelected, onSelect, onEdit }) => {
     return (
         <div
             className={`relative flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all flex-1
-        ${isSelected ? 'border-blue-600' : 'border-gray-100 bg-white'}`}
+        ${isSelected ? 'border-blue-600' : 'border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800'}`}
             onClick={() => onSelect(method.id)}
         >
             <div className="flex items-center gap-4 w-full">
@@ -20,13 +20,13 @@ const SavedMethodCard = ({ method, isSelected, onSelect, onEdit }) => {
 
                 {/* Info */}
                 <div className="flex-1">
-                    <p className="font-bold text-gray-900">**** {method.last4}</p>
-                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <p className="font-bold text-gray-900 dark:text-gray-100">**** {method.last4}</p>
+                    <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                         <span>{method.type}</span>
                         <span>•</span>
                         <button
                             onClick={(e) => { e.stopPropagation(); onEdit(method.id); }}
-                            className="hover:underline text-gray-600"
+                            className="hover:underline text-gray-600 dark:text-gray-400"
                         >
                             {t('Edit')}
                         </button>
@@ -45,7 +45,7 @@ function SavedMethodsGroup({ methods, selectedId, onSelect, onEdit, onAddNew }) 
 
     return (
         <div className="flex flex-col gap-4 w-full">
-            <h3 className="text-gray-800">{t('Payment method')}</h3>
+            <h3 className="text-gray-800 dark:text-gray-200">{t('Payment method')}</h3>
 
             <div className="flex flex-col sm:flex-row gap-3">
                 {methods.map((method) => (
@@ -61,7 +61,7 @@ function SavedMethodsGroup({ methods, selectedId, onSelect, onEdit, onAddNew }) 
 
             <button
                 onClick={onAddNew}
-                className="w-full py-3 mt-2 text-blue-600 bg-blue-50/50 border border-transparent rounded-xl font-medium hover:bg-blue-50 transition-colors"
+                className="w-full py-3 mt-2 text-blue-600 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-500/10 border border-transparent rounded-xl font-medium hover:bg-blue-50 dark:hover:bg-blue-500/20 transition-colors"
             >
                 + {t('Other payment method')}
             </button>

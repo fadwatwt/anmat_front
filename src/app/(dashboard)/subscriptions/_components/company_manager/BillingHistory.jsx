@@ -25,17 +25,17 @@ function BillingHistory() {
         <div key={`product-${payment._id}`} className="flex items-center justify-start gap-2">
             <div className="rounded-full p-2 bg-primary-100">
                 <div className="rounded-full p-2 bg-primary-200">
-                    <RiFlashlightLine size={25} className="rounded-full text-primary-500 stroke-[5px]" />
+                    <RiFlashlightLine size={25} className="rounded-full text-primary-500 dark:text-primary-400 stroke-[5px]" />
                 </div>
             </div>
-            <span className="text-sm text-gray-900">
+            <span className="text-sm text-gray-900 dark:text-gray-100">
                 {payment.stripe_metadata?.[0]?.split(': ')[1] || t("Subscription")}
             </span>
         </div>,
 
         // Reference cell
         <div key={`ref-${payment._id}`} className="flex items-center justify-start gap-2">
-            <span className="text-sm text-gray-900">
+            <span className="text-sm text-gray-900 dark:text-gray-100">
                 {payment.stripe_invoice_id || "N/A"}
             </span>
         </div>,

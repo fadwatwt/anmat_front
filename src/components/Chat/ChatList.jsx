@@ -43,13 +43,13 @@ const ChatList = ({ activeChatId, onSelectChat }) => {
           <div className="flex gap-1 bg-weak-50 p-1 rounded-lg">
             <button 
               onClick={() => setShowArchived(false)}
-              className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${!showArchived ? 'bg-white shadow-sm text-primary' : 'text-sub-500 hover:text-cell-primary'}`}
+              className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${!showArchived ? 'bg-white dark:bg-gray-800 shadow-sm text-primary' : 'text-sub-500 hover:text-cell-primary'}`}
             >
               Active
             </button>
             <button 
               onClick={() => setShowArchived(true)}
-              className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${showArchived ? 'bg-white shadow-sm text-primary' : 'text-sub-500 hover:text-cell-primary'}`}
+              className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${showArchived ? 'bg-white dark:bg-gray-800 shadow-sm text-primary' : 'text-sub-500 hover:text-cell-primary'}`}
             >
               Archived
             </button>
@@ -119,7 +119,7 @@ const ChatList = ({ activeChatId, onSelectChat }) => {
                 </p>
               </div>
               {chat.unreadCount > 0 && (
-                <div className="bg-primary-500 text-white text-[10px] font-bold px-2 py-1 rounded-full min-w-[20px] text-center">
+                <div className="bg-primary-500 dark:bg-primary-200 dark:text-black text-white text-[10px] font-bold px-2 py-1 rounded-full min-w-[20px] text-center">
                   {chat.unreadCount}
                 </div>
               )}

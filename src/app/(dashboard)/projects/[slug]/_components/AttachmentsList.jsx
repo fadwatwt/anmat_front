@@ -17,12 +17,12 @@ function AttachmentsList({ attachments = [], onUpload, onDelete, isUploading }) 
 
     const getFileIcons = (type) => {
         if (type?.includes("pdf") || type === "pdf")
-            return <BiSolidFilePdf size={15} className={"text-gray-400 rounded"} />;
+            return <BiSolidFilePdf size={15} className={"text-gray-400 dark:text-gray-500 rounded"} />;
         if (type?.includes("image") || type === "image")
-            return <IoImage size={15} className={"text-gray-400 rounded"} />;
+            return <IoImage size={15} className={"text-gray-400 dark:text-gray-500 rounded"} />;
         if (type?.includes("video") || type === "video")
-            return <PiVideoFill size={15} className={"text-gray-400 rounded"} />;
-        return <IoDocument size={15} className={"text-gray-500 rounded"} />;
+            return <PiVideoFill size={15} className={"text-gray-400 dark:text-gray-500 rounded"} />;
+        return <IoDocument size={15} className={"text-gray-500 dark:text-gray-400 rounded"} />;
     };
 
     const handleFileChange = (event) => {
@@ -70,7 +70,7 @@ function AttachmentsList({ attachments = [], onUpload, onDelete, isUploading }) 
     };
 
     return (
-        <div className={"flex flex-col w-full p-4 rounded-2xl items-start gap-3 bg-white dark:bg-white-0"}>
+        <div className={"flex flex-col w-full p-4 rounded-2xl items-start gap-3 bg-white dark:bg-gray-800"}>
             <p className={"text-lg dark:text-gray-200"}>{t("Attachments")}</p>
             <div className={"flex flex-col gap-3 w-full"}>
                 {attachments?.map((attachment, index) => (
@@ -88,7 +88,7 @@ function AttachmentsList({ attachments = [], onUpload, onDelete, isUploading }) 
                                         {t("size")}: {formatSize(attachment.size)}
                                     </p>
                                     {attachment.description && (
-                                        <p className={"text-xs text-gray-600 dark:text-gray-400 mt-0.5 leading-relaxed"}>
+                                        <p className={"text-xs text-gray-600 dark:text-gray-300 mt-0.5 leading-relaxed"}>
                                             {attachment.description}
                                         </p>
                                     )}
@@ -113,7 +113,7 @@ function AttachmentsList({ attachments = [], onUpload, onDelete, isUploading }) 
                 ))}
                 
                 {isUploading && (
-                   <p className="text-xs text-primary-base animate-pulse">{t("Uploading...")}</p>
+                   <p className="text-xs text-primary-base dark:text-primary-200 animate-pulse">{t("Uploading...")}</p>
                 )}
 
                 {!selectedFile && (
@@ -123,12 +123,12 @@ function AttachmentsList({ attachments = [], onUpload, onDelete, isUploading }) 
                 )}
 
                 {selectedFile && (
-                    <div className="flex flex-col gap-3 p-3 mt-2 border border-primary-100 bg-primary-50 dark:bg-gray-800 dark:border-gray-700 rounded-xl w-full">
+                    <div className="flex flex-col gap-3 p-3 mt-2 border border-primary-100 bg-primary-50 dark:bg-primary-950/20 dark:border-gray-700 rounded-xl w-full">
                         <div className="flex justify-between items-center">
                             <span className="text-sm font-medium text-gray-700 dark:text-gray-200 truncate">
                                 {selectedFile.name}
                             </span>
-                            <RiCloseLine className="cursor-pointer text-gray-500 hover:text-red-500" size={20} onClick={cancelUpload} />
+                            <RiCloseLine className="cursor-pointer text-gray-500 dark:text-gray-400 hover:text-red-500" size={20} onClick={cancelUpload} />
                         </div>
                         <InputAndLabel 
                             value={description}
@@ -139,10 +139,10 @@ function AttachmentsList({ attachments = [], onUpload, onDelete, isUploading }) 
                             placeholder={t("Add a short description about this file")}
                         />
                         <div className="flex justify-end gap-2 mt-1">
-                            <button onClick={cancelUpload} className="px-4 py-2 text-xs font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600">
+                            <button onClick={cancelUpload} className="px-4 py-2 text-xs font-medium text-gray-600 bg-white dark:bg-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 dark:text-gray-300 dark:border-gray-600">
                                 {t("Cancel")}
                             </button>
-                            <button onClick={confirmUpload} className="px-4 py-2 text-xs font-medium text-white bg-primary-base rounded-lg hover:bg-primary-600 dark:bg-primary-500 dark:hover:bg-primary-600">
+                            <button onClick={confirmUpload} className="px-4 py-2 text-xs font-medium text-white dark:text-black bg-primary-base dark:bg-primary-200 rounded-lg hover:bg-primary-600 dark:hover:bg-primary-600">
                                 {t("Upload")}
                             </button>
                         </div>

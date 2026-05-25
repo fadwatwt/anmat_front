@@ -3,6 +3,7 @@
 import SearchInput from "./Form/SearchInput.jsx";
 
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
+import { FiSun, FiMoon } from "react-icons/fi";
 import React from "react";
 
 import PropTypes from "prop-types";
@@ -12,11 +13,16 @@ import { selectNotifications, selectUnreadCount } from "@/redux/notifications/no
 import NotificationsDropdown from "./Dropdowns/NotificationsDropdown.jsx";
 import MessagesDropdown from "./Dropdowns/MessagesDropdown.jsx";
 import HeaderUserMenu from "./Dropdowns/HeaderUserMenu.jsx";
+import { useTheme } from "@/app/providers";
 
 const Header = React.memo(({ taggleSlidebarOpen, className }) => {
   const notifications = useSelector(selectNotifications);
   const unreadCount = useSelector(selectUnreadCount);
+  const [theme, setTheme] = useTheme();
 
+  const toggleTheme = () => {
+    setTheme(theme === "dark" ? "light" : "dark");
+  };
 
   // Close dropdown when clicking outside
 
@@ -38,6 +44,13 @@ const Header = React.memo(({ taggleSlidebarOpen, className }) => {
       </div>
       <div className={"flex gap-2 sm:gap-5"}>
         <div className={"icons flex gap-1 sm:gap-2 items-center relative w-auto justify-end"}>
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-lg text-cell-secondary hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+          >
+            {theme === "dark" ? <FiSun size={18} /> : <FiMoon size={18} />}
+          </button>
           <NotificationsDropdown notifications={notifications} unreadCount={unreadCount} />
           <MessagesDropdown />
         </div>

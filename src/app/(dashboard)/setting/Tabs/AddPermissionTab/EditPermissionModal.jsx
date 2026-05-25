@@ -46,13 +46,13 @@ const EditPermissionModal = ({
 
                 {/* Categories */}
                 <div className="flex flex-col items-start ">
-                    <ElementsSelect options={optionsStatus} classNameItemSelected={"p-1 px-2 bg-primary-100 text-black rounded-md"} isMultiple={true} isRemoveBtn={false} defaultValue={[optionsStatus[0],optionsStatus[2]]}
+                    <ElementsSelect options={optionsStatus} classNameItemSelected={"p-1 px-2 bg-primary-100 text-black dark:text-gray-100 rounded-md"} isMultiple={true} isRemoveBtn={false} defaultValue={[optionsStatus[0],optionsStatus[2]]}
                                     title={"Categories"} classNameContainer={"w-full"} onChange={handleCategoryChange}/>
                 </div>
 
                 {/* Permissions */}
                 <div className="flex flex-col items-start ">
-                    <ElementsSelect options={optionsStatus} isMultiple={true} isRemoveBtn={false} classNameItemSelected={"p-1 px-2 bg-primary-100 text-black rounded-md"} defaultValue={[optionsStatus[1]]}
+                    <ElementsSelect options={optionsStatus} isMultiple={true} isRemoveBtn={false} classNameItemSelected={"p-1 px-2 bg-primary-100 text-black dark:text-gray-100 rounded-md"} defaultValue={[optionsStatus[1]]}
                                     title={"Permissions"} classNameContainer={"w-full"} onChange={handleCategoryChange}/>
                 </div>
             </div>

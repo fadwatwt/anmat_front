@@ -183,7 +183,7 @@ function CustomSelect({
                     onClick={() => setIsDropdownOpen(true)}
                     className={variant === "chart" 
                         ? `flex items-center justify-between gap-2 h-9 bg-status-bg text-cell-primary w-full border border-status-border rounded-xl hover:border-primary-400 transition-all shadow-sm cursor-pointer px-3 ${classNameSelect || "text-xs font-medium"}` 
-                        : `flex flex-wrap items-center gap-2 h-auto bg-status-bg text-cell-primary w-full border border-status-border rounded-xl ${classNameSelect ? classNameSelect : "py-2.5 px-4 text-sm"} shadow-sm cursor-text focus-within:ring-2 focus-within:ring-primary-500/20 focus-within:border-primary-500 transition-all`}
+                        : `flex flex-wrap items-center gap-2 h-auto bg-status-bg text-cell-primary w-full border border-status-border rounded-xl ${classNameSelect ? classNameSelect : "py-2.5 px-4 text-sm"} shadow-sm cursor-text focus-within:ring-2 focus-within:ring-primary-500/20 focus-within:border-primary-500 dark:focus-within:border-primary-500 dark:focus-within:ring-primary-500 transition-all`}
                 >
                     {/* Tags (Selected Options) */}
                     <div className={variant === "chart" ? "flex items-center gap-1 font-medium text-cell-secondary truncate flex-nowrap" : "flex flex-wrap gap-1"}>

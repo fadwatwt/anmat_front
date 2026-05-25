@@ -117,7 +117,7 @@ function CreateChatGroupModal({ isOpen, onClose, isEdit, editData }) {
 
                 {/* Model Type & Record */}
                 <div className="flex gap-4">
-                    <div className="w-1/2">
+                    <div className="w-full md:w-1/2">
                         <SelectAndLabel
                             title="Model Type"
                             options={modelTypeOptions}
@@ -127,7 +127,7 @@ function CreateChatGroupModal({ isOpen, onClose, isEdit, editData }) {
                             name="modelType"
                         />
                     </div>
-                    <div className="w-1/2">
+                    <div className="w-full md:w-1/2">
                         <InputAndLabel
                             title="Model Record"
                             isRequired={true}

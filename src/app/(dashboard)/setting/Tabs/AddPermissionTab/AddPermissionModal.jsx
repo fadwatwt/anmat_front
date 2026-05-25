@@ -46,13 +46,13 @@ const AddPermissionModal = ({
 
                 {/* Categories */}
                 <div className="flex flex-col items-start ">
-                    <ElementsSelect options={optionsStatus} classNameItemSelected={"p-1 px-2 bg-primary-100 text-black rounded-md"} isMultiple={true} isRemoveBtn={false}
+                    <ElementsSelect options={optionsStatus} classNameItemSelected={"p-1 px-2 bg-primary-100 text-black dark:text-gray-100 rounded-md"} isMultiple={true} isRemoveBtn={false}
                                     title={"Categories"} classNameContainer={"w-full"} onChange={handleCategoryChange}/>
                 </div>
 
                 {/* Permissions */}
                 <div className="flex flex-col items-start ">
-                    <ElementsSelect options={optionsStatus} isMultiple={true} isRemoveBtn={false} classNameItemSelected={"p-1 px-2 bg-primary-100 text-black rounded-md"}
+                    <ElementsSelect options={optionsStatus} isMultiple={true} isRemoveBtn={false} classNameItemSelected={"p-1 px-2 bg-primary-100 text-black dark:text-gray-100 rounded-md"}
                                     title={"Permissions"} classNameContainer={"w-full"} onChange={handleCategoryChange}/>
                 </div>
             </div>

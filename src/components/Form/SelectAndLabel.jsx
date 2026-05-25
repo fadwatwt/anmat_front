@@ -33,7 +33,7 @@ function SelectAndLabel({
             onChange(e.target.value); // Send _id to backend
           }}
           onBlur={onBlur}
-          className={`py-3 px-2 text-sm bg-status-bg border-2 rounded-xl w-full focus:outline-none focus:border-primary-400 text-cell-primary appearance-none transition-all
+          className={`py-3 px-2 text-sm bg-status-bg border-2 rounded-xl w-full focus:outline-none focus:border-primary-400 dark:focus:border-primary-500 dark:focus:ring-primary-500 text-cell-primary appearance-none transition-all
             ${error
               ? "border-red-500"
               : "border-status-border"

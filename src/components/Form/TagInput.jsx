@@ -149,7 +149,7 @@ const TagInput = ({ suggestions, apparent, placeholder, title, isRequired, value
                             calculateDropdownPosition();
                         }}
                         onBlur={handleBlur}
-                        className="flex-grow bg-transparent focus:outline-none text-sm p-1 min-w-[150px] text-cell-primary placeholder:text-cell-secondary/50"
+                        className="flex-grow bg-transparent focus:outline-none text-sm p-1 min-w-[150px] text-cell-primary placeholder:text-cell-secondary/50 dark:placeholder-gray-400"
                     />
                 </div>
             </div>

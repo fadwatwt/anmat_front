@@ -174,7 +174,7 @@ function EditOrganizationModal({ isOpen, onClose, organization }) {
                         placeholder="https://example.com"
                         error={formik.touched.website && formik.errors.website ? formik.errors.website : ""}
                     />
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <SelectAndLabel
                             title="Country"
                             name="country"

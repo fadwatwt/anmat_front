@@ -127,7 +127,7 @@ const ThreadSidebar = ({ message, onClose }) => {
             type="submit"
             disabled={!replyText.trim()}
             className={`p-2 rounded-xl transition-colors ${
-              replyText.trim() ? "bg-primary-500 text-white" : "bg-weak-100 text-sub-500"
+              replyText.trim() ? "bg-primary-500 dark:bg-primary-200 dark:text-black text-white" : "bg-weak-100 text-sub-500"
             }`}
           >
             <Send size={16} />

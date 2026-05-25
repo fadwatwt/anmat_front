@@ -387,23 +387,23 @@ const AssistantPage = () => {
                                                     onClick={() => setOpenImageUrl(file.url)}
                                                   />
                                               ) : (
-                                                <div key={fileIdx} className="rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow flex items-center w-[492px] h-[68px] px-5 py-4 gap-2.5">
+                                                <div key={fileIdx} className="rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow flex items-center w-full sm:w-[492px] min-h-[68px] px-4 sm:px-5 py-4 gap-2.5">
                                                   {/* Left icon */}
                                                   {isDocument(file.type, file.name) ? (
-                                                    <span className="inline-flex items-center justify-center w-8 h-8 bg-primary-50 rounded-lg">
+                                                    <span className="inline-flex items-center justify-center w-8 h-8 bg-primary-50 rounded-lg shrink-0">
                                                       <img src="/images/AiAssistant/document-text.svg" alt="Document" className="w-6 h-6" />
                                                     </span>
                                                   ) : (
-                                                    <span className="inline-flex items-center justify-center w-8 h-8 bg-primary-50 rounded-lg">
+                                                    <span className="inline-flex items-center justify-center w-8 h-8 bg-primary-50 rounded-lg shrink-0">
                                                       <img src="/images/AiAssistant/file.svg" alt="File" className="w-6 h-6" />
                                                     </span>
                                                   )}
                                                   {/* File name center */}
                                                   <div className="flex-1 min-w-0">
-                                                    <div className="font-semibold text-lg text-gray-900 dark:text-gray-100 truncate">{file.name}</div>
+                                                    <div className="font-semibold text-base sm:text-lg text-gray-900 dark:text-gray-100 truncate">{file.name}</div>
                                                   </div>
                                                   {/* Download icon right */}
-                                                  <a href={file.url} download={file.name} className="flex items-center justify-center text-primary-500 hover:text-primary-700" title="Download">
+                                                  <a href={file.url} download={file.name} className="flex items-center justify-center text-primary-500 hover:text-primary-700 shrink-0" title="Download">
                                                     <img src="/images/AiAssistant/lucide_download.svg" alt="Download" className="w-6 h-6" style={{ width: 24, height: 24 }} />
                                                   </a>
                                                 </div>
@@ -425,10 +425,10 @@ const AssistantPage = () => {
                                                       onClick={() => setOpenImageUrl(file.url)}
                                                     />
                                                 ) : (
-                                                  <div key={fileIdx} className="rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow flex items-center w-[492px] h-[68px] px-5 py-4 gap-2.5">
+                                                  <div key={fileIdx} className="rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow flex items-center w-full sm:w-[492px] min-h-[68px] px-4 sm:px-5 py-4 gap-2.5">
                                                     {/* Left icon */}
                                                     {isDocument(file.type, file.name) ? (
-                                                      <span className="inline-flex items-center justify-center w-8 h-8 bg-primary-50 rounded-lg">
+                                                      <span className="inline-flex items-center justify-center w-8 h-8 bg-primary-50 rounded-lg shrink-0">
                                                         <img src="/images/AiAssistant/document-text.svg" alt="Document" className="w-6 h-6" />
                                                       </span>
                                                     ) : (

@@ -114,10 +114,10 @@ const EmployeeRegistration = () => {
     if (isInfoError) {
         return (
             <div className="w-full h-screen flex flex-col items-center justify-center gap-4">
-                <p className="text-red-500 font-medium">{t("Invalid or expired invitation link")}</p>
+                <p className="text-red-500 dark:text-red-400 font-medium">{t("Invalid or expired invitation link")}</p>
                 <button
                     onClick={() => router.push('/sign-in')}
-                    className="text-primary-500 hover:underline"
+                    className="text-primary-500 dark:text-primary-400 hover:underline"
                 >
                     {t("Back to Login")}
                 </button>
@@ -139,7 +139,7 @@ const EmployeeRegistration = () => {
                 <div className="flex flex-col items-center gap-3">
                     <div className="flex w-20 h-20 justify-center items-center rounded-full bg-status-bg">
                         <div className="flex w-12 h-12 justify-center items-center rounded-full bg-surface shadow-md">
-                            <LiaUser size={30} className="text-primary-500" />
+                            <LiaUser size={30} className="text-primary-500 dark:text-primary-400" />
                         </div>
                     </div>
 
@@ -156,7 +156,7 @@ const EmployeeRegistration = () => {
                 {/* Form */}
                 <form id="employee-registration-form" onSubmit={formik.handleSubmit} className="flex flex-col w-full gap-5 max-w-md">
                     {error && (
-                        <div className="w-full p-3 text-sm text-red-500 bg-red-50 border border-red-200 rounded-lg">
+                        <div className="w-full p-3 text-sm text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-800 rounded-lg">
                             {error}
                         </div>
                     )}
@@ -227,7 +227,7 @@ const EmployeeRegistration = () => {
                         <button
                             type="submit"
                             disabled={isRegistering}
-                            className="bg-primary-500 text-white font-medium text-md w-full py-3 rounded-xl cursor-pointer
+                            className="bg-primary-500 dark:bg-primary-200 text-white dark:text-black font-medium text-md w-full py-3 rounded-xl cursor-pointer
                             hover:bg-primary-600 transition-colors shadow-md disabled:bg-primary-300 flex items-center justify-center gap-2"
                         >
                             {isRegistering ? (

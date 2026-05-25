@@ -53,9 +53,9 @@ function OrdersTable() {
 
     const statusCell = (status) => {
         const config = statusConfig[status] || {
-            bgColor: "bg-gray-50",
-            icon: <RiQuestionLine size={15} className="text-gray-700" />,
-            textColor: "text-gray-700",
+            bgColor: "bg-gray-50 dark:bg-gray-900",
+            icon: <RiQuestionLine size={15} className="text-gray-700 dark:text-gray-200" />,
+            textColor: "text-gray-700 dark:text-gray-200",
         };
 
         return (
@@ -77,10 +77,10 @@ function OrdersTable() {
         <div key={`product-${payment._id}`} className="flex items-center justify-start gap-2">
             <div className="rounded-full p-2 bg-primary-100">
                 <div className="rounded-full p-2 bg-primary-200">
-                    <RiHourglass2Line size={25} className="rounded-full text-primary-500 stroke-[5px]" />
+                    <RiHourglass2Line size={25} className="rounded-full text-primary-500 dark:text-primary-400 stroke-[5px]" />
                 </div>
             </div>
-            <span className="text-md text-gray-900">
+            <span className="text-md text-gray-900 dark:text-gray-100">
                 {payment.stripe_metadata?.[0]?.split(': ')[1] || t("Subscription")}
             </span>
         </div>,
@@ -88,7 +88,7 @@ function OrdersTable() {
         // Payment Method cell
         <div key={`pm-${payment._id}`} className="flex items-center justify-start gap-2">
             {payment.payment_method_id?.card_brand === 'visa' ? <RiVisaFill size={35} className="rounded-full stroke-[5px]" /> : <RiMastercardFill size={35} className="rounded-full stroke-[5px]" />}
-            <span className="text-md text-gray-900">
+            <span className="text-md text-gray-900 dark:text-gray-100">
                 {payment.payment_method_id?.card_brand || t("Card")}
             </span>
         </div>,

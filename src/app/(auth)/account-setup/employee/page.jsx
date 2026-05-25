@@ -29,7 +29,7 @@ const EmployeeAccountSetup = () => {
     return (
         <div className="flex flex-col items-center justify-center gap-8 p-8 w-full text-center">
             <div className="flex flex-col items-center gap-6 max-w-2xl w-full">
-                <div className="w-24 h-24 bg-status-bg rounded-full flex items-center justify-center text-primary-500 shadow-sm border border-status-border">
+                <div className="w-24 h-24 bg-status-bg rounded-full flex items-center justify-center text-primary-500 dark:text-primary-400 shadow-sm border border-status-border">
                     {noDetails ? (
                         <LiaUserShieldSolid size={48} />
                     ) : (

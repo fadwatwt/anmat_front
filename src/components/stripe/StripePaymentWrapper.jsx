@@ -63,14 +63,14 @@ const StripePaymentWrapper = ({ amount, onFinish, userEmail, userName, userPhone
         return (
             <div className="flex flex-col items-center justify-center p-10 gap-4">
                 <RiLoader4Line className="animate-spin text-primary-base" size={48} />
-                <p className="text-gray-500 font-medium text-lg">Initializing secure checkout...</p>
+                <p className="text-gray-500 font-medium text-lg dark:text-gray-400">Initializing secure checkout...</p>
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className="p-6 bg-red-50 border border-red-200 rounded-xl text-red-600 text-center">
+            <div className="p-6 bg-red-50 border border-red-200 rounded-xl text-red-600 text-center dark:bg-red-900/30 dark:border-red-800 dark:text-red-400">
                 <p className="font-bold mb-2">Error</p>
                 <p>{typeof error === 'string' ? error : (error.message || "An unexpected error occurred.")}</p>
             </div>

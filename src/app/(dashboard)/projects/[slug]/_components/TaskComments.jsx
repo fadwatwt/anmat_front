@@ -42,7 +42,7 @@ function TaskComments({comments, currentUserId, authUserType, onDeleteComment, o
                                     {canEdit && (
                                         <button 
                                             onClick={() => setEditingCommentId(comment._id)} 
-                                            className="text-primary-base hover:text-primary-600 transition"
+                                            className="text-primary-base dark:text-primary-200 hover:text-primary-600 dark:hover:text-primary-400 transition"
                                             title="Edit Comment"
                                             disabled={loadingComments[comment._id]}
                                         >

@@ -5,7 +5,7 @@ import Link from "next/link";
 const VerifyEmail = () => {
     return (
         <>
-            <div className="relative rounded-xl px-12 py-16 border border-status-border bg-surface">
+            <div className="relative rounded-xl px-4 sm:px-6 md:px-12 py-10 md:py-16 border border-status-border bg-surface">
                 <div className="absolute top-0 left-0 w-full">
                     <img src="/images/patterns/pattern_rec_top.png" className="w-full h-[120px]" alt="" />
                 </div>
@@ -20,8 +20,8 @@ const VerifyEmail = () => {
                         </svg>
                     </div>
 
-                    <div className="flex flex-col items-center justify-start gap-8 text-center w-[30rem]">
-                        <div className="flex flex-col gap-1 text-2xl w-full">
+                    <div className="flex flex-col items-center justify-start gap-8 text-center w-full max-w-[30rem]">
+                        <div className="flex flex-col gap-1 text-xl sm:text-2xl w-full">
                             <span className="text-cell-primary">
                                 {"Reset Password Link Sent"}
                             </span>
@@ -33,7 +33,7 @@ const VerifyEmail = () => {
 
                         <Link
                             href="/sign-in"
-                            className="bg-primary-500 text-primary-50 text-nowrap text-md px-12 py-2 rounded-lg cursor-pointer
+                            className="bg-primary-500 dark:bg-primary-200 dark:text-black text-primary-50 text-nowrap text-md px-12 py-2 rounded-lg cursor-pointer
                                         hover:bg-primary-600 text-center"
                         >
                             {"Return"}

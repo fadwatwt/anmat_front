@@ -67,13 +67,13 @@ const EditPerformanceRatingModal = ({ isOpen, onClose, employee, onUpdate }) => 
                 <div className="flex justify-end gap-3 mt-6">
                     <button 
                         onClick={onClose} 
-                        className="px-6 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors"
+                        className="px-6 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                     >
                         {t("Cancel")}
                     </button>
                     <button 
                         onClick={handleSave} 
-                        className="px-6 py-2.5 text-sm font-medium text-white bg-primary-base rounded-xl hover:bg-primary-dark transition-colors"
+                        className="px-6 py-2.5 text-sm font-medium text-white bg-primary-base dark:bg-primary-200 dark:text-black rounded-xl hover:bg-primary-dark transition-colors"
                     >
                         {t("Save Changes")}
                     </button>

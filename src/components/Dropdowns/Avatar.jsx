@@ -16,7 +16,7 @@ const Avatar = ({ user, avatar, avatarImage, avatarColor }) => {
     return (
       <div
         className={`w-8 h-8 rounded-full flex items-center justify-center ${
-          avatarColor || "bg-gray-200"
+          avatarColor || "bg-gray-200 dark:bg-gray-700"
         }`}
       >
         {avatar}

@@ -64,7 +64,7 @@ function PermissionsPage() {
                     </span>
                 ))}
                 {role.permissions.length > 6 && (
-                    <span className="text-[11px] text-primary-base font-bold flex items-center justify-center bg-badge-bg px-2 py-1 rounded-full border border-status-border">
+                    <span className="text-[11px] text-primary-base dark:text-primary-200 font-bold flex items-center justify-center bg-badge-bg px-2 py-1 rounded-full border border-status-border">
                         +{role.permissions.length - 6}
                     </span>
                 )}
@@ -72,8 +72,8 @@ function PermissionsPage() {
 
             {/* Mobile/Small Tablet: Compact List Trigger and Hover Panel */}
             <div className="min-[1100px]:hidden">
-                <div className="text-xs text-primary-base bg-badge-bg hover:bg-primary-base/10 px-3 py-1.5 rounded-lg border border-status-border cursor-pointer flex items-center gap-2 transition-all">
-                    <RiEyeLine size={14} className="flex-shrink-0 text-primary-base" />
+                <div className="text-xs text-primary-base dark:text-primary-200 bg-badge-bg hover:bg-primary-base/10 px-3 py-1.5 rounded-lg border border-status-border cursor-pointer flex items-center gap-2 transition-all">
+                    <RiEyeLine size={14} className="flex-shrink-0 text-primary-base dark:text-primary-200" />
                     <span className="whitespace-nowrap font-medium">{role.permissions.length} {t("Permissions")}</span>
                 </div>
             </div>
@@ -87,7 +87,7 @@ function PermissionsPage() {
                 <div className="max-h-[300px] overflow-y-auto custom-scroll pr-2 flex flex-col gap-2 bg-transparent">
                     {role.permissions.map((p, i) => (
                         <div key={i} className="flex items-start gap-2.5 group/item py-0.5">
-                            <div className="w-1.5 h-1.5 rounded-full bg-primary-base mt-1.5 flex-shrink-0 group-hover/item:scale-125 transition-transform shadow-[0_0_8px_rgba(55,93,251,0.4)]"></div>
+                            <div className="w-1.5 h-1.5 rounded-full bg-primary-base dark:bg-primary-200 dark:text-black mt-1.5 flex-shrink-0 group-hover/item:scale-125 transition-transform shadow-[0_0_8px_rgba(55,93,251,0.4)]"></div>
                             <span className="text-xs text-cell-secondary group-hover/item:text-cell-primary transition-colors leading-relaxed">
                                 {p.name}
                             </span>
@@ -192,7 +192,7 @@ function PermissionsPage() {
         return (
             <Page title={"Roles"}>
                 <div className="flex items-center justify-center h-full">
-                    <span className="text-gray-500 text-sm">{t("Loading roles...")}</span>
+                    <span className="text-gray-500 dark:text-gray-400 text-sm">{t("Loading roles...")}</span>
                 </div>
             </Page>
         );

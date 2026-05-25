@@ -7,7 +7,7 @@ const ProviderItem = ({ logo, name, isSelected, onClick }) => (
     <button
         onClick={onClick}
         className={`flex items-center justify-center p-4 border-2 rounded-xl transition-all w-full h-16 
-      ${isSelected ? 'border-blue-600 bg-blue-50/10' : 'border-gray-100 bg-white hover:border-gray-300'}`}
+      ${isSelected ? 'border-blue-600 bg-blue-50/10 dark:bg-blue-500/10' : 'border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600'}`}
     >
         <img src={logo} alt={name} className="h-full object-contain" />
     </button>
@@ -25,7 +25,7 @@ function PaymentProviderSelector({ selectedProvider, onProviderChange }) {
 
     return (
         <div className="flex flex-col gap-4">
-            <h3 className="text-gray-800">{t('Select Payment method')}</h3>
+            <h3 className="text-gray-800 dark:text-gray-200">{t('Select Payment method')}</h3>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {providers.map((provider) => (
                     <ProviderItem

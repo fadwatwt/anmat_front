@@ -33,11 +33,11 @@ function SupportTicketsPage() {
     const getPriorityStyle = (priority) => {
         const p = priority?.toUpperCase();
         switch (p) {
-            case 'URGENT': return 'bg-red-100 text-red-600';
-            case 'HIGH': return 'bg-orange-100 text-orange-600';
-            case 'MEDIUM': return 'bg-yellow-100 text-yellow-600';
-            case 'LOW': return 'bg-green-100 text-green-600';
-            default: return 'bg-gray-100 text-gray-600';
+            case 'URGENT': return 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400';
+            case 'HIGH': return 'bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400';
+            case 'MEDIUM': return 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400';
+            case 'LOW': return 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400';
+            default: return 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300';
         }
     };
 

@@ -29,7 +29,7 @@ function PlanCard({
 
     return (
         <div
-            className={"flex flex-col min-w-[320px] flex-1 max-w-[420px] rounded-2xl border border-status-border shadow-sm overflow-hidden bg-surface transition-all duration-500 hover:shadow-2xl hover:border-primary-100 group relative"}>
+            className={"flex flex-col min-w-0 sm:min-w-[320px] flex-1 max-w-[420px] rounded-2xl border border-status-border shadow-sm overflow-hidden bg-surface transition-all duration-500 hover:shadow-2xl hover:border-primary-100 group relative"}> 
 
             {trial.is_active && (
                 <div className="absolute top-4 right-8 z-10">

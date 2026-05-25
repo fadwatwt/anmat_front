@@ -228,7 +228,7 @@ function SignIn() {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder="Enter your email"
-                                className="w-full py-3 px-2 outline-none bg-transparent text-cell-primary"
+                                className="w-full py-3 px-2 outline-none bg-transparent dark:bg-gray-800 text-cell-primary dark:text-gray-100 dark:placeholder-gray-400"
                                 required
                                 disabled={isLoading || isSubmitting}
                             />
@@ -241,7 +241,7 @@ function SignIn() {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="*"
-                                className="w-full py-3 px-2 outline-none bg-transparent text-cell-primary"
+                                className="w-full py-3 px-2 outline-none bg-transparent dark:bg-gray-800 text-cell-primary dark:text-gray-100"
                                 required
                                 disabled={isLoading || isSubmitting}
                             />
@@ -258,17 +258,17 @@ function SignIn() {
                                 <p className="text-sm text-cell-primary">Remember Me</p>
                             </div>
                             <Link href="/forget-password"
-                                className={`text-sm text-primary-base hover:text-primary-600 underline cursor-pointer ${(isLoading || isSubmitting) ? 'pointer-events-none text-gray-400' : ''}`}>
+                                className={`text-sm text-primary-base hover:text-primary-600 underline cursor-pointer ${(isLoading || isSubmitting) ? 'pointer-events-none text-gray-400 dark:text-gray-500' : ''}`}>
                                 Forgot Password?
                             </Link>
                         </div>
 
-                        {error && <p className="text-red-500 text-sm">{error}</p>}
+                        {error && <p className="text-red-500 dark:text-red-400 text-sm">{error}</p>}
 
                         <button
                             type="submit"
                             disabled={isLoading || isSubmitting}
-                            className="w-full rounded-lg bg-primary-base text-white py-1.5 disabled:opacity-70 disabled:cursor-not-allowed"
+                            className="w-full rounded-lg bg-primary-base dark:bg-primary-200 text-white dark:text-black py-1.5 disabled:opacity-70 disabled:cursor-not-allowed"
                         >
                             {(isLoading || isSubmitting) ? "Loading..." : "Login"}
                         </button>
@@ -287,8 +287,8 @@ function SignIn() {
                             <span className="text-md text-cell-secondary">
                                 Not have an account?
                             </span>
-                            <Link href="/register/subscriber/email" className={`text-primary-500 hover:text-primary-600 ${(isLoading || isSubmitting) ? 'pointer-events-none text-gray-400' : ''}`}>
-                                Register
+<Link href="/register/subscriber/email" className={`text-primary-500 dark:text-primary-400 hover:text-primary-600 ${(isLoading || isSubmitting) ? 'pointer-events-none text-gray-400 dark:text-gray-500' : ''}`}>
+                                                                Register
                             </Link>
                         </div>
                     </div>

@@ -23,8 +23,8 @@ const FileUpload = ({ title, callBack, accept = "image/*", maxSize = 5 * 1024 * 
             <label >{title}</label>
             <div
                 {...getRootProps()}
-                className={`border-2 border-dashed dark:border-gray-600 rounded-lg p-6 text-center w-full transition-all ${disabled ? "opacity-50 cursor-not-allowed bg-gray-50 border-gray-200" :
-                        isDragActive ? "border-blue-500 bg-blue-50 cursor-pointer" : "border-gray-300 cursor-pointer hover:border-gray-400"
+                className={`border-2 border-dashed dark:border-gray-700 rounded-lg p-6 text-center w-full transition-all ${disabled ? "opacity-50 cursor-not-allowed bg-gray-50 border-gray-200 dark:border-gray-700" :
+                        isDragActive ? "border-blue-500 bg-blue-50 cursor-pointer" : "border-gray-300 dark:border-gray-700 cursor-pointer hover:border-gray-400"
                     }`}
             >
                 <input {...getInputProps()} />
@@ -39,7 +39,7 @@ const FileUpload = ({ title, callBack, accept = "image/*", maxSize = 5 * 1024 * 
                     <button
                         type="button"
                         disabled={disabled}
-                        className={`mt-4 text-sm px-8 py-2 border-2 rounded-xl transition-colors ${disabled ? "bg-gray-100 text-gray-400 border-gray-200" : "bg-white text-gray-900 border-gray-200 hover:bg-gray-100"
+                        className={`mt-4 text-sm px-8 py-2 border-2 rounded-xl transition-colors ${disabled ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 border-gray-200 dark:border-gray-700" : "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
                             }`}
                     >
                         {t("Browse File")}

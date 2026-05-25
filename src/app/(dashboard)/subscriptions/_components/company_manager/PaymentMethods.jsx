@@ -105,7 +105,7 @@ function PaymentMethods() {
 
                                         {/* info */}
                                         <div className="flex items-start gap-8 justify-between w-full">
-                                            <div className="flex flex-col items-start justify-start gap-0 min-w-[10rem]">
+                                            <div className="flex flex-col items-start justify-start gap-0 min-w-0 sm:min-w-[10rem]">
                                                 <span className="text-sm text-gray-700 font-bold">
                                                     {t("Country")}
                                                 </span>
@@ -113,7 +113,7 @@ function PaymentMethods() {
                                                     {country || t("N/A")}
                                                 </span>
                                             </div>
-                                            <div className="flex flex-col items-start justify-start gap-0 min-w-[15rem]">
+                                            <div className="flex flex-col items-start justify-start gap-0 min-w-0 sm:min-w-[15rem]">
                                                 <span className="text-sm text-gray-700 font-bold">
                                                     {t("Card Number")}
                                                 </span>
@@ -121,7 +121,7 @@ function PaymentMethods() {
                                                     {last4 ? `**** **** **** ${last4}` : t("N/A")}
                                                 </span>
                                             </div>
-                                            <div className="flex flex-col items-start justify-start gap-0 min-w-[10rem]">
+                                            <div className="flex flex-col items-start justify-start gap-0 min-w-0 sm:min-w-[10rem]">
                                                 <span className="text-sm text-gray-700 font-bold">
                                                     {t("Card Expiry")}
                                                 </span>

@@ -172,14 +172,14 @@ function CreateMeetingModal({ isOpen, onClose, isEdit, editData }) {
                 />
 
                 <div className="flex gap-4">
-                    <div className="w-1/2">
+                    <div className="w-full md:w-1/2">
                         <DateInput
                             title="Date"
                             value={formData.date}
                             onChange={(e) => handleSelectChange("date", e.target.value)}
                         />
                     </div>
-                    <div className="w-1/2">
+                    <div className="w-full md:w-1/2">
                         <TimeInput
                             title="Meeting Time"
                             value={formData.time}

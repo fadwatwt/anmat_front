@@ -143,7 +143,7 @@ function TaskMainInfo({ task, type = "project", values, handleChange, setFieldVa
         placeholder={t("Add a description")}
       />
 
-      <div className={"grid grid-cols-2 gap-4"}>
+      <div className={"grid grid-cols-1 md:grid-cols-2 gap-4"}>
         {/* Department */}
         <DefaultSelect
           title={t("Department")}
@@ -206,7 +206,7 @@ function TaskMainInfo({ task, type = "project", values, handleChange, setFieldVa
       )}
 
       {/* Dates Section */}
-      <div className={"grid grid-cols-2 gap-4"}>
+      <div className={"grid grid-cols-1 md:grid-cols-2 gap-4"}>
         <DateInput
           value={values?.start_date || ""}
           onChange={handleChange}
@@ -223,7 +223,7 @@ function TaskMainInfo({ task, type = "project", values, handleChange, setFieldVa
         />
       </div>
 
-      <div className={"grid grid-cols-2 gap-4"}>
+      <div className={"grid grid-cols-1 md:grid-cols-2 gap-4"}>
         {type === "project" ? (
           <>
             <DateInput
@@ -252,7 +252,7 @@ function TaskMainInfo({ task, type = "project", values, handleChange, setFieldVa
         )}
       </div>
 
-      <div className={"grid grid-cols-2 gap-4 items-end"}>
+      <div className={"grid grid-cols-1 md:grid-cols-2 gap-4 items-end"}>
         {/* Status */}
         <DefaultSelect
           title={t("Status")}

@@ -110,7 +110,7 @@ const ChatDetailsModal = ({ activeChat, onClose }) => {
               <div className="mt-6 pt-4 border-t border-status-border">
                 <div className="flex items-center justify-between mb-3 px-1">
                   <h4 className="text-sm font-bold text-cell-secondary uppercase tracking-wider">Participants</h4>
-                  <button className="text-primary hover:text-primary-600 text-sm font-medium flex items-center gap-1">
+                  <button className="text-primary hover:text-primary-600 dark:hover:text-primary-400 text-sm font-medium flex items-center gap-1">
                     <UserPlus size={14} /> Add
                   </button>
                 </div>

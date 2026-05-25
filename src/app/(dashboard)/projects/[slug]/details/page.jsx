@@ -300,7 +300,7 @@ function ProjectDetailsPage() {
                         {(canManageTeam && false) && (
                             <button
                                 onClick={() => setIsTeamModalOpen(true)}
-                                className="flex items-center gap-2 px-4 py-2 bg-primary-base text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity w-fit"
+                                className="flex items-center gap-2 px-4 py-2 bg-primary-base dark:bg-primary-200 text-white dark:text-black rounded-xl text-sm font-medium hover:opacity-90 transition-opacity w-fit"
                             >
                                 <RiGroupFill size={16} />
                                 {t("Manage Team")}

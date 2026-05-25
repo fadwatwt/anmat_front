@@ -33,7 +33,7 @@ function QualificationsForm() {
             {qualifications.map((qual, index) => (
                 <div
                     key={qual.id}
-                    className="relative flex flex-col gap-4 p-4 border border-dashed border-gray-200 rounded-xl bg-gray-50/30"
+                    className="relative flex flex-col gap-4 p-4 border border-dashed border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50/30 dark:bg-gray-900/30"
                 >
                     {qualifications.length > 1 && (
                         <button

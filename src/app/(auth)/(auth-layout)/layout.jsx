@@ -61,9 +61,9 @@ function AuthLayout({ children }) {
 
     return (
         <div className="w-full flex justify-start py-1 bg-white dark:bg-[#161922]">
-            <div className="flex flex-col w-[40%] h-screen overflow-hidden gap-8 px-9 py-7 bg-transparent">
+            <div className="flex flex-col w-full md:w-[50%] lg:w-[40%] h-screen overflow-hidden gap-8 px-4 sm:px-6 md:px-9 py-4 sm:py-7 bg-transparent">
                 {/* Logo Section */}
-                <div className="flex items-center justify-start gap-2 mb-8">
+                <div className="flex items-center justify-start gap-2 mb-4 md:mb-8">
                     <Image
                         className="w-10 h-10 rounded-full"
                         src="/images/logo.png"
@@ -79,7 +79,7 @@ function AuthLayout({ children }) {
 
                 {/* Placeholder for login form (this should be a Client Component) */}
                 <div className="w-full flex flex-col items-center gap-8 justify-between h-full overflow-auto">
-                    <div className="w-full px-12">{children}</div>
+                    <div className="w-full px-4 sm:px-6 md:px-12">{children}</div>
                 </div>
 
                 <div className="w-full flex flex-wrap gap-4 items-center justify-between">
@@ -91,7 +91,7 @@ function AuthLayout({ children }) {
             </div>
 
             {/* Right Side Image/Placeholder */}
-            <div className="flex flex-col justify-center flex-1 rounded-xl bg-status-bg relative overflow-hidden m-2">
+            <div className="hidden md:flex flex-col justify-center flex-1 rounded-xl bg-status-bg relative overflow-hidden m-2">
                 <div className="absolute top-12 left-36 w-full">
                     <img
                         src="/images/LandingPage/dashboardImage.png"
@@ -100,11 +100,11 @@ function AuthLayout({ children }) {
                     />
                 </div>
                 <div className="h-[75vh]"></div>
-                <div className="flex flex-col items-center justify-center gap-2 text-center">
-                    <span className="text-2xl text-cell-primary">
+                <div className="flex flex-col items-center justify-center gap-2 text-center px-4">
+                    <span className="text-xl lg:text-2xl text-cell-primary">
                         {"The Ultimate Management Dashboard"}
                     </span>
-                    <span className="text-lg text-cell-secondary">
+                    <span className="text-sm lg:text-lg text-cell-secondary">
                         {
                             "Everything you require for teamwork, analysis, and making decisions all in a single location."
                         }

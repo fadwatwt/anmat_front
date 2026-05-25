@@ -49,7 +49,7 @@ function RegisterForm() {
                 </div>
 
                 {error && (
-                    <div className="w-full p-3 text-sm text-red-500 bg-red-100 rounded-lg">
+                    <div className="w-full p-3 text-sm text-red-500 dark:text-red-400 bg-red-100 dark:bg-red-500/10 rounded-lg">
                         {error}
                     </div>
                 )}
@@ -66,7 +66,7 @@ function RegisterForm() {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="Enter your email"
-                            className="w-full py-3 px-2 outline-none disabled:bg-status-bg bg-transparent text-cell-primary"
+                            className="w-full py-3 px-2 outline-none disabled:bg-status-bg bg-transparent dark:bg-gray-800 text-cell-primary dark:text-gray-100 dark:placeholder-gray-400"
                             required
                             disabled={isBusy}
                         />
@@ -78,7 +78,7 @@ function RegisterForm() {
                     <button
                         type="submit"
                         disabled={isBusy}
-                        className="bg-primary-500 text-primary-50 text-md w-full py-3 rounded-xl cursor-pointer
+                        className="bg-primary-500 dark:bg-primary-200 text-primary-50 dark:text-black text-md w-full py-3 rounded-xl cursor-pointer
                         hover:bg-primary-600 text-center disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {isBusy ? "Loading..." : "Sign Up"}
@@ -90,11 +90,11 @@ function RegisterForm() {
                             Already have an account?
                         </span>
                         {isBusy ? (
-                            <span className="text-gray-400 cursor-not-allowed">
+                            <span className="text-gray-400 dark:text-gray-500 cursor-not-allowed">
                                 Login
                             </span>
                         ) : (
-                            <Link href="/sign-in" className="text-primary-500 hover:text-primary-600">
+                            <Link href="/sign-in" className="text-primary-500 dark:text-primary-400 hover:text-primary-600">
                                 Login
                             </Link>
                         )}

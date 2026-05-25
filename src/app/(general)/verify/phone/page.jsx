@@ -60,7 +60,7 @@ function PhoneVerify() {
 
     return (
         <>
-            <div className="relative rounded-xl px-12 border">
+            <div className="relative rounded-xl px-4 sm:px-6 md:px-12 border">
                 <div className="absolute top-0 left-0 w-full">
                     <img src="/images/patterns/pattern_rec_top.png" className="w-full h-[120px]" alt="" />
                 </div>
@@ -75,18 +75,18 @@ function PhoneVerify() {
                         </svg>
                     </div>
 
-                    <div className="flex flex-col items-center justify-start gap-4 text-center w-[30rem]">
-                        <div className="flex flex-col gap-1 text-2xl w-full">
+                    <div className="flex flex-col items-center justify-start gap-4 text-center w-full max-w-[30rem]">
+                        <div className="flex flex-col gap-1 text-xl sm:text-2xl w-full">
                             <span className="text-gray-900 dark:text-gray-50">
                                 {"Hi Mai, we’ve sent a verification Code"}
                             </span>
                         </div>
 
-                        <span className="block text-gray-500 text-lg text-wrap">
-                            we’ve sent verification 4 digits code to <span className="text-gray-700 m-1 font-semibold">{"+20/578999766"}</span> please add the code below to verify your phone
+                        <span className="block text-gray-500 dark:text-gray-400 text-lg text-wrap">
+                            we’ve sent verification 4 digits code to <span className="text-gray-700 dark:text-gray-200 m-1 font-semibold">{"+20/578999766"}</span> please add the code below to verify your phone
                         </span>
 
-                        <div className="flex justify-center gap-4 my-2" onPaste={handlePaste}>
+                        <div className="flex justify-center gap-2 sm:gap-4 my-2" onPaste={handlePaste}>
                             {otp.map((digit, index) => (
                                 <input
                                     key={index}
@@ -96,7 +96,7 @@ function PhoneVerify() {
                                     onChange={(e) => handleChange(index, e)}
                                     onClick={() => handleClick(index)}
                                     onKeyDown={(e) => handleKeyDown(index, e)}
-                                    className="w-16 h-16 text-center text-2xl font-semibold border rounded-xl outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-all dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
+                                    className="w-12 sm:w-16 h-12 sm:h-16 text-center text-xl sm:text-2xl font-semibold border rounded-xl outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-all dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
                                     maxLength={1}
                                 />
                             ))}
@@ -104,8 +104,8 @@ function PhoneVerify() {
 
                         <button
                             type="submit"
-                            className="bg-primary-500 text-primary-50 text-nowrap text-md px-12 py-2 rounded-lg cursor-pointer
-                                        hover:bg-primary-600 text-center mt-2"
+className="bg-primary-500 dark:bg-primary-200 text-primary-50 dark:text-black text-nowrap text-md px-12 py-2 rounded-lg cursor-pointer
+                                         hover:bg-primary-600 text-center mt-2"
                         >
                             {"Verify"}
                         </button>

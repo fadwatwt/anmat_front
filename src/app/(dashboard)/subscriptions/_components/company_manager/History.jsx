@@ -42,10 +42,10 @@ function History() {
         <div key={`product-${payment._id}`} className="flex items-center justify-start gap-2">
             <div className="rounded-full p-2 bg-primary-100">
                 <div className="rounded-full p-2 bg-primary-200">
-                    <RiFlashlightLine size={25} className="rounded-full text-primary-500 stroke-[5px]" />
+                    <RiFlashlightLine size={25} className="rounded-full text-primary-500 dark:text-primary-400 stroke-[5px]" />
                 </div>
             </div>
-            <span className="text-sm text-gray-900">
+            <span className="text-sm text-gray-900 dark:text-gray-100">
                 {payment.stripe_metadata?.[0]?.split(': ')[1] || t("Subscription")}
             </span>
         </div>,
@@ -55,7 +55,7 @@ function History() {
             <div className="p-2 h-12 w-18">
                 <img src={payment.payment_method_id?.card_brand === 'visa' ? "/images/payments/visa.png" : "/images/payments/mastercard.png"} alt={"img"} className={"w-full h-full object-cover"} />
             </div>
-            <span className="text-sm text-gray-900">
+            <span className="text-sm text-gray-900 dark:text-gray-100">
                 {payment.payment_method_id?.card_brand || t("Card")} **** {payment.payment_method_id?.last4 || ""}
             </span>
         </div>,
@@ -93,7 +93,7 @@ function History() {
                 confirmBtnText={t("Confirm")}
                 description={
                     <p>
-                        {t("Are you sure you want to")} <span className="font-bold text-black">{t("Re-Order")}</span> {t("the plan")}?
+                        {t("Are you sure you want to")} <span className="font-bold text-black dark:text-gray-100">{t("Re-Order")}</span> {t("the plan")}?
                     </p>
                 }
                 onSubmit={() => { }}

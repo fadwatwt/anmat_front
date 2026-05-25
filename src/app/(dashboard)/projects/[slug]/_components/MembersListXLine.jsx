@@ -22,7 +22,7 @@ function MembersListXLine({ members = [], maxVisible }) {
         </div>
       ))}
       {hiddenCount > 0 && (
-        <div className=" -ml-2 w-8 h-8 flex items-center justify-center text-sm font-medium bg-gray-200 text-gray-600 rounded-full border-2 border-white">
+        <div className=" -ml-2 w-8 h-8 flex items-center justify-center text-sm font-medium bg-gray-200 text-gray-600 dark:text-gray-300 rounded-full border-2 border-white">
           +{hiddenCount}
         </div>
       )}

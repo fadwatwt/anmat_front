@@ -13,21 +13,21 @@ const LastProjectsList = ({ projects = [] }) => {
             main={
                 <div className="flex flex-col items-start justify-start gap-4 w-full">
                     {projects.length === 0 && (
-                        <span className="text-sm text-gray-500">No projects yet.</span>
+                        <span className="text-sm text-gray-500 dark:text-gray-400">No projects yet.</span>
                     )}
                     {projects.map((project, index) => {
                         return (
                             <div key={index} className="flex gap-2 items-start justify-start w-full">
-                                <div className="w-12 h-12 rounded-full overflow-hidden border border-gray-200 bg-white text-center flex items-center justify-center">
+                                <div className="w-12 h-12 rounded-full overflow-hidden border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-center flex items-center justify-center">
                                     <span className="text-xl">
                                         {index + 1}
                                     </span>
                                 </div>
                                 <div className="flex flex-col items-start justify-start gap-1">
-                                    <span className="text-md text-gray-900">
+                                    <span className="text-md text-gray-900 dark:text-gray-100">
                                         {project.name}
                                     </span>
-                                    <span className="text-sm text-gray-500">
+                                    <span className="text-sm text-gray-500 dark:text-gray-400">
                                         {project.department || project.desc}
                                     </span>
                                 </div>

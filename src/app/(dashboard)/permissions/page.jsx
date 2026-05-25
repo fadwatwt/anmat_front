@@ -55,7 +55,7 @@ function PermissionsPage() {
         return (
             <Page title={"Permissions"}>
                 <div className="flex items-center justify-center h-64">
-                    <div className="text-primary-500 animate-pulse font-medium">{t("Loading permissions...")}</div>
+                    <div className="text-primary-500 dark:text-primary-400 animate-pulse font-medium">{t("Loading permissions...")}</div>
                 </div>
             </Page>
         );

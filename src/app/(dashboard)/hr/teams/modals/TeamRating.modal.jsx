@@ -60,7 +60,7 @@ function TeamRatingModal({ isOpen, onClose, team }) {
                 </div>
 
                 {/* File Upload Section */}
-                <div className="w-full border-t pt-4 border-dashed border-gray-200">
+                <div className="w-full border-t pt-4 border-dashed border-gray-200 dark:border-gray-700">
                     <FileUpload />
                 </div>
 
