@@ -1,4 +1,4 @@
-
+"use client"
 import { useTranslation } from "react-i18next";
 import { FaYoutube, FaInstagram, FaLinkedin, FaFacebook, FaEnvelope } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
