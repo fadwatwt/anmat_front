@@ -27,11 +27,10 @@ function Page({
                                     </div>
                                     <div className={"flex flex-col justify-start items-center"}>
                                         <p>**** 8304</p>
-<p className={"text-xs text-gray-500 dark:text-gray-400"}>Visa . Edit</p>
+                                        <p className={"text-xs text-gray-500 dark:text-gray-400"}>Visa . Edit</p>
                                     </div>
                                 </div>
                             </div>
-                        </div>
                         <div
                                 className={"border border-gray-500 rounded-xl py-2 px-4 w-full sm:w-[48%] flex justify-between items-center"}>
                                 <div className={"flex gap-3 items-center"}>
