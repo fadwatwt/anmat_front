@@ -99,7 +99,7 @@ function LoginAccountsModal({ isOpen, onClose, className }) {
                 <AccountPicker
                     selected={selectedAccounts}
                     onChange={setSelectedAccounts}
-                    title="Select Account(s) to Login"
+                    title={t("Select Account(s) to Login")}
                 />
 
                 <div className="flex flex-col gap-1 w-full items-start">

@@ -98,9 +98,9 @@ function SetSocialMediaQuotaModal({ isOpen, onClose, subscriberId, currentQuota 
             <Modal
                 isOpen={isOpen}
                 onClose={onClose}
-                title="Set Social Media Quota"
+                title={t("Set Social Media Quota")}
                 isBtns={true}
-                btnApplyTitle={isLoading ? "Saving..." : "Save"}
+                btnApplyTitle={isLoading ? t("Saving...") : t("Save")}
                 disabled={isLoading}
                 onClick={handleSubmit}
                 className="lg:w-4/12 md:w-7/12 sm:w-7/12 w-11/12 p-4"
@@ -141,8 +141,8 @@ function SetSocialMediaQuotaModal({ isOpen, onClose, subscriberId, currentQuota 
                         {mode === MODES.SPECIFIC && (
                             <div className="ms-6">
                                 <InputAndLabel
-                                    title="Limit"
-                                    placeholder="e.g. 5"
+                                    title={t("Limit")}
+                                    placeholder={t("e.g. 5")}
                                     type="number"
                                     name="limit"
                                     value={limit}

@@ -17,21 +17,20 @@ import {useRouter} from "next/navigation";
 import { useGetSubscriptionsBasicDetailsQuery, useUpdateSubscriptionStatusMutation } from "@/redux/subscriptions/subscriptionsApi";
 import { format } from "date-fns";
 
-const headers = [
-    { label: "Subscriber", width: "300px" },
-    { label: "Company", width: "300px" },
-    { label: "Subscribed at", width: "150px" },
-    { label: "Expires at", width: "150px" },
-    { label: "Status", width: "125px" },
-    { label: "", width: "50px" }
-];
-
-
 function AdminCompaniesSubscriptions() {
     const { data: subscriptions, isLoading, error } = useGetSubscriptionsBasicDetailsQuery();
     const [updateStatus] = useUpdateSubscriptionStatusMutation();
     const { t } = useTranslation();
     const router = useRouter();
+
+    const headers = [
+        { label: t("Subscriber"), width: "300px" },
+        { label: t("Company"), width: "300px" },
+        { label: t("Subscribed at"), width: "150px" },
+        { label: t("Expires at"), width: "150px" },
+        { label: t("Status"), width: "125px" },
+        { label: "", width: "50px" }
+    ];
 
     const [isDeleteSubAert,setIsDeleteSubAert] = useState(false);
     const [selectedSubscription, setSelectedSubscription] = useState(null);
@@ -55,34 +54,34 @@ function AdminCompaniesSubscriptions() {
             <div className={"flex justify-between items-start"}>
                 <div className={" h-[40px] w-[40px]"}>
                     <img className={"rounded-full h-[40px] w-[40px] max-w-full"}
-                         src={"https://randomuser.me/api/portraits/men/1.jpg"} alt={"image-user"}/>
+                         src={"https://randomuser.me/api/portraits/men/1.jpg"} alt={t("image-user")}/>
                 </div>
             </div>
             <div className="flex flex-col items-start justify-start gap-0">
                 <span className="text-sm font-medium text-cell-primary">
-                    {item.subscriber?.name || "N/A"}
+                    {item.subscriber?.name || t("N/A")}
                 </span>
                 <span className="text-xs text-cell-secondary">
-                    {item.subscriber?.email || "N/A"}
+                    {item.subscriber?.email || t("N/A")}
                 </span>
             </div>
         </div>,
         // Company Name cell
         <div key={`${item.subscription._id}_company`} className="flex flex-col items-start justify-start gap-0">
             <span className="text-sm font-medium text-cell-primary">
-                {item.organization?.name || "N/A"}
+                {item.organization?.name || t("N/A")}
             </span>
             <span className="text-xs text-cell-secondary">
-                {item.organization?.website || "N/A"}
+                {item.organization?.website || t("N/A")}
             </span>
         </div>,
 
         // Dates
         <div key={`${item.subscription._id}_start`} className="text-sm text-cell-secondary">
-            {item.subscription.starts_at ? format(new Date(item.subscription.starts_at), "MMM dd, yyyy") : "N/A"}
+            {item.subscription.starts_at ? format(new Date(item.subscription.starts_at), "MMM dd, yyyy") : t("N/A")}
         </div>,
         <div key={`${item.subscription._id}_end`} className="text-sm text-cell-secondary">
-            {item.subscription.expires_at ? format(new Date(item.subscription.expires_at), "MMM dd, yyyy") : "N/A"}
+            {item.subscription.expires_at ? format(new Date(item.subscription.expires_at), "MMM dd, yyyy") : t("N/A")}
         </div>,
 
         // Status cell
@@ -91,20 +90,20 @@ function AdminCompaniesSubscriptions() {
 
 
     const  SubscriptionActions = ({ item }) => {
-        const { i18n } = useTranslation();
+        const { t, i18n } = useTranslation();
         const statesActions = [
             {
-                text: "Active", icon: <RiCheckboxCircleLine className="text-green-500"/>, onClick: () => {
+                text: t("Active"), icon: <RiCheckboxCircleLine className="text-green-500"/>, onClick: () => {
                     handleUpdateStatus(item.subscription._id, "active");
                 },
             },
             {
-                text: "Deactivate", icon: <RiCloseCircleLine className="text-red-500"/>, onClick: () => {
+                text: t("Deactivate"), icon: <RiCloseCircleLine className="text-red-500"/>, onClick: () => {
                     handleUpdateStatus(item.subscription._id, "inactive");
                 },
             },
             {
-                text: "Terminate", icon: <RiDeleteBin7Line className="text-red-500"/>, onClick: () => {
+                text: t("Terminate"), icon: <RiDeleteBin7Line className="text-red-500"/>, onClick: () => {
                     handleDeleteSubAert(item);
                 },
             }
@@ -117,13 +116,13 @@ function AdminCompaniesSubscriptions() {
     }
 
     if (isLoading) return <div className="p-10 text-center"> <div className="flex items-center justify-center w-full p-4"><ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} /></div> </div>;
-    if (error) return <div className="p-10 text-center text-red-500">Error loading subscriptions</div>;
+    if (error) return <div className="p-10 text-center text-red-500">{t("Error loading subscriptions")}</div>;
 
     return (
-        <Page title="Subscriptions" isBtn={false}>
+        <Page title={t("Subscriptions")} isBtn={false}>
             <Table
                 classContainer={"rounded-2xl px-8"}
-                title="All Subscriptions"
+                title={t("All Subscriptions")}
                 headers={headers}
                 isActions={false}
                 rows={rows}
@@ -143,11 +142,11 @@ function AdminCompaniesSubscriptions() {
                 isOpen={isDeleteSubAert}
                 onClose={() => handleDeleteSubAert()}
                 type="cancel"
-                title="Terminate Subscription"
-                confirmBtnText="Yes, Terminate"
+                title={t("Terminate Subscription")}
+                confirmBtnText={t("Yes, Terminate")}
                 description={
                     <p className="text-cell-secondary">
-                        Are you sure you want to <span className="font-bold text-cell-primary">Terminate Subscription</span> of 
+                        {t("Are you sure you want to")} <span className="font-bold text-cell-primary">{t("Terminate Subscription")}</span> {t("of")}
                         <span className="font-bold text-cell-primary"> {selectedSubscription?.subscriber?.name}</span>?
                     </p>
                 }

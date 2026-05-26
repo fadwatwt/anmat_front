@@ -1,4 +1,5 @@
 "use client";
+import { useTranslation } from "react-i18next";
 import React, { useState } from "react";
 import { BarChart2, CheckCircle2 } from "lucide-react";
 import { useVotePollMutation, useClosePollMutation } from "@/redux/conversations/conversationsAPI";
@@ -6,6 +7,7 @@ import { useSelector } from "react-redux";
 import { selectUserId } from "@/redux/auth/authSlice";
 
 const PollBubble = ({ message, isMe }) => {
+  const { t } = useTranslation();
   const currentUserId = useSelector(selectUserId);
   const [votePoll, { isLoading: isVoting }] = useVotePollMutation();
   const [closePoll, { isLoading: isClosing }] = useClosePollMutation();
@@ -61,7 +63,7 @@ const PollBubble = ({ message, isMe }) => {
         <div className="flex-1">
           <h4 className="font-bold text-sm leading-tight">{poll.question}</h4>
           <span className="text-[10px] text-sub-500">
-            {poll.is_closed ? "Poll closed" : poll.allow_multiple_choice ? "Multiple choice" : "Single choice"} • {totalVotes} votes
+            {poll.is_closed ? t("Poll closed") : poll.allow_multiple_choice ? t("Multiple choice") : t("Single choice")} • {totalVotes} {t("votes")}
           </span>
         </div>
       </div>
@@ -107,7 +109,7 @@ const PollBubble = ({ message, isMe }) => {
             onClick={handleClose}
             className="w-full py-1.5 text-xs text-sub-500 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors font-medium"
           >
-            Close Poll
+            {t("Close Poll")}
           </button>
         </div>
       )}

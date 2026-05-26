@@ -17,51 +17,7 @@ import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import { useProcessing } from "@/app/providers";
 
-const validationSchema = Yup.object().shape({
-    employee_id: Yup.string().required("Employee is required"),
-    date: Yup.date()
-        .required("Date is required")
-        .max(new Date(), "Date cannot be in the future"),
-    start_time: Yup.string()
-        .required("Start time is required")
-        .test("not-future", "Start time cannot be in the future", function (value) {
-            const { date } = this.parent;
-            if (!date || !value) return true;
-            const selectedDate = new Date(date);
-            const today = startOfToday();
-            if (isAfter(selectedDate, today)) return false;
-            if (isBefore(selectedDate, today)) return true;
 
-            // If it's today, check time
-            const now = new Date();
-            const currentTime = formatDate(now, "HH:mm");
-            return value <= currentTime;
-        }),
-    end_time: Yup.string()
-        .required("End time is required")
-        .test("after-start", "End time must be after start time", function (value) {
-            const { start_time } = this.parent;
-            if (!start_time || !value) return true;
-            return value > start_time;
-        })
-        .test("not-future", "End time cannot be in the future", function (value) {
-            const { date } = this.parent;
-            if (!date || !value) return true;
-            const selectedDate = new Date(date);
-            const today = startOfToday();
-            if (isAfter(selectedDate, today)) return false;
-            if (isBefore(selectedDate, today)) return true;
-
-            const now = new Date();
-            const currentTime = formatDate(now, "HH:mm");
-            return value <= currentTime;
-        }),
-    late_in_minutes: Yup.number()
-        .min(0, "Late minutes must be at least 0")
-        .integer("Late minutes must be a whole number")
-        .required("Late minutes is required"),
-    comment: Yup.string(),
-});
 
 function AddAttendanceModal({ isOpen, onClose }) {
     const { t } = useTranslation();
@@ -72,6 +28,52 @@ function AddAttendanceModal({ isOpen, onClose }) {
     // Alerts State
     const [isApprovalOpen, setIsApprovalOpen] = useState(false);
     const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
+
+    const validationSchema = Yup.object().shape({
+        employee_id: Yup.string().required(t("Employee is required")),
+        date: Yup.date()
+            .required(t("Date is required"))
+            .max(new Date(), t("Date cannot be in the future")),
+        start_time: Yup.string()
+            .required(t("Start time is required"))
+            .test("not-future", t("Start time cannot be in the future"), function (value) {
+                const { date } = this.parent;
+                if (!date || !value) return true;
+                const selectedDate = new Date(date);
+                const today = startOfToday();
+                if (isAfter(selectedDate, today)) return false;
+                if (isBefore(selectedDate, today)) return true;
+
+                // If it's today, check time
+                const now = new Date();
+                const currentTime = formatDate(now, "HH:mm");
+                return value <= currentTime;
+            }),
+        end_time: Yup.string()
+            .required(t("End time is required"))
+            .test("after-start", t("End time must be after start time"), function (value) {
+                const { start_time } = this.parent;
+                if (!start_time || !value) return true;
+                return value > start_time;
+            })
+            .test("not-future", t("End time cannot be in the future"), function (value) {
+                const { date } = this.parent;
+                if (!date || !value) return true;
+                const selectedDate = new Date(date);
+                const today = startOfToday();
+                if (isAfter(selectedDate, today)) return false;
+                if (isBefore(selectedDate, today)) return true;
+
+                const now = new Date();
+                const currentTime = formatDate(now, "HH:mm");
+                return value <= currentTime;
+            }),
+        late_in_minutes: Yup.number()
+            .min(0, t("Late minutes must be at least 0"))
+            .integer(t("Late minutes must be a whole number"))
+            .required(t("Late minutes is required")),
+        comment: Yup.string(),
+    });
 
     const formik = useFormik({
         initialValues: {

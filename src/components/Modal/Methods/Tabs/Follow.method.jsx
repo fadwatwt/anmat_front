@@ -77,7 +77,7 @@ function FollowMethod() {
             <AccountPicker
                 selected={sourceAccounts}
                 onChange={setSourceAccounts}
-                title="Source accounts (who will follow)"
+                title={t("Source accounts (who will follow)")}
             />
 
             <div className="flex flex-col gap-1 w-full items-start">
@@ -99,7 +99,7 @@ function FollowMethod() {
             <div className="flex gap-2 pt-2">
                 <DefaultButton
                     type="button"
-                    title="Cancel"
+                    title={t("Cancel")}
                     onClick={() => {
                         setSourceAccounts([]);
                         setTargets("");
@@ -109,7 +109,7 @@ function FollowMethod() {
                 />
                 <DefaultButton
                     type="button"
-                    title={isLoading ? "Submitting..." : "Apply"}
+                    title={isLoading ? t("Submitting...") : t("Apply")}
                     onClick={handleSubmit}
                     disabled={isLoading}
                     className="bg-primary-500 font-medium text-white hover:bg-primary-600 transition-colors"

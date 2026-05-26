@@ -11,14 +11,7 @@ import { useTranslation } from "react-i18next";
 import ElementsSelect from "@/components/Form/ElementsSelect";
 import InputWithIcon from "@/components/Form/InputWithIcon";
 
-const validationSchema = Yup.object().shape({
-  salary: Yup.number()
-    .required("Salary is required")
-    .min(0, "Salary must be at least 0"),
-  bonuses: Yup.number().min(0, "Bonuses must be at least 0"),
-  deductions: Yup.number().min(0, "Deductions must be at least 0"),
-  workType: Yup.string().required("Work type is required"),
-});
+
 
 function EditFinancialModal({ isOpen, onClose, financialId, employeeId }) {
   const { t } = useTranslation();
@@ -50,6 +43,15 @@ function EditFinancialModal({ isOpen, onClose, financialId, employeeId }) {
       });
     }
   }, [employeeId, isOpen, employees]);
+
+  const validationSchema = Yup.object().shape({
+    salary: Yup.number()
+      .required(t("Salary is required"))
+      .min(0, t("Salary must be at least 0")),
+    bonuses: Yup.number().min(0, t("Bonuses must be at least 0")),
+    deductions: Yup.number().min(0, t("Deductions must be at least 0")),
+    workType: Yup.string().required(t("Work type is required")),
+  });
 
   const formik = useFormik({
     initialValues,
@@ -97,10 +99,10 @@ function EditFinancialModal({ isOpen, onClose, financialId, employeeId }) {
       isOpen={isOpen}
       onClose={onClose}
       isBtns={true}
-      btnApplyTitle="Save Changes"
+      btnApplyTitle={t("Save Changes")}
       onClick={() => formik.handleSubmit()}
       className="lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12"
-      title="Edit Financial Record"
+      title={t("Edit Financial Record")}
       isLoading={loading}
     >
       <div className="px-1 overflow-visible">
@@ -110,7 +112,7 @@ function EditFinancialModal({ isOpen, onClose, financialId, employeeId }) {
           )}
 
           <InputWithIcon
-            title="Salary"
+            title={t("Salary")}
             name="salary"
             type="number"
             value={formik.values.salary}
@@ -123,7 +125,7 @@ function EditFinancialModal({ isOpen, onClose, financialId, employeeId }) {
           />
 
           <InputWithIcon
-            title="Bonuses"
+            title={t("Bonuses")}
             name="bonuses"
             type="number"
             value={formik.values.bonuses}
@@ -135,7 +137,7 @@ function EditFinancialModal({ isOpen, onClose, financialId, employeeId }) {
           />
 
           <InputWithIcon
-            title="Deductions"
+            title={t("Deductions")}
             name="deductions"
             type="number"
             value={formik.values.deductions}
@@ -147,10 +149,10 @@ function EditFinancialModal({ isOpen, onClose, financialId, employeeId }) {
           />
 
           <ElementsSelect
-            title="Work Type"
+            title={t("Work Type")}
             options={workTypeOptions}
             onChange={(selected) => formik.setFieldValue("workType", selected[0]?.id || "")}
-            placeholder="Select Work Type"
+            placeholder={t("Select Work Type")}
             defaultValue={workTypeOptions.filter(opt => opt.id === formik.values.workType)}
             isMultiple={false}
           />

@@ -38,11 +38,11 @@ function TokenPackageModal({ isOpen, onClose, editPackage = null }) {
             sort_order: editPackage?.sort_order || 0,
         },
         validationSchema: Yup.object({
-            name: Yup.string().required("Required"),
+            name: Yup.string().required(t("Required")),
             description: Yup.string(),
-            price_cents: Yup.number().min(1, "Must be at least 1").required("Required"),
-            price_label: Yup.string().required("Required"),
-            tokens: Yup.number().min(1, "Must be at least 1").required("Required"),
+            price_cents: Yup.number().min(1, t("Must be at least 1")).required(t("Required")),
+            price_label: Yup.string().required(t("Required")),
+            tokens: Yup.number().min(1, t("Must be at least 1")).required(t("Required")),
             features: Yup.array().of(Yup.string()),
             is_active: Yup.boolean().required(),
             sort_order: Yup.number().min(0),
@@ -122,22 +122,22 @@ function TokenPackageModal({ isOpen, onClose, editPackage = null }) {
                 {/* Basic Info */}
                 <div className={"px-4 grid grid-cols-1 gap-4"}>
                     <InputAndLabel
-                        title="Package Name"
+                        title={t("Package Name")}
                         name="name"
                         value={formik.values.name}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
-                        placeholder="e.g. Starter Pack"
+                        placeholder={t("e.g. Starter Pack")}
                         error={formik.touched.name && formik.errors.name}
                         isRequired={true}
                     />
                     <InputAndLabel
-                        title="Description"
+                        title={t("Description")}
                         name="description"
                         value={formik.values.description}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
-                        placeholder="Describe this package..."
+                        placeholder={t("Describe this package...")}
                     />
                 </div>
 
@@ -147,41 +147,41 @@ function TokenPackageModal({ isOpen, onClose, editPackage = null }) {
                 </div>
                 <div className={"px-4 grid grid-cols-1 sm:grid-cols-2 gap-4"}>
                     <InputAndLabel
-                        title="Price (cents)"
+                        title={t("Price (cents)")}
                         name="price_cents"
                         type="number"
                         value={formik.values.price_cents}
                         onChange={handlePriceCentsChange}
                         onBlur={formik.handleBlur}
-                        placeholder="e.g. 500 = $5"
+                        placeholder={t("e.g. 500 = $5")}
                         error={formik.touched.price_cents && formik.errors.price_cents}
                         isRequired={true}
                     />
                     <InputAndLabel
-                        title="Price Label"
+                        title={t("Price Label")}
                         name="price_label"
                         value={formik.values.price_label}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
-                        placeholder="e.g. $5"
+                        placeholder={t("e.g. $5")}
                         error={formik.touched.price_label && formik.errors.price_label}
                         isRequired={true}
                     />
                 </div>
                 <div className={"px-4 grid grid-cols-1 sm:grid-cols-2 gap-4"}>
                     <InputAndLabel
-                        title="Number of Tokens"
+                        title={t("Number of Tokens")}
                         name="tokens"
                         type="number"
                         value={formik.values.tokens}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
-                        placeholder="e.g. 10000"
+                        placeholder={t("e.g. 10000")}
                         error={formik.touched.tokens && formik.errors.tokens}
                         isRequired={true}
                     />
                     <InputAndLabel
-                        title="Sort Order"
+                        title={t("Sort Order")}
                         name="sort_order"
                         type="number"
                         value={formik.values.sort_order}
@@ -218,14 +218,14 @@ function TokenPackageModal({ isOpen, onClose, editPackage = null }) {
                             )}
                         </div>
                     ))}
-                    <BtnAddOutline title="Add Feature" onClick={addFeature} />
+                    <BtnAddOutline title={t("Add Feature")} onClick={addFeature} />
                 </div>
 
                 {/* Status */}
                 <div className={"flex flex-col gap-3 px-4 pb-4 mt-2"}>
                     <SwitchWithLabel
-                        title="Active Status"
-                        description="Make this package available for purchase"
+                        title={t("Active Status")}
+                        description={t("Make this package available for purchase")}
                         isOn={formik.values.is_active}
                         handleToggle={() => formik.setFieldValue("is_active", !formik.values.is_active)}
                     />

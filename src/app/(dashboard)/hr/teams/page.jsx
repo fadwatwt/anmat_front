@@ -240,22 +240,22 @@ function TeamsPage() {
                 type="delete"
                 isOpen={isOpenDeleteAlert}
                 onClose={() => setIsOpenDeleteAlert(false)}
-                title="Delete Team"
+                title={t("Delete Team")}
                 message={
                     <span>
-                        Are you sure you want to <b>Delete {selectedDeleteTeam?.name}</b>?
+                        {t("Are you sure you want to")} <b>{t("Delete")} {selectedDeleteTeam?.name}</b>?
                     </span>
                 }
                 isBtns={true}
-                titleSubmitBtn="Yes, Delete"
-                titleCancelBtn="Cancel"
+                titleSubmitBtn={t("Yes, Delete")}
+                titleCancelBtn={t("Cancel")}
                 onSubmit={handleDeleteConfirmation}
             />
             <Alert
                 type="success"
-                title="Team Deleted"
+                title={t("Team Deleted")}
                 isBtns={false}
-                message={`The team "${selectedDeleteTeam?.name}" has been successfully deleted.`}
+                message={t('The team "{{name}}" has been successfully deleted.', { name: selectedDeleteTeam?.name })}
                 isOpen={isOpenSuccessDeleteAlert}
                 onClose={() => setIsOpenSuccessDeleteAlert(false)}
             />

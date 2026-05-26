@@ -142,9 +142,9 @@ function AdminProfile() {
 
 
     const headers = [
-        { label: "Plan Name", width: "300px" },
-        { label: "Subscription Date", width: "150px" },
-        { label: "Status", width: "125px" },
+        { label: t("Plan Name"), width: "300px" },
+        { label: t("Subscription Date"), width: "150px" },
+        { label: t("Status"), width: "125px" },
         { label: "", width: "50px" }
     ];
 
@@ -410,7 +410,7 @@ function AdminProfile() {
                                         <SelectWithoutLabel
                                             className="w-40"
                                             name="subscriptionStatus"
-                                            title="Status"
+                                            title={t("Status")}
                                             value={lastActiveSubscription.status}
                                             options={statusOptions}
                                             onChange={(newStatus) => handleStatusChange(lastActiveSubscription, newStatus)}
@@ -499,8 +499,8 @@ function AdminProfile() {
                     isOpen={isDeleteCatalogAert}
                     onClose={handleDeleteCatalogAert}
                     type="cancel"
-                    title="Cancel Subscription"
-                    confirmBtnText="Yes, Stop"
+                    title={t("Cancel Subscription")}
+                    confirmBtnText={t("Yes, Stop")}
                     description={
                         <p className="text-cell-secondary">
                             Are you sure you want to <span className="font-bold text-cell-primary">Delete Catalog</span> of the
@@ -514,9 +514,9 @@ function AdminProfile() {
                     isOpen={isApprovalOpen}
                     onClose={() => setIsApprovalOpen(false)}
                     onConfirm={confirmUpdateStatus}
-                    title="Change Subscription Status"
-                    message={`Are you sure you want to change the subscription status to ${t(targetStatus.charAt(0).toUpperCase() + targetStatus.slice(1))}?`}
-                    confirmBtnText="Confirm"
+                    title={t("Change Subscription Status")}
+                    message={t("Are you sure you want to change the subscription status to {{status}}?", { status: t(targetStatus.charAt(0).toUpperCase() + targetStatus.slice(1)) })}
+                    confirmBtnText={t("Confirm")}
                     type="warning"
                 />
 

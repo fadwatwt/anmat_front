@@ -4,20 +4,22 @@ import PropTypes from "prop-types";
 import TabModal from "../TabsContener/TabModal.jsx";
 import PostByFile from "./PostByFile.jsx";
 import PostManually from "./PostManually.jsx";
+import { useTranslation } from "react-i18next";
 
 function PostAndDeletePost({isOpen, onClose,className}) {
+    const { t } = useTranslation();
     const tabsData = [
         {
-            title: "By File",
+            title: t("By File"),
             content: <PostByFile />,
         },
         {
-            title: "Manually",
+            title: t("Manually"),
             content:<PostManually />,
         },
     ];
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title={"Post/Delete Post"} className={className}>
+        <Modal isOpen={isOpen} onClose={onClose} title={t("Post/Delete Post")} className={className}>
             <TabModal tabs={tabsData}/>
         </Modal>
     );

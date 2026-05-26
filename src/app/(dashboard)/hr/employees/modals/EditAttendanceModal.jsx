@@ -60,13 +60,13 @@ function EditAttendanceModal({ isOpen, onClose, attendance }) {
   ];
 
   const validationSchema = Yup.object().shape({
-    checkinDate: Yup.string().required("Check-in date is required"),
-    checkinTime: Yup.string().required("Check-in time is required"),
+    checkinDate: Yup.string().required(t("Check-in date is required")),
+    checkinTime: Yup.string().required(t("Check-in time is required")),
     checkoutDate: Yup.string()
       .nullable()
       .test(
         "checkout-date-validation",
-        "Check-out date cannot be before check-in date",
+        t("Check-out date cannot be before check-in date"),
         function (checkoutDate) {
           const { checkinDate } = this.parent;
           if (!checkoutDate || !checkinDate) return true;
@@ -79,7 +79,7 @@ function EditAttendanceModal({ isOpen, onClose, attendance }) {
       ),
     checkoutTime: Yup.string().test(
       "checkout-time-required",
-      "Check-out time is required when date is provided",
+      t("Check-out time is required when date is provided"),
       function (value) {
         return !this.parent.checkoutDate || (value && value.length > 0);
       }
@@ -184,11 +184,11 @@ function EditAttendanceModal({ isOpen, onClose, attendance }) {
       isOpen={isOpen}
       onClose={onClose}
       isBtns={true}
-      btnApplyTitle="Save"
-      btnCancelTitle="Cancel"
+      btnApplyTitle={t("Save")}
+      btnCancelTitle={t("Cancel")}
       onClick={() => formik.handleSubmit()}
       className="lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12 px-3"
-      title="Add an employee attendance"
+      title={t("Add an employee attendance")}
     >
       <div className="px-1 overflow-visible">
         <div className="flex flex-col gap-4">
@@ -197,10 +197,10 @@ function EditAttendanceModal({ isOpen, onClose, attendance }) {
           )}
 
           <ElementsSelect
-            title="Employee"
+            title={t("Employee")}
             options={employeeOptions}
             onChange={(selected) => formik.setFieldValue("employeeId", selected[0]?.id || "")}
-            placeholder="Select Employee"
+            placeholder={t("Select Employee")}
             defaultValue={employeeOptions.filter(opt => opt.id === formik.values.employeeId)}
             isMultiple={false}
           />
@@ -209,8 +209,8 @@ function EditAttendanceModal({ isOpen, onClose, attendance }) {
           )}
 
           <DateInput
-            title="Date"
-            placeholder="Select Date"
+            title={t("Date")}
+            placeholder={t("Select Date")}
             name="date"
             value={formik.values.date}
             onChange={formik.handleChange}
@@ -221,7 +221,7 @@ function EditAttendanceModal({ isOpen, onClose, attendance }) {
           )}
 
           <TimeInput
-            title="Attendance Time"
+            title={t("Attendance Time")}
             name="attendanceTime"
             value={formik.values.attendanceTime}
             onChange={formik.handleChange}
@@ -230,7 +230,7 @@ function EditAttendanceModal({ isOpen, onClose, attendance }) {
           />
 
           <InputWithIcon
-            title="Late Minutes"
+            title={t("Late Minutes")}
             name="lateMinutes"
             type="number"
             value={formik.values.lateMinutes}
@@ -239,12 +239,12 @@ function EditAttendanceModal({ isOpen, onClose, attendance }) {
           />
 
           <TextAreaWithLabel
-            title="Comment"
+            title={t("Comment")}
             name="comment"
             value={formik.values.comment}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            placeholder="Comment"
+            placeholder={t("Comment")}
             rows={4}
             isOptional={true}
             error={formik.touched.comment && formik.errors.comment}

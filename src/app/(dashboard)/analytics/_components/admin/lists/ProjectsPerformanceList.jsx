@@ -1,19 +1,21 @@
 import ContentCard from '@/components/containers/ContentCard';
 import DefaultSelect from '@/components/Form/DefaultSelect';
+import { useTranslation } from "react-i18next";
 
 const ProjectsPerformanceList = ({ projects = [] }) => {
+    const { t } = useTranslation();
     return (
         <ContentCard
-            title={"Projects Performance"}
+            title={t("Projects Performance")}
             toolbar={
                 <div className="w-32 flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end">
-                    <DefaultSelect options={[{ id: 1, value: "Last Month" }]} />
+                    <DefaultSelect options={[{ id: 1, value: t("Last Month") }]} />
                 </div>
             }
             main={
                 <div className="space-y-4">
                     {projects.length === 0 && (
-                        <span className="text-sm text-cell-secondary">No projects yet.</span>
+                        <span className="text-sm text-cell-secondary">{t("No projects yet.")}</span>
                     )}
                     {projects.map((project, index) => {
                         const completed = project.completedTasks ?? 0;
@@ -33,9 +35,9 @@ const ProjectsPerformanceList = ({ projects = [] }) => {
                                     </div>
                                     <div className="flex flex-wrap gap-1 items-start justify-between w-full">
                                         <p className="text-sm text-cell-secondary">
-                                            {completed}/{total} tasks completed
+                                            {t('{{completed}}/{{total}} tasks completed', { completed, total })}
                                         </p>
-                                        <span className="text-xs text-cell-secondary ml-4">{project.daysLeft ?? 0} days left</span>
+                                        <span className="text-xs text-cell-secondary ml-4">{t('{{daysLeft}} days left', { daysLeft: project.daysLeft ?? 0 })}</span>
                                     </div>
                                 </div>
                             </div>

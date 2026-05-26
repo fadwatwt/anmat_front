@@ -31,7 +31,7 @@ const IconPicker = ({ title, value, onChange }) => {
 
     return (
         <div className="flex flex-col gap-3 w-full">
-            <label className="text-sm font-medium text-cell-primary">{title}</label>
+            <label className="text-sm font-medium text-cell-primary">{t(title)}</label>
 
             <div className="border border-status-border rounded-2xl bg-status-bg p-4">
                 <div className="relative mb-4">

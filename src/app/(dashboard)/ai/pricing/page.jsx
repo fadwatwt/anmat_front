@@ -5,6 +5,7 @@ import Page from "@/components/Page.jsx";
 import { Zap, Crown, Rocket, Sparkles, Check, ArrowRight, Loader2 } from "lucide-react";
 import { useCreateTokenCheckoutMutation, useGetTokenPackagesQuery } from "@/redux/api/aiApi";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
+import { useTranslation } from "react-i18next";
 
 const iconMap = {
   Starter: Zap,
@@ -27,6 +28,7 @@ function getPackStyle(tokens) {
 }
 
 const PricingPage = () => {
+  const { t } = useTranslation();
   const { data: packages, isLoading: loadingPackages } = useGetTokenPackagesQuery();
   const [createCheckout, { isLoading: isCreatingCheckout }] = useCreateTokenCheckoutMutation();
   const [purchasingId, setPurchasingId] = useState(null);
@@ -40,13 +42,13 @@ const PricingPage = () => {
       if (checkoutUrl) {
         window.location.href = checkoutUrl;
       } else {
-        throw new Error("No checkout URL returned from server.");
+        throw new Error(t("No checkout URL returned from server."));
       }
     } catch (err) {
       setApiResponse({
         isOpen: true,
         status: "error",
-        message: err?.data?.message || err?.message || "Failed to create payment session.",
+        message: err?.data?.message || err?.message || t("Failed to create payment session."),
       });
       setPurchasingId(null);
     }
@@ -57,17 +59,17 @@ const PricingPage = () => {
       <div className="flex flex-col items-center bg-gray-50 dark:bg-gray-950 py-12 px-6 min-h-[calc(100vh-100px)]">
         <div className="text-center max-w-2xl mb-12">
           <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white sm:text-4xl">
-            Power Up Your AI Assistant
+            {t("Power Up Your AI Assistant")}
           </h1>
           <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">
-            Choose a token top-up pack to continue executing actions, running commands, and generating smart files.
+            {t("Choose a token top-up pack to continue executing actions, running commands, and generating smart files.")}
           </p>
         </div>
 
         {loadingPackages ? (
           <div className="flex flex-col items-center justify-center py-20 gap-3">
             <Loader2 className="w-10 h-10 text-primary-500 animate-spin" />
-            <span className="text-gray-500 dark:text-gray-400 font-medium">Loading token packages...</span>
+            <span className="text-gray-500 dark:text-gray-400 font-medium">{t("Loading token packages...")}</span>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl w-full">
@@ -89,7 +91,7 @@ const PricingPage = () => {
                 >
                   {isPro && (
                     <span className="absolute top-0 right-8 -translate-y-1/2 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-1 text-xs font-bold text-white uppercase tracking-wider">
-                      Most Popular
+                      {t("Most Popular")}
                     </span>
                   )}
 
@@ -99,7 +101,7 @@ const PricingPage = () => {
                         <Icon className="w-8 h-8 text-primary-500" />
                       </div>
                       <div className="text-right">
-                        <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">Tokens Pack</p>
+                        <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">{t("Tokens Pack")}</p>
                         <p className="text-2xl font-black text-gray-900 dark:text-white">
                           {pkg.tokens?.toLocaleString()}
                         </p>
@@ -118,7 +120,7 @@ const PricingPage = () => {
                         {pkg.price_label}
                       </span>
                       <span className="ml-1 text-sm font-semibold text-gray-500 dark:text-gray-400">
-                        / one-time
+                        {t("/ one-time")}
                       </span>
                     </div>
 
@@ -142,11 +144,11 @@ const PricingPage = () => {
                     {isPurchasing ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin" />
-                        <span>Redirecting to Stripe...</span>
+                        <span>{t("Redirecting to Stripe...")}</span>
                       </>
                     ) : (
                       <>
-                        <span>Get {pkg.name}</span>
+                        <span>{t("Get")} {pkg.name}</span>
                         <ArrowRight className="w-4 h-4" />
                       </>
                     )}

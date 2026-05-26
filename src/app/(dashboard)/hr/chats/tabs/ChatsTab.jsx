@@ -54,10 +54,10 @@ function ChatsTab() {
     ]);
 
     const headers = [
-        { label: "Chat Group Title", width: "100px" },
-        { label: "Admins", width: "100px" },
-        { label: "No. of Participants", width: "100px" },
-        { label: "Status", width: "50px" },
+        { label: t("Chat Group Title"), width: "100px" },
+        { label: t("Admins"), width: "100px" },
+        { label: t("No. of Participants"), width: "100px" },
+        { label: t("Status"), width: "50px" },
         { label: "", width: "50px" },
     ];
 
@@ -128,7 +128,7 @@ function ChatsTab() {
     return (
         <>
             <Table
-                title="HR - Chats Management - Chats"
+                title={t("HR - Chats Management - Chats")}
                 headers={headers}
                 rows={tableRows}
                 isActions={false}
@@ -157,9 +157,9 @@ function ChatsTab() {
             <Modal
                 isOpen={isDeleteModalOpen}
                 onClose={() => setIsDeleteModalOpen(false)}
-                title="Delete Chat Group"
+                title={t("Delete Chat Group")}
                 isBtns={true}
-                btnApplyTitle="Yes, Save"
+                btnApplyTitle={t("Yes, Save")}
                 onClick={confirmDelete}
                 className="lg:w-[30%] md:w-1/2 w-11/12 p-6"
             >
@@ -168,7 +168,7 @@ function ChatsTab() {
                         <RiDeleteBinLine size={32} />
                     </div>
                     <p className="text-gray-800 dark:text-gray-200 text-lg font-medium">
-                        Are you sure you want to delete <span className="font-bold">"{selectedChat?.title}"</span> Group Chat?
+                        {t("Are you sure you want to delete")} <span className="font-bold">"{selectedChat?.title}"</span> {t("Group Chat?")}
                     </p>
                 </div>
             </Modal>

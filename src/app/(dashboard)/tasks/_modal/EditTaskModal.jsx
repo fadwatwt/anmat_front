@@ -11,20 +11,10 @@ import { fetchEmployees } from "@/redux/employees/employeeAPI";
 import ElementsSelect from "@/components/Form/ElementsSelect.jsx";
 import UserSelect from "@/components/Form/UserSelect.jsx";
 import TaskMainInfo from "@/app/(dashboard)/projects/_components/CreateProjectForm/SubComponents/TaskMainInfo.jsx";
-
-const validationSchema = Yup.object({
-  taskName: Yup.string().required("Title is required"),
-  department: Yup.string().required("Department is required"),
-  assignedEmployee: Yup.string().required("Assigned Employee is required"),
-  dueDate: Yup.date().required("Due date is required"),
-  assignedDate: Yup.date().required("Assigned date is required"),
-  status: Yup.string().required("Status is required"),
-  priority: Yup.string().required("Priority is required"),
-  description: Yup.string(),
-  dependentDepartment: Yup.string(),
-});
+import { useTranslation } from "react-i18next";
 
 const EditTaskModal = ({ task, isOpen, onClose }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { employees } = useSelector((state) => state.employees);
   const { departments } = useSelector((state) => state.departments);
@@ -76,6 +66,18 @@ const EditTaskModal = ({ task, isOpen, onClose }) => {
       });
     }
   }, [task, isOpen]);
+
+  const validationSchema = Yup.object({
+    taskName: Yup.string().required(t("Title is required")),
+    department: Yup.string().required(t("Department is required")),
+    assignedEmployee: Yup.string().required(t("Assigned Employee is required")),
+    dueDate: Yup.date().required(t("Due date is required")),
+    assignedDate: Yup.date().required(t("Assigned date is required")),
+    status: Yup.string().required(t("Status is required")),
+    priority: Yup.string().required(t("Priority is required")),
+    description: Yup.string(),
+    dependentDepartment: Yup.string(),
+  });
 
   const formik = useFormik({
     initialValues,
@@ -129,11 +131,11 @@ const EditTaskModal = ({ task, isOpen, onClose }) => {
       isOpen={isOpen}
       onClose={onClose}
       isBtns={true}
-      btnApplyTitle={formik.isSubmitting ? "Updating..." : "Update Task"}
+      btnApplyTitle={formik.isSubmitting ? t("Updating...") : t("Update Task")}
       onClick={formik.handleSubmit}
       btnApplyDisabled={formik.isSubmitting}
       className={"lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12"}
-      title={"Edit Task"}
+      title={t("Edit Task")}
     >
       <TaskMainInfo
         task={task}

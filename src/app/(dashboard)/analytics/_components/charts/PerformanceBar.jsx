@@ -1,7 +1,10 @@
 "use client";
+import { useTranslation } from "react-i18next";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
-const PerformanceBar = ({ data = [] }) => (
+const PerformanceBar = ({ data = [] }) => {
+    const { t } = useTranslation();
+    return (
     <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--status-border)" />
@@ -9,10 +12,11 @@ const PerformanceBar = ({ data = [] }) => (
             <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--text-cell-secondary)' }} />
             <Tooltip cursor={{ fill: 'transparent' }} />
             <Legend iconType="circle" verticalAlign="bottom" height={36} />
-            <Bar dataKey="onTime" fill="#10B981" radius={[4, 4, 0, 0]} barSize={12} name="On-Time Completed" />
-            <Bar dataKey="late" fill="#F59E0B" radius={[4, 4, 0, 0]} barSize={12} name="Late Completed" />
+            <Bar dataKey="onTime" fill="#10B981" radius={[4, 4, 0, 0]} barSize={12} name={t("On-Time Completed")} />
+            <Bar dataKey="late" fill="#F59E0B" radius={[4, 4, 0, 0]} barSize={12} name={t("Late Completed")} />
         </BarChart>
     </ResponsiveContainer>
-);
+    );
+};
 
 export default PerformanceBar;

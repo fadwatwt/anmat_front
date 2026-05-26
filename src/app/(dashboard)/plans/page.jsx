@@ -31,20 +31,20 @@ import { usePermission } from "@/Hooks/usePermission";
 import Tabs from "@/components/Tabs";
 import AIPlansTab from "./_components/AIPlansTab";
 
-const headers = [
-    { label: "Plan", width: "250px" },
-    { label: "Price", width: "120px" },
-    { label: "Created at", width: "130px" },
-    { label: "Trial", width: "120px" },
-    { label: "Features", width: "250px" },
-    { label: "Status", width: "125px" },
-    { label: "", width: "50px" }
-];
-
 function SubscriptionPlansTab({ canCreate, canUpdate, canDelete, canToggleActivity, canManageTrial }) {
     const router = useRouter();
     const { t, i18n } = useTranslation();
     const { data: plans, isLoading, error } = useGetSubscriptionPlansQuery();
+
+    const headers = [
+        { label: t("Plan"), width: "250px" },
+        { label: t("Price"), width: "120px" },
+        { label: t("Created at"), width: "130px" },
+        { label: t("Trial"), width: "120px" },
+        { label: t("Features"), width: "250px" },
+        { label: t("Status"), width: "125px" },
+        { label: "", width: "50px" }
+    ];
 
     // Mutations
     const [deletePlan] = useDeleteSubscriptionPlanMutation();
@@ -83,30 +83,30 @@ function SubscriptionPlansTab({ canCreate, canUpdate, canDelete, canToggleActivi
         if (action === "delete") {
             config = {
                 ...config,
-                title: "Delete Plan",
-                message: `Are you sure you want to delete the plan "${plan.name}"? This action cannot be undone.`,
+                title: t("Delete Plan"),
+                message: t(`Are you sure you want to delete the plan "${plan.name}"? This action cannot be undone.`),
                 type: "danger",
                 onConfirm: async () => {
                     try {
                         await deletePlan(plan._id).unwrap();
-                        setApiResponse({ isOpen: true, status: "success", message: "Plan deleted successfully!" });
+                        setApiResponse({ isOpen: true, status: "success", message: t("Plan deleted successfully!") });
                     } catch (err) {
-                        setApiResponse({ isOpen: true, status: "error", message: err?.data?.message || "Failed to delete plan." });
+                        setApiResponse({ isOpen: true, status: "error", message: err?.data?.message || t("Failed to delete plan.") });
                     }
                 }
             };
         } else if (action === "toggle-status") {
             config = {
                 ...config,
-                title: plan.is_active ? "Deactivate Plan" : "Activate Plan",
-                message: `Are you sure you want to ${plan.is_active ? "deactivate" : "activate"} the plan "${plan.name}"?`,
+                title: plan.is_active ? t("Deactivate Plan") : t("Activate Plan"),
+                message: t(`Are you sure you want to ${plan.is_active ? "deactivate" : "activate"} the plan "${plan.name}"?`),
                 type: "warning",
                 onConfirm: async () => {
                     try {
                         await toggleActiveStatus(plan._id).unwrap();
-                        setApiResponse({ isOpen: true, status: "success", message: `Plan ${plan.is_active ? "deactivated" : "activated"} successfully!` });
+                        setApiResponse({ isOpen: true, status: "success", message: t(`Plan ${plan.is_active ? "deactivated" : "activated"} successfully!`) });
                     } catch (err) {
-                        setApiResponse({ isOpen: true, status: "error", message: err?.data?.message || "Failed to update status." });
+                        setApiResponse({ isOpen: true, status: "error", message: err?.data?.message || t("Failed to update status.") });
                     }
                 }
             };
@@ -114,15 +114,15 @@ function SubscriptionPlansTab({ canCreate, canUpdate, canDelete, canToggleActivi
             const isTrialActive = plan.trial?.is_active;
             config = {
                 ...config,
-                title: isTrialActive ? "Stop Free Trial" : "Start Free Trial",
-                message: `Are you sure you want to ${isTrialActive ? "stop" : "start"} the free trial for plan "${plan.name}"?`,
+                title: isTrialActive ? t("Stop Free Trial") : t("Start Free Trial"),
+                message: t(`Are you sure you want to ${isTrialActive ? "stop" : "start"} the free trial for plan "${plan.name}"?`),
                 type: "info",
                 onConfirm: async () => {
                     try {
                         await toggleTrialStatus(plan._id).unwrap();
-                        setApiResponse({ isOpen: true, status: "success", message: `Free trial ${isTrialActive ? "stopped" : "started"} successfully!` });
+                        setApiResponse({ isOpen: true, status: "success", message: t(`Free trial ${isTrialActive ? "stopped" : "started"} successfully!`) });
                     } catch (err) {
-                        setApiResponse({ isOpen: true, status: "error", message: err?.data?.message || "Failed to update trial status." });
+                        setApiResponse({ isOpen: true, status: "error", message: err?.data?.message || t("Failed to update trial status.") });
                     }
                 }
             };
@@ -137,17 +137,17 @@ function SubscriptionPlansTab({ canCreate, canUpdate, canDelete, canToggleActivi
 
         const statesActions = [
             {
-                text: "View", icon: <RiEyeLine className="text-primary-400" />, onClick: () => {
+                text: t("View"), icon: <RiEyeLine className="text-primary-400" />, onClick: () => {
                     router.push(`/plans/${planId}/details`);
                 }
             },
             canUpdate && {
-                text: "Edit", icon: <RiEditLine className="text-primary-400" />, onClick: () => {
+                text: t("Edit"), icon: <RiEditLine className="text-primary-400" />, onClick: () => {
                     handleEdit(plan)
                 },
             },
             canToggleActivity && {
-                text: plan.is_active ? "Deactivate Plan" : "Activate Plan",
+                text: plan.is_active ? t("Deactivate Plan") : t("Activate Plan"),
                 icon: plan.is_active ? (
                     <RiCloseCircleLine className="text-orange-500" />
                 ) : (
@@ -156,12 +156,12 @@ function SubscriptionPlansTab({ canCreate, canUpdate, canDelete, canToggleActivi
                 onClick: () => handleAction("toggle-status", plan)
             },
             canManageTrial && {
-                text: isTrialActive ? "Stop Free Trial" : "Start Free Trial",
+                text: isTrialActive ? t("Stop Free Trial") : t("Start Free Trial"),
                 icon: <RiFlashlightLine className={isTrialActive ? "text-red-500" : "text-blue-500"} />,
                 onClick: () => handleAction("toggle-trial", plan)
             },
             canDelete && {
-                text: "Delete", icon: <RiDeleteBin7Line className="text-red-500" />, onClick: () => handleAction("delete", plan)
+                text: t("Delete"), icon: <RiDeleteBin7Line className="text-red-500" />, onClick: () => handleAction("delete", plan)
             }
         ].filter(Boolean);
         return (
@@ -188,19 +188,19 @@ function SubscriptionPlansTab({ canCreate, canUpdate, canDelete, canToggleActivi
 
         // Price cell
         <div key={`${plan._id}_price`} className="text-sm">
-            {plan.pricing?.[0] ? `${plan.pricing[0].price} / ${plan.pricing[0].interval}` : "N/A"}
+            {plan.pricing?.[0] ? `${plan.pricing[0].price} / ${plan.pricing[0].interval}` : t("N/A")}
         </div>,
 
         // Created at cell
         <div key={`${plan._id}_created_at`} className="text-sm">
-            {plan.createdAt ? format(new Date(plan.createdAt), "MMM dd, yyyy") : "N/A"}
+            {plan.createdAt ? format(new Date(plan.createdAt), "MMM dd, yyyy") : t("N/A")}
         </div>,
 
         // Trial Cell
         <div key={`${plan._id}_trial`} className="flex flex-col gap-1">
-            <span className="text-sm font-medium">{plan.trial?.trial_days || 0} days</span>
+            <span className="text-sm font-medium">{plan.trial?.trial_days || 0} {t("days")}</span>
             <span className={`text-[10px] px-2 py-0.5 rounded-full w-fit ${plan.trial?.is_active ? 'bg-green-100 text-green-700' : 'bg-badge-bg text-badge-text border border-status-border'}`}>
-                {plan.trial?.is_active ? 'Active' : 'Inactive'}
+                {plan.trial?.is_active ? t("Active") : t("Inactive")}
             </span>
         </div>,
 
@@ -213,7 +213,7 @@ function SubscriptionPlansTab({ canCreate, canUpdate, canDelete, canToggleActivi
                             <div className="flex items-start gap-2">
                                 <div className="w-1.5 h-1.5 rounded-full bg-primary-400 mt-1.5 shrink-0" />
                                 <span className="text-sm font-semibold text-cell-primary leading-tight">
-                                    {feature.plan_feature?.title || feature.feature_type?.title || "Feature"}
+                                    {feature.plan_feature?.title || feature.feature_type?.title || t("Feature")}
                                 </span>
                             </div>
                             
@@ -244,7 +244,7 @@ function SubscriptionPlansTab({ canCreate, canUpdate, canDelete, canToggleActivi
     ]) || [];
 
     if (isLoading) return <div className="flex justify-center items-center h-full p-10"> <div className="flex items-center justify-center w-full p-4"><ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} /></div> </div>;
-    if (error) return <div className="flex justify-center items-center h-full p-10 text-red-500">Error loading plans.</div>;
+    if (error) return <div className="flex justify-center items-center h-full p-10 text-red-500">{t("Error loading plans.")}</div>;
 
     return (
         <div>
@@ -261,7 +261,7 @@ function SubscriptionPlansTab({ canCreate, canUpdate, canDelete, canToggleActivi
 
             <Table
                 classContainer={"rounded-2xl px-8"}
-                title="All Plans"
+                title={t("All Plans")}
                 headers={headers}
                 isActions={false}
                 rows={rows}
@@ -337,7 +337,7 @@ function PlansPageContent() {
     ];
 
     return (
-        <Page title="Plans">
+        <Page title={t("Plans")}>
             <Tabs tabs={tabs} />
         </Page>
     );

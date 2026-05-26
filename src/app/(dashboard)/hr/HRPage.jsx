@@ -12,8 +12,10 @@ import CreateADepartmentModal from "@/app/(dashboard)/hr/_modals/CreateADepartme
 import InviteEmployeeModal from "./_modals/InviteEmployeeModal";
 import EditAnEmployeeModal from "@/app/(dashboard)/hr/_modals/AddingAnEmployeeModal.jsx";
 import { usePermission } from "@/Hooks/usePermission";
+import { useTranslation } from "react-i18next";
 
 function HRPage() {
+  const { t } = useTranslation();
   const [isEditEmployeeModal, setIsEditEmployeeModal] = useState(false);
   const [isInviteEmployeeModal, setIsInviteEmployeeModal] = useState(false);
   const [isAddDepartmentModal, setIsAddDepartmentModal] = useState(false);
@@ -32,23 +34,23 @@ function HRPage() {
 
   const tabsData = [
     ...(canListEmployees ? [{
-      title: "Employees",
+      title: t("Employees"),
       content: <EmployeesTap />,
     }] : []),
     ...(canListDepartments ? [{
-      title: "Departments",
+      title: t("Departments"),
       content: <DepartmentsTab />,
     }] : []),
     ...(canViewAttendances ? [{
-      title: "Rotation",
+      title: t("Rotation"),
       content: <RotationTap />,
     }] : []),
     ...(canViewAttendances ? [{
-      title: "Attendance",
+      title: t("Attendance"),
       content: <AttendanceTab />,
     }] : []),
     ...(canViewFinancials ? [{
-      title: "Financials",
+      title: t("Financials"),
       content: <FinancialsTab />,
     }] : []),
   ];
@@ -69,7 +71,7 @@ function HRPage() {
     <>
       {/* <LoginPage /> */}
       <Page
-        title={"HR Management"}
+        title={t("HR Management")}
         isBtn={
           activeTab === "Departments"
             ? canCreateDepartment
@@ -84,8 +86,8 @@ function HRPage() {
         }
         btnTitle={
           activeTab === "Departments"
-            ? "Create a Department"
-            : "Add an Employee"
+            ? t("Create a Department")
+            : t("Add an Employee")
         }
       >
         <Tabs tabs={tabsData} setActiveTitleTab={setActiveTab} />

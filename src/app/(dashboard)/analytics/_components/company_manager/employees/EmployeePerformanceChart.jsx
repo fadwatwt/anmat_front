@@ -9,23 +9,24 @@ import { ZAxis } from "recharts/es6/cartesian/ZAxis";
 import { ScatterChart } from "recharts/es6/chart/ScatterChart";
 import { Tooltip as EPCT } from "recharts/es6/component/Tooltip";
 import { Scatter } from "recharts/es6/cartesian/Scatter";
-
+import { useTranslation } from "react-i18next";
 
 const EmployeePerformanceChart = ({ data = [] }) => {
+    const { t } = useTranslation();
     const points = data.map((item, idx) => ({ x: idx + 1, y: item.rating ?? 0 }));
 
     const lastDelta =
         points.length >= 2
-            ? `Employee performance has changed from ${points[points.length - 2].y} to ${points[points.length - 1].y} this month`
-            : "No performance trend yet";
+            ? t('Employee performance has changed from {{from}} to {{to}} this month', { from: points[points.length - 2].y, to: points[points.length - 1].y })
+            : t("No performance trend yet");
 
     return (
         <ContentCard
-            title={"Employee Performance"}
+            title={t("Employee Performance")}
             toolbar={
                 <div className="w-72 flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end">
-                    <DefaultSelect options={[{ id: 1, value: "Employee" }]} />
-                    <DefaultSelect options={[{ id: 1, value: "Last Month" }]} />
+                    <DefaultSelect options={[{ id: 1, value: t("Employee") }]} />
+                    <DefaultSelect options={[{ id: 1, value: t("Last Month") }]} />
                 </div>
             }
             main={
@@ -34,7 +35,7 @@ const EmployeePerformanceChart = ({ data = [] }) => {
                         <span
                             className='text-md text-gray-500 dark:text-gray-200 ps-4'
                         >
-                            Rating
+                            {t('Rating')}
                         </span>
                         <ResponsiveContainer width="100%" height="100%">
                             <ScatterChart
@@ -45,11 +46,11 @@ const EmployeePerformanceChart = ({ data = [] }) => {
                                     left: 0,
                                 }}
                             >
-                                <YAxis ticks={[0, 1, 2, 3, 4, 5]} domain={[0, 5]} type="number" dataKey="y" name="rating" />
+                                <YAxis ticks={[0, 1, 2, 3, 4, 5]} domain={[0, 5]} type="number" dataKey="y" name={t("rating")} />
                                 <ZAxis type="number" range={[50]} />
                                 <EPCT cursor={{ strokeDasharray: '3 3' }} />
                                 <Scatter symbolSize={5}
-                                    name="Performance"
+                                    name={t("Performance")}
                                     data={points} fill="#FCAA0B" line shape="circle" />
                             </ScatterChart>
                         </ResponsiveContainer>

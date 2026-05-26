@@ -5,8 +5,10 @@ import 'dayjs/locale/ar';
 import {translateTime} from "@/functions/Days.js";
 import { RiDeleteBinLine, RiEdit2Line } from "react-icons/ri";
 import CommentInput from "@/components/CommentInput";
+import { useTranslation } from "react-i18next";
 
 function TaskComments({comments, currentUserId, authUserType, onDeleteComment, onEditComment, loadingComments = {}}) {
+    const { t } = useTranslation();
     const [editingCommentId, setEditingCommentId] = useState(null);
     return (
 
@@ -43,7 +45,7 @@ function TaskComments({comments, currentUserId, authUserType, onDeleteComment, o
                                         <button 
                                             onClick={() => setEditingCommentId(comment._id)} 
                                             className="text-primary-base dark:text-primary-200 hover:text-primary-600 dark:hover:text-primary-400 transition"
-                                            title="Edit Comment"
+                                            title={t("Edit Comment")}
                                             disabled={loadingComments[comment._id]}
                                         >
                                             <RiEdit2Line size={14} />
@@ -53,7 +55,7 @@ function TaskComments({comments, currentUserId, authUserType, onDeleteComment, o
                                         <button 
                                             onClick={() => onDeleteComment(comment._id)} 
                                             className="text-red-500 hover:text-red-700 transition disabled:opacity-50"
-                                            title="Delete Comment"
+                                            title={t("Delete Comment")}
                                             disabled={loadingComments[comment._id]}
                                         >
                                             {loadingComments[comment._id] === 'deleting' ? (

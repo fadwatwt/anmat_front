@@ -6,8 +6,10 @@ import { GoMail } from "react-icons/go";
 import { useRouter } from "next/navigation";
 import { useRegisterSubscriberEmailMutation } from "@/redux/auth/authAPI";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 
 function RegisterForm() {
+    const { t } = useTranslation();
     const [email, setEmail] = useState("");
     const [registerSubscriberEmail, { isLoading }] = useRegisterSubscriberEmailMutation();
     const [error, setError] = useState("");
@@ -22,7 +24,7 @@ function RegisterForm() {
             setIsRedirecting(true);
             router.push("/register/subscriber/email/verify");
         } catch (err) {
-            setError(err.data?.message || err.message || "Registration failed");
+            setError(err.data?.message || err.message || t("Registration failed"));
             setIsRedirecting(false);
         }
     };
@@ -41,10 +43,10 @@ function RegisterForm() {
                 {/* Intro Title */}
                 <div className="flex flex-col items-center justify-center gap-2 text-center">
                     <span className="text-2xl text-cell-primary">
-                        {`Register Your Email`}
+                        {t("Register Your Email")}
                     </span>
                     <span className="text-sm text-cell-secondary">
-                        {'Enter your email for registration.'}
+                        {t("Enter your email for registration.")}
                     </span>
                 </div>
 
@@ -56,7 +58,7 @@ function RegisterForm() {
 
                 <div className="flex flex-col gap-2 w-full">
                     <label htmlFor="sign_up_email_input" className="text-cell-primary">
-                        {'Email Address'}
+                        {t("Email Address")}
                     </label>
                     <div className="flex bg-surface pl-2 px-2 w-full items-center border border-status-border rounded-xl">
                         <GoMail className="text-cell-secondary w-10" size={18} />
@@ -65,7 +67,7 @@ function RegisterForm() {
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Enter your email"
+                            placeholder={t("Enter your email")}
                             className="w-full py-3 px-2 outline-none disabled:bg-status-bg bg-transparent dark:bg-gray-800 text-cell-primary dark:text-gray-100 dark:placeholder-gray-400"
                             required
                             disabled={isBusy}
@@ -81,21 +83,21 @@ function RegisterForm() {
                         className="bg-primary-500 dark:bg-primary-200 text-primary-50 dark:text-black text-md w-full py-3 rounded-xl cursor-pointer
                         hover:bg-primary-600 text-center disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        {isBusy ? "Loading..." : "Sign Up"}
+                        {isBusy ? t("Loading...") : t("Sign Up")}
                     </button>
 
                     {/*Return to Sign-in*/}
                     <div className="flex flex-wrap items-center justify-end gap-2 mt-4">
                         <span className="text-md text-cell-secondary">
-                            Already have an account?
+                            {t("Already have an account?")}
                         </span>
                         {isBusy ? (
                             <span className="text-gray-400 dark:text-gray-500 cursor-not-allowed">
-                                Login
+                                {t("Login")}
                             </span>
                         ) : (
                             <Link href="/sign-in" className="text-primary-500 dark:text-primary-400 hover:text-primary-600">
-                                Login
+                                {t("Login")}
                             </Link>
                         )}
                     </div>

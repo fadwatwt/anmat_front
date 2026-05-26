@@ -1,8 +1,9 @@
 import Table from "@/components/Tables/Table";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 const DepartmentsRankingTable = ({ rows: rowsProp = [] }) => {
+    const { t } = useTranslation();
 
     const headersDeparmentsRanking = [
         { label: t("Department"), width: "400px" },
@@ -18,11 +19,11 @@ const DepartmentsRankingTable = ({ rows: rowsProp = [] }) => {
             <React.Fragment key={dept.rank + dept.name}>
                 <div className={"flex justify-start items-center gap-2"}>
                     <div className={"flex justify-center items-center rounded-full w-9 h-9 border border-gray-400 dark:border-gray-700"}>
-                        <img src="/images/Department Brands/departmentBrand1.png" alt={""} className={"w-6 h-6 rounded-full"} />
+                        <img src="/images/Department Brands/departmentBrand1.png" alt={t("")} className={"w-6 h-6 rounded-full"} />
                     </div>
                     <div className={"flex flex-col items-start gap-1"}>
                         <p className={"text-sm dark:text-gray-200"}>{dept.name}</p>
-                        <p className={"text-sm text-gray-500"}>Manager: {dept.manager}</p>
+                        <p className={"text-sm text-gray-500"}>{t("Manager:")} {dept.manager}</p>
                     </div>
                 </div>
             </React.Fragment>,
@@ -38,7 +39,7 @@ const DepartmentsRankingTable = ({ rows: rowsProp = [] }) => {
 
     return (
         <div className={"w-full"}>
-            <Table isTitle={true} title={"Departments Ranking"}
+            <Table isTitle={true} title={t("Departments Ranking")}
                 headers={headersDeparmentsRanking} rows={rows}
                 isActions={false} />
         </div>

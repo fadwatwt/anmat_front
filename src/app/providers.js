@@ -7,6 +7,20 @@ import { Provider } from "react-redux";
 import { store } from "@/redux/store";
 import NotificationListener from '@/components/NotificationListener';
 import ProcessingOverlay from '@/components/Feedback/ProcessingOverlay';
+import { setLanguage } from "@/functions/Days";
+
+const updateHtmlAttributes = (lang) => {
+    const root = document.documentElement;
+    root.lang = lang;
+    root.dir = i18n.dir();
+    if (lang === "ar") {
+        root.classList.add("font-ar");
+        root.classList.remove("font-default");
+    } else {
+        root.classList.add("font-default");
+        root.classList.remove("font-ar");
+    }
+};
 
 export const ThemeContext = createContext();
 export const ProcessingContext = createContext();
@@ -83,6 +97,16 @@ const ProcessingProvider = ({ children }) => {
 };
 
 const Providers = ({ children }) => {
+    useEffect(() => {
+        updateHtmlAttributes(i18n.language);
+        setLanguage(i18n.language);
+        i18n.on("languageChanged", (lng) => {
+            updateHtmlAttributes(lng);
+            setLanguage(lng);
+        });
+        return () => i18n.off("languageChanged");
+    }, []);
+
     return (
         <Provider store={store}>
             <NotificationListener />

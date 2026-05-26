@@ -4,6 +4,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import i18n from "i18next";
+import { useTranslation } from "react-i18next";
 import { setLanguage } from "@/functions/Days";
 import Header from "@/components/Header"
 import "../globals.css";
@@ -18,6 +19,7 @@ import useDarkMode from "@/Hooks/useDarkMode";
 const MainLayout = ({ children }) => {
     const [isSlidebarOpen, setSlidebarOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
+    const { t } = useTranslation();
     useDarkMode();
     const router = useRouter();
     const pathname = usePathname();
@@ -161,7 +163,7 @@ const MainLayout = ({ children }) => {
             <div className="h-screen w-screen flex items-center justify-center bg-status-bg">
                 <div className="flex flex-col items-center gap-4">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-base"></div>
-                    <p className="text-cell-secondary font-medium">Initializing session...</p>
+                    <p className="text-cell-secondary font-medium">{t("Initializing session...")}</p>
                 </div>
             </div>
         );
@@ -174,7 +176,7 @@ const MainLayout = ({ children }) => {
                     <div className="flex flex-col items-center gap-4">
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-base"></div>
                         <p className="text-cell-secondary font-medium">
-                            {shouldRedirect ? "Redirecting to setup..." : "Loading session..."}
+                            {shouldRedirect ? t("Redirecting to setup...") : t("Loading session...")}
                         </p>
                     </div>
                 </div>

@@ -98,43 +98,43 @@ function CreateChatGroupModal({ isOpen, onClose, isEdit, editData }) {
         <Modal
             isOpen={isOpen}
             onClose={onClose}
-            title={isEdit ? "Chat Group Details" : "Creating a Chat Group"}
+            title={isEdit ? t("Chat Group Details") : t("Creating a Chat Group")}
             isBtns={true}
-            btnApplyTitle={isEdit ? "Update" : "Save"}
+            btnApplyTitle={isEdit ? t("Update") : t("Save")}
             onClick={handleSave}
             className="lg:w-[40%] md:w-9/12 sm:w-11/12 w-full p-6"
         >
             <div className="flex flex-col gap-4">
                 {/* Chat Group Title */}
                 <InputAndLabel
-                    title="Chat Group Title"
+                    title={t("Chat Group Title")}
                     isRequired={true}
                     name="title"
                     value={formData.title}
                     onChange={handleChange}
-                    placeholder="Chat Group Title"
+                    placeholder={t("Chat Group Title")}
                 />
 
                 {/* Model Type & Record */}
                 <div className="flex gap-4">
                     <div className="w-full md:w-1/2">
                         <SelectAndLabel
-                            title="Model Type"
+                            title={t("Model Type")}
                             options={modelTypeOptions}
                             value={formData.modelType}
                             onChange={(val) => handleSelectChange("modelType", val)}
-                            placeholder="Select Type"
+                            placeholder={t("Select Type")}
                             name="modelType"
                         />
                     </div>
                     <div className="w-full md:w-1/2">
                         <InputAndLabel
-                            title="Model Record"
+                            title={t("Model Record")}
                             isRequired={true}
                             name="modelRecord"
                             value={formData.modelRecord}
                             onChange={handleChange}
-                            placeholder="Model Record Name"
+                            placeholder={t("Model Record Name")}
                         />
                     </div>
                 </div>
@@ -159,7 +159,7 @@ function CreateChatGroupModal({ isOpen, onClose, isEdit, editData }) {
                     defaultValue={formData.participants}
                     onChange={(val) => handleSelectChange("participants", val)}
                     isMultiple={true}
-                    placeholder="Select Participants"
+                    placeholder={t("Select Participants")}
                 />
 
 
@@ -192,7 +192,7 @@ function CreateChatGroupModal({ isOpen, onClose, isEdit, editData }) {
                                     defaultValue={admin.userId ? [admin.userId] : []}
                                     onChange={(val) => handleAdminChange(index, "userId", val[0])}
                                     isMultiple={false}
-                                    placeholder="Select Admin"
+                                    placeholder={t("Select Admin")}
                                     name={`admins-${index}`}
                                     classNameContainer="mb-0"
                                 />
@@ -206,7 +206,7 @@ function CreateChatGroupModal({ isOpen, onClose, isEdit, editData }) {
                                     // defaultValue={admin.permission}
                                     // onChange={(val) => handleAdminChange(index, "permission", val)}
                                     isMultiple={true}
-                                    placeholder="Select Permission"
+                                    placeholder={t("Select Permission")}
                                     name={`permissions-${index}`}
                                     classNameContainer="mb-0"
                                 />
@@ -231,7 +231,7 @@ function CreateChatGroupModal({ isOpen, onClose, isEdit, editData }) {
                 <div>
                     <label className="text-gray-900 dark:text-gray-200 text-sm mb-2 block">{t("Avatar")}</label>
                     <FileUpload
-                        title="Choose a file or drag & drop here"
+                        title={t("Choose a file or drag & drop here")}
                         onFileSelect={(file) => setFormData({ ...formData, avatar: file })}
                     />
                 </div>

@@ -414,7 +414,7 @@ const AssistantPage = () => {
         setApiResponse({
           isOpen: true,
           status: "error",
-          message: "Microphone access denied or not available.",
+          message: t("Microphone access denied or not available."),
         });
       }
     }
@@ -444,7 +444,7 @@ const AssistantPage = () => {
   const handleStartRename = (e, conv) => {
     e.stopPropagation();
     setEditingConvId(conv._id);
-    setEditConvTitle(conv.title || "Untitled Chat");
+    setEditConvTitle(conv.title || t("Untitled Chat"));
   };
 
   const handleSaveRename = async (e, id) => {
@@ -557,7 +557,7 @@ const AssistantPage = () => {
         {isHistoryOpen && (
           <button
             type="button"
-            aria-label="Close chat history"
+            aria-label={t("Close chat history")}
             className="absolute inset-0 z-20 bg-black/30 md:bg-black/10 md:pointer-events-none"
             onClick={() => setIsHistoryOpen(false)}
           />
@@ -577,7 +577,7 @@ const AssistantPage = () => {
               type="button"
               onClick={() => setIsHistoryOpen(false)}
               className="p-2 rounded-lg text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
-              title="Close history"
+              title={t("Close history")}
             >
               <PanelLeftClose size={18} />
             </button>
@@ -589,7 +589,7 @@ const AssistantPage = () => {
               className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-semibold shadow-sm transition-all duration-200 hover:shadow-md hover:scale-[1.01]"
             >
               <Plus size={18} />
-              <span>New Chat</span>
+              <span>{t("New Chat")}</span>
             </button>
           </div>
 
@@ -601,7 +601,7 @@ const AssistantPage = () => {
               </div>
             ) : Object.keys(groupedConversations).length === 0 ? (
               <div className="text-center text-gray-400 py-8 text-sm">
-                No recent conversations
+                {t("No recent conversations")}
               </div>
             ) : (
               Object.entries(groupedConversations).map(([groupName, groupConvs]) => (
@@ -626,7 +626,7 @@ const AssistantPage = () => {
                         <div className="flex items-center gap-2.5 flex-1 min-w-0 pr-8">
                           <img
                             src="/images/AiAssistant/file.svg"
-                            alt="Chat icon"
+                            alt={t("Chat icon")}
                             className="w-4 h-4 opacity-60 shrink-0"
                           />
                           {isEditing ? (
@@ -645,7 +645,7 @@ const AssistantPage = () => {
                             />
                           ) : (
                             <span className="text-sm truncate">
-                              {conv.title || "Untitled Chat"}
+                              {conv.title || t("Untitled Chat")}
                             </span>
                           )}
                         </div>
@@ -656,14 +656,14 @@ const AssistantPage = () => {
                             <button
                               onClick={(e) => handleStartRename(e, conv)}
                               className="p-1 text-gray-400 hover:text-primary-500 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
-                              title="Rename"
+                              title={t("Rename")}
                             >
                               <Edit2 size={13} />
                             </button>
                             <button
                               onClick={(e) => handleDeleteConv(e, conv._id)}
                               className="p-1 text-gray-400 hover:text-red-500 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
-                              title="Delete"
+                              title={t("Delete")}
                             >
                               <Trash2 size={13} />
                             </button>
@@ -686,21 +686,21 @@ const AssistantPage = () => {
             ) : hasUnlimitedAiAccess ? (
               <div className="bg-white dark:bg-gray-800 border border-gray-200/60 dark:border-gray-700/60 rounded-2xl p-4 flex flex-col gap-2 shadow-sm">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">AI Access</span>
-                  <span className="text-xs font-bold text-primary-600 dark:text-primary-400">Unlimited</span>
+                  <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">{t("AI Access")}</span>
+                  <span className="text-xs font-bold text-primary-600 dark:text-primary-400">{t("Unlimited")}</span>
                 </div>
                 <div className="w-full h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                   <div className="bg-gradient-to-r from-blue-500 to-indigo-600 h-full rounded-full w-full"></div>
                 </div>
                 <p className="text-[11px] text-gray-400">
-                  Admin accounts are not limited by token balance.
+                  {t("Admin accounts are not limited by token balance.")}
                 </p>
               </div>
             ) : (
               <div className="bg-white dark:bg-gray-800 border border-gray-200/60 dark:border-gray-700/60 rounded-2xl p-4 flex flex-col gap-3 shadow-sm">
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Free Tokens Remaining</span>
+                    <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">{t("Free Tokens Remaining")}</span>
                     <span className="text-xs font-bold text-primary-600 dark:text-primary-400">
                       {freeTokensRemaining.toLocaleString()}
                     </span>
@@ -716,12 +716,12 @@ const AssistantPage = () => {
                   </div>
                   <div className="flex justify-between text-[10px] text-gray-400 mt-1">
                     <span>0</span>
-                    <span>Limit: {balanceData?.free_limit?.toLocaleString() || "5,000"}</span>
+                    <span>{t("Limit: ")}{balanceData?.free_limit?.toLocaleString() || "5,000"}</span>
                   </div>
 
                   {balanceData?.balance > 0 && (
                     <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100 dark:border-gray-700/60">
-                      <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Paid Tokens</span>
+                      <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">{t("Paid Tokens")}</span>
                       <span className="text-xs font-bold text-green-600 dark:text-green-400">
                         {balanceData.balance.toLocaleString()}
                       </span>
@@ -734,7 +734,7 @@ const AssistantPage = () => {
                   className="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-primary-600 to-indigo-600 hover:from-primary-700 hover:to-indigo-700 text-white font-semibold text-xs shadow-sm transition-all duration-200 hover:scale-[1.02] flex items-center justify-center gap-1.5"
                 >
                   <CreditCard size={14} />
-                  <span>Buy Tokens</span>
+                  <span>{t("Buy Tokens")}</span>
                 </button>
               </div>
             )}
@@ -797,17 +797,17 @@ const AssistantPage = () => {
             {loadingMessages ? (
               <div className="flex flex-col items-center justify-center h-full gap-3">
                 <div className="w-8 h-8 border-4 border-gray-200 border-t-primary-500 rounded-full animate-spin"></div>
-                <span className="text-sm text-gray-500">Loading conversation...</span>
+                <span className="text-sm text-gray-500">{t("Loading conversation...")}</span>
               </div>
             ) : !hasStarted ? (
               <div className="flex flex-col items-center justify-center h-full max-w-xl mx-auto text-center gap-6">
-                <img src="/images/AiAssistant/file.svg" alt="Assistant Logo" style={{ width: '80px', height: '80px' }} />
+                <img src="/images/AiAssistant/file.svg" alt={t("Assistant Logo")} style={{ width: '80px', height: '80px' }} />
                 <div>
                   <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                    Welcome to AI Assistant
+                    {t("Welcome to AI Assistant")}
                   </h2>
                   <p className="text-gray-500 dark:text-gray-400 text-sm">
-                    Ask questions, check agenda templates, summarize points, or manage your company's tasks.
+                    {t("Ask questions, check agenda templates, summarize points, or manage your company's tasks.")}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2.5 justify-center w-full mt-2">
@@ -817,7 +817,7 @@ const AssistantPage = () => {
                       className="bg-gray-50 dark:bg-gray-800 hover:bg-primary-50 dark:hover:bg-primary-950/20 border border-gray-200 dark:border-gray-700 rounded-xl px-5 py-2.5 text-sm text-gray-700 dark:text-gray-300 shadow-sm transition font-medium"
                       onClick={() => handleSuggestionClick(s)}
                     >
-                      {s}
+                      {t(s)}
                     </button>
                   ))}
                 </div>
@@ -847,8 +847,8 @@ const AssistantPage = () => {
                                 rows={1}
                               />
                               <div className="flex gap-2 mt-1">
-                                <button onClick={() => handleCopy(editValue)} title="Copy" className="text-gray-400 hover:text-primary-500"><Copy size={18} /></button>
-                                <button onClick={() => handleEditSave(idx)} title="Save" className="text-gray-400 hover:text-primary-500"><Save size={18} /></button>
+                                <button onClick={() => handleCopy(editValue)} title={t("Copy")} className="text-gray-400 hover:text-primary-500"><Copy size={18} /></button>
+                                <button onClick={() => handleEditSave(idx)} title={t("Save")} className="text-gray-400 hover:text-primary-500"><Save size={18} /></button>
                               </div>
                             </div>
                           ) : (
@@ -874,18 +874,18 @@ const AssistantPage = () => {
                                         <div key={fileIdx} className="rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow flex items-center w-full sm:w-[492px] h-[68px] px-5 py-4 gap-2.5">
                                           {isDocument(file.type, file.name) ? (
                                             <span className="inline-flex items-center justify-center w-8 h-8 bg-primary-50 rounded-lg shrink-0">
-                                              <img src="/images/AiAssistant/document-text.svg" alt="Document" className="w-6 h-6" />
+                                              <img src="/images/AiAssistant/document-text.svg" alt={t("Document")} className="w-6 h-6" />
                                             </span>
                                           ) : (
                                             <span className="inline-flex items-center justify-center w-8 h-8 bg-primary-50 rounded-lg shrink-0">
-                                              <img src="/images/AiAssistant/file.svg" alt="File" className="w-6 h-6" />
+                                              <img src="/images/AiAssistant/file.svg" alt={t("File")} className="w-6 h-6" />
                                             </span>
                                           )}
                                           <div className="flex-1 min-w-0">
                                             <div className="font-semibold text-lg text-gray-900 dark:text-gray-100 truncate">{file.name}</div>
                                           </div>
-                                          <a href={file.url} download={file.name} className="flex items-center justify-center text-primary-500 hover:text-primary-700 shrink-0" title="Download">
-                                            <img src="/images/AiAssistant/lucide_download.svg" alt="Download" className="w-6 h-6" style={{ width: 24, height: 24 }} />
+                                          <a href={file.url} download={file.name} className="flex items-center justify-center text-primary-500 hover:text-primary-700 shrink-0" title={t("Download")}>
+                                            <img src="/images/AiAssistant/lucide_download.svg" alt={t("Download")} className="w-6 h-6" style={{ width: 24, height: 24 }} />
                                           </a>
                                         </div>
                                       )
@@ -895,8 +895,8 @@ const AssistantPage = () => {
                               </div>
                               {(!msg.audio && !msg.files) && (
                                 <div className="flex gap-2 mt-1">
-                                  <button onClick={() => handleEdit(idx, msg.text)} title="Edit" className="text-gray-400 hover:text-primary-500"><img src="/images/AiAssistant/edit.svg" alt="Edit" className="w-5 h-5" /></button>
-                                  <button onClick={() => handleCopy(msg.text)} title="Copy" className="text-gray-400 hover:text-primary-500"><img src="/images/AiAssistant/copy.svg" alt="Copy" className="w-5 h-5" /></button>
+                                  <button onClick={() => handleEdit(idx, msg.text)} title={t("Edit")} className="text-gray-400 hover:text-primary-500"><img src="/images/AiAssistant/edit.svg" alt={t("Edit")} className="w-5 h-5" /></button>
+                                  <button onClick={() => handleCopy(msg.text)} title={t("Copy")} className="text-gray-400 hover:text-primary-500"><img src="/images/AiAssistant/copy.svg" alt={t("Copy")} className="w-5 h-5" /></button>
                                 </div>
                               )}
                             </>
@@ -970,8 +970,8 @@ const AssistantPage = () => {
                                 rows={1}
                               />
                               <div className="flex gap-2 mt-1">
-                                <button onClick={() => handleCopy(editValue)} title="Copy" className="text-gray-400 hover:text-primary-500"><Copy size={18} /></button>
-                                <button onClick={() => handleEditSave(idx)} title="Save" className="text-gray-400 hover:text-primary-500"><Save size={18} /></button>
+                                <button onClick={() => handleCopy(editValue)} title={t("Copy")} className="text-gray-400 hover:text-primary-500"><Copy size={18} /></button>
+                                <button onClick={() => handleEditSave(idx)} title={t("Save")} className="text-gray-400 hover:text-primary-500"><Save size={18} /></button>
                               </div>
                             </div>
                           ) : (
@@ -1014,7 +1014,7 @@ const AssistantPage = () => {
                                           href={assignee.profileUrl}
                                           className="text-primary-500 hover:text-primary-700 underline text-sm"
                                         >
-                                          View profile
+                                          {t("View profile")}
                                         </a>
                                       </div>
                                     ))}
@@ -1024,7 +1024,7 @@ const AssistantPage = () => {
                                           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M3 3h10v10H3V3zm1 1v8h8V4H4zm2 2h4v1H6V6zm0 2h3v1H6V8z" fill="currentColor" />
                                           </svg>
-                                          View reference
+                                          {t("View reference")}
                                         </button>
                                       </div>
                                     )}
@@ -1050,7 +1050,7 @@ const AssistantPage = () => {
                                             className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white text-sm font-medium"
                                           >
                                             <Check size={16} />
-                                            Confirm
+                                            {t("Confirm")}
                                           </button>
                                           <button
                                             disabled={msg.pendingActionLoading}
@@ -1058,23 +1058,23 @@ const AssistantPage = () => {
                                             className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 text-gray-700 dark:text-gray-200 text-sm font-medium"
                                           >
                                             <X size={16} />
-                                            Cancel
+                                            {t("Cancel")}
                                           </button>
                                         </div>
                                       )}
                                       {msg.pendingAction.status === "confirmed" && (
                                         <div className="text-xs text-emerald-700 dark:text-emerald-300 font-medium">
-                                          Action confirmed and executed.
+                                          {t("Action confirmed and executed.")}
                                         </div>
                                       )}
                                       {msg.pendingAction.status === "cancelled" && (
                                         <div className="text-xs text-gray-500 font-medium">
-                                          Action cancelled.
+                                          {t("Action cancelled.")}
                                         </div>
                                       )}
                                       {msg.pendingAction.status === "failed" && (
                                         <div className="text-xs text-red-600 font-medium">
-                                          Action failed during execution.
+                                          {t("Action failed during execution.")}
                                         </div>
                                       )}
                                     </div>
@@ -1083,8 +1083,8 @@ const AssistantPage = () => {
                               )}
                               {!msg.isStreaming && (
                                 <div className="flex gap-2 mt-1">
-                                  <button onClick={() => handleEdit(idx, msg.text)} title="Edit" className="text-gray-400 hover:text-primary-500"><img src="/images/AiAssistant/edit.svg" alt="Edit" className="w-5 h-5" /></button>
-                                  <button onClick={() => handleCopy(msg.text)} title="Copy" className="text-gray-400 hover:text-primary-500"><img src="/images/AiAssistant/copy.svg" alt="Copy" className="w-5 h-5" /></button>
+                                  <button onClick={() => handleEdit(idx, msg.text)} title={t("Edit")} className="text-gray-400 hover:text-primary-500"><img src="/images/AiAssistant/edit.svg" alt={t("Edit")} className="w-5 h-5" /></button>
+                                  <button onClick={() => handleCopy(msg.text)} title={t("Copy")} className="text-gray-400 hover:text-primary-500"><img src="/images/AiAssistant/copy.svg" alt={t("Copy")} className="w-5 h-5" /></button>
                                 </div>
                               )}
                             </>
@@ -1152,7 +1152,7 @@ const AssistantPage = () => {
                         <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
                         <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
                       </div>
-                      <span className="text-blue-700 font-medium">Thinking...</span>
+                      <span className="text-blue-700 font-medium">{t("Thinking...")}</span>
                     </div>
                   </div>
                 </div>
@@ -1185,11 +1185,11 @@ const AssistantPage = () => {
       {openImageUrl && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 dark:bg-black/60 backdrop-blur-sm" onClick={() => setOpenImageUrl(null)}>
           <div className="relative" onClick={e => e.stopPropagation()}>
-            <img src={openImageUrl} alt="Preview" className="max-h-[80vh] max-w-[90vw] rounded-xl shadow-lg" />
+            <img src={openImageUrl} alt={t("Preview")} className="max-h-[80vh] max-w-[90vw] rounded-xl shadow-lg" />
             <button
               onClick={() => setOpenImageUrl(null)}
               className="absolute top-2 right-2 bg-white bg-opacity-80 rounded-full p-1 hover:bg-opacity-100 transition"
-              title="Close"
+              title={t("Close")}
             >
               <X size={24} className="text-gray-700" />
             </button>

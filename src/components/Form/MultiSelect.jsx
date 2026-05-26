@@ -49,7 +49,7 @@ function MultiSelect({
     <div className={`relative w-full ${classNameContainer}`} ref={selectRef}>
       {title && (
         <label className="text-sm text-gray-700 flex items-center gap-1 mb-2 dark:text-gray-200">
-          <span>{title}</span>
+          <span>{t(title)}</span>
           {isOption && (
             <span className="text-xs text-gray-500 flex items-center gap-1">
               ({t("Option")}){" "}
@@ -71,8 +71,8 @@ function MultiSelect({
                   .filter((opt) => value.includes(opt.id))
                   .map((opt) => opt.value)
                   .join(", ")
-              : placeholder
-            : options.find((opt) => opt.id === value)?.value || placeholder}
+              : t(placeholder)
+            : options.find((opt) => opt.id === value)?.value || t(placeholder)}
         </span>
         <IoIosArrowDown className="text-gray-500" />
       </div>

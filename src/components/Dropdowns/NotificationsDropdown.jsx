@@ -171,7 +171,7 @@ const NotificationsDropdown = ({ notifications, unreadCount }) => {
 
             <div className="w-full h-[56px] px-5 py-4 border-t dark:border-gray-700 flex justify-center items-center">
               <button className="text-[#375DFB] font-[Almarai] font-[400] text-[14px] leading-[20px] tracking-[-0.6%] text-center hover:underline">
-                View all notifications
+                {t("View all notifications")}
               </button>
             </div>
           </div>

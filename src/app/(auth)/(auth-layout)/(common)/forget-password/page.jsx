@@ -8,8 +8,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { loginSuccess, loginFailure } from "@/redux/auth/authSlice";
 import { RiUserSettingsLine } from "@remixicon/react";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 
 function ForgetPasswordPage() {
+    const { t } = useTranslation();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [login, { isLoading }] = useLoginMutation();
@@ -27,7 +29,7 @@ function ForgetPasswordPage() {
             }
             router.push("/dashboard");
         } catch (err) {
-            dispatch(loginFailure(err.data?.message || "Login failed"));
+            dispatch(loginFailure(err.data?.message || t("Login failed")));
         }
     };
 
@@ -42,10 +44,10 @@ function ForgetPasswordPage() {
 
                 <div className="flex flex-col items-center justify-center gap-2 text-center">
                     <span className="text-2xl text-cell-primary">
-                        {`Forget Password`}
+                        {t("Forget Password")}
                     </span>
                     <span className="text-sm text-cell-secondary">
-                        {'Enter your email to got a reset link.'}
+                        {t("Enter your email to got a reset link.")}
                     </span>
                 </div>
 
@@ -53,14 +55,14 @@ function ForgetPasswordPage() {
                     <div className="flex flex-col gap-2 w-full">
 
                         <div className={"flex flex-col gap-2 w-full"}>
-                            <label className="text-cell-primary">Email Address</label>
+                            <label className="text-cell-primary">{t("Email Address")}</label>
                             <div className="flex bg-surface pl-2 px-2 w-full items-center border border-status-border rounded-xl">
                                 <GoMail className="text-cell-secondary w-10" size={18} />
                                 <input
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="Enter your email"
+                                    placeholder={t("Enter your email")}
                                     className="w-full py-3 px-2 outline-none bg-transparent dark:bg-gray-800 text-cell-primary dark:text-gray-100 dark:placeholder-gray-400"
                                     required
                                 />
@@ -74,13 +76,13 @@ function ForgetPasswordPage() {
                             disabled={isLoading}
                             className="w-full rounded-lg bg-primary-base dark:bg-primary-200 text-white dark:text-black py-1.5"
                         >
-                            {isLoading ? "Loading..." : "Get Reset Link"}
+                            {isLoading ? t("Loading...") : t("Get Reset Link")}
                         </button>
                         <Link
                             href="/sign-in"
                             className="w-full rounded-lg text-end text-primary-base hover:text-primary-600"
                         >
-                            Return to login
+                            {t("Return to login")}
                         </Link>
                     </div>
                 </div>

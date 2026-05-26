@@ -2,6 +2,7 @@
 
 import PropTypes from "prop-types";
 import Alert from "./Alert";
+import { useTranslation } from "react-i18next";
 
 /**
  * Reusable modal to display API response status and message.
@@ -13,12 +14,15 @@ function ApiResponseAlert({
   status,
   message,
   onClose,
-  successTitle = "Success",
-  errorTitle = "Error",
-  warningTitle = "Notification",
+  successTitle,
+  errorTitle,
+  warningTitle,
 }) {
+  const { t } = useTranslation();
   let type = "success";
-  let title = successTitle;
+  let title = successTitle || t("Success");
+  errorTitle = errorTitle || t("Error");
+  warningTitle = warningTitle || t("Notification");
 
   const normalizedStatus = (status || "").toLowerCase();
 
@@ -42,7 +46,7 @@ function ApiResponseAlert({
       message={message}
       isBtns={true}
       hideCancelBtn={true}
-      titleSubmitBtn="OK"
+      titleSubmitBtn={t("OK")}
     />
   );
 }

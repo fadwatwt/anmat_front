@@ -8,6 +8,7 @@ import {
     useElements,
 } from "@stripe/react-stripe-js";
 import { RiLoader4Line } from "@remixicon/react";
+import { useTranslation } from "react-i18next";
 
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
@@ -15,6 +16,7 @@ import { selectAuth } from "@/redux/auth/authSlice";
 import { RootRoute } from "@/Root.Route";
 
 const CheckoutForm = ({ amount, onFinish, clientSecret, userName, userEmail, userPhone, priceId, planId, trialDays }) => {
+    const { t } = useTranslation();
     const stripe = useStripe();
     const elements = useElements();
     const router = useRouter();
@@ -37,16 +39,16 @@ const CheckoutForm = ({ amount, onFinish, clientSecret, userName, userEmail, use
             stripe.retrievePaymentIntent(piSecret).then(({ paymentIntent }) => {
                 switch (paymentIntent.status) {
                     case "succeeded":
-                        setMessage("Payment succeeded!");
+                        setMessage(t("Payment succeeded!"));
                         break;
                     case "processing":
-                        setMessage("Your payment is processing.");
+                        setMessage(t("Your payment is processing."));
                         break;
                     case "requires_payment_method":
-                        setMessage("Your payment was not successful, please try again.");
+                        setMessage(t("Your payment was not successful, please try again."));
                         break;
                     default:
-                        setMessage("Something went wrong.");
+                        setMessage(t("Something went wrong."));
                         break;
                 }
             });
@@ -54,16 +56,16 @@ const CheckoutForm = ({ amount, onFinish, clientSecret, userName, userEmail, use
             stripe.retrieveSetupIntent(siSecret).then(({ setupIntent }) => {
                 switch (setupIntent.status) {
                     case "succeeded":
-                        setMessage("Subscription setup successful!");
+                        setMessage(t("Subscription setup successful!"));
                         break;
                     case "processing":
-                        setMessage("Your setup is processing.");
+                        setMessage(t("Your setup is processing."));
                         break;
                     case "requires_payment_method":
-                        setMessage("Setup failed, please try again.");
+                        setMessage(t("Setup failed, please try again."));
                         break;
                     default:
-                        setMessage("Something went wrong.");
+                        setMessage(t("Something went wrong."));
                         break;
                 }
             });
@@ -137,7 +139,7 @@ const CheckoutForm = ({ amount, onFinish, clientSecret, userName, userEmail, use
 
                 if (result.error) {
                     console.error("Stripe SDK Error:", result.error);
-                    setMessage(result.error.message || "Confirmation failed. Please check your card information.");
+                    setMessage(result.error.message || t("Confirmation failed. Please check your card information."));
                     setIsLoading(false);
                     return; // Stop execution
                 }
@@ -178,7 +180,7 @@ const CheckoutForm = ({ amount, onFinish, clientSecret, userName, userEmail, use
                 router.push('/account-setup/subscriber/plans/success');
         } catch (err) {
             console.error("JavaScript Error in handleSubmit:", err);
-            setMessage(err.message || "A system error occurred. Please refresh and try again.");
+            setMessage(err.message || t("A system error occurred. Please refresh and try again."));
             setIsLoading(false);
         }
     };
@@ -203,7 +205,7 @@ const CheckoutForm = ({ amount, onFinish, clientSecret, userName, userEmail, use
             {!elementReady && (
                 <div className="flex flex-col items-center justify-center p-12 gap-4">
                     <RiLoader4Line className="animate-spin text-primary-base dark:text-primary-200" size={40} />
-                    <p className="text-gray-400 font-medium italic dark:text-gray-500">Loading secure payment...</p>
+                    <p className="text-gray-400 font-medium italic dark:text-gray-500">{t("Loading secure payment...")}</p>
                 </div>
             )}
 
@@ -213,8 +215,8 @@ const CheckoutForm = ({ amount, onFinish, clientSecret, userName, userEmail, use
                 className={`p-6 bg-white rounded-2xl shadow-xl border border-gray-100 transition-opacity duration-300 dark:bg-gray-800 dark:border-gray-700 ${elementReady ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden'}`}
             >
                 <div className="mb-6 text-center">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-2 dark:text-gray-100">Complete Payment</h2>
-                    <p className="text-gray-500 dark:text-gray-400">Securely pay using Stripe</p>
+                    <h2 className="text-2xl font-bold text-gray-800 mb-2 dark:text-gray-100">{t("Complete Payment")}</h2>
+                    <p className="text-gray-500 dark:text-gray-400">{t("Securely pay using Stripe")}</p>
                     <div className="mt-4 text-3xl font-extrabold text-primary-base dark:text-primary-200">
                         ${amount}
                     </div>
@@ -235,7 +237,7 @@ const CheckoutForm = ({ amount, onFinish, clientSecret, userName, userEmail, use
                     {isLoading ? (
                         <RiLoader4Line className="animate-spin" size={24} />
                     ) : (
-                        `Complete Subscription`
+                        t("Complete Subscription")
                     )}
                 </button>
 

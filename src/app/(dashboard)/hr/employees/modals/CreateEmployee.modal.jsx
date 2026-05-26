@@ -139,8 +139,8 @@ function CreateEmployeeModal({ isOpen, onClose }) {
                 isOpen={isApprovalOpen}
                 onClose={() => setIsApprovalOpen(false)}
                 onConfirm={onConfirmSave}
-                title="Create Employee"
-                message="Are you sure you want to create this employee?"
+                title={t("Create Employee")}
+                message={t("Are you sure you want to create this employee?")}
             />
 
             <ApiResponseAlert

@@ -1,19 +1,21 @@
+import { useTranslation } from "react-i18next";
 import ContentCard from '@/components/containers/ContentCard';
 import DefaultSelect from '@/components/Form/DefaultSelect';
 
 const ProjectsPerformanceList = ({ projects = [] }) => {
+    const { t } = useTranslation();
     return (
         <ContentCard
-            title={"Projects Performance"}
+            title={t("Projects Performance")}
             toolbar={
                 <div className="w-32 flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end">
-                    <DefaultSelect variant="chart" multi={false} options={[{ id: 1, value: "Last Month" }]} />
+                    <DefaultSelect variant="chart" multi={false} options={[{ id: 1, value: t("Last Month") }]} />
                 </div>
             }
             main={
                 <div className="flex flex-col gap-8 h-full">
                     {projects.length === 0 && (
-                        <span className="text-sm text-gray-500">No projects assigned.</span>
+                        <span className="text-sm text-gray-500">{t("No projects assigned.")}</span>
                     )}
                     {projects.map((project, index) => {
                         const completion = project.totalTasks
@@ -33,9 +35,9 @@ const ProjectsPerformanceList = ({ projects = [] }) => {
                                     </div>
                                     <div className="flex flex-wrap gap-1 items-start justify-between w-full">
                                         <p className="text-sm text-gray-500">
-                                            {project.completedTasks ?? 0}/{project.totalTasks ?? 0} tasks completed
+                                            {t("{{completed}}/{{total}} tasks completed", { completed: project.completedTasks ?? 0, total: project.totalTasks ?? 0 })}
                                         </p>
-                                        <span className="text-xs text-gray-500 ml-4">{project.daysLeft ?? 0} days left</span>
+                                        <span className="text-xs text-gray-500 ml-4">{t("{{daysLeft}} days left", { daysLeft: project.daysLeft ?? 0 })}</span>
                                     </div>
                                 </div>
                             </div>

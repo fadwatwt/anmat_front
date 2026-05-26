@@ -6,8 +6,8 @@ function ChatPermissionsTab() {
     const { t } = useTranslation();
 
     const headers = [
-        { label: "Permission Title", width: "60%" },
-        { label: "Description", width: "40%" },
+        { label: t("Permission Title"), width: "60%" },
+        { label: t("Description"), width: "40%" },
     ];
 
     const rows = Array.from({ length: 9 }).map((_, index) => [
@@ -21,7 +21,7 @@ function ChatPermissionsTab() {
 
     return (
         <Table
-            title="Chat Permissions"
+            title={t("Chat Permissions")}
             headers={headers}
             rows={rows}
             isActions={false}

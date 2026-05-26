@@ -235,22 +235,22 @@ function DepartmentsPage() {
                 type="delete"
                 isOpen={isOpenDeleteAlert}
                 onClose={() => setIsOpenDeleteAlert(false)}
-                title="Delete Department"
+                title={t("Delete Department")}
                 message={
                     <span>
-                        Are you sure you want to <b>Delete {selectedDeleteDepartment?.name}</b>?
+                        {t("Are you sure you want to")} <b>{t("Delete")} {selectedDeleteDepartment?.name}</b>?
                     </span>
                 }
                 isBtns={true}
-                titleSubmitBtn="Yes, Delete"
-                titleCancelBtn="Cancel"
+                titleSubmitBtn={t("Yes, Delete")}
+                titleCancelBtn={t("Cancel")}
                 onSubmit={handleDeleteConfirmation}
             />
             <Alert
                 type="success"
-                title="Department Deleted"
+                title={t("Department Deleted")}
                 isBtns={false}
-                message={`The department "${selectedDeleteDepartment?.name}" has been successfully deleted.`}
+                message={t('The department "{{name}}" has been successfully deleted.', { name: selectedDeleteDepartment?.name })}
                 isOpen={isOpenSuccessDeleteAlert}
                 onClose={() => setIsOpenSuccessDeleteAlert(false)}
             />

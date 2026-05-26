@@ -43,9 +43,9 @@ function AddCategoryModal({ isOpen, onClose, mode = "create", category = null, o
         validationSchema: Yup.object({
             name: Yup.string()
                 .trim()
-                .min(3, "Name must be at least 3 characters")
-                .max(32, "Name is too long")
-                .required("Name is required"),
+                .min(3, t("Name must be at least 3 characters"))
+                .max(32, t("Name is too long"))
+                .required(t("Name is required")),
             parent: Yup.string().nullable(),
         }),
         onSubmit: async (values) => {
@@ -68,14 +68,14 @@ function AddCategoryModal({ isOpen, onClose, mode = "create", category = null, o
                 setApiResponse({
                     isOpen: true,
                     status: "success",
-                    message: response?.message || (isEdit ? "Category updated" : "Category created"),
+                    message: response?.message || (isEdit ? t("Category updated") : t("Category created")),
                 });
             } catch (error) {
                 const message =
                     error?.data?.message ||
                     error?.data?.error ||
                     error?.error ||
-                    (isEdit ? "Failed to update category" : "Failed to create category");
+                    (isEdit ? t("Failed to update category") : t("Failed to create category"));
                 setApiResponse({ isOpen: true, status: "error", message });
             } finally {
                 hideProcessing();
@@ -122,7 +122,7 @@ function AddCategoryModal({ isOpen, onClose, mode = "create", category = null, o
             <Modal
                 isOpen={isOpen}
                 onClose={onClose}
-                title={isEdit ? "Edit Category" : "Add Category"}
+                title={isEdit ? t("Edit Category") : t("Add Category")}
                 isBtns={true}
                 btnApplyTitle={isLoading ? t("Saving...") : isEdit ? t("Save") : t("Add Category")}
                 disabled={isLoading || !formik.isValid}
@@ -138,8 +138,8 @@ function AddCategoryModal({ isOpen, onClose, mode = "create", category = null, o
                     className="flex flex-col gap-3 px-1"
                 >
                     <InputAndLabel
-                        title="Category Name"
-                        placeholder="e.g. Marketing"
+                        title={t("Category Name")}
+                        placeholder={t("e.g. Marketing")}
                         isRequired
                         type="text"
                         name="name"
@@ -149,14 +149,14 @@ function AddCategoryModal({ isOpen, onClose, mode = "create", category = null, o
                         error={formik.touched.name && formik.errors.name}
                     />
                     <SelectAndLabel
-                        title="Parent Category"
+                        title={t("Parent Category")}
                         name="parent"
                         value={formik.values.parent}
                         options={parentOptions}
                         onChange={(val) => formik.setFieldValue("parent", val)}
                         onBlur={() => formik.setFieldTouched("parent", true)}
                         error={formik.touched.parent && formik.errors.parent}
-                        placeholder="None (top-level)"
+                        placeholder={t("None (top-level)")}
                     />
                 </form>
             </Modal>

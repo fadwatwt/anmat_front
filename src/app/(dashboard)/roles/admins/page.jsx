@@ -102,17 +102,12 @@ function PermissionsPage() {
         const { t, i18n } = useTranslation();
         const statesActions = [
             {
-                text: "Sync Permissions", icon: <RiEditLine className="text-primary-400" />, onClick: () => {
+                text: t("Sync Permissions"), icon: <RiEditLine className="text-primary-400" />, onClick: () => {
                     openSyncPermissionsModal(actualRowIndex);
                 },
             },
-            // {
-            //     text: "View Permissions", icon: <RiEyeLine className="text-primary-400" />, onClick: () => {
-            //         console.log(actualRowIndex)
-            //     }
-            // },
             {
-                text: "Delete", icon: <RiDeleteBin7Line className="text-red-500" />, onClick: () => {
+                text: t("Delete"), icon: <RiDeleteBin7Line className="text-red-500" />, onClick: () => {
                     openDeleteRoleAlert(actualRowIndex);
                 },
             }
@@ -240,13 +235,13 @@ function PermissionsPage() {
                 isOpen={isDeleteRoleAert}
                 onClose={closeDeleteRoleAlert}
                 type="cancel"
-                title="Delete Role"
-                confirmBtnText={isDeleting ? "Deleting..." : "Yes, Delete"}
+                title={t("Delete Role")}
+                confirmBtnText={isDeleting ? t("Deleting...") : t("Yes, Delete")}
                 description={
                     <p>
-                        Are you sure you want to{" "}
+                        {t("Are you sure you want to")}{" "}
                         <span className="font-bold text-table-title">
-                            Delete {roleToDelete?.name} Role
+                            {t("Delete {{name}} Role", { name: roleToDelete?.name })}
                         </span>
                         ?
                     </p>

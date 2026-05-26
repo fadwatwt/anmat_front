@@ -1,23 +1,24 @@
-
+import { useTranslation } from "react-i18next";
 import { RiMoreFill, RiArrowDownSLine } from '@remixicon/react';
 
 const AnalyticsCard = ({ title, children, showDropdowns = false, dropdown1Label = "Filter" }) => {
+    const { t } = useTranslation();
     return (
         <div className="bg-surface px-6 pt-6 pb-10 rounded-[24px] shadow-sm border border-status-border flex flex-col min-h-[400px]">
             <div className="flex justify-between items-center mb-6">
-                <h3 className="font-bold text-table-title text-lg">{title}</h3>
+                <h3 className="font-bold text-table-title text-lg">{t(title)}</h3>
                 <div className="flex items-center gap-2">
                     {showDropdowns && (
                         <div className="relative flex items-center">
                             <select className="appearance-none text-xs bg-status-bg border border-status-border rounded-lg pl-3 pr-8 py-1.5 outline-none text-cell-secondary font-medium cursor-pointer">
-                                <option>{dropdown1Label}</option>
+                                <option>{t(dropdown1Label)}</option>
                             </select>
                             <RiArrowDownSLine className="size-4 absolute right-2 text-cell-secondary pointer-events-none" />
                         </div>
                     )}
                     <div className="relative flex items-center">
                         <select className="appearance-none text-xs bg-status-bg border border-status-border rounded-lg pl-3 pr-8 py-1.5 outline-none text-cell-secondary font-medium cursor-pointer">
-                            <option>Last Month</option>
+                            <option>{t("Last Month")}</option>
                         </select>
                         <RiArrowDownSLine className="size-4 absolute right-2 text-cell-secondary pointer-events-none" />
                     </div>

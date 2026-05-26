@@ -11,21 +11,23 @@ import TextAreaWithLabel from "@/components/Form/TextAreaWithLabel";
 import { useGetEmployeesQuery } from "@/redux/employees/employeesApi";
 import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
 
-const validationSchema = Yup.object().shape({
-    employee_id: Yup.string().required("Employee is required"),
-    amount: Yup.number()
-        .required("Amount is required")
-        .min(0, "Amount must be at least 0"),
-    bonus: Yup.number().min(0, "Bonus must be at least 0"),
-    discount: Yup.number().min(0, "Discount must be at least 0"),
-    comment: Yup.string(),
-});
+
 
 function AddSalaryModal({ isOpen, onClose, onSubmit }) {
     const { t } = useTranslation();
     const { data: employees = [], isLoading: isLoadingEmployees } = useGetEmployeesQuery();
     const [submissionError, setSubmissionError] = useState(null);
     const [isApprovalOpen, setIsApprovalOpen] = useState(false);
+
+    const validationSchema = Yup.object().shape({
+        employee_id: Yup.string().required(t("Employee is required")),
+        amount: Yup.number()
+            .required(t("Amount is required"))
+            .min(0, t("Amount must be at least 0")),
+        bonus: Yup.number().min(0, t("Bonus must be at least 0")),
+        discount: Yup.number().min(0, t("Discount must be at least 0")),
+        comment: Yup.string(),
+    });
 
     const formik = useFormik({
         initialValues: {

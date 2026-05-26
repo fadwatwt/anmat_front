@@ -1,44 +1,46 @@
 import InputAndLabel from "@/components/Form/InputAndLabel";
+import { useTranslation } from "react-i18next";
 
 function IntegrationSettingsForm() {
+    const { t } = useTranslation();
     return (
         <div className={"flex flex-col gap-4 max-h-full pb-3"}>
             <InputAndLabel
                 type="text"
-                title={"Account Email / ID"}
+                title={t("Account Email / ID")}
                 isRequired={true}
-                placeholder="Account Email"
+                placeholder={t("Account Email")}
             />
             <InputAndLabel
                 type="text"
-                title={"Client ID"}
+                title={t("Client ID")}
                 isRequired={true}
-                placeholder="Client ID"
+                placeholder={t("Client ID")}
             />
 
             <InputAndLabel
                 type="text"
-                title={"Client Secret"}
+                title={t("Client Secret")}
                 isRequired={true}
-                placeholder="Client Secret"
+                placeholder={t("Client Secret")}
             />
             <InputAndLabel
                 type="text"
-                title={"Mode"}
+                title={t("Mode")}
                 isRequired={true}
-                placeholder="Mode"
+                placeholder={t("Mode")}
             />
             <InputAndLabel
                 type="text"
-                title={"Webhook URL"}
+                title={t("Webhook URL")}
                 isRequired={true}
-                placeholder="Webhook URL"
+                placeholder={t("Webhook URL")}
             />
             <InputAndLabel
                 type="text"
-                title={"Callback URL"}
+                title={t("Callback URL")}
                 isRequired={true}
-                placeholder="Callback URL"
+                placeholder={t("Callback URL")}
             />
 
         </div>

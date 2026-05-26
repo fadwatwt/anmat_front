@@ -12,8 +12,10 @@ import {
   useGetAdminPermissionsQuery,
   useCreateAdminRoleMutation,
 } from "@/redux/roles/adminRolesAPI";
+import { useTranslation } from "react-i18next";
 
 function AddRoleModal({ isOpen, onClose }) {
+  const { t } = useTranslation();
   const [createAdminRole, { isLoading }] = useCreateAdminRoleMutation();
   const [apiResponse, setApiResponse] = useState({
     isOpen: false,
@@ -38,10 +40,10 @@ function AddRoleModal({ isOpen, onClose }) {
       admin_permissions_ids: [],
     },
     validationSchema: Yup.object({
-      name: Yup.string().required("Role name is required"),
+      name: Yup.string().required(t("Role name is required")),
       admin_permissions_ids: Yup.array().min(
         0,
-        "Select at least one permission"
+        t("Select at least one permission")
       ),
     }),
     onSubmit: async (values) => {
@@ -105,20 +107,20 @@ function AddRoleModal({ isOpen, onClose }) {
         isOpen={isOpen}
         onClose={onClose}
         isBtns={true}
-        btnApplyTitle={isLoading ? "Creating..." : "Save"}
+        btnApplyTitle={isLoading ? t("Creating...") : t("Save")}
         onClick={formik.handleSubmit}
         className={"lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12 px-3"}
-        title={"Add Role"}
+        title={t("Add Role")}
       >
         <div className="px-1">
           <div className="flex flex-col gap-4">
             <InputAndLabel
-              title="Role Name"
+              title={t("Role Name")}
               name="name"
               value={formik.values.name}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              placeholder="Enter Role Name..."
+              placeholder={t("Enter Role Name...")}
               error={
                 formik.touched.name && formik.errors.name
                   ? formik.errors.name
@@ -128,7 +130,7 @@ function AddRoleModal({ isOpen, onClose }) {
             />
 
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Permissions</label>
+              <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t("Permissions")}</label>
               {isLoadingPermissions ? (
                 <p className="text-sm text-gray-500"> <div className="flex items-center justify-center w-full p-4"><ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} /></div> </p>
               ) : (

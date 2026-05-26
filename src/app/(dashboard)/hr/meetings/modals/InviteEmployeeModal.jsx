@@ -18,20 +18,20 @@ function InviteEmployeeModal({ isOpen, onClose }) {
         <Modal
             isOpen={isOpen}
             onClose={onClose}
-            title="Invite Employee"
+            title={t("Invite Employee")}
             isBtns={true}
-            btnApplyTitle="Send"
+            btnApplyTitle={t("Send")}
             onClick={handleSend}
             className="lg:w-[35%] md:w-1/2 sm:w-11/12 w-full p-6"
         >
             <div className="flex flex-col gap-4">
                 <InputAndLabel
-                    title="Email"
+                    title={t("Email")}
                     isRequired={true}
                     name="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="example@gmail.com"
+                    placeholder={t("example@gmail.com")}
                     type="email"
                 />
             </div>

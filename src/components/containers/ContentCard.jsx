@@ -1,6 +1,9 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
+
 const ContentCard = ({ title, subtitle, toolbar, main, footer, className = "" }) => {
+    const { t } = useTranslation();
     return (
         // Card Container
         <div className={`flex flex-col items-start gap-4 justify-between p-4 bg-white dark:bg-gray-800 border border-status-border rounded-2xl w-full h-full ${className}`}>
@@ -10,10 +13,10 @@ const ContentCard = ({ title, subtitle, toolbar, main, footer, className = "" })
                     {/* title */}
                     <div className="flex flex-col items-start justify-start gap-1">
                         <span className="text-xl text-center text-table-title">
-                            {title}
+                            {t(title)}
                         </span>
                         {
-                            subtitle && <span className="text-md text-cell-secondary">{subtitle}</span>
+                            subtitle && <span className="text-md text-cell-secondary">{t(subtitle)}</span>
                         }
                     </div>
                     {/* Header Actions */}

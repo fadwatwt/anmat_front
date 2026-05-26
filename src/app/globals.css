@@ -92,6 +92,14 @@ body {
     overflow: hidden;
 }
 
+html.font-ar body {
+    font-family: 'Almarai', sans-serif;
+}
+
+html.font-default body {
+    font-family: 'Roboto', sans-serif;
+}
+
 p,
 div {
     color: var(--text-secondary);

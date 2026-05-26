@@ -64,7 +64,7 @@ const SetupSubscriberProfile = () => {
                     message: response?.message || t("Account registered successfully!")
                 });
             } catch (err) {
-                setError(err.data?.message || err.message || "Registration failed");
+                setError(err.data?.message || err.message || t("Registration failed"));
                 setIsRedirecting(false);
             }
         },
@@ -115,37 +115,37 @@ const SetupSubscriberProfile = () => {
                 )}
 
                 <InputAndLabel
-                    title="Email Address"
+                    title={t("Email Address")}
                     name="email"
                     type="email"
                     value={formik.values.email}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    placeholder="Enter email..."
+                    placeholder={t("Enter email...")}
                     error={formik.touched.email && formik.errors.email ? formik.errors.email : ""}
                     isRequired={true}
                     disabled={isBusy}
                 />
 
                 <InputAndLabel
-                    title="Full Name"
+                    title={t("Full Name")}
                     name="name"
                     value={formik.values.name}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    placeholder="Enter Full Name..."
+                    placeholder={t("Enter Full Name...")}
                     error={formik.touched.name && formik.errors.name ? formik.errors.name : ""}
                     isRequired={true}
                     disabled={isBusy}
                 />
 
                 <InputAndLabel
-                    title="Phone Number (Optional)"
+                    title={t("Phone Number (Optional)")}
                     name="phone"
                     value={formik.values.phone}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    placeholder="Enter Phone Number..."
+                    placeholder={t("Enter Phone Number...")}
                     error={formik.touched.phone && formik.errors.phone ? formik.errors.phone : ""}
                     isRequired={false}
                     type="text"
@@ -153,7 +153,7 @@ const SetupSubscriberProfile = () => {
                 />
 
                 <InputAndLabel
-                    title="Password"
+                    title={t("Password")}
                     name="password"
                     type="password"
                     value={formik.values.password}
@@ -166,7 +166,7 @@ const SetupSubscriberProfile = () => {
                 />
 
                 <InputAndLabel
-                    title="Confirm Password"
+                    title={t("Confirm Password")}
                     name="password_confirmation"
                     type="password"
                     value={formik.values.password_confirmation}
@@ -192,7 +192,7 @@ const SetupSubscriberProfile = () => {
                             <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-primary-100 dark:border-primary-800 shadow-sm relative group">
                                 <img
                                     src={URL.createObjectURL(formik.values.avatar)}
-                                    alt="Avatar Preview"
+                                    alt={t("Avatar Preview")}
                                     className="w-full h-full object-cover"
                                 />
                                 <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">

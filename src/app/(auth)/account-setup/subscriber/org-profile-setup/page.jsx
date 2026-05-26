@@ -138,49 +138,49 @@ const SetupCompanyProfile = () => {
                 {/* Form */}
                 <form onSubmit={formik.handleSubmit} className="flex flex-col w-full gap-5">
                     <InputAndLabel
-                        title="Company Name"
+                        title={t("Company Name")}
                         name="name"
                         value={formik.values.name}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
-                        placeholder="Enter Company Name..."
+                        placeholder={t("Enter Company Name...")}
                         error={formik.touched.name && formik.errors.name ? formik.errors.name : ""}
                         isRequired={true}
                         disabled={isBusy}
                     />
 
                     <InputAndLabel
-                        title="Email Address"
+                        title={t("Email Address")}
                         name="email"
                         type="email"
                         value={formik.values.email}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
-                        placeholder="Enter Email..."
+                        placeholder={t("Enter Email...")}
                         error={formik.touched.email && formik.errors.email ? formik.errors.email : ""}
                         isRequired={true}
                         disabled={isBusy}
                     />
 
                     <InputAndLabel
-                        title="Phone Number"
+                        title={t("Phone Number")}
                         name="phone"
                         value={formik.values.phone}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
-                        placeholder="Enter Phone Number..."
+                        placeholder={t("Enter Phone Number...")}
                         error={formik.touched.phone && formik.errors.phone ? formik.errors.phone : ""}
                         isRequired={true}
                         disabled={isBusy}
                     />
 
                     <InputAndLabel
-                        title="Website Link"
+                        title={t("Website Link")}
                         name="website"
                         value={formik.values.website}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
-                        placeholder="Enter Website URL..."
+                        placeholder={t("Enter Website URL...")}
                         error={formik.touched.website && formik.errors.website ? formik.errors.website : ""}
                         isRequired={false}
                         disabled={isBusy}
@@ -188,7 +188,7 @@ const SetupCompanyProfile = () => {
 
                     <div className="flex flex-col sm:flex-row gap-4">
                         <SelectAndLabel
-                            title="Country"
+                            title={t("Country")}
                             name="country"
                             value={formik.values.country}
                             onChange={(val) => {
@@ -198,20 +198,20 @@ const SetupCompanyProfile = () => {
                             onBlur={formik.handleBlur}
                             options={countries}
                             error={formik.touched.country && formik.errors.country ? formik.errors.country : ""}
-                            placeholder="Select Country..."
+                            placeholder={t("Select Country...")}
                             isRequired={true}
                             disabled={isBusy}
                         />
 
                         <SelectAndLabel
-                            title="City"
+                            title={t("City")}
                             name="city"
                             value={formik.values.city}
                             onChange={(val) => formik.setFieldValue("city", val)}
                             onBlur={formik.handleBlur}
                             options={cities}
                             error={formik.touched.city && formik.errors.city ? formik.errors.city : ""}
-                            placeholder="Select City..."
+                            placeholder={t("Select City...")}
                             isRequired={true}
                             disabled={isBusy}
                         />

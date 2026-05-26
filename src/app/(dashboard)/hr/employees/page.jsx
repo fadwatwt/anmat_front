@@ -13,8 +13,10 @@ import InviteEmployeeModal from "@/app/(dashboard)/hr/_modals/InviteEmployeeModa
 import { usePermission } from "@/Hooks/usePermission";
 import { useSelector } from "react-redux";
 import { selectUserType } from "@/redux/auth/authSlice";
+import { useTranslation } from "react-i18next";
 
 function HRPage() {
+    const { t } = useTranslation();
     const [isInviteEmployeeModal, setIsInviteEmployeeModal] = useState(false);
     const [isAddDepartmentModal, setIsAddDepartmentModal] = useState(false);
     const [activeTab, setActiveTab] = useState("Employees");
@@ -38,27 +40,27 @@ function HRPage() {
 
     const tabsData = [
         ...(canViewEmployees ? [{
-            title: "Employees",
+            title: t("Employees"),
             content: <EmployeesTap />,
         }] : []),
         ...(!isEmployee && canViewAttendances ? [{
-            title: "Attendances",
+            title: t("Attendances"),
             content: <AttendanceTab />,
         }] : []),
         ...(!isEmployee && canViewLeaves ? [{
-            title: "Short Leaves",
+            title: t("Short Leaves"),
             content: <LeavesTab />,
         }] : []),
         ...(!isEmployee && canViewRequests ? [{
-            title: "Requests",
+            title: t("Requests"),
             content: <RequestsTab />,
         }] : []),
         ...(!isEmployee && canViewSalary ? [{
-            title: "Salary",
+            title: t("Salary"),
             content: <SalaryTab />,
         }] : []),
         ...(canViewAttendances ? [{
-            title: "Rotations",
+            title: t("Rotations"),
             content: <RotationTap />,
         }] : []),
     ];
@@ -75,7 +77,7 @@ function HRPage() {
         <>
             {/* <LoginPage /> */}
             <Page
-                title={"HR - Employees Management"}
+                title={t("HR - Employees Management")}
             >
                 <Tabs tabs={tabsData} setActiveTitleTab={setActiveTab} />
             </Page>

@@ -1,4 +1,5 @@
 "use client";
+import { useTranslation } from "react-i18next";
 
 import ChartSelect from "@/app/(dashboard)/analytics/_components/admin/ChartSelect";
 import { useMemo } from 'react'
@@ -7,6 +8,7 @@ import { RiCircleFill } from "@remixicon/react";
 import { Line, LineChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 
 const RevenuesChart = ({ data = [] }) => {
+    const { t } = useTranslation();
     // Check efficiency: ensures data is present
     const chartData = data.length > 0 ? data : [];
 
@@ -15,18 +17,18 @@ const RevenuesChart = ({ data = [] }) => {
         const last = chartData[chartData.length - 1].value;
         const prev = chartData[chartData.length - 2].value;
         if (prev === 0 && last === 0) return null;
-        const direction = last >= prev ? "improved" : "decreased";
-        return `Revenues has ${direction} from ${prev} to ${last} this month`;
+        const direction = last >= prev ? t("improved") : t("decreased");
+        return t("Revenues has {{direction}} from {{prev}} to {{last}} this month", { direction, prev, last });
     }, [chartData]);
 
     return (
         <ContentCard
-            title={"Revenues"}
+            title={t("Revenues")}
             toolbar={
                 <div className="flex flex-wrap sm:flex-nowrap gap-2 items-center justify-end w-full sm:w-auto">
                     <ChartSelect 
-                        options={[{ id: 1, value: "Last 6 Months" }]} 
-                        defaultValue="Last 6 Months"
+                        options={[{ id: 1, value: t("Last 6 Months") }]} 
+                        defaultValue={t("Last 6 Months")}
                         className="w-full sm:w-32"
                     />
                 </div>

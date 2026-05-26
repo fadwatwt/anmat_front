@@ -88,7 +88,7 @@ const HeaderUserMenu = () => {
                     <UserChatAvatar user={user} size="32px" fontSize="text-xs" />
                 </div>
                 <p className={"dark:text-gray-400 text-sm sm:block hidden"}>
-                    {user?.name || "N/A"}
+                    {user?.name || t("N/A")}
                 </p>
                 <MdOutlineKeyboardArrowDown />
             </div>
@@ -104,14 +104,14 @@ const HeaderUserMenu = () => {
                         className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                     >
                         <RiUser3Line className="mr-2" size={18} />
-                        Profile
+                        {t("Profile")}
                     </Link>
                     <button
                         onClick={handleLogout}
                         className="flex items-center w-full px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                     >
                         <RiLogoutBoxLine className="mr-2" size={18} />
-                        Logout
+                        {t("Logout")}
                     </button>
                 </div>
             )}

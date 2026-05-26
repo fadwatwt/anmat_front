@@ -1,4 +1,5 @@
 "use client";
+import { useTranslation } from "react-i18next";
 import React, { useEffect, useRef } from "react";
 import { RootRoute } from "@/Root.Route";
 import { format } from "date-fns";
@@ -9,6 +10,7 @@ import MessageActions from "./MessageActions";
 import PollBubble from "./PollBubble";
 
 const MessageList = ({ messages, isLoading, onEdit, onDelete, onReact, onReply }) => {
+  const { t } = useTranslation();
   const currentUserId = useSelector(selectUserId);
   const scrollRef = useRef(null);
 
@@ -49,7 +51,7 @@ const MessageList = ({ messages, isLoading, onEdit, onDelete, onReact, onReply }
     >
       {messages?.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-full text-sub-300">
-          <p className="text-sm">No messages yet. Start the conversation!</p>
+          <p className="text-sm">{t("No messages yet. Start the conversation!")}</p>
         </div>
       ) : (
         messages?.map((message, index) => {
@@ -67,7 +69,7 @@ const MessageList = ({ messages, isLoading, onEdit, onDelete, onReact, onReply }
                     className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold ${showAvatar ? "opacity-100" : "opacity-0"}`}
                     style={{ backgroundColor: 'var(--bg-main)' }}
                   >
-                    <span className="text-cell-secondary">{message.sent_by?.name?.charAt(0) || "U"}</span>
+                    <span className="text-cell-secondary">{message.sent_by?.name?.charAt(0) || t("U")}</span>
                   </div>
                 )}
 
@@ -102,7 +104,7 @@ const MessageList = ({ messages, isLoading, onEdit, onDelete, onReact, onReply }
                       <div style={{ color: isMe ? '#ffffff' : 'inherit' }}>
                         {message.content}
                         {message.is_edited && (
-                          <span className="text-[10px] opacity-70 ml-2 italic">(edited)</span>
+                          <span className="text-[10px] opacity-70 ml-2 italic">{t("(edited)")}</span>
                         )}
                       </div>
                     )}
@@ -130,7 +132,7 @@ const MessageList = ({ messages, isLoading, onEdit, onDelete, onReact, onReply }
                               <p className={`text-sm font-medium truncate ${isMe ? 'text-white' : 'text-cell-primary'}`}>
                                 {message.attachment.split('/').pop()}
                               </p>
-                              <p className="text-[10px] text-sub-500">Click to download</p>
+                              <p className="text-[10px] text-sub-500">{t("Click to download")}</p>
                             </div>
                           </a>
                         )}

@@ -3,22 +3,24 @@ import Modal from "../Modal.jsx";
 import ReplayMethod from "./Tabs/Replay.method.jsx";
 import DeleteReplayMethod from "./Tabs/DeleteReplay.method.jsx";
 import PropTypes from "prop-types";
+import { useTranslation } from "react-i18next";
 
 
 function ReplayAndDeleteReplay({isOpen, onClose,className}) {
+    const { t } = useTranslation();
 
     const tabsData = [
         {
-            title: "Replay",
+            title: t("Replay"),
             content: <ReplayMethod />,
         },
         {
-            title: "Delete Replay",
+            title: t("Delete Replay"),
             content:<DeleteReplayMethod />,
         },
     ];
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title={"Replay/Delete Replay"} className={className}>
+        <Modal isOpen={isOpen} onClose={onClose} title={t("Replay/Delete Replay")} className={className}>
             <TabMethod tabs={tabsData}/>
         </Modal>
     );

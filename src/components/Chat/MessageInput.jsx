@@ -1,10 +1,12 @@
 "use client";
+import { useTranslation } from "react-i18next";
 import React, { useState, useRef, useEffect } from "react";
 import EmojiPicker from "emoji-picker-react";
 import { useUploadFileMutation } from "@/redux/conversations/conversationsAPI";
 import { Send, Paperclip, Smile, Edit3, X, BarChart2, FileIcon, ImageIcon } from "lucide-react";
 
 const MessageInput = ({ onSendMessage, onTyping, editMessageData, onCancelEdit, onEditMessage, onOpenPoll, activeChatId }) => {
+  const { t } = useTranslation();
   const [message, setMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -108,7 +110,7 @@ const MessageInput = ({ onSendMessage, onTyping, editMessageData, onCancelEdit, 
         <div className="flex items-center justify-between px-4 py-2 bg-weak-50 border-b border-status-border">
           <div className="flex items-center gap-2 text-sm text-sub-500">
             <Edit3 size={14} />
-            <span>Editing message</span>
+            <span>{t("Editing message")}</span>
           </div>
           <button onClick={onCancelEdit} className="p-1 text-sub-500 hover:text-red-500 transition-colors">
             <X size={14} />
@@ -145,14 +147,14 @@ const MessageInput = ({ onSendMessage, onTyping, editMessageData, onCancelEdit, 
         <button
           type="button"
           onClick={onOpenPoll}
-          title="Create Poll"
+          title={t("Create Poll")}
           className="p-2 transition-colors rounded-full text-sub-500 hover:bg-weak-100"
         >
           <BarChart2 size={20} />
         </button>
         <button
           type="button"
-          title="Attach file"
+          title={t("Attach file")}
           onClick={() => fileInputRef.current?.click()}
           className={`p-2 transition-colors rounded-full ${selectedFile ? 'text-primary-500 dark:text-primary-400 bg-primary-50 dark:bg-primary-950/20' : 'text-sub-500 hover:bg-weak-100'}`}
         >
@@ -162,7 +164,7 @@ const MessageInput = ({ onSendMessage, onTyping, editMessageData, onCancelEdit, 
           <input
             ref={inputRef}
             type="text"
-            placeholder={editMessageData ? "Edit your message..." : "Type a message..."}
+            placeholder={editMessageData ? t("Edit your message...") : t("Type a message...")}
             className="w-full px-4 py-3 bg-main border-none rounded-2xl text-sm text-cell-primary focus:ring-2 focus:ring-primary-500/50 outline-none transition-all"
             value={message}
             onChange={handleChange}

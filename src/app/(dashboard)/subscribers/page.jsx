@@ -22,20 +22,22 @@ import SendAdminNotificationModal from "@/components/Modal/SendAdminNotification
 
 import InitialsAvatar from "@/components/InitialsAvatar";
 
-const headers = [
-  { label: "Subscriber", width: "250px" },
-  { label: "Company", width: "250px" },
-  { label: "Plan", width: "150px" },
-  { label: "Industry ", width: "150px" },
-  { label: "Subscribed at", width: "150px" },
-  { label: "Expires at", width: "150px" },
-  { label: "Users", width: "100px" },
-  { label: "Status", width: "125px" },
-  { label: "", width: "50px" }
-];
+
 
 
 function Subscribers() {
+  const { t } = useTranslation();
+  const headers = [
+    { label: t("Subscriber"), width: "250px" },
+    { label: t("Company"), width: "250px" },
+    { label: t("Plan"), width: "150px" },
+    { label: t("Industry"), width: "150px" },
+    { label: t("Subscribed at"), width: "150px" },
+    { label: t("Expires at"), width: "150px" },
+    { label: t("Users"), width: "100px" },
+    { label: t("Status"), width: "125px" },
+    { label: "", width: "50px" }
+  ];
   const router = useRouter();
   const { data: subscribers, isLoading, error } = useGetSubscribersQuery();
   const [toggleActivation] = useToggleSubscriberActivationMutation();
@@ -148,24 +150,24 @@ function Subscribers() {
     const { t, i18n } = useTranslation();
     const statesActions = [
       {
-        text: "View", icon: <FiEye className="text-primary-400" />, onClick: () => {
+        text: t("View"), icon: <FiEye className="text-primary-400" />, onClick: () => {
           router.push(`/subscribers/${subscriber._id}`);
         },
       },
       {
-        text: "Edit", icon: <RiEditLine className="text-primary-400" />, onClick: () => {
+        text: t("Edit"), icon: <RiEditLine className="text-primary-400" />, onClick: () => {
           console.log("Edit", subscriber._id)
         },
       },
       {
-        text: subscriber.is_active ? "Deactivate" : "Activate",
+        text: subscriber.is_active ? t("Deactivate") : t("Activate"),
         icon: subscriber.is_active ? <RiCloseCircleLine className="text-red-500" /> : <RiCheckboxCircleLine className="text-green-500" />,
         onClick: () => {
           handleToggleActivation(subscriber._id)
         },
       },
       {
-        text: "Delete", icon: <RiDeleteBin7Line className="text-red-500" />, onClick: () => {
+        text: t("Delete"), icon: <RiDeleteBin7Line className="text-red-500" />, onClick: () => {
           handleDeleteSubAert()
           console.log("Delete", subscriber._id)
         },
@@ -211,8 +213,8 @@ function Subscribers() {
         isOpen={isDeleteSubAert}
         onClose={handleDeleteSubAert}
         type="cancel"
-        title="Cancel Subscription"
-        confirmBtnText="Yes, Stop"
+        title={t("Cancel Subscription")}
+        confirmBtnText={t("Yes, Stop")}
         description={
           <p className="text-cell-secondary">
             Are you sure you want to <span className="font-bold text-cell-primary">Delete Subscription</span> of the

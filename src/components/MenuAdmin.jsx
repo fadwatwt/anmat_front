@@ -45,7 +45,7 @@ const MenuAdmin = React.memo(({ isSlidebarOpen, taggleSlidebarOpen }) => {
         >
             <div className={" h-32 flex p-5 gap-2 border-b-2 dark:border-gray-600 items-center"}>
                 <div className={"profile-image"}>
-                    <img src="/images/logo.png" alt={"img"}
+                    <img src="/images/logo.png" alt={t("img")}
                         className={" w-10 h-10 rounded-full m-0 p-0"} />
                 </div>
                 <div className={"flex flex-col  gap-2 justify-center  "}>

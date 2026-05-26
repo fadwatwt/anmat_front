@@ -1,7 +1,9 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 function PhoneVerify() {
+    const { t } = useTranslation();
     const [otp, setOtp] = useState(["", "", "", ""]);
     const inputRefs = useRef([]);
 
@@ -78,12 +80,12 @@ function PhoneVerify() {
                     <div className="flex flex-col items-center justify-start gap-4 text-center w-full max-w-[30rem]">
                         <div className="flex flex-col gap-1 text-xl sm:text-2xl w-full">
                             <span className="text-gray-900 dark:text-gray-50">
-                                {"Hi Mai, we’ve sent a verification Code"}
+                                {t("Hi Mai, we've sent a verification Code")}
                             </span>
                         </div>
 
                         <span className="block text-gray-500 dark:text-gray-400 text-lg text-wrap">
-                            we’ve sent verification 4 digits code to <span className="text-gray-700 dark:text-gray-200 m-1 font-semibold">{"+20/578999766"}</span> please add the code below to verify your phone
+                            {t("we've sent verification 4 digits code to")} <span className="text-gray-700 dark:text-gray-200 m-1 font-semibold">{"+20/578999766"}</span> {t("please add the code below to verify your phone")}
                         </span>
 
                         <div className="flex justify-center gap-2 sm:gap-4 my-2" onPaste={handlePaste}>
@@ -107,7 +109,7 @@ function PhoneVerify() {
 className="bg-primary-500 dark:bg-primary-200 text-primary-50 dark:text-black text-nowrap text-md px-12 py-2 rounded-lg cursor-pointer
                                          hover:bg-primary-600 text-center mt-2"
                         >
-                            {"Verify"}
+                            {t("Verify")}
                         </button>
                     </div>
 

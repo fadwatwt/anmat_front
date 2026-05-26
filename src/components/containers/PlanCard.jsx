@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { RiCopperDiamondLine, RiCheckboxCircleFill } from "@remixicon/react";
 import PropTypes from "prop-types";
 import { useState } from "react";
@@ -18,6 +19,7 @@ function PlanCard({
         originalIndex
     })).filter(p => p.is_active !== false);
 
+    const { t } = useTranslation();
     const [selectedLocalIndex, setSelectedLocalIndex] = useState(0);
 
     const handlePriceChange = (localIndex) => {
@@ -35,7 +37,7 @@ function PlanCard({
                 <div className="absolute top-4 right-8 z-10">
                     <div className="bg-orange-100 dark:bg-orange-900/40 text-orange-600 dark:text-orange-400 text-[10px] font-black px-2.5 py-1 rounded-full border border-orange-200 dark:border-orange-800 shadow-sm flex items-center gap-1.5 animate-pulse">
                         <span className="w-1.5 h-1.5 bg-orange-500 rounded-full" />
-                        {trial.trial_days} DAYS FREE TRIAL
+                        {trial.trial_days} {t("DAYS FREE TRIAL")}
                     </div>
                 </div>
             )}
@@ -64,7 +66,7 @@ function PlanCard({
                 {/* Pricing Selection */}
                 <div className="flex flex-col gap-3 mb-8">
                     <p className={"font-bold text-cell-primary text-xs uppercase tracking-widest"}>
-                        Choose your plan:
+                        {t("Choose your plan:")}
                     </p>
                     <div className="flex flex-col gap-2">
                         {pricingWithOptions.map((item, index) => (
@@ -117,7 +119,7 @@ function PlanCard({
 
                 <div className={"flex flex-col gap-6 justify-start items-start"}>
                     <p className={"font-bold text-cell-primary text-xs uppercase tracking-widest"}>
-                        Whats included:
+                        {t("Whats included:")}
                     </p>
                     <div className={"flex flex-col items-start gap-5 w-full"}>
                         {features.length > 0 ? (
@@ -153,7 +155,7 @@ function PlanCard({
                                 </div>
                             ))
                         ) : (
-                            <p className="text-cell-secondary text-sm italic">Standard features included</p>
+                            <p className="text-cell-secondary text-sm italic">{t("Standard features included")}</p>
                         )}
                     </div>
                 </div>
@@ -166,7 +168,7 @@ function PlanCard({
                         "rounded-xl bg-primary-base w-full py-4 text-white font-bold shadow-xl shadow-primary-500/10 hover:bg-primary-700 hover:shadow-primary-500/20 hover:-translate-y-0.5 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
                     }
                 >
-                    Get started with {name}
+                    {t("Get started with")} {t(name)}
                 </button>
             </div>
         </div>

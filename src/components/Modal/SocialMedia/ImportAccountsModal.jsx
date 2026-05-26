@@ -51,7 +51,7 @@ function ImportAccountsModal({ isOpen, onClose }) {
         formData.append("csvFile", file);
         formData.append("Category", category);
 
-        showProcessing("Importing accounts...");
+        showProcessing(t("Importing accounts..."));
         try {
             const response = await importAccounts(formData).unwrap();
             const insertedCount = response?.insertedCount ?? 0;
@@ -89,9 +89,9 @@ function ImportAccountsModal({ isOpen, onClose }) {
             <Modal
                 isOpen={isOpen}
                 onClose={onClose}
-                title="Import Twitter Accounts"
+                title={t("Import Twitter Accounts")}
                 isBtns={true}
-                btnApplyTitle={isLoading ? "Importing..." : "Import"}
+                btnApplyTitle={isLoading ? t("Importing...") : t("Import")}
                 disabled={isLoading || !file || !category}
                 onClick={handleSubmit}
                 className="lg:w-5/12 md:w-8/12 sm:w-7/12 w-11/12 p-4"
@@ -103,14 +103,14 @@ function ImportAccountsModal({ isOpen, onClose }) {
                         )}
                     </p>
                     <SelectAndLabel
-                        title="Category"
+                        title={t("Category")}
                         name="Category"
                         isRequired
                         value={category}
                         options={categories.map((c) => ({ _id: c._id, name: c.name }))}
                         onChange={setCategory}
                         onBlur={() => {}}
-                        placeholder={catsLoading ? "Loading categories..." : "Select category"}
+                        placeholder={catsLoading ? t("Loading categories...") : t("Select category")}
                     />
                     <FileUpload
                         title={t("CSV File")}

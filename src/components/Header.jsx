@@ -2,7 +2,6 @@
 
 import SearchInput from "./Form/SearchInput.jsx";
 
-import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { FiSun, FiMoon } from "react-icons/fi";
 import React from "react";
 
@@ -14,8 +13,10 @@ import NotificationsDropdown from "./Dropdowns/NotificationsDropdown.jsx";
 import MessagesDropdown from "./Dropdowns/MessagesDropdown.jsx";
 import HeaderUserMenu from "./Dropdowns/HeaderUserMenu.jsx";
 import { useTheme } from "@/app/providers";
+import { useTranslation } from "react-i18next";
 
 const Header = React.memo(({ taggleSlidebarOpen, className }) => {
+  const { t, i18n } = useTranslation();
   const notifications = useSelector(selectNotifications);
   const unreadCount = useSelector(selectUnreadCount);
   const [theme, setTheme] = useTheme();
@@ -24,7 +25,10 @@ const Header = React.memo(({ taggleSlidebarOpen, className }) => {
     setTheme(theme === "dark" ? "light" : "dark");
   };
 
-  // Close dropdown when clicking outside
+  const toggleLanguage = () => {
+    const newLang = i18n.language === "ar" ? "en" : "ar";
+    i18n.changeLanguage(newLang);
+  };
 
   return (
     <div
@@ -47,9 +51,16 @@ const Header = React.memo(({ taggleSlidebarOpen, className }) => {
           <button
             onClick={toggleTheme}
             className="p-2 rounded-lg text-cell-secondary hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-            title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            title={theme === "dark" ? t("Switch to Light Mode") : t("Switch to Dark Mode")}
           >
             {theme === "dark" ? <FiSun size={18} /> : <FiMoon size={18} />}
+          </button>
+          <button
+            onClick={toggleLanguage}
+            className="p-2 rounded-lg text-cell-secondary hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-sm font-medium"
+            title={i18n.language === "ar" ? t("English") : t("Arabic")}
+          >
+            {i18n.language === "ar" ? t("EN") : t("AR")}
           </button>
           <NotificationsDropdown notifications={notifications} unreadCount={unreadCount} />
           <MessagesDropdown />

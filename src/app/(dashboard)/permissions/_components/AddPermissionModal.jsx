@@ -6,6 +6,7 @@ import * as Yup from "yup";
 import PropTypes from "prop-types";
 import Modal from "@/components/Modal/Modal.jsx";
 import InputAndLabel from "@/components/Form/InputAndLabel.jsx";
+import { useTranslation } from "react-i18next";
 
 import {
   createEmployee,
@@ -25,6 +26,7 @@ function setDepartments(payload) {
 }
 
 function AddPermissionModal({ isOpen, onClose }) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
 
   const [permissions ] = useState(['Add', 'Edit', 'View', 'Delete']);
@@ -42,7 +44,7 @@ function AddPermissionModal({ isOpen, onClose }) {
       permissions: "",
     },
     validationSchema: Yup.object({
-      name: Yup.string().required("Required"),
+      name: Yup.string().required(t("Required")),
       permissions: Yup.array(),
     }),
     onSubmit: (values, { resetForm }) => {
@@ -66,20 +68,20 @@ function AddPermissionModal({ isOpen, onClose }) {
       isOpen={isOpen}
       onClose={onClose}
       isBtns={true}
-      btnApplyTitle={"Save"}
+      btnApplyTitle={t("Save")}
       onClick={formik.handleSubmit}
       className={"lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12"}
-      title={"Add Permission"}
+      title={t("Add Permission")}
     >
       <div className="px-1">
         <div className="flex flex-col gap-4">
           <InputAndLabel
-            title="Permission Category"
+            title={t("Permission Category")}
             name="name"
             value={formik.values.name}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            placeholder="Enter Permission Category..."
+            placeholder={t("Enter Permission Category...")}
             error={
               formik.touched.name && formik.errors.name
                 ? formik.errors.name
@@ -88,7 +90,7 @@ function AddPermissionModal({ isOpen, onClose }) {
             isRequired={true}
           />
 
-          <TagInput title="Permissions" isRequired={true} suggestions={suggestions} placeholder="Select Permissions..." />
+          <TagInput title={t("Permissions")} isRequired={true} suggestions={suggestions} placeholder={t("Select Permissions...")} />
 
         </div>
       </div>

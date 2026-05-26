@@ -14,8 +14,10 @@ import {
 import { fetchRoles } from "@/redux/roles/rolesSlice.js";
 import { fetchDepartments } from "@/redux/departments/departmentAPI.js";
 import SelectAndLabel from "@/components/Form/SelectAndLabel.jsx";
+import { useTranslation } from "react-i18next";
 
 function ChangeBillingInfoModal({ isOpen, onClose }) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   // const { loading } = useSelector((state) => state.employees);
 
@@ -45,13 +47,13 @@ function ChangeBillingInfoModal({ isOpen, onClose }) {
       city: ""
     },
     validationSchema: Yup.object({
-      firstname: Yup.string().required("Required"),
-      lastname: Yup.string().required("Required"),
-      email: Yup.string().email("Invalid email").required("Required"),
-      address: Yup.string().required("Required"),
-      country: Yup.string().required("Required"),
-      state: Yup.string().required("Required"),
-      city: Yup.string().required("Required")
+      firstname: Yup.string().required(t("Required")),
+      lastname: Yup.string().required(t("Required")),
+      email: Yup.string().email(t("Invalid email")).required(t("Required")),
+      address: Yup.string().required(t("Required")),
+      country: Yup.string().required(t("Required")),
+      state: Yup.string().required(t("Required")),
+      city: Yup.string().required(t("Required"))
     }),
     onSubmit: (values, { resetForm }) => {
       console.log({ values });
@@ -67,20 +69,20 @@ function ChangeBillingInfoModal({ isOpen, onClose }) {
       isOpen={isOpen}
       onClose={onClose}
       isBtns={true}
-      btnApplyTitle={"Save"}
+      btnApplyTitle={t("Save")}
       onClick={formik.handleSubmit}
       className={"lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12 p-4"}
-      title={"Change Billing Information"}
+      title={t("Change Billing Information")}
     >
       <div className="px-1">
         <div className="flex flex-col gap-4">
           <InputAndLabel
-            title="First Name"
+            title={t("First Name")}
             name="firstname"
             value={formik.values.firstname}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            placeholder="Enter First Name..."
+            placeholder={t("Enter First Name...")}
             error={
               formik.touched.firstname && formik.errors.firstname
                 ? formik.errors.firstname
@@ -90,12 +92,12 @@ function ChangeBillingInfoModal({ isOpen, onClose }) {
           />
 
           <InputAndLabel
-            title="Last Name"
+            title={t("Last Name")}
             name="lastname"
             value={formik.values.lastname}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            placeholder="Enter Last Name..."
+            placeholder={t("Enter Last Name...")}
             error={
               formik.touched.lastname && formik.errors.lastname
                 ? formik.errors.lastname
@@ -105,12 +107,12 @@ function ChangeBillingInfoModal({ isOpen, onClose }) {
           />
 
           <InputAndLabel
-            title="Email"
+            title={t("Email")}
             name="email"
             value={formik.values.email}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            placeholder="Enter Email"
+            placeholder={t("Enter Email")}
             error={
               formik.touched.email && formik.errors.email
                 ? formik.errors.email
@@ -120,12 +122,12 @@ function ChangeBillingInfoModal({ isOpen, onClose }) {
           />
 
           <InputAndLabel
-            title="Adress"
+            title={t("Adress")}
             name="address"
             value={formik.values.address}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            placeholder="Enter Adress..."
+            placeholder={t("Enter Adress...")}
             error={
               formik.touched.address && formik.errors.address
                 ? formik.errors.address
@@ -135,18 +137,34 @@ function ChangeBillingInfoModal({ isOpen, onClose }) {
           />
 
           <SelectAndLabel
-            title={"Country"}
+            title={t("Country")}
             name="country"
-            value={formik.values.country} // Ensure it’s controlled
-            onChange={(val) => formik.setFieldValue("country", val)} // Send _id
+            value={formik.values.country}
+            onChange={(val) => formik.setFieldValue("country", val)}
             onBlur={formik.handleBlur}
-            options={countries} // Ensure _id is used internally but name is displayed
+            options={countries}
             error={
               formik.touched.country && formik.errors.country
                 ? formik.errors.country
                 : ""
             }
-            placeholder={"Select Country..."}
+            placeholder={t("Select Country...")}
+            isRequired={true}
+          />
+
+          <SelectAndLabel
+            title={t("State/Region")}
+            name="state"
+            value={formik.values.state}
+            onChange={(val) => formik.setFieldValue("state", val)}
+            onBlur={formik.handleBlur}
+            options={states}
+            error={
+              formik.touched.state && formik.errors.state
+                ? formik.errors.state
+                : ""
+            }
+            placeholder={t("Select State...")}
             isRequired={true}
           />
 
@@ -167,12 +185,12 @@ function ChangeBillingInfoModal({ isOpen, onClose }) {
           />
 
           <InputAndLabel
-            title="City"
+            title={t("City")}
             name="city"
             value={formik.values.city}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            placeholder="Enter City..."
+            placeholder={t("Enter City...")}
             error={
               formik.touched.city && formik.errors.city
                 ? formik.errors.city

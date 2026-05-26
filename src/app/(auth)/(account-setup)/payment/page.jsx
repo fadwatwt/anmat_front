@@ -172,60 +172,6 @@ function PaymentPage({
                     </div>
                 </div>
                 </div>
-                <div className={"hidden lg:flex w-full lg:w-2/3 flex-col justify-start items-start px-8 xl:px-16 pt-20 lg:pt-28 gap-10"}>
-                    <div className={""}>
-                        <h3 className={"text-2xl dark:text-gray-100"}>Billing Information</h3>
-                        <p className={"text-gray-500 dark:text-gray-400 text-sm"}>Lorem Ipsum Dummy Text Lorem Ipsum Dummy Text</p>
-                    </div>
-                    <div className={"w-full p-5 rounded-lg flex items-center justify-between bg-white border border gap-3"}>
-                            <div className={"rounded-full p-2 bg-primary-200 shadow-sm shadow-primary-100 flex justify-center items-center"}>
-                                <RiCopperCoinLine className={"text-primary-500 w-12 h-12"} />
-                            </div>
-                            <div className={"flex flex-col w-full justify-center items-start"}>
-                                <div className={"flex w-full justify-between"}>
-                                    <p>Professional Plan</p>
-                                    <p className={"text-lg font-bold"}>$28.00</p>
-                                </div>
-                                <div className={"flex w-full gap-5"}>
-                                   <p className={"text-sm"}><span className={"text-gray-400"}>Users: </span>20</p>
-                                   <p className={"text-sm"}><span className={"text-gray-400"}>Paid: </span>Monthly</p>
-                                </div>
-                            </div>
-                    </div>
-                    <div className={"w-full flex flex-col gap-2"}>
-                        <p>Discount Code</p>
-                        <div className={"flex border border-2 border-primary-500 rounded-md p-2 flex justify-between w-full"}>
-                            <div className={"flex gap-2 justify-center items-center"}>
-                                <RiTicketFill className={"text-primary-500"} />
-                                <p>BUYR|</p>
-                            </div>
-                            <p className={"text-primary-500 font-bold"}>Apply</p>
-                        </div>
-                    </div>
-                    <div className={"flex flex-col gap-3 w-full py-3 border-b border-t border-gray-200 "}>
-                        <div className={"w-full flex justify-between item-baseline"}>
-                            <span className={"text-gray-400"}>Subtotal</span>
-                            <span className={"text-black"}>$56.00</span>
-                        </div>
-                        <div className={"w-full flex justify-between item-baseline"}>
-                            <span className={"text-gray-400"}>Subtotal</span>
-                            <span className={"text-black"}>$56.00</span>
-                        </div>
-                        <div className={"w-full flex justify-between item-baseline"}>
-                            <span className={"text-gray-400"}>Subtotal</span>
-                            <span className={"text-black"}>$56.00</span>
-                        </div>
-                        <div className={"w-full flex justify-between item-baseline"}>
-                            <span className={"text-gray-400"}>Subtotal</span>
-                            <span className={"text-black"}>$56.00</span>
-                        </div>
-                    </div>
-                    <div className={"w-full flex justify-between items-baseline"}>
-                        <span className={"font-bold"}>Total</span>
-                        <span className={"font-bold"}>$51.00</span>
-                    </div>
-                </div>
-            </div>
             <Alert type={'success'} isOpen={false} title={"Success"} isBtns={true} titleCancelBtn={"Cancel"} cancelColor={"gray"} message={"Congratulations, you have successfully subscribed to the Basic Plan."} />
         </div>
     );

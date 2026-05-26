@@ -56,11 +56,11 @@ function UnLikeMethod() {
 
     return (
         <div className="flex flex-col gap-3">
-            <AccountPicker selected={accounts} onChange={setAccounts} title="Accounts" />
+            <AccountPicker selected={accounts} onChange={setAccounts} title={t("Accounts")} />
 
             <InputAndLabel
-                title="Tweet URL"
-                placeholder="https://x.com/user/status/..."
+                title={t("Tweet URL")}
+                placeholder={t("https://x.com/user/status/...")}
                 type="text"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
@@ -70,7 +70,7 @@ function UnLikeMethod() {
             <div className="flex gap-2 pt-2">
                 <DefaultButton
                     type="button"
-                    title="Cancel"
+                    title={t("Cancel")}
                     onClick={() => {
                         setAccounts([]);
                         setUrl("");
@@ -80,7 +80,7 @@ function UnLikeMethod() {
                 />
                 <DefaultButton
                     type="button"
-                    title={isLoading ? "Submitting..." : "Apply"}
+                    title={isLoading ? t("Submitting...") : t("Apply")}
                     onClick={handleSubmit}
                     disabled={isLoading}
                     className="bg-primary-500 font-medium text-white hover:bg-primary-600 transition-colors"

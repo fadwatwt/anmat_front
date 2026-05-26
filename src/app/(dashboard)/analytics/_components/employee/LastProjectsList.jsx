@@ -1,19 +1,21 @@
+import { useTranslation } from "react-i18next";
 const { default: ContentCard } = require("@/components/containers/ContentCard");
 const { default: DefaultSelect } = require("@/components/Form/DefaultSelect");
 
 const LastProjectsList = ({ projects = [] }) => {
+    const { t } = useTranslation();
     return (
         <ContentCard
-            title={"Last 4 Projects"}
+            title={t("Last 4 Projects")}
             toolbar={
                 <div className="w-32 flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end">
-                    <DefaultSelect variant="chart" multi={false} placeholder="Performance" options={[{ id: 1, value: "Higher" }]} />
+                    <DefaultSelect variant="chart" multi={false} placeholder={t("Performance")} options={[{ id: 1, value: "Higher" }]} />
                 </div>
             }
             main={
                 <div className="flex flex-col items-start justify-start gap-4 w-full">
                     {projects.length === 0 && (
-                        <span className="text-sm text-gray-500 dark:text-gray-400">No projects yet.</span>
+                        <span className="text-sm text-gray-500 dark:text-gray-400">{t("No projects yet.")}</span>
                     )}
                     {projects.map((project, index) => {
                         return (

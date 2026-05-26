@@ -1,8 +1,9 @@
-"use server";
+"use client";
 import Image from "next/image";
+import { useTranslation } from "react-i18next";
 
 function AuthLayout({ children }) {
-    console.log(children)
+    const { t } = useTranslation();
     return (
         <div className="w-full flex h-screen justify-start py-1 bg-main-900 overflow-y-scroll">
             <div className="flex flex-col w-full gap-16 px-9 py-7">
@@ -16,8 +17,8 @@ function AuthLayout({ children }) {
                         height={40}
                     />
                     <div className="flex flex-col gap-1 justify-center">
-                        <p className="text-sm text-cell-primary dark:text-white">Employees Management</p>
-                        <p className="text-xs text-gray-500 dark:text-white">Employees & HR Management</p>
+                        <p className="text-sm text-cell-primary dark:text-white">{t("Employees Management")}</p>
+                        <p className="text-xs text-gray-500 dark:text-white">{t("Employees & HR Management")}</p>
                     </div>
                 </div>
 

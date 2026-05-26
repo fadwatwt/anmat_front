@@ -149,19 +149,19 @@ function TemplateMainInfo({
                 onChange={handleChangeFunc}
                 name="projectName"
                 type="text"
-                title={"Project Name"}
-                placeholder="Project Name..."
+                title={t("Project Name")}
+                placeholder={t("Project Name...")}
             />
 
             {/* Category */}
             <DefaultSelect
-                title="Category"
+                title={t("Category")}
                 options={optionsCategory}
                 multi={false}
                 value={getSingleValue(valuesInputs.category, optionsCategory)}
                 onChange={(value) => handleSelectChange("category", value)}
                 name="category"
-                placeholder="Select Category..."
+                placeholder={t("Select Category...")}
             />
 
             {/* Description */}
@@ -169,31 +169,31 @@ function TemplateMainInfo({
                 value={valuesInputs.description}
                 onChange={handleChangeFunc}
                 name="description"
-                title="Description"
-                placeholder="Add a description"
+                title={t("Description")}
+                placeholder={t("Add a description")}
             />
 
             {/* Department */}
             <DefaultSelect
-                title="Department"
+                title={t("Department")}
                 options={optionsDepartment}
                 multi={false}
                 value={getSingleValue(valuesInputs.department, optionsDepartment)}
                 onChange={(value) => handleSelectChange("department", value)}
                 name="department"
-                placeholder="Select Department..."
+                placeholder={t("Select Department...")}
             />
 
             {/* Manager and Assignees */}
             <div className={"flex items-center justify-center gap-2"}>
                 <DefaultSelect
-                    title="Manager"
+                    title={t("Manager")}
                     options={optionsManager}
                     multi={false}
                     value={getSingleValue(valuesInputs.manager, optionsManager)}
                     onChange={(value) => handleSelectChange("manager", value)}
                     name="manager"
-                    placeholder="Select Manager..."
+                    placeholder={t("Select Manager...")}
                     className={"flex-1"}
                 />
                 <DefaultSelect
@@ -213,41 +213,41 @@ function TemplateMainInfo({
                     value={valuesInputs.assignedDate}
                     onChange={handleChangeFunc}
                     name="assignedDate"
-                    title="Assigned Date"
+                    title={t("Assigned Date")}
                     className={"flex-1"}
-                    placeholder="DD / MM / YYYY"
+                    placeholder={t("DD / MM / YYYY")}
                 />
                 <DateInput
                     value={valuesInputs.dueDate}
                     onChange={handleChangeFunc}
                     name="dueDate"
-                    title="Due Date"
+                    title={t("Due Date")}
                     className={"flex-1"}
-                    placeholder="DD / MM / YYYY"
+                    placeholder={t("DD / MM / YYYY")}
                 />
             </div>
 
             {/* Rating and Status */}
             <div className={"flex items-center justify-center gap-2"}>
                 <DefaultSelect
-                    title="Rating"
+                    title={t("Rating")}
                     options={optionsRating}
                     multi={false}
                     value={valuesInputs.rating}
                     onChange={(value) => handleSelectChange("rating", value)}
                     name="rating"
-                    placeholder="Select Rating..."
+                    placeholder={t("Select Rating...")}
                     className={"flex-1"}
                 />
                 <div className={"relative flex-1"}>
                     <ElementsSelect
-                        title="Status"
+                        title={t("Status")}
                         options={optionsStatus}
                         defaultValue={[optionsStatus[0]]}
                         onChange={(value) => handleSelectChange("status", value)}
                         name="status"
                         classNameContainer={"w-full"}
-                        placeholder="Select Status..."
+                        placeholder={t("Select Status...")}
                     />
                 </div>
             </div>

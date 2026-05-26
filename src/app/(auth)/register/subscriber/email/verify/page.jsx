@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 
 const VerifyEmail = () => {
+    const { t } = useTranslation();
     return (
         <div className="w-full min-h-screen flex items-center justify-center py-12 px-4">
             <div className="relative rounded-xl px-4 sm:px-6 md:px-12 py-10 md:py-16 border border-status-border bg-surface shadow-sm">
@@ -23,12 +25,12 @@ const VerifyEmail = () => {
                     <div className="flex flex-col items-center justify-start gap-8 text-center w-full max-w-[30rem]">
                         <div className="flex flex-col gap-1 text-xl sm:text-2xl w-full">
                             <span className="text-cell-primary">
-                                {"Registering Account Link Sent"}
+                                {t("Registering Account Link Sent")}
                             </span>
                         </div>
 
                         <span className="block text-cell-secondary text-lg text-wrap px-4">
-                            We have sent you a link to your email for verifying and complete registering, please check your email and continue.
+                            {t("We have sent you a link to your email for verifying and complete registering, please check your email and continue.")}
                         </span>
 
                         <Link
@@ -36,7 +38,7 @@ const VerifyEmail = () => {
 className="bg-primary-500 dark:bg-primary-200 text-primary-50 dark:text-black text-nowrap text-md px-12 py-2 rounded-lg cursor-pointer
                                          hover:bg-primary-600 text-center"
                         >
-                            {"Return"}
+                            {t("Return")}
                         </Link>
                     </div>
                 </div>

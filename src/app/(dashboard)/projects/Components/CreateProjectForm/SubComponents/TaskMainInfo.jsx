@@ -120,8 +120,8 @@ function TaskMainInfo({ task, type = "task", values, handleChange }) {
         onChange={handleChangeFunc}
         name="taskName"
         type="text"
-        title={type === "task" ? "Task Name" : "Project Name"}
-        placeholder="Task Name"
+        title={type === "task" ? t("Task Name") : t("Project Name")}
+        placeholder={t("Task Name")}
       />
 
       {/* Description */}
@@ -129,13 +129,13 @@ function TaskMainInfo({ task, type = "task", values, handleChange }) {
         value={valuesInputs.description}
         onChange={handleChangeFunc}
         name="description"
-        title="Description"
-        placeholder="Add a description"
+        title={t("Description")}
+        placeholder={t("Add a description")}
       />
 
       {/* Department */}
       <DefaultSelect
-        title="Department"
+        title={t("Department")}
         options={optionsDepartment}
         defaultValue={valuesInputs.department}
         onChange={(value) => handleSelectChange("department", value)}
@@ -144,7 +144,7 @@ function TaskMainInfo({ task, type = "task", values, handleChange }) {
 
       {/* Manager */}
       <DefaultSelect
-        title="Manager"
+        title={t("Manager")}
         options={optionsManager}
         defaultValue={formik.values.manager}
         onChange={(value) => handleSelectChange("manager", value)}
@@ -158,14 +158,14 @@ function TaskMainInfo({ task, type = "task", values, handleChange }) {
           value={valuesInputs.assignedDate}
           onChange={handleChangeFunc}
           name="assignedDate"
-          title="Assigned Date"
+          title={t("Assigned Date")}
           className={"flex-1"}
         />
         <DateInput
           value={valuesInputs.dueDate}
           onChange={handleChangeFunc}
           name="dueDate"
-          title="Due Date"
+          title={t("Due Date")}
           className={"flex-1"}
         />
       </div>
@@ -174,9 +174,9 @@ function TaskMainInfo({ task, type = "task", values, handleChange }) {
       <div className={" relative flex items-center justify-center gap-2"}>
         <div className={"relative flex-1"}>
           <ElementsSelect
-            title="Status"
+            title={t("Status")}
             options={optionsStatus}
-            defaultValue={[optionsStatus[0]]} // Pass the selected ID directly
+            defaultValue={[optionsStatus[0]]}
             onChange={(value) => handleSelectChange("status", value)}
             name="status"
             classNameContainer={"w-full"}
@@ -184,9 +184,9 @@ function TaskMainInfo({ task, type = "task", values, handleChange }) {
         </div>
         <div className={"relative flex-1"}>
           <ElementsSelect
-            title="Priority"
+            title={t("Priority")}
             options={optionsPriority}
-            defaultValue={valuesInputs.priority} // Pass the selected ID directly
+            defaultValue={valuesInputs.priority}
             onChange={(value) => handleSelectChange("priority", value)}
             name="priority"
             classNameContainer={"flex-1"}
@@ -196,7 +196,7 @@ function TaskMainInfo({ task, type = "task", values, handleChange }) {
 
       {/* Dependent Department */}
       <DefaultSelect
-        title="Dependent Department"
+        title={t("Dependent Department")}
         defaultValue={valuesInputs.dependentDepartment}
         onChange={(value) => handleSelectChange("dependentDepartment", value)}
         name="dependentDepartment"

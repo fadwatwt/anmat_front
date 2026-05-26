@@ -8,8 +8,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { loginSuccess, loginFailure } from "@/redux/auth/authSlice";
 import { RiUserSettingsLine } from "@remixicon/react";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 
 function ResetPasswordPage() {
+    const { t } = useTranslation();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [rememberMe, setRememberMe] = useState(false);
@@ -28,7 +30,7 @@ function ResetPasswordPage() {
             }
             router.push("/dashboard");
         } catch (err) {
-            dispatch(loginFailure(err.data?.message || "Login failed"));
+            dispatch(loginFailure(err.data?.message || t("Login failed")));
         }
     };
 
@@ -43,10 +45,10 @@ function ResetPasswordPage() {
 
                 <div className="flex flex-col items-center justify-center gap-2 text-center">
                     <span className="text-2xl text-cell-primary">
-                        {`Reset Password`}
+                        {t("Reset Password")}
                     </span>
                     <span className="text-sm text-cell-secondary">
-                        {'Enter your new password'}
+                        {t("Enter your new password")}
                     </span>
                 </div>
 
@@ -54,7 +56,7 @@ function ResetPasswordPage() {
                     <div className="flex flex-col gap-2 w-full">
 
                         <div className={"flex flex-col gap-2 w-full"}>
-                            <label className="text-cell-primary">New Password</label>
+                            <label className="text-cell-primary">{t("New Password")}</label>
                             <div className="flex bg-surface pl-2 px-2 w-full items-center border border-status-border rounded-xl">
                                 <IoIosLock className="text-cell-secondary w-10" size={18} />
                                 <input
@@ -68,7 +70,7 @@ function ResetPasswordPage() {
                             </div>
                         </div>
                         <div className={"flex flex-col gap-2 w-full"}>
-                            <label className="text-cell-primary">Confirm New Password</label>
+                            <label className="text-cell-primary">{t("Confirm New Password")}</label>
                             <div className="flex bg-surface pl-2 px-2 w-full items-center border border-status-border rounded-xl">
                                 <IoIosLock className="text-cell-secondary w-10" size={18} />
                                 <input
@@ -89,13 +91,13 @@ function ResetPasswordPage() {
                             disabled={isLoading}
                             className="w-full rounded-lg bg-primary-base dark:bg-primary-200 text-white dark:text-black py-1.5"
                         >
-                            {isLoading ? "Loading..." : "Reset"}
+                            {isLoading ? t("Loading...") : t("Reset")}
                         </button>
                         <Link
                             href="/sign-in"
                             className="w-full rounded-lg text-end text-primary-base hover:text-primary-600"
                         >
-                            Return to login
+                            {t("Return to login")}
                         </Link>
                     </div>
                 </div>

@@ -34,7 +34,7 @@ function Page({
 
           {isNavs && (
             <div className="ml-auto flex items-center text-sm md:text-base text-gray-500 font-medium whitespace-nowrap px-2">
-              Dashboard / Notifications
+              {t("Dashboard / Notifications")}
             </div>
           )}
 

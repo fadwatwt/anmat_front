@@ -76,7 +76,7 @@ function PermissionsPage() {
         const statesActions = [];
         if (canUpdateRole) {
             statesActions.push({
-                text: "Sync Permissions", icon: <RiEditLine className="text-primary-400" />, onClick: () => {
+                text: t("Sync Permissions"), icon: <RiEditLine className="text-primary-400" />, onClick: () => {
                     setSelectedRole(role);
                     setSyncPermissionsModalOpen(true);
                 },
@@ -84,7 +84,7 @@ function PermissionsPage() {
         }
         if (canDeleteRole) {
             statesActions.push({
-                text: "Delete", icon: <RiDeleteBin7Line className="text-red-500" />, onClick: () => {
+                text: t("Delete"), icon: <RiDeleteBin7Line className="text-red-500" />, onClick: () => {
                     setSelectedRole(role);
                     setIsDeleteRoleAlert(true);
                 },
@@ -172,9 +172,9 @@ function PermissionsPage() {
                 isOpen={isDeleteRoleAlert}
                 onClose={() => setIsDeleteRoleAlert(false)}
                 type="danger"
-                title="Delete Role"
-                confirmBtnText={isDeleting ? "Deleting..." : "Yes, Delete"}
-                message={`Are you sure you want to delete the ${selectedRole?.name} role?`}
+                title={t("Delete Role")}
+                confirmBtnText={isDeleting ? t("Deleting...") : t("Yes, Delete")}
+                message={t("Are you sure you want to delete the {{name}} role?", { name: selectedRole?.name })}
                 onConfirm={handleConfirmDelete}
             />
 

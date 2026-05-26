@@ -103,7 +103,7 @@ function PostManuallyMethod() {
 
     return (
         <div className="flex flex-col items-start gap-3">
-            <AccountPicker selected={accounts} onChange={setAccounts} title="Post from accounts" />
+            <AccountPicker selected={accounts} onChange={setAccounts} title={t("Post from accounts")} />
 
             <div className="flex flex-col gap-1 w-full items-start">
                 <label className="text-cell-primary text-sm font-medium">
@@ -163,14 +163,14 @@ function PostManuallyMethod() {
             <div className="flex gap-2 w-full pt-2">
                 <DefaultButton
                     type="button"
-                    title="Cancel"
+                    title={t("Cancel")}
                     onClick={reset}
                     className="font-medium text-cell-secondary"
                     disabled={isLoading}
                 />
                 <DefaultButton
                     type="button"
-                    title={isLoading ? "Posting..." : "Apply"}
+                    title={isLoading ? t("Posting...") : t("Apply")}
                     onClick={handleSubmit}
                     disabled={isLoading || accounts.length === 0 || !text.trim()}
                     className="bg-primary-500 font-medium text-white hover:bg-primary-600 transition-colors"

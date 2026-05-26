@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { TfiCalendar } from 'react-icons/tfi';
+import { useTranslation } from "react-i18next";
 
 const DatePickerDropdown = () => {
+  const { t } = useTranslation();
   const [selectedDate, setSelectedDate] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -41,7 +43,7 @@ const DatePickerDropdown = () => {
             selectedDate ? "text-gray-700" : "text-gray-500"
           }`}
         >
-          {selectedDate || "Select Date"}
+          {selectedDate || t("Select Date")}
         </span>
         <TfiCalendar size={18} />
       </div>

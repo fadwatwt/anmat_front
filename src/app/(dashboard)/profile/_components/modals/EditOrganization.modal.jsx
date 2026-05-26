@@ -125,17 +125,17 @@ function EditOrganizationModal({ isOpen, onClose, organization }) {
             >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <InputAndLabel
-                        title="Name"
+                        title={t("Name")}
                         name="name"
                         value={formik.values.name}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
-                        placeholder="Enter organization name"
+                        placeholder={t("Enter organization name")}
                         error={formik.touched.name && formik.errors.name ? formik.errors.name : ""}
                         isRequired={true}
                     />
                     <SelectAndLabel
-                        title="Industry"
+                        title={t("Industry")}
                         name="industry_id"
                         value={formik.values.industry_id}
                         options={industries}
@@ -145,38 +145,38 @@ function EditOrganizationModal({ isOpen, onClose, organization }) {
                         isRequired={true}
                     />
                     <InputAndLabel
-                        title="Email"
+                        title={t("Email")}
                         name="email"
                         type="email"
                         value={formik.values.email}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
-                        placeholder="Enter email"
+                        placeholder={t("Enter email")}
                         error={formik.touched.email && formik.errors.email ? formik.errors.email : ""}
                         isRequired={true}
                     />
                     <InputAndLabel
-                        title="Phone"
+                        title={t("Phone")}
                         name="phone"
                         value={formik.values.phone}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
-                        placeholder="Enter phone number"
+                        placeholder={t("Enter phone number")}
                         error={formik.touched.phone && formik.errors.phone ? formik.errors.phone : ""}
                         isRequired={true}
                     />
                     <InputAndLabel
-                        title="Website"
+                        title={t("Website")}
                         name="website"
                         value={formik.values.website}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
-                        placeholder="https://example.com"
+                        placeholder={t("https://example.com")}
                         error={formik.touched.website && formik.errors.website ? formik.errors.website : ""}
                     />
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <SelectAndLabel
-                            title="Country"
+                            title={t("Country")}
                             name="country"
                             value={formik.values.country}
                             options={countries}
@@ -186,7 +186,7 @@ function EditOrganizationModal({ isOpen, onClose, organization }) {
                             isRequired={true}
                         />
                         <SelectAndLabel
-                            title="City"
+                            title={t("City")}
                             name="city"
                             value={formik.values.city}
                             options={cities}

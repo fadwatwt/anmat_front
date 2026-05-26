@@ -1,10 +1,12 @@
 "use client";
+import { useTranslation } from "react-i18next";
 import React, { useState } from "react";
 import { MoreHorizontal, Edit2, Trash2, MessageSquareQuote, Smile, X } from "lucide-react";
 
 const EMOJI_LIST = ["👍", "❤️", "😂", "😮", "😢", "👏"];
 
 const MessageActions = ({ message, isMe, onEdit, onDelete, onReply, onReact }) => {
+  const { t } = useTranslation();
   const [showMenu, setShowMenu] = useState(false);
   const [showEmojis, setShowEmojis] = useState(false);
 
@@ -24,14 +26,14 @@ const MessageActions = ({ message, isMe, onEdit, onDelete, onReply, onReact }) =
             onClick={() => { setShowEmojis(!showEmojis); }}
             className="w-full text-left px-3 py-1.5 text-xs text-cell-primary hover:bg-weak-100 flex items-center gap-2"
           >
-            <Smile size={12} /> React
+            <Smile size={12} /> {t("React")}
           </button>
           
           <button 
             onClick={() => { onReply(); setShowMenu(false); }}
             className="w-full text-left px-3 py-1.5 text-xs text-cell-primary hover:bg-weak-100 flex items-center gap-2"
           >
-            <MessageSquareQuote size={12} /> Reply
+            <MessageSquareQuote size={12} /> {t("Reply")}
           </button>
 
           {isMe && (
@@ -40,13 +42,13 @@ const MessageActions = ({ message, isMe, onEdit, onDelete, onReply, onReact }) =
                 onClick={() => { onEdit(); setShowMenu(false); }}
                 className="w-full text-left px-3 py-1.5 text-xs text-cell-primary hover:bg-weak-100 flex items-center gap-2"
               >
-                <Edit2 size={12} /> Edit
+                <Edit2 size={12} /> {t("Edit")}
               </button>
               <button 
                 onClick={() => { onDelete(); setShowMenu(false); }}
                 className="w-full text-left px-3 py-1.5 text-xs text-red-500 hover:bg-red-50 flex items-center gap-2"
               >
-                <Trash2 size={12} /> Delete
+                <Trash2 size={12} /> {t("Delete")}
               </button>
             </>
           )}

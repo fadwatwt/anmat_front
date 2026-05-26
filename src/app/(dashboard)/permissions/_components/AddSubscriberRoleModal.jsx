@@ -13,8 +13,10 @@ import {
 } from "@/redux/permissions/subscriberPermissionsApi";
 import { useCreateSubscriberRoleMutation } from "@/redux/roles/subscriberRolesApi";
 import { useProcessing } from "@/app/providers";
+import { useTranslation } from "react-i18next";
 
 function AddSubscriberRoleModal({ isOpen, onClose }) {
+    const { t } = useTranslation();
     const [createRole, { isLoading }] = useCreateSubscriberRoleMutation();
     const [isApprovalOpen, setIsApprovalOpen] = useState(false);
     const [apiResponse, setApiResponse] = useState({
@@ -41,7 +43,7 @@ function AddSubscriberRoleModal({ isOpen, onClose }) {
             permissions_ids: [],
         },
         validationSchema: Yup.object({
-            name: Yup.string().required("Role name is required"),
+            name: Yup.string().required(t("Role name is required")),
             permissions_ids: Yup.array().min(0),
         }),
         onSubmit: async (values) => {
@@ -108,20 +110,20 @@ function AddSubscriberRoleModal({ isOpen, onClose }) {
                 isOpen={isOpen}
                 onClose={onClose}
                 isBtns={true}
-                btnApplyTitle={isLoading ? "Creating..." : "Save"}
+                btnApplyTitle={isLoading ? t("Creating...") : t("Save")}
                 onClick={formik.handleSubmit}
                 className={"lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12 px-3"}
-                title={"Add Role"}
+                title={t("Add Role")}
             >
                 <div className="px-1">
                     <div className="flex flex-col gap-4">
                         <InputAndLabel
-                            title="Role Name"
+                            title={t("Role Name")}
                             name="name"
                             value={formik.values.name}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
-                            placeholder="Enter Role Name..."
+                            placeholder={t("Enter Role Name...")}
                             error={
                                 formik.touched.name && formik.errors.name
                                     ? formik.errors.name
@@ -131,7 +133,7 @@ function AddSubscriberRoleModal({ isOpen, onClose }) {
                         />
 
                         <div className="flex flex-col gap-2">
-                            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Permissions</label>
+                            <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t("Permissions")}</label>
                             {isLoadingPermissions ? (
                                 <p className="text-sm text-gray-500"> <div className="flex items-center justify-center w-full p-4"><ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} /></div> </p>
                             ) : (
@@ -176,7 +178,7 @@ function AddSubscriberRoleModal({ isOpen, onClose }) {
                 isOpen={isApprovalOpen}
                 onClose={() => setIsApprovalOpen(false)}
                 onConfirm={handleConfirmCreate}
-                title="Confirm Create Role"
+                title={t("Confirm Create Role")}
                 message={`Are you sure you want to create the ${formik.values.name} role?`}
                 confirmBtnText={isLoading ? "Creating..." : "Confirm"}
                 type="warning"

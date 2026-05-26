@@ -10,21 +10,23 @@ import ElementsSelect from "@/components/Form/ElementsSelect";
 import InputWithIcon from "@/components/Form/InputWithIcon";
 import TextAreaWithLabel from "@/components/Form/TextAreaWithLabel";
 
-const validationSchema = Yup.object().shape({
-    employeeId: Yup.string().required("Employee is required"),
-    workType: Yup.string().required("Work type is required"),
-    salary: Yup.number()
-        .required("Salary is required")
-        .min(0, "Salary must be at least 0"),
-    bonuses: Yup.number().min(0, "Bonus must be at least 0"),
-    deductions: Yup.number().min(0, "Discount must be at least 0"),
-    comment: Yup.string(),
-});
+
 
 function EditSalaryModal({ isOpen, onClose, onSubmit, data }) {
     const { t } = useTranslation();
     const { employees } = useSelector((state) => state.employees);
     const [submissionError, setSubmissionError] = useState(null);
+
+    const validationSchema = Yup.object().shape({
+        employeeId: Yup.string().required(t("Employee is required")),
+        workType: Yup.string().required(t("Work type is required")),
+        salary: Yup.number()
+            .required(t("Salary is required"))
+            .min(0, t("Salary must be at least 0")),
+        bonuses: Yup.number().min(0, t("Bonus must be at least 0")),
+        deductions: Yup.number().min(0, t("Discount must be at least 0")),
+        comment: Yup.string(),
+    });
 
     const formik = useFormik({
         initialValues: {
@@ -66,11 +68,11 @@ function EditSalaryModal({ isOpen, onClose, onSubmit, data }) {
             isOpen={isOpen}
             onClose={onClose}
             isBtns={true}
-            btnApplyTitle="Save"
-            btnCancelTitle="Cancel"
+            btnApplyTitle={t("Save")}
+            btnCancelTitle={t("Cancel")}
             onClick={() => formik.handleSubmit()}
             className="lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12 px-3"
-            title="Edit an employee salary"
+            title={t("Edit an employee salary")}
         >
             <div className="px-1 overflow-visible">
                 <div className="flex flex-col gap-4">
@@ -79,10 +81,10 @@ function EditSalaryModal({ isOpen, onClose, onSubmit, data }) {
                     )}
 
                     <ElementsSelect
-                        title="Employee"
+                        title={t("Employee")}
                         options={employeeOptions}
                         onChange={(selected) => formik.setFieldValue("employeeId", selected[0]?.id || "")}
-                        placeholder="Select Employee"
+                        placeholder={t("Select Employee")}
                         defaultValue={employeeOptions.filter(opt => opt.id === formik.values.employeeId)}
                         isMultiple={false}
                     />
@@ -91,10 +93,10 @@ function EditSalaryModal({ isOpen, onClose, onSubmit, data }) {
                     )}
 
                     <ElementsSelect
-                        title="Work Type"
+                        title={t("Work Type")}
                         options={workTypeOptions}
                         onChange={(selected) => formik.setFieldValue("workType", selected[0]?.id || "")}
-                        placeholder="Select Work Type"
+                        placeholder={t("Select Work Type")}
                         defaultValue={workTypeOptions.filter(opt => opt.id === formik.values.workType)}
                         isMultiple={false}
                     />
@@ -103,7 +105,7 @@ function EditSalaryModal({ isOpen, onClose, onSubmit, data }) {
                     )}
 
                     <InputWithIcon
-                        title="Salary Amount"
+                        title={t("Salary Amount")}
                         name="salary"
                         type="number"
                         value={formik.values.salary}
@@ -115,7 +117,7 @@ icon={<span className="text-gray-500 dark:text-gray-400">$</span>}
                         />
 
                         <InputWithIcon
-                            title="Bonus Amount"
+                            title={t("Bonus Amount")}
                             name="bonuses"
                             type="number"
                             value={formik.values.bonuses}
@@ -126,7 +128,7 @@ icon={<span className="text-gray-500 dark:text-gray-400">$</span>}
                         />
 
                         <InputWithIcon
-                            title="Discount Amount"
+                            title={t("Discount Amount")}
                             name="deductions"
                             type="number"
                             value={formik.values.deductions}
@@ -137,12 +139,12 @@ icon={<span className="text-gray-500 dark:text-gray-400">$</span>}
                     />
 
                     <TextAreaWithLabel
-                        title="Comment"
+                        title={t("Comment")}
                         name="comment"
                         value={formik.values.comment}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
-                        placeholder="Comment"
+                        placeholder={t("Comment")}
                         rows={4}
                         isOptional={true}
                         error={formik.touched.comment && formik.errors.comment}

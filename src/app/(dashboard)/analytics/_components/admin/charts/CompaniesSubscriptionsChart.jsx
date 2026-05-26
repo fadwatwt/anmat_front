@@ -1,4 +1,5 @@
 "use client";
+import { useTranslation } from "react-i18next";
 import { ImSpinner2 } from "react-icons/im";
 
 import { useMemo } from "react";
@@ -8,6 +9,7 @@ import ChartSelect from "@/app/(dashboard)/analytics/_components/admin/ChartSele
 import BarChartComponent from "@/components/containers/chart/BarChartComponent";
 
 const CompaniesSubscriptionsChart = ({ monthlyData: monthlyProp }) => {
+    const { t } = useTranslation();
     const skip = Array.isArray(monthlyProp) && monthlyProp.length > 0;
     const { data: subscriptions, isLoading, error } = useGetSubscriptionsQuery(undefined, { skip });
 
@@ -46,18 +48,18 @@ const CompaniesSubscriptionsChart = ({ monthlyData: monthlyProp }) => {
         {
             dataKey: 'total',
             fill: '#38C793',
-            name: 'Subscriptions',
+            name: t('Subscriptions'),
             radius: [4, 4, 0, 0],
             barSize: 25
         }
     ];
 
     if (!skip && isLoading) return <div className="h-[300px] flex items-center justify-center bg-white rounded-2xl border border-gray-100 dark:bg-gray-800 dark:border-gray-700"> <div className="flex items-center justify-center w-full p-4"><ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} /></div> </div>;
-    if (!skip && error) return <div className="h-[300px] flex items-center justify-center bg-white rounded-2xl border border-gray-100 text-red-500 dark:bg-gray-800 dark:border-gray-700">Error loading chart data</div>;
+    if (!skip && error) return <div className="h-[300px] flex items-center justify-center bg-white rounded-2xl border border-gray-100 text-red-500 dark:bg-gray-800 dark:border-gray-700">{t("Error loading chart data")}</div>;
 
     return (
         <BarChartComponent
-            title={"Monthly Subscriptions"}
+            title={t("Monthly Subscriptions")}
             toolbar={
                 <div className="flex flex-wrap sm:flex-nowrap gap-2 items-center justify-end w-full sm:w-auto">
                     <ChartSelect 
@@ -70,7 +72,7 @@ const CompaniesSubscriptionsChart = ({ monthlyData: monthlyProp }) => {
             barGab={4}
             monthlyData={chartData}
             bars={bars}
-            yaxisTitle="Number of subscriptions"
+            yaxisTitle={t("Number of subscriptions")}
         />
     );
 };

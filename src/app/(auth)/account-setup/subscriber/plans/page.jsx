@@ -1,5 +1,6 @@
 "use client"
 
+import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import Switch2 from "@/components/Form/Switch2";
 import PlanCard from "@/components/containers/PlanCard";
@@ -11,6 +12,7 @@ import { useGetSubscriberSubscriptionPlansQuery } from "@/redux/plans/subscripti
 import { RiLoader4Line } from "@remixicon/react";
 
 function Page() {
+    const { t } = useTranslation();
     const user = useSelector(selectUser);
     const { data: plansData, isLoading, error: plansError } = useGetSubscriberSubscriptionPlansQuery();
 
@@ -31,7 +33,7 @@ function Page() {
         return (
             <div className="flex flex-col items-center justify-center min-h-[400px] w-full gap-4">
                 <RiLoader4Line className="animate-spin text-primary-base" size={48} />
-                <p className="text-cell-secondary font-medium">Loading plans...</p>
+                <p className="text-cell-secondary font-medium">{t("Loading plans...")}</p>
             </div>
         );
     }
@@ -40,8 +42,8 @@ function Page() {
         return (
             <div className="flex flex-col items-center justify-center min-h-[400px] w-full gap-4">
                 <div className="p-6 bg-red-50 text-red-600 rounded-2xl border border-red-100 dark:bg-red-900/20 dark:border-red-800 text-center">
-                    <p className="font-bold text-lg mb-2">Error Loading Plans</p>
-                    <p>{plansError?.data?.message || "Something went wrong while fetching plans."}</p>
+                    <p className="font-bold text-lg mb-2">{t("Error Loading Plans")}</p>
+                    <p>{plansError?.data?.message || t("Something went wrong while fetching plans.")}</p>
                 </div>
             </div>
         );
@@ -54,12 +56,12 @@ function Page() {
         <div className={"flex flex-col items-start w-full gap-10 mb-8"}>
             <div className="flex flex-col items-center text-center justify-start gap-6 w-full max-w-2xl mx-auto">
                 <div className={"flex flex-col items-center text-center justify-start gap-3 w-full"}>
-                    <span className={"text-primary-base font-bold uppercase tracking-widest text-[10px]"}>Pricing Plans</span>
+                    <span className={"text-primary-base font-bold uppercase tracking-widest text-[10px]"}>{t("Pricing Plans")}</span>
                     <h1 className="text-4xl font-extrabold text-cell-primary tracking-tight">
-                        {`Flexible plans for every team`}
+                        {t("Flexible plans for every team")}
                     </h1>
                     <p className="text-lg text-cell-secondary font-medium leading-relaxed">
-                        Choose the plan that suits your team size and requirements. All plans include 30 days free trial.
+                        {t("Choose the plan that suits your team size and requirements. All plans include 30 days free trial.")}
                     </p>
                 </div>
             </div>
@@ -83,7 +85,7 @@ function Page() {
             <Modal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
-                title={"Secure Subscription Checkout"}
+                title={t("Secure Subscription Checkout")}
                 className={"lg:w-[500px] md:w-10/12 w-11/12 p-0 overflow-hidden"}
             >
                 {selectedPlanInfo && (
@@ -91,12 +93,12 @@ function Page() {
                         <div className="bg-status-bg p-6 border-b border-status-border">
                             <div className="flex justify-between items-center">
                                 <div>
-                                    <p className="text-xs font-bold text-primary-base uppercase tracking-wider mb-1">Selected Plan</p>
+                                    <p className="text-xs font-bold text-primary-base uppercase tracking-wider mb-1">{t("Selected Plan")}</p>
                                     <h3 className="text-xl font-bold text-cell-primary">{selectedPlanInfo.plan.name}</h3>
                                 </div>
                                 <div className="text-right">
                                     <p className="text-2xl font-black text-cell-primary">${selectedPlanInfo.price}</p>
-                                    <p className="text-xs text-cell-secondary font-medium">Billed recurringly</p>
+                                    <p className="text-xs text-cell-secondary font-medium">{t("Billed recurringly")}</p>
                                 </div>
                             </div>
                         </div>

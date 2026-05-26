@@ -6,6 +6,7 @@ import { Mic, Paperclip, Copy, Edit2, Save, X } from "lucide-react";
 import "./hide-scrollbar.css";
 import ChatInput from "./ChatInput";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
+import { useTranslation } from "react-i18next";
 
 // Remove GeminiIcon if not used elsewhere
 
@@ -33,6 +34,7 @@ const isDocument = (type, name) => {
 };
 
 const AssistantPage = () => {
+  const { t } = useTranslation();
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]); // Chat messages state
   const [loading, setLoading] = useState(false); // Loading state for AI response
@@ -63,12 +65,7 @@ const AssistantPage = () => {
     setStagedFiles(prev => prev.filter((_, index) => index !== indexToRemove));
   };
 
-  const aiThoughts = [
-    'Analyzing your request...',
-    'Checking agenda templates...',
-    'Summarizing points...',
-    'Almost ready...'
-  ];
+
 
   useLayoutEffect(() => {
     if (editingIdx === messages.length-2 && userBubbleRef.current) {
@@ -293,7 +290,7 @@ const AssistantPage = () => {
         setApiResponse({
           isOpen: true,
           status: "error",
-          message: "Microphone access denied or not available.",
+          message: t("Microphone access denied or not available."),
         });
       }
     }
@@ -312,12 +309,12 @@ const AssistantPage = () => {
               {!hasStarted && (
                   <>
                     <div className="flex flex-col items-center gap-4 mt-12">
-                      <img src="/images/AiAssistant/file.svg" alt="Assistant Logo" style={{ width: '96px', height: '96px' }} />
+                      <img src="/images/AiAssistant/file.svg" alt={t("Assistant Logo")} style={{ width: '96px', height: '96px' }} />
                       <h2 className="text-2xl font-semibold text-center text-gray-900 dark:text-white mt-2">
-                        Welcome <span className="text-primary-500 font-bold">Mai Haggag</span>,<br/>
-                        <span className="font-normal">Start your journey with <span className="font-semibold">AI Assistant</span></span>
+                        {t("Welcome")} <span className="text-primary-500 font-bold">Mai Haggag</span>,<br/>
+                        <span className="font-normal">{t("Start your journey with")} <span className="font-semibold">{t("AI Assistant")}</span></span>
                       </h2>
-                      <p className="text-gray-400 text-center text-base max-w-xl">Lorem ipsum dummy text Lorem ipsum dummy text</p>
+                      <p className="text-gray-400 text-center text-base max-w-xl">{t("Lorem ipsum dummy text Lorem ipsum dummy text")}</p>
                     </div>
                     <div className="flex flex-row gap-4 justify-center mt-8 mb-12 w-full">
                       {suggestions.map((s, i) => (
@@ -326,7 +323,7 @@ const AssistantPage = () => {
                           className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-6 py-3 text-gray-900 dark:text-gray-200 shadow-sm hover:bg-primary-50 dark:hover:bg-primary-900 transition text-base font-medium"
                           onClick={() => setInput(s)}
                         >
-                          {s}
+                          {t(s)}
                         </button>
                       ))}
                     </div>
@@ -342,7 +339,7 @@ const AssistantPage = () => {
                               <div className="flex justify-start items-start gap-3">
                                 <img
                                     src={USER_AVATAR}
-                                    alt="User"
+                                    alt={t("User")}
                                     className="w-10 h-10 rounded-full object-cover border border-gray-200"
                                 />
                                 <div className="flex flex-col items-start w-full max-w-[70%]">
@@ -363,8 +360,8 @@ const AssistantPage = () => {
                                   rows={1}
                               />
                                         <div className="flex gap-2 mt-1">
-                                          <button onClick={() => handleCopy(editValue)} title="Copy" className="text-gray-400 hover:text-primary-500"><Copy size={18} /></button>
-                                          <button onClick={() => handleEditSave(idx)} title="Save" className="text-gray-400 hover:text-primary-500"><Save size={18} /></button>
+                                          <button onClick={() => handleCopy(editValue)} title={t("Copy")} className="text-gray-400 hover:text-primary-500"><Copy size={18} /></button>
+                                          <button onClick={() => handleEditSave(idx)} title={t("Save")} className="text-gray-400 hover:text-primary-500"><Save size={18} /></button>
                                         </div>
                                       </div>
                                   ) : (
@@ -391,11 +388,11 @@ const AssistantPage = () => {
                                                   {/* Left icon */}
                                                   {isDocument(file.type, file.name) ? (
                                                     <span className="inline-flex items-center justify-center w-8 h-8 bg-primary-50 rounded-lg shrink-0">
-                                                      <img src="/images/AiAssistant/document-text.svg" alt="Document" className="w-6 h-6" />
+                                                      <img src="/images/AiAssistant/document-text.svg" alt={t("Document")} className="w-6 h-6" />
                                                     </span>
                                                   ) : (
                                                     <span className="inline-flex items-center justify-center w-8 h-8 bg-primary-50 rounded-lg shrink-0">
-                                                      <img src="/images/AiAssistant/file.svg" alt="File" className="w-6 h-6" />
+                                                      <img src="/images/AiAssistant/file.svg" alt={t("File")} className="w-6 h-6" />
                                                     </span>
                                                   )}
                                                   {/* File name center */}
@@ -403,8 +400,8 @@ const AssistantPage = () => {
                                                     <div className="font-semibold text-base sm:text-lg text-gray-900 dark:text-gray-100 truncate">{file.name}</div>
                                                   </div>
                                                   {/* Download icon right */}
-                                                  <a href={file.url} download={file.name} className="flex items-center justify-center text-primary-500 hover:text-primary-700 shrink-0" title="Download">
-                                                    <img src="/images/AiAssistant/lucide_download.svg" alt="Download" className="w-6 h-6" style={{ width: 24, height: 24 }} />
+                                                  <a href={file.url} download={file.name} className="flex items-center justify-center text-primary-500 hover:text-primary-700 shrink-0" title={t("Download")}>
+                                                    <img src="/images/AiAssistant/lucide_download.svg" alt={t("Download")} className="w-6 h-6" style={{ width: 24, height: 24 }} />
                                                   </a>
                                                 </div>
                                               )
@@ -429,11 +426,11 @@ const AssistantPage = () => {
                                                     {/* Left icon */}
                                                     {isDocument(file.type, file.name) ? (
                                                       <span className="inline-flex items-center justify-center w-8 h-8 bg-primary-50 rounded-lg shrink-0">
-                                                        <img src="/images/AiAssistant/document-text.svg" alt="Document" className="w-6 h-6" />
+                                                        <img src="/images/AiAssistant/document-text.svg" alt={t("Document")} className="w-6 h-6" />
                                                       </span>
                                                     ) : (
                                                       <span className="inline-flex items-center justify-center w-8 h-8 bg-primary-50 rounded-lg">
-                                                        <img src="/images/AiAssistant/file.svg" alt="File" className="w-6 h-6" />
+                                                        <img src="/images/AiAssistant/file.svg" alt={t("File")} className="w-6 h-6" />
                                                       </span>
                                                     )}
                                                     {/* File name center */}
@@ -441,8 +438,8 @@ const AssistantPage = () => {
                                                       <div className="font-semibold text-lg text-gray-900 dark:text-gray-100 truncate">{file.name}</div>
                                                     </div>
                                                     {/* Download icon right */}
-                                                    <a href={file.url} download={file.name} className="flex items-center justify-center text-primary-500 hover:text-primary-700" title="Download">
-                                                      <img src="/images/AiAssistant/lucide_download.svg" alt="Download" className="w-6 h-6" style={{ width: 24, height: 24 }} />
+                                                    <a href={file.url} download={file.name} className="flex items-center justify-center text-primary-500 hover:text-primary-700" title={t("Download")}>
+                                                      <img src="/images/AiAssistant/lucide_download.svg" alt={t("Download")} className="w-6 h-6" style={{ width: 24, height: 24 }} />
                                                     </a>
                                                   </div>
                                                 )
@@ -461,7 +458,7 @@ const AssistantPage = () => {
                                                   className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary-500 text-white font-semibold shadow hover:bg-primary-600 transition text-base"
                                                 >
                                                   {/* Optionally add an icon here */}
-                                                  {link.label}
+                                                  {t(link.label)}
                                                 </a>
                                               ))}
                                             </div>
@@ -491,8 +488,8 @@ const AssistantPage = () => {
                                         </div>
                                         {(!msg.file && !msg.files) && (
                                           <div className="flex gap-2 mt-1">
-                                            <button onClick={() => handleEdit(idx, msg.text)} title="Edit" className="text-gray-400 hover:text-primary-500"><img src="/images/AiAssistant/edit.svg" alt="Edit" className="w-5 h-5" /></button>
-                                            <button onClick={() => handleCopy(msg.text)} title="Copy" className="text-gray-400 hover:text-primary-500"><img src="/images/AiAssistant/copy.svg" alt="Copy" className="w-5 h-5" /></button>
+                                            <button onClick={() => handleEdit(idx, msg.text)} title={t("Edit")} className="text-gray-400 hover:text-primary-500"><img src="/images/AiAssistant/edit.svg" alt={t("Edit")} className="w-5 h-5" /></button>
+                                            <button onClick={() => handleCopy(msg.text)} title={t("Copy")} className="text-gray-400 hover:text-primary-500"><img src="/images/AiAssistant/copy.svg" alt={t("Copy")} className="w-5 h-5" /></button>
                                           </div>
                                         )}
                                       </>
@@ -566,8 +563,8 @@ const AssistantPage = () => {
                                             rows={1}
                                         />
                                         <div className="flex gap-2 mt-1">
-                                          <button onClick={() => handleCopy(editValue)} title="Copy" className="text-gray-400 hover:text-primary-500"><Copy size={18} /></button>
-                                          <button onClick={() => handleEditSave(idx)} title="Save" className="text-gray-400 hover:text-primary-500"><Save size={18} /></button>
+                                          <button onClick={() => handleCopy(editValue)} title={t("Copy")} className="text-gray-400 hover:text-primary-500"><Copy size={18} /></button>
+                                          <button onClick={() => handleEditSave(idx)} title={t("Save")} className="text-gray-400 hover:text-primary-500"><Save size={18} /></button>
                                         </div>
                                       </div>
                                   ) : (
@@ -597,7 +594,7 @@ const AssistantPage = () => {
                                                     href={assignee.profileUrl}
                                                     className="text-primary-500 hover:text-primary-700 underline text-sm"
                                                   >
-                                                    View profile
+                                                    {t("View profile")}
                                                   </a>
                                                 </div>
                                               ))}
@@ -607,7 +604,7 @@ const AssistantPage = () => {
                                                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                       <path d="M3 3h10v10H3V3zm1 1v8h8V4H4zm2 2h4v1H6V6zm0 2h3v1H6V8z" fill="currentColor"/>
                                                     </svg>
-                                                    View reference
+                                                    {t("View reference")}
                                                   </button>
                                                 </div>
                                               )}
@@ -615,8 +612,8 @@ const AssistantPage = () => {
                                           )}
                                         </div>
                                         <div className="flex gap-2 mt-1">
-                                          <button onClick={() => handleEdit(idx, msg.text)} title="Edit" className="text-gray-400 hover:text-primary-500"><img src="/images/AiAssistant/edit.svg" alt="Edit" className="w-5 h-5" /></button>
-                                          <button onClick={() => handleCopy(msg.text)} title="Copy" className="text-gray-400 hover:text-primary-500"><img src="/images/AiAssistant/copy.svg" alt="Copy" className="w-5 h-5" /></button>
+                                          <button onClick={() => handleEdit(idx, msg.text)} title={t("Edit")} className="text-gray-400 hover:text-primary-500"><img src="/images/AiAssistant/edit.svg" alt={t("Edit")} className="w-5 h-5" /></button>
+                                          <button onClick={() => handleCopy(msg.text)} title={t("Copy")} className="text-gray-400 hover:text-primary-500"><img src="/images/AiAssistant/copy.svg" alt={t("Copy")} className="w-5 h-5" /></button>
                                         </div>
                                       </>
                                   )}
@@ -684,11 +681,11 @@ const AssistantPage = () => {
                             <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
                             <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
                           </div>
-                          <span className="text-blue-700 font-medium">Thinking...</span>
+                          <span className="text-blue-700 font-medium">{t("Thinking...")}</span>
                         </div>
                         <div className="mt-2 flex items-center gap-2 text-xs text-blue-600">
                           <div className="w-1 h-1 bg-blue-400 rounded-full animate-pulse"></div>
-                          <span>Processing your request</span>
+                          <span>{t("Processing your request")}</span>
                         </div>
                       </div>
                     </div>
@@ -716,11 +713,11 @@ const AssistantPage = () => {
         {openImageUrl && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70" onClick={() => setOpenImageUrl(null)}>
             <div className="relative" onClick={e => e.stopPropagation()}>
-              <img src={openImageUrl} alt="Preview" className="max-h-[80vh] max-w-[90vw] rounded-xl shadow-lg" />
+              <img src={openImageUrl} alt={t("Preview")} className="max-h-[80vh] max-w-[90vw] rounded-xl shadow-lg" />
               <button
                 onClick={() => setOpenImageUrl(null)}
                 className="absolute top-2 right-2 bg-white bg-opacity-80 rounded-full p-1 hover:bg-opacity-100 transition"
-                title="Close"
+                title={t("Close")}
               >
                 <X size={24} className="text-gray-700" />
               </button>

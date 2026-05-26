@@ -87,48 +87,48 @@ function CreateMeetingModal({ isOpen, onClose, isEdit, editData }) {
         <Modal
             isOpen={isOpen}
             onClose={onClose}
-            title={isEdit ? "Meeting Details" : "Creating a Meeting"}
+            title={isEdit ? t("Meeting Details") : t("Creating a Meeting")}
             isBtns={true}
-            btnApplyTitle={isEdit ? "Update" : "Schedule"}
+            btnApplyTitle={isEdit ? t("Update") : t("Schedule")}
             onClick={handleSave}
             className="lg:w-[30%] md:w-8/12 sm:w-10/12 w-full p-6"
         >
             <div className="flex flex-col gap-4">
                 <InputAndLabel
-                    title="Meeting Title"
+                    title={t("Meeting Title")}
                     isRequired={true}
                     name="title"
                     value={formData.title}
                     onChange={handleChange}
-                    placeholder="Meeting Title"
+                    placeholder={t("Meeting Title")}
                 />
 
                 <ElementsSelect
-                    title="Departments"
+                    title={t("Departments")}
                     options={departmentOptions.map(dept => ({ ...dept, element: <span>{dept.name}</span> }))}
                     defaultValue={formData.departments}
                     onChange={(val) => handleSelectChange("departments", val)}
                     isMultiple={true}
-                    placeholder="Select Departments"
+                    placeholder={t("Select Departments")}
                 />
-                <ElementsSelect title="Type"
+                <ElementsSelect title={t("Type")}
                     options={typeOptions}
                     defaultValue={formData.type}
                     onChange={(val) => handleSelectChange("type", val)}
                     isMultiple={false}
-                    placeholder="Select Type"
+                    placeholder={t("Select Type")}
                 />
 
                 <InputAndLabel
-                    title="Topics"
+                    title={t("Topics")}
                     name="topics"
                     value={formData.topics}
                     onChange={handleChange}
-                    placeholder="Topics"
+                    placeholder={t("Topics")}
                 />
 
                 <ElementsSelect
-                    title="Admins"
+                    title={t("Admins")}
                     options={employeesFactory.map((emp) => ({
                         id: emp.id,
                         element: (
@@ -146,11 +146,11 @@ function CreateMeetingModal({ isOpen, onClose, isEdit, editData }) {
                     defaultValue={formData.admins}
                     onChange={(val) => handleSelectChange("admins", val)}
                     isMultiple={true}
-                    placeholder="Select Admins"
+                    placeholder={t("Select Admins")}
                 />
 
                 <ElementsSelect
-                    title="Participants"
+                    title={t("Participants")}
                     options={employeesFactory.map((emp) => ({
                         id: emp.id,
                         element: (
@@ -168,20 +168,20 @@ function CreateMeetingModal({ isOpen, onClose, isEdit, editData }) {
                     defaultValue={formData.participants}
                     onChange={(val) => handleSelectChange("participants", val)}
                     isMultiple={true}
-                    placeholder="Select Participants"
+                    placeholder={t("Select Participants")}
                 />
 
                 <div className="flex gap-4">
                     <div className="w-full md:w-1/2">
                         <DateInput
-                            title="Date"
+                            title={t("Date")}
                             value={formData.date}
                             onChange={(e) => handleSelectChange("date", e.target.value)}
                         />
                     </div>
                     <div className="w-full md:w-1/2">
                         <TimeInput
-                            title="Meeting Time"
+                            title={t("Meeting Time")}
                             value={formData.time}
                             onChange={(e) => handleSelectChange("time", e.target.value)}
                         />
@@ -189,15 +189,15 @@ function CreateMeetingModal({ isOpen, onClose, isEdit, editData }) {
                 </div>
 
                 <div className="flex flex-col gap-2">
-                    <TextAreaWithLabel title="Description" name="description"
+                    <TextAreaWithLabel title={t("Description")} name="description"
                         value={formData.description} onChange={handleChange} />
 
                     <InputAndLabel
-                        title="Meeting Link"
+                        title={t("Meeting Link")}
                         name="meetingLink"
                         value={formData.meetingLink}
                         onChange={handleChange}
-                        placeholder="www.google.meet..."
+                        placeholder={t("www.google.meet...")}
                     />
 
                     <button className="w-full py-2 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition-colors font-medium">

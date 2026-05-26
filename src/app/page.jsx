@@ -17,7 +17,7 @@ import { useGetPublicSubscriptionPlansQuery } from "@/redux/plans/subscriptionPl
 import { useTranslation } from "react-i18next";
 
 function Desktop2Page() {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const [isOnSwitch, setIsOnSwitch] = useState(false);
   const { data: plans, isLoading } = useGetPublicSubscriptionPlansQuery();
   return (
@@ -37,25 +37,25 @@ function Desktop2Page() {
               <div className={"flex items-center gap-2"}>
                 <img
                   src="/images/LandingPage/logoBlue.png"
-                  alt={"logo"}
+                  alt={t("logo")}
                   className={"w-8 h-8"}
                 />
-                <p className={"text-white"}>Anmat</p>
+                <p className={"text-white"}>{t("Anmat")}</p>
               </div>
               <nav className={"hidden md:flex gap-6 text-white"}>
-                <li className={"list-none "}>Home</li>
-                <li className={"list-none "}>Features</li>
-                <li className={"list-none "}>Pricing</li>
-                <li className={"list-none "}>FAQ</li>
+                <li className={"list-none "}>{t("Home")}</li>
+                <li className={"list-none "}>{t("Features")}</li>
+                <li className={"list-none "}>{t("Pricing")}</li>
+                <li className={"list-none "}>{t("FAQ")}</li>
               </nav>
             </div>
             <div className={"flex items-center gap-3"}>
               <p className={"text-white text-sm md:text-base"}>
                 {" "}
-                <Link href="sign-in"> {"Login"}</Link>
+                <Link href="sign-in"> {t("Login")}</Link>
               </p>
               <Link href={"/register/subscriber/email"} className={"bg-white py-1.5 px-3 rounded-md text-sm md:text-base"}>
-                Sign up
+                {t("Sign up")}
               </Link>
             </div>
           </div>
@@ -65,25 +65,24 @@ function Desktop2Page() {
                 "text-3xl sm:text-4xl md:text-5xl max-w-3xl font-bold bg-gradient-to-r from-primary-400 to-primary-400 via-primary-100 bg-clip-text text-transparent text-wrap "
               }
             >
-              Your Ultimate Management Dashboard
+              {t("Your Ultimate Management Dashboard")}
             </p>
             <p className={"text-primary-200 max-w-3xl text-sm sm:text-base"}>
-              All the tools you need for collaboration, analytics, and
-              decision-making in one place.
+              {t("All the tools you need for collaboration, analytics, and decision-making in one place.")}
             </p>
           </div>
           <div className={"flex justify-center items-center gap-3"}>
             <button className={"bg-white py-2 px-3 rounded-md text-sm"}>
-              <a href="/dashboard"> Get started</a>
+              <a href="/dashboard"> {t("Get started")}</a>
             </button>
             <p className={"text-primary-200"}>
-              <a href="/sign-in"> Login</a>{" "}
+              <a href="/sign-in"> {t("Login")}</a>{" "}
             </p>
           </div>
           <div className={"flex justify-center w-full px-4"}>
             <img
               src="/images/LandingPage/dashboardImage.png"
-              alt={"dashboard image"}
+              alt={t("dashboard image")}
               className={"w-full sm:w-10/12 md:w-8/12"}
             />
           </div>
@@ -95,8 +94,8 @@ function Desktop2Page() {
         }
       >
         <div className={"flex flex-col py-10 text-center"}>
-          <p className={"text-blue-500 text-sm"}>Main Features</p>
-          <p className={"text-3xl sm:text-4xl font-bold text-black "}>Key Features</p>
+          <p className={"text-blue-500 text-sm"}>{t("Main Features")}</p>
+          <p className={"text-3xl sm:text-4xl font-bold text-black "}>{t("Key Features")}</p>
         </div>
         <div className={"w-full grid grid-cols-1 md:grid-cols-2 gap-6"}>
           <div
@@ -111,10 +110,10 @@ function Desktop2Page() {
                 }
               >
                 <p className={"text-lg font-bold text-black"}>
-                  Performance Analytics
+                  {t("Performance Analytics")}
                 </p>
                 <p className={"text-black text-wrap"}>
-                  Track performance across tasks, employees, and departments.
+                  {t("Track performance across tasks, employees, and departments.")}
                 </p>
               </div>
               <div
@@ -124,12 +123,12 @@ function Desktop2Page() {
               >
                 <img
                   src="/images/LandingPage/pioChart.png"
-                  alt={"chart1"}
+                  alt={t("chart1")}
                   className={"w-48 sm:w-72 absolute sm:right-10 top-11"}
                 />
                 <img
                   src="/images/LandingPage/chart1.png"
-                  alt={"chart1"}
+                  alt={t("chart1")}
                   className={"w-48 sm:w-72 absolute sm:right-64 -top-4 hidden sm:block"}
                 />
               </div>
@@ -147,10 +146,10 @@ function Desktop2Page() {
                 }
               >
                 <p className={"text-lg font-bold text-black"}>
-                  Performance Analytics
+                  {t("Performance Analytics")}
                 </p>
                 <p className={"text-black text-wrap"}>
-                  Track performance across tasks, employees, and departments.
+                  {t("Track performance across tasks, employees, and departments.")}
                 </p>
               </div>
               <div
@@ -160,7 +159,7 @@ function Desktop2Page() {
               >
                 <img
                   src="/images/LandingPage/notifications.png"
-                  alt={"notifications image"}
+                  alt={t("notifications image")}
                   className={"w-64 sm:w-96 absolute -top-3"}
                 />
               </div>
@@ -178,10 +177,10 @@ function Desktop2Page() {
                 }
               >
                 <p className={"text-lg font-bold text-black"}>
-                  Performance Analytics
+                  {t("Performance Analytics")}
                 </p>
                 <p className={"text-black text-wrap"}>
-                  Track performance across tasks, employees, and departments.
+                  {t("Track performance across tasks, employees, and departments.")}
                 </p>
               </div>
               <div
@@ -191,12 +190,12 @@ function Desktop2Page() {
               >
                 <img
                   src="/images/LandingPage/fileInputImage.png"
-                  alt={"chart1"}
+                  alt={t("chart1")}
                   className={"w-48 sm:w-72 absolute sm:right-64 -top-4 hidden sm:block"}
                 />
                 <img
                   src="/images/LandingPage/followAndUnfollowModalImage.png"
-                  alt={"chart1"}
+                  alt={t("chart1")}
                   className={"w-48 sm:w-72 absolute sm:right-10 top-11"}
                 />
               </div>
@@ -214,10 +213,10 @@ function Desktop2Page() {
                 }
               >
                 <p className={"text-lg font-bold text-black"}>
-                  Performance Analytics
+                  {t("Performance Analytics")}
                 </p>
                 <p className={"text-black text-wrap"}>
-                  Track performance across tasks, employees, and departments.
+                  {t("Track performance across tasks, employees, and departments.")}
                 </p>
               </div>
               <div
@@ -227,12 +226,12 @@ function Desktop2Page() {
               >
                 <img
                   src="/images/LandingPage/taskStagesImage.png"
-                  alt={"chart1"}
+                  alt={t("chart1")}
                   className={"w-64 sm:w-96 absolute sm:right-52 top-11"}
                 />
                 <img
                   src="/images/LandingPage/projectDetailsImage.png"
-                  alt={"chart1"}
+                  alt={t("chart1")}
                   className={"w-48 sm:w-72 absolute sm:right-0 -top-4 hidden sm:block"}
                 />
               </div>
@@ -250,29 +249,29 @@ function Desktop2Page() {
             }
           >
             <p className={"text-white text-2xl md:text-3xl font-bold"}>
-              Connect with your team
+              {t("Connect with your team")}
             </p>
             <div className={"flex flex-col gap-6"}>
               <div className={"flex gap-1 items-center md:items-start"}>
                 <RiCheckboxCircleFill size={"24"} className={"text-white shrink-0"} />
                 <p className={"text-base md:text-lg text-white"}>
-                  Seamless Communication & Collaboration
+                  {t("Seamless Communication & Collaboration")}
                 </p>
               </div>
               <div className={"flex gap-1 items-center md:items-start"}>
                 <RiCheckboxCircleFill size={"24"} className={"text-white shrink-0"} />
-                <p className={"text-base md:text-lg text-white"}>Real-time messaging</p>
+                <p className={"text-base md:text-lg text-white"}>{t("Real-time messaging")}</p>
               </div>
               <div className={"flex gap-1 items-center md:items-start"}>
                 <RiCheckboxCircleFill size={"24"} className={"text-white shrink-0"} />
                 <p className={"text-base md:text-lg text-white"}>
-                  Effortless meeting scheduling
+                  {t("Effortless meeting scheduling")}
                 </p>
               </div>
               <div className={"flex gap-1 items-center md:items-start"}>
                 <RiCheckboxCircleFill size={"24"} className={"text-white shrink-0"} />
                 <p className={"text-base md:text-lg text-white"}>
-                  Stay organized & on track
+                  {t("Stay organized & on track")}
                 </p>
               </div>
               <div className={"w-full md:w-1/2"}>
@@ -282,7 +281,7 @@ function Desktop2Page() {
                   }
                 >
                   {" "}
-                  Get started
+                  {t("Get started")}
                 </button>
               </div>
             </div>
@@ -290,7 +289,7 @@ function Desktop2Page() {
           <div className={"py-8 px-4 md:px-0"}>
             <img
               src="/images/LandingPage/companyImag1.png"
-              alt={"company"}
+              alt={t("company")}
               className={"w-full max-w-[320px] md:max-w-[480px]"}
             />
           </div>
@@ -298,13 +297,13 @@ function Desktop2Page() {
         <div className={"flex flex-col w-full "}>
           <div className={"flex flex-col py-10 gap-12"}>
             <div className={"flex flex-col"}>
-              <p className={"text-blue-500 text-sm"}>Main Features</p>
+              <p className={"text-blue-500 text-sm"}>{t("Main Features")}</p>
               <p className={"text-4xl font-bold text-black "}>
-                Plans tailored for your team
+                {t("Plans tailored for your team")}
               </p>
             </div>
             <div className={"flex items-center justify-center gap-3 relative"}>
-              <p className={!isOnSwitch ? "font-bold text-primary-600" : ""}>Pay Monthly </p>
+              <p className={!isOnSwitch ? "font-bold text-primary-600" : ""}>{t("Pay Monthly")}</p>
               <button
                 type={"button"}
                 onClick={() => setIsOnSwitch(!isOnSwitch)}
@@ -321,10 +320,10 @@ function Desktop2Page() {
                   />
                 </div>
               </button>
-              <p className={isOnSwitch ? "font-bold text-primary-600" : ""}>Pay Yearly</p>
+              <p className={isOnSwitch ? "font-bold text-primary-600" : ""}>{t("Pay Yearly")}</p>
               <img
                 src="/images/LandingPage/arrowSwitchImage.png"
-                alt={"arrow"}
+                alt={t("arrow")}
                 className={"absolute w-[120px] md:w-[185px] h-[50px] md:h-[87px] right-[8rem] md:right-[24rem] -top-7 hidden md:block"}
               />
             </div>
@@ -339,7 +338,6 @@ function Desktop2Page() {
                   const Icon = plan.name?.toLowerCase().includes('enterprise') ? RiBuilding4Line : 
                                plan.name?.toLowerCase().includes('pro') ? RiCopperDiamondLine : RiFlashlightLine;
                   
-                  // Highlight professional or middle plans
                   const isHighlighted = plan.name?.toLowerCase().includes('pro');
                   
                   return (
@@ -362,11 +360,11 @@ function Desktop2Page() {
                             ${pricing ? pricing.price : '-'}
                           </span>
                           <span className="text-gray-500 font-medium mb-1">
-                            /{currentInterval === 'month' ? 'mo' : 'yr'}
+                            /{currentInterval === 'month' ? t('mo') : t('yr')}
                           </span>
                         </div>
                         <p className={"text-gray-500 text-sm h-12 line-clamp-2 mt-2"}>
-                          {plan.description || "Everything you need to manage your business efficiently."}
+                          {plan.description || t("Everything you need to manage your business efficiently.")}
                         </p>
                       </div>
                       
@@ -397,20 +395,20 @@ function Desktop2Page() {
                               : 'bg-primary-100 hover:bg-primary-200 text-primary-800'}
                         `}
                       >
-                        {pricing ? 'Get started' : 'Not available'}
+                        {pricing ? t('Get started') : t('Not available')}
                       </Link>
                     </div>
                   );
                 })
               ) : (
-                 <div className="flex justify-center py-20 w-full text-gray-500 text-lg">No active plans available at the moment.</div>
+                 <div className="flex justify-center py-20 w-full text-gray-500 text-lg">{t("No active plans available at the moment.")}</div>
               )}
             </div>
 
           </div>
         </div>
         <div className={"flex flex-col gap-5 justify-center items-center w-full px-4"}>
-          <p className={"text-base sm:text-lg text-gray-400"}>Trusted by X companies</p>
+          <p className={"text-base sm:text-lg text-gray-400"}>{t("Trusted by X companies")}</p>
           <div className={"flex flex-wrap items-center justify-center max-w-full px-4 sm:px-10 gap-6 sm:gap-8"}>
             <img
               src="/images/LandingPage/Companys/company1.png"
@@ -442,83 +440,71 @@ function Desktop2Page() {
         <div className={"flex flex-col gap-5 w-full md:w-3/4 lg:w-1/2 px-4"}>
           <div className={"flex flex-col gap-5 text-center md:text-start"}>
             <p className={"text-black text-xl sm:text-2xl font-bold"}>
-              Frequently asked questions
+              {t("Frequently asked questions")}
             </p>
             <p className={"text-gray-500 text-sm sm:text-base"}>
-              Everything you need to know about managing your dashboard.
+              {t("Everything you need to know about managing your dashboard.")}
             </p>
           </div>
           <div className={"flex flex-col px-0 md:px-10 lg:px-20 gap-5 "}>
             <Collapse
-              title={"Can I customize permissions for my team?"}
-              text={
-                "Yes, the dashboard allows you to set and customize permissions based on roles, ensuring secure and efficient task delegation."
-              }
+              title={t("Can I customize permissions for my team?")}
+              text={t("Yes, the dashboard allows you to set and customize permissions based on roles, ensuring secure and efficient task delegation.")}
             />
             <Collapse
-              title={"Can I switch to a different plan later?"}
-              text={
-                "Yes, the dashboard allows you to set and customize permissions based on roles, ensuring secure and efficient task delegation."
-              }
+              title={t("Can I switch to a different plan later?")}
+              text={t("Yes, the dashboard allows you to set and customize permissions based on roles, ensuring secure and efficient task delegation.")}
             />
             <Collapse
-              title={"What happens to data if I cancel my subscription?"}
-              text={
-                "Yes, the dashboard allows you to set and customize permissions based on roles, ensuring secure and efficient task delegation."
-              }
+              title={t("What happens to data if I cancel my subscription?")}
+              text={t("Yes, the dashboard allows you to set and customize permissions based on roles, ensuring secure and efficient task delegation.")}
             />
             <Collapse
-              title={"Can I integrate third-party tools with the dashboard?"}
-              text={
-                "Yes, the dashboard allows you to set and customize permissions based on roles, ensuring secure and efficient task delegation."
-              }
+              title={t("Can I integrate third-party tools with the dashboard?")}
+              text={t("Yes, the dashboard allows you to set and customize permissions based on roles, ensuring secure and efficient task delegation.")}
             />
             <Collapse
-              title={"How does the analytics feature work?"}
-              text={
-                "Yes, the dashboard allows you to set and customize permissions based on roles, ensuring secure and efficient task delegation."
-              }
+              title={t("How does the analytics feature work?")}
+              text={t("Yes, the dashboard allows you to set and customize permissions based on roles, ensuring secure and efficient task delegation.")}
             />
             <Collapse
-              title={"How do I update my contact email?"}
-              text={
-                "Yes, the dashboard allows you to set and customize permissions based on roles, ensuring secure and efficient task delegation."
-              }
+              title={t("How do I update my contact email?")}
+              text={t("Yes, the dashboard allows you to set and customize permissions based on roles, ensuring secure and efficient task delegation.")}
             />
             <div className={"flex flex-col items-center gap-5 pt-10 pb-16 text-center"}>
               <div className={"flex justify-center"}>
                 <div className={"p-1 rounded-full"}>
                   <img
                     src="/images/users/user1.png"
-                    alt={"user1"}
+                    alt={t("user1")}
                     className={"rounded-full w-10 h-10"}
                   />
                 </div>
                 <div className={"p-1 rounded-full -ml-2"}>
                   <img
                     src="/images/users/user2.png"
-                    alt={"user2"}
+                    alt={t("user2")}
                     className={"rounded-full w-10 h-10"}
                   />
                 </div>
                 <div className={"p-1 rounded-full -ml-2"}>
                   <img
                     src="/images/users/user3.png"
-                    alt={"user3"}
+                    alt={t("user3")}
                     className={"rounded-full w-10 h-10"}
                   />
                 </div>
               </div>
               <div className={"flex flex-col gap-2"}>
-                <p className={"text-xl text-black"}>Connect with us</p>
+                <p className={"text-xl text-black"}>{t("Connect with us")}</p>
                 <p className={"text-gray-600 text-sm"}>
-                  Quickly get started by exploring our product today!
+                  {t("Quickly get started by exploring our product today!")}
                 </p>
               </div>
               <button
                 className={"bg-primary-base text-white rounded-xl py-2 px-3"}
               >
-                Get started
+                {t("Get started")}
               </button>
             </div>
           </div>
@@ -540,10 +526,10 @@ function Desktop2Page() {
             alt={""}
             className={"w-8"}
           />
-          <p className={"text-gray-200"}>Management</p>
+          <p className={"text-gray-200"}>{t("Management")}</p>
         </div>
         <p className={"text-gray-200 text-sm"}>
-          © 2025 Management. All rights reserved.
+          {t("© 2025 Management. All rights reserved.")}
         </p>
       </div>
     </div>

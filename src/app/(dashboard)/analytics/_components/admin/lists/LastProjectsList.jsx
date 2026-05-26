@@ -1,15 +1,17 @@
 import ContentCard from "@/components/containers/ContentCard";
 import ChartSelect from "@/app/(dashboard)/analytics/_components/admin/ChartSelect";
+import { useTranslation } from "react-i18next";
 
 const LastProjectsList = ({ projects = [] }) => {
+    const { t } = useTranslation();
     return (
         <ContentCard
-            title={"Last 4 Projects"}
+            title={t("Last 4 Projects")}
             toolbar={
                 <div className="flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end w-full sm:w-auto">
                     <ChartSelect 
-                        options={[{ id: 1, value: "Performance" }]} 
-                        defaultValue="Performance"
+                        options={[{ id: 1, value: t("Performance") }]} 
+                        defaultValue={t("Performance")}
                         className="w-full sm:w-32"
                     />
                 </div>
@@ -17,7 +19,7 @@ const LastProjectsList = ({ projects = [] }) => {
             main={
                 <div className="flex flex-col items-start justify-start gap-4 w-full">
                     {projects.length === 0 && (
-                        <span className="text-sm text-cell-secondary">No projects yet.</span>
+                        <span className="text-sm text-cell-secondary">{t("No projects yet.")}</span>
                     )}
                     {projects.map((project, index) => {
                         return (

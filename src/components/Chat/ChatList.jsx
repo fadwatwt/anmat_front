@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
 import React, { useState } from "react";
 import { useGetChatsQuery } from "@/redux/conversations/conversationsAPI";
 import { formatDistanceToNow } from "date-fns";
@@ -8,6 +9,7 @@ import { useSelector } from "react-redux";
 import { selectUserId } from "@/redux/auth/authSlice";
 
 const ChatList = ({ activeChatId, onSelectChat }) => {
+  const { t } = useTranslation();
   const userId = useSelector(selectUserId);
   const [searchQuery, setSearchQuery] = useState("");
   const [showArchived, setShowArchived] = useState(false);
@@ -20,7 +22,7 @@ const ChatList = ({ activeChatId, onSelectChat }) => {
 
   const filteredChats = chats.filter((chat) => {
     const otherParticipant = chat.participants_ids?.find(p => p._id !== userId);
-    const chatTitle = chat.title || otherParticipant?.name || "Direct Chat";
+    const chatTitle = chat.title || otherParticipant?.name || t("Direct Chat");
 
     return chatTitle.toLowerCase().includes(searchQuery.toLowerCase());
   });
@@ -30,7 +32,7 @@ const ChatList = ({ activeChatId, onSelectChat }) => {
     return (
       <div className="flex flex-col h-full items-center justify-center text-sub-300">
         <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-500"></div>
-        <p className="mt-2 text-sm">Loading chats...</p>
+        <p className="mt-2 text-sm">{t("Loading chats...")}</p>
       </div>
     );
   }
@@ -39,19 +41,19 @@ const ChatList = ({ activeChatId, onSelectChat }) => {
     <div className="flex flex-col h-full bg-surface border-r border-status-border">
       <div className="p-4 border-b border-status-border">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-cell-primary">Messages</h2>
+          <h2 className="text-xl font-bold text-cell-primary">{t("Messages")}</h2>
           <div className="flex gap-1 bg-weak-50 p-1 rounded-lg">
             <button 
               onClick={() => setShowArchived(false)}
               className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${!showArchived ? 'bg-white dark:bg-gray-800 shadow-sm text-primary' : 'text-sub-500 hover:text-cell-primary'}`}
             >
-              Active
+              {t("Active")}
             </button>
             <button 
               onClick={() => setShowArchived(true)}
               className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${showArchived ? 'bg-white dark:bg-gray-800 shadow-sm text-primary' : 'text-sub-500 hover:text-cell-primary'}`}
             >
-              Archived
+              {t("Archived")}
             </button>
           </div>
         </div>
@@ -59,7 +61,7 @@ const ChatList = ({ activeChatId, onSelectChat }) => {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-sub-500" size={18} />
           <input
             type="text"
-            placeholder="Search conversations..."
+            placeholder={t("Search conversations...")}
             className="w-full pl-10 pr-4 py-2 bg-main border-none rounded-xl text-sm text-cell-primary focus:ring-2 focus:ring-primary-500/50 outline-none transition-all"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -71,7 +73,7 @@ const ChatList = ({ activeChatId, onSelectChat }) => {
         {filteredChats?.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-8 text-center">
             <MessageSquare size={48} className="text-sub-300 mb-4 opacity-20" />
-            <p className="text-sub-500 text-sm">No conversations found</p>
+            <p className="text-sub-500 text-sm">{t("No conversations found")}</p>
           </div>
         ) : (
           filteredChats?.map((chat) => (
@@ -106,7 +108,7 @@ const ChatList = ({ activeChatId, onSelectChat }) => {
               <div className="flex-1 min-w-0 text-left">
                 <div className="flex justify-between items-baseline mb-1">
                   <h3 className="font-semibold truncate text-cell-primary">
-                    {chat.title || chat.participants_ids?.find(p => p._id !== userId)?.name || "Direct Chat"}
+                    {chat.title || chat.participants_ids?.find(p => p._id !== userId)?.name || t("Direct Chat")}
                   </h3>
                   {chat.lastMessage && (
                     <span className="text-[10px] whitespace-nowrap text-sub-500">
@@ -115,7 +117,7 @@ const ChatList = ({ activeChatId, onSelectChat }) => {
                   )}
                 </div>
                 <p className="text-sm truncate text-sub-500">
-                  {chat.lastMessage?.content || "No messages yet"}
+                  {chat.lastMessage?.content || t("No messages yet")}
                 </p>
               </div>
               {chat.unreadCount > 0 && (

@@ -11,15 +11,7 @@ import {
 } from "@remixicon/react";
 import Table from "@/components/Tables/Table";
 import Page from "@/components/Page";
-
-const headers = [
-    { label: "Company Name", width: "300px" },
-    { label: "Plan Request", width: "300px" },
-    { label: "Order Date", width: "150px" },
-    { label: "Users Subscribed", width: "100px" },
-    { label: "Status", width: "125px" },
-    { label: "", width: "50px" }
-];
+import { useTranslation } from "react-i18next";
 
 // Sample data - replace with your actual data
 const ordersData = [
@@ -81,6 +73,16 @@ const statusConfig = {
 };
 
 function OrdersTable() {
+    const { t } = useTranslation();
+
+    const headers = [
+        { label: t("Company Name"), width: "300px" },
+        { label: t("Plan Request"), width: "300px" },
+        { label: t("Order Date"), width: "150px" },
+        { label: t("Users Subscribed"), width: "100px" },
+        { label: t("Status"), width: "125px" },
+        { label: "", width: "50px" }
+    ];
 
     const statusCell = (status) => {
         const config = statusConfig[status] || {
@@ -97,7 +99,7 @@ function OrdersTable() {
                 >
                     {config.icon}
                     <span className={`text-xs ${config.textColor}`}>
-                        {status}
+                        {t(status)}
                     </span>
                 </div>
             </div>
@@ -148,17 +150,17 @@ function OrdersTable() {
     ]);
 
     const statusOptions = [
-        { name: "All", value: "All" },
-        { name: "Approved", value: "Approved" },
-        { name: "Pending", value: "Pending" },
-        { name: "Rejected", value: "Rejected" }
+        { name: t("All"), value: "All" },
+        { name: t("Approved"), value: "Approved" },
+        { name: t("Pending"), value: "Pending" },
+        { name: t("Rejected"), value: "Rejected" }
     ];
 
     return (
-        <Page title="Orders" isBtn={false}>
+        <Page title={t("Orders")} isBtn={false}>
             <Table
                 classContainer={"rounded-2xl px-8"}
-                title="All Companies"
+                title={t("All Companies")}
                 headers={headers}
                 isActions={true}
                 rows={rows}

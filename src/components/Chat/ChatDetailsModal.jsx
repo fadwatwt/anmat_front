@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { X, Users, Download, Archive, UserPlus, UserMinus, Shield } from "lucide-react";
 import {
   useArchiveChatMutation,
@@ -13,6 +14,7 @@ import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import { useIsAlertOpen } from "@/store/alertStore";
 
 const ChatDetailsModal = ({ activeChat, onClose }) => {
+  const { t } = useTranslation();
   const currentUser = useSelector(selectUser);
   const [archiveChat, { isLoading: isArchiving }] = useArchiveChatMutation();
   const [removeParticipant] = useRemoveParticipantMutation();
@@ -28,13 +30,13 @@ const ChatDetailsModal = ({ activeChat, onClose }) => {
       await archiveChat({ chatId: activeChat._id, is_archived: !activeChat.is_archived }).unwrap();
       onClose();
     } catch (err) {
-      setApiResponse({ isOpen: true, status: "error", message: "Failed to archive chat" });
+      setApiResponse({ isOpen: true, status: "error", message: t("Failed to archive chat") });
     }
   };
 
   const handleExport = () => {
     if (!isSubscriber) {
-      setApiResponse({ isOpen: true, status: "error", message: "You don't have permission to export chats." });
+      setApiResponse({ isOpen: true, status: "error", message: t("You don't have permission to export chats.") });
       return;
     }
     // Trigger download
@@ -46,7 +48,7 @@ const ChatDetailsModal = ({ activeChat, onClose }) => {
     try {
       await removeParticipant({ chatId: activeChat._id, userId }).unwrap();
     } catch (err) {
-      setApiResponse({ isOpen: true, status: "error", message: "Failed to remove participant" });
+      setApiResponse({ isOpen: true, status: "error", message: t("Failed to remove participant") });
     }
   };
 
@@ -58,7 +60,7 @@ const ChatDetailsModal = ({ activeChat, onClose }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 animate-in fade-in duration-200">
       <div className="bg-surface rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         <div className="p-4 border-b border-status-border flex items-center justify-between">
-          <h2 className="text-lg font-bold text-cell-primary">Chat Details</h2>
+          <h2 className="text-lg font-bold text-cell-primary">{t("Chat Details")}</h2>
           <button onClick={onClose} className="p-2 hover:bg-weak-100 rounded-full text-sub-500 transition-colors">
             <X size={20} />
           </button>
@@ -80,12 +82,12 @@ const ChatDetailsModal = ({ activeChat, onClose }) => {
             )}
           </div>
           <h3 className="text-xl font-bold text-cell-primary mb-1">
-            {activeChat.title || activeChat.participants_ids?.find(p => p._id !== currentUser?._id)?.name || "Direct Chat"}
+            {activeChat.title || activeChat.participants_ids?.find(p => p._id !== currentUser?._id)?.name || t("Direct Chat")}
           </h3>
-          <p className="text-sm text-sub-500 mb-6">{isGroup ? "Group Chat" : "Direct Chat"}</p>
+          <p className="text-sm text-sub-500 mb-6">{isGroup ? t("Group Chat") : t("Direct Chat")}</p>
 
           <div className="w-full space-y-2">
-            <h4 className="text-sm font-bold text-cell-secondary uppercase tracking-wider mb-3 px-1">Actions</h4>
+            <h4 className="text-sm font-bold text-cell-secondary uppercase tracking-wider mb-3 px-1">{t("Actions")}</h4>
             
             <button 
               onClick={handleArchive}
@@ -93,7 +95,7 @@ const ChatDetailsModal = ({ activeChat, onClose }) => {
               className="w-full flex items-center gap-3 p-3 bg-weak-50 hover:bg-weak-100 rounded-xl text-cell-primary font-medium transition-colors border border-status-border"
             >
               <Archive size={18} className="text-sub-500" />
-              {activeChat.is_archived ? "Unarchive Chat" : "Archive Chat"}
+              {activeChat.is_archived ? t("Unarchive Chat") : t("Archive Chat")}
             </button>
 
             {isSubscriber && (
@@ -102,16 +104,16 @@ const ChatDetailsModal = ({ activeChat, onClose }) => {
                 className="w-full flex items-center gap-3 p-3 bg-weak-50 hover:bg-weak-100 rounded-xl text-cell-primary font-medium transition-colors border border-status-border"
               >
                 <Download size={18} className="text-sub-500" />
-                Export Chat History
+                {t("Export Chat History")}
               </button>
             )}
 
             {isGroup && (
               <div className="mt-6 pt-4 border-t border-status-border">
                 <div className="flex items-center justify-between mb-3 px-1">
-                  <h4 className="text-sm font-bold text-cell-secondary uppercase tracking-wider">Participants</h4>
+                  <h4 className="text-sm font-bold text-cell-secondary uppercase tracking-wider">{t("Participants")}</h4>
                   <button className="text-primary hover:text-primary-600 dark:hover:text-primary-400 text-sm font-medium flex items-center gap-1">
-                    <UserPlus size={14} /> Add
+                    <UserPlus size={14} /> {t("Add")}
                   </button>
                 </div>
                 

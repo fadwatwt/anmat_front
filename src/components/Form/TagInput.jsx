@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 
 const TagInput = ({ suggestions, apparent, placeholder, title, isRequired, value, onChange, classNameContainer }) => {
+    const { t } = useTranslation();
     const [internalTags, setInternalTags] = useState([]);
     const tags = value || internalTags;
     const setTags = onChange || setInternalTags;
@@ -106,7 +108,7 @@ const TagInput = ({ suggestions, apparent, placeholder, title, isRequired, value
         <div className={classNameContainer || "w-full max-w-lg"}>
             <div className={`relative flex flex-col gap-1 w-full items-start`}>
                 {title && <label className="text-cell-primary font-medium text-sm">
-                    {title}{isRequired && <span className={"text-red-500 ms-1"}>*</span>}
+                    {t(title)}{isRequired && <span className={"text-red-500 ms-1"}>*</span>}
                 </label>}
 
                 <div
@@ -141,7 +143,7 @@ const TagInput = ({ suggestions, apparent, placeholder, title, isRequired, value
                     ))}
                     <input
                         type="text"
-                        placeholder={placeholder}
+                        placeholder={t(placeholder)}
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value.trimStart())}
                         onFocus={() => {

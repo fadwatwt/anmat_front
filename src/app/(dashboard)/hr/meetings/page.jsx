@@ -71,14 +71,14 @@ function MeetingManagementPage() {
     ]);
 
     const headers = [
-        { label: "Meeting Title", width: "150px" },
-        { label: "Departments", width: "150px" },
-        { label: "Type", width: "100px" },
-        { label: "Scheduled at", width: "150px" },
-        { label: "Started at", width: "150px" },
-        { label: "Finished at", width: "150px" },
-        { label: "Created By", width: "150px" },
-        { label: "Status", width: "100px" },
+        { label: t("Meeting Title"), width: "150px" },
+        { label: t("Departments"), width: "150px" },
+        { label: t("Type"), width: "100px" },
+        { label: t("Scheduled at"), width: "150px" },
+        { label: t("Started at"), width: "150px" },
+        { label: t("Finished at"), width: "150px" },
+        { label: t("Created By"), width: "150px" },
+        { label: t("Status"), width: "100px" },
         { label: "", width: "50px" },
     ];
 
@@ -175,9 +175,9 @@ function MeetingManagementPage() {
     );
 
     return (
-        <Page title="HR - Meetings Management">
+        <Page title={t("HR - Meetings Management")}>
             <Table
-                title="Meetings"
+                title={t("Meetings")}
                 headers={headers}
                 rows={tableRows}
                 isActions={false}
@@ -211,14 +211,14 @@ function MeetingManagementPage() {
 
             <Alert isOpen={isDeleteModalOpen}
                 onClose={() => setIsDeleteModalOpen(false)}
-                title="Delete Meeting"
-                isBtns={true} btnApplyTitle="Yes, Delete"
+                title={t("Delete Meeting")}
+                isBtns={true} btnApplyTitle={t("Yes, Delete")}
                 onClick={confirmDelete}
                 className="lg:w-[30%] md:w-1/2 w-11/12 p-6"
                 btnApplyClassName="bg-red-600 hover:bg-red-700 text-white"
                 message={(
                     <div className="flex flex-col gap-2">
-                        <p>Are you sure you want to delete this meeting?</p>
+                        <p>{t("Are you sure you want to delete this meeting?")}</p>
                     </div>
                 )}
             />
@@ -226,10 +226,10 @@ function MeetingManagementPage() {
             <CheckAlert
                 isOpen={isCancelModalOpen}
                 onClose={() => setIsCancelModalOpen(false)}
-                title="Cancel Meeting"
+                title={t("Cancel Meeting")}
                 isBtns={true}
-                confirmBtnText="Yes, Cancel meeting"
-                cancelBtnText="Cancel"
+                confirmBtnText={t("Yes, Cancel meeting")}
+                cancelBtnText={t("Cancel")}
                 onSubmit={confirmCancel}
                 description={(
                     <div>

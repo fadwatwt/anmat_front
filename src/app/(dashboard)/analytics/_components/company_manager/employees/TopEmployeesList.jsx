@@ -1,7 +1,9 @@
 const { default: ContentCard } = require("@/components/containers/ContentCard");
 const { default: DefaultSelect } = require("@/components/Form/DefaultSelect");
+const { useTranslation } = require("react-i18next");
 
 const TopEmployeesList = ({ employees = [] }) => {
+    const { t } = useTranslation();
     return (
         <ContentCard
             title={"Top 3 Employees"}

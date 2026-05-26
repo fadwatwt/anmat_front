@@ -75,7 +75,7 @@ function TaskStage({ stageNumber, index, values, handleChange, setFieldValue, ha
                     onChange={handleChange}
                     title={t("Start Date")}
                     className={"flex-1"}
-                    placeholder="DD / MM / YYYY"
+                    placeholder={t("DD / MM / YYYY")}
                 />
                 <DateInput
                     name={`${baseKey}.due_date`}
@@ -83,7 +83,7 @@ function TaskStage({ stageNumber, index, values, handleChange, setFieldValue, ha
                     onChange={handleChange}
                     title={t("Due Date")}
                     className={"flex-1"}
-                    placeholder="DD / MM / YYYY"
+                    placeholder={t("DD / MM / YYYY")}
                 />
             </div>
         </div>

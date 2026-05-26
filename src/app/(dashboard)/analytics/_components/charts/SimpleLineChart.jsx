@@ -2,11 +2,13 @@
 import {
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
+import { useTranslation } from "react-i18next";
 
 const SimpleLineChart = ({ data, dataKey, color, note }) => {
+    const { t } = useTranslation();
     return (
         <div className="h-full w-full flex flex-col">
-            <p className="text-sm text-cell-secondary mb-4">Rating</p>
+            <p className="text-sm text-cell-secondary mb-4">{t('Rating')}</p>
             <div className="flex-1 min-h-[200px]">
                 <ResponsiveContainer width="100%" height="100%">
                     <LineChart

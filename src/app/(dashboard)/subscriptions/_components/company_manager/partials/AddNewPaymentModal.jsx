@@ -7,8 +7,10 @@ import PropTypes from "prop-types";
 import Modal from "@/components/Modal/Modal.jsx";
 import InputAndLabel from "@/components/Form/InputAndLabel.jsx";
 import DateInput from "@/components/Form/DateInput";
+import { useTranslation } from "react-i18next";
 
 function AddNewPaymentModal({ isOpen, onClose }) {
+  const { t } = useTranslation();
 
   const formik = useFormik({
     initialValues: {
@@ -18,10 +20,10 @@ function AddNewPaymentModal({ isOpen, onClose }) {
       cvv: ""
     },
     validationSchema: Yup.object({
-      nameOnCard: Yup.string().required("Required"),
-      cardNumber: Yup.number().required("Required"),
-      expirationDate: Yup.date("Invalid expirationDate").required("Required"),
-      cvv: Yup.number().required("Required")
+      nameOnCard: Yup.string().required(t("Required")),
+      cardNumber: Yup.number().required(t("Required")),
+      expirationDate: Yup.date(t("Invalid expirationDate")).required(t("Required")),
+      cvv: Yup.number().required(t("Required"))
     }),
     onSubmit: (values, { resetForm }) => {
       resetForm();
@@ -34,20 +36,20 @@ function AddNewPaymentModal({ isOpen, onClose }) {
       isOpen={isOpen}
       onClose={onClose}
       isBtns={true}
-      btnApplyTitle={"Save"}
+      btnApplyTitle={t("Save")}
       onClick={formik.handleSubmit}
       className={"lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12 p-4"}
-      title={"Add New Payment Method"}
+      title={t("Add New Payment Method")}
     >
       <div className="px-1">
         <div className="flex flex-col gap-4">
           <InputAndLabel
-            title="Name on Card"
+            title={t("Name on Card")}
             name="nameOnCard"
             value={formik.values.nameOnCard}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            placeholder="Enter Name on Card..."
+            placeholder={t("Enter Name on Card...")}
             error={
               formik.touched.nameOnCard && formik.errors.nameOnCard
                 ? formik.errors.nameOnCard
@@ -57,12 +59,12 @@ function AddNewPaymentModal({ isOpen, onClose }) {
           />
 
           <InputAndLabel
-            title="Card Number"
+            title={t("Card Number")}
             name="cardNumber"
             value={formik.values.cardNumber}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            placeholder="Enter Card Number..."
+            placeholder={t("Enter Card Number...")}
             error={
               formik.touched.cardNumber && formik.errors.cardNumber
                 ? formik.errors.cardNumber
@@ -74,12 +76,12 @@ function AddNewPaymentModal({ isOpen, onClose }) {
           <div className="flex items-start gap-4 justify-between">
             <div className="w-full md:w-1/2">
               <DateInput
-                title="Expiration Date"
+                title={t("Expiration Date")}
                 name="expirationDate"
                 value={formik.values.expirationDate}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                placeholder="Enter Expiration Date..."
+                placeholder={t("Enter Expiration Date...")}
                 error={
                   formik.touched.expirationDate && formik.errors.expirationDate
                     ? formik.errors.expirationDate
@@ -91,12 +93,12 @@ function AddNewPaymentModal({ isOpen, onClose }) {
 
             <div className="w-full md:w-1/2">
               <InputAndLabel
-                title="CVV"
+                title={t("CVV")}
                 name="cvv"
                 value={formik.values.cvv}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                placeholder="Enter CVV..."
+                placeholder={t("Enter CVV...")}
                 error={
                   formik.touched.cvv && formik.errors.cvv
                     ? formik.errors.cvv
@@ -111,10 +113,10 @@ function AddNewPaymentModal({ isOpen, onClose }) {
             <input type="checkbox" className="mt-1" />
             <div className="flex flex-col gap-0">
               <span className="text-sm text-gray-700 dark:text-gray-200">
-                Save this method as default
+                {t("Save this method as default")}
               </span>
               <span className="text-sm text-gray-500 dark:text-gray-400">
-                It will save your payment method as the default option.
+                {t("It will save your payment method as the default option.")}
               </span>
             </div>
           </div>

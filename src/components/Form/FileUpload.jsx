@@ -20,7 +20,7 @@ const FileUpload = ({ title, callBack, accept = "image/*", maxSize = 5 * 1024 * 
 
     return (
         <div className="flex flex-col justify-center gap-3 w-full">
-            <label >{title}</label>
+            <label >{t(title)}</label>
             <div
                 {...getRootProps()}
                 className={`border-2 border-dashed dark:border-gray-700 rounded-lg p-6 text-center w-full transition-all ${disabled ? "opacity-50 cursor-not-allowed bg-gray-50 border-gray-200 dark:border-gray-700" :

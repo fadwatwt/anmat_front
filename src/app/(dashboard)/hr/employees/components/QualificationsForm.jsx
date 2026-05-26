@@ -50,7 +50,7 @@ function QualificationsForm() {
                             type="text"
                             title={t("Qualification Title")}
                             isRequired={true}
-                            placeholder="Online Payment"
+                            placeholder={t("Online Payment")}
                         />
                         <ElementsSelect
                             title={t("Type")}

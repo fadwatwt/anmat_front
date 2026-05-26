@@ -41,25 +41,25 @@ function EditPlanModal({ isOpen, onClose, plan }) {
       is_active: true
     },
     validationSchema: Yup.object({
-      name: Yup.string().required("Required"),
-      description: Yup.string().required("Required"),
+      name: Yup.string().required(t("Required")),
+      description: Yup.string().required(t("Required")),
       pricing: Yup.array().of(
         Yup.object({
-          price: Yup.number().required("Required"),
-          interval: Yup.string().required("Required"),
-          interval_count: Yup.number().required("Required"),
-          days_number: Yup.number().required("Required"),
-          discount: Yup.number().min(0).required("Required"),
+          price: Yup.number().required(t("Required")),
+          interval: Yup.string().required(t("Required")),
+          interval_count: Yup.number().required(t("Required")),
+          days_number: Yup.number().required(t("Required")),
+          discount: Yup.number().min(0).required(t("Required")),
           is_active: Yup.boolean().required()
         })
       ),
       features: Yup.array().of(
         Yup.object({
-          feature_type_id: Yup.string().required("Required"),
+          feature_type_id: Yup.string().required(t("Required")),
           properties: Yup.array().of(
             Yup.object({
               key: Yup.string().required(),
-              value: Yup.mixed().required("Required")
+              value: Yup.mixed().required(t("Required"))
             })
           )
         })
@@ -67,7 +67,7 @@ function EditPlanModal({ isOpen, onClose, plan }) {
       trial: Yup.object({
         trial_days: Yup.number().when("is_active", {
           is: true,
-          then: () => Yup.number().min(1, "Minimum 1 day").required("Required"),
+          then: () => Yup.number().min(1, t("Minimum 1 day")).required(t("Required")),
           otherwise: () => Yup.number().notRequired()
         }),
         is_active: Yup.boolean().required()
@@ -111,13 +111,13 @@ function EditPlanModal({ isOpen, onClose, plan }) {
       setApiResponse({
         isOpen: true,
         status: "success",
-        message: "Plan updated successfully! A new version has been archived."
+        message: t("Plan updated successfully! A new version has been archived.")
       });
     } catch (error) {
       setApiResponse({
         isOpen: true,
         status: "error",
-        message: error?.data?.message || "Failed to update plan."
+        message: error?.data?.message || t("Failed to update plan.")
       });
     }
   };
@@ -191,23 +191,23 @@ function EditPlanModal({ isOpen, onClose, plan }) {
       btnApplyTitle={isUpdating ? t("Updating...") : t("Update Plan")}
       onClick={() => formik.submitForm()}
       className={"lg:w-5/12 md:w-8/12 sm:w-10/12 w-11/12"}
-      title={"Edit Plan"}
+      title={t("Edit Plan")}
     >
       <div className="flex flex-col gap-4 max-h-[70vh] overflow-y-auto custom-scrollbar">
         {/* Warning Banner */}
         <div className="mx-4 p-3 bg-blue-50 border border-blue-100 rounded-xl flex items-start gap-3">
             <RiInformationLine size={20} className="text-blue-500 shrink-0 mt-0.5" />
             <div className="flex flex-col">
-                <span className="text-xs font-bold text-blue-700">Financial Rights Preservation</span>
+                <span className="text-xs font-bold text-blue-700">{t("Financial Rights Preservation")}</span>
                 <p className="text-[10px] text-blue-600 leading-tight">
-                    Updating this plan will automatically archive the current version. Existing subscribers will stay on their current price and features until their next renewal.
+                    {t("Updating this plan will automatically archive the current version. Existing subscribers will stay on their current price and features until their next renewal.")}
                 </p>
             </div>
         </div>
 
         <div className={"px-4 grid grid-cols-1 gap-4"}>
           <InputAndLabel
-            title="Plan Name"
+            title={t("Plan Name")}
             name="name"
             value={formik.values.name}
             onChange={formik.handleChange}
@@ -216,7 +216,7 @@ function EditPlanModal({ isOpen, onClose, plan }) {
             isRequired={true}
           />
           <InputAndLabel
-            title="Description"
+            title={t("Description")}
             name="description"
             value={formik.values.description}
             onChange={formik.handleChange}
@@ -236,7 +236,7 @@ function EditPlanModal({ isOpen, onClose, plan }) {
               <span className="text-[10px] text-cell-secondary">Price Option #{index + 1}</span>
               <div className="flex items-center gap-3">
                 <SwitchWithLabel
-                  title="Active"
+                  title={t("Active")}
                   isOn={formik.values.pricing[index].is_active}
                   handleToggle={() => formik.setFieldValue(`pricing.${index}.is_active`, !formik.values.pricing[index].is_active)}
                   className="!p-0 !bg-transparent !border-0 !rounded-none gap-2"
@@ -250,7 +250,7 @@ function EditPlanModal({ isOpen, onClose, plan }) {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
               <InputAndLabel
-                title="Price"
+                title={t("Price")}
                 name={`pricing.${index}.price`}
                 type="number"
                 value={formik.values.pricing[index].price}
@@ -260,7 +260,7 @@ function EditPlanModal({ isOpen, onClose, plan }) {
                 isRequired={true}
               />
               <InputAndLabel
-                title="Discount (%)"
+                title={t("Discount (%)")}
                 name={`pricing.${index}.discount`}
                 type="number"
                 value={formik.values.pricing[index].discount}
@@ -272,7 +272,7 @@ function EditPlanModal({ isOpen, onClose, plan }) {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               <InputAndLabel
-                title="Interval Count"
+                title={t("Interval Count")}
                 name={`pricing.${index}.interval_count`}
                 type="number"
                 value={formik.values.pricing[index].interval_count}
@@ -286,14 +286,14 @@ function EditPlanModal({ isOpen, onClose, plan }) {
                 isRequired={true}
               />
               <SelectAndLabel
-                title="Interval"
+                title={t("Interval")}
                 name={`pricing.${index}.interval`}
                 value={formik.values.pricing[index].interval}
                 options={[
-                  { _id: "day", name: "Day" },
-                  { _id: "week", name: "Week" },
-                  { _id: "month", name: "Month" },
-                  { _id: "year", name: "Year" }
+                  { _id: "day", name: t("Day") },
+                  { _id: "week", name: t("Week") },
+                  { _id: "month", name: t("Month") },
+                  { _id: "year", name: t("Year") }
                 ]}
                 onChange={(val) => {
                   formik.setFieldValue(`pricing.${index}.interval`, val);
@@ -304,7 +304,7 @@ function EditPlanModal({ isOpen, onClose, plan }) {
                 isRequired={true}
               />
               <InputAndLabel
-                title="Days Number"
+                title={t("Days Number")}
                 name={`pricing.${index}.days_number`}
                 type="number"
                 value={formik.values.pricing[index].days_number}
@@ -318,7 +318,7 @@ function EditPlanModal({ isOpen, onClose, plan }) {
         ))}
 
         <div className={"px-4"}>
-          <BtnAddOutline title="Add Another Pricing Option" onClick={addPricing} />
+          <BtnAddOutline title={t("Add Another Pricing Option")} onClick={addPricing} />
         </div>
 
         <div className={"w-full py-[6px] bg-weak-100 text-start text-xs dark:bg-weak-800 text-weak-800 dark:text-weak-100 px-4 mt-2"}>
@@ -339,17 +339,17 @@ function EditPlanModal({ isOpen, onClose, plan }) {
               </div>
 
               <ElementsSelect
-                title="Feature Type"
+                title={t("Feature Type")}
                 options={getAvailableFeatureTypes(index)}
                 value={getAvailableFeatureTypes(index).filter(ft => ft.id === feature.feature_type_id)}
                 onChange={(val) => handleFeatureTypeChange(index, val[0]?.id)}
-                placeholder="Select Feature Type"
+                placeholder={t("Select Feature Type")}
                 error={formik.touched.features?.[index]?.feature_type_id && formik.errors.features?.[index]?.feature_type_id}
               />
 
               {selectedType && feature.properties.length > 0 && (
                 <div className="mt-3 grid grid-cols-1 gap-3 p-3 bg-status-bg rounded-lg">
-                  <p className="text-[10px] text-cell-secondary uppercase tracking-wider font-bold">Properties</p>
+                  <p className="text-[10px] text-cell-secondary uppercase tracking-wider font-bold">{t("Properties")}</p>
                   {feature.properties.map((prop, propIndex) => {
                     const attrDef = selectedType.attributes_definitions.find(a => a.key === prop.key);
                     return (
@@ -376,13 +376,13 @@ function EditPlanModal({ isOpen, onClose, plan }) {
         })}
 
         <div className={"px-4"}>
-          <BtnAddOutline title="Add New Feature Group" onClick={addFeature} />
+          <BtnAddOutline title={t("Add New Feature Group")} onClick={addFeature} />
         </div>
 
         <div className={"flex flex-col gap-3 px-4 pb-4 mt-2"}>
           <SwitchWithLabel
-            title="Free Trial enabled"
-            description="Activate free trial for this plan"
+            title={t("Free Trial enabled")}
+            description={t("Activate free trial for this plan")}
             isOn={formik.values.trial.is_active}
             handleToggle={() => formik.setFieldValue("trial.is_active", !formik.values.trial.is_active)}
           />
@@ -390,7 +390,7 @@ function EditPlanModal({ isOpen, onClose, plan }) {
           {formik.values.trial.is_active && (
             <div className="animate-in fade-in slide-in-from-top-2 duration-300">
               <InputAndLabel
-                title="Trial Days"
+                title={t("Trial Days")}
                 name="trial.trial_days"
                 type="number"
                 value={formik.values.trial.trial_days}
@@ -403,8 +403,8 @@ function EditPlanModal({ isOpen, onClose, plan }) {
           )}
 
           <SwitchWithLabel
-            title="Active Status"
-            description="Make this plan available for subscription"
+            title={t("Active Status")}
+            description={t("Make this plan available for subscription")}
             isOn={formik.values.is_active}
             handleToggle={() => formik.setFieldValue("is_active", !formik.values.is_active)}
           />
@@ -415,9 +415,9 @@ function EditPlanModal({ isOpen, onClose, plan }) {
         isOpen={showApproval}
         onClose={() => setShowApproval(false)}
         onConfirm={handleConfirmUpdate}
-        title="Update Subscription Plan"
-        message={`Are you sure you want to update the "${plan?.name}" plan? This will create a new version.`}
-        confirmBtnText={isUpdating ? "Updating..." : "Yes, Update"}
+        title={t("Update Subscription Plan")}
+        message={t('Are you sure you want to update the "{{name}}" plan? This will create a new version.', { name: plan?.name })}
+        confirmBtnText={isUpdating ? t("Updating...") : t("Yes, Update")}
         type="warning"
       />
 

@@ -69,7 +69,7 @@ function UnFollowMethod() {
             <AccountPicker
                 selected={sourceAccounts}
                 onChange={setSourceAccounts}
-                title="Source accounts (who will unfollow)"
+                title={t("Source accounts (who will unfollow)")}
             />
 
             <div className="flex flex-col gap-1 w-full items-start">
@@ -91,7 +91,7 @@ function UnFollowMethod() {
             <div className="flex gap-2 pt-2">
                 <DefaultButton
                     type="button"
-                    title="Cancel"
+                    title={t("Cancel")}
                     onClick={() => {
                         setSourceAccounts([]);
                         setTargets("");
@@ -101,7 +101,7 @@ function UnFollowMethod() {
                 />
                 <DefaultButton
                     type="button"
-                    title={isLoading ? "Submitting..." : "Apply"}
+                    title={isLoading ? t("Submitting...") : t("Apply")}
                     onClick={handleSubmit}
                     disabled={isLoading}
                     className="bg-primary-500 font-medium text-white hover:bg-primary-600 transition-colors"

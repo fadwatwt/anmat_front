@@ -116,7 +116,7 @@ const UserSelect = ({
                   className="text-gray-500 dark:text-gray-400"
                   size={16}
                 />
-                <p className="text-sm dark:text-gray-400">can view</p>
+                <p className="text-sm dark:text-gray-400">{t("can view")}</p>
               </>
             )}
             <IoIosArrowDown

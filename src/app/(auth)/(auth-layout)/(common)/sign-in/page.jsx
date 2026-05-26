@@ -12,8 +12,10 @@ import { loginSuccess, loginFailure, logout } from "@/redux/auth/authSlice";
 import Link from "next/link";
 
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 function SignIn() {
+    const { t } = useTranslation();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -53,7 +55,7 @@ function SignIn() {
                     if (userData?.type === 'Admin') {
                         console.warn("Admin user trying to access non-admin login. Logging out.");
                         await performLogout(token);
-                        dispatch(loginFailure("Access Denied: Use Admin Sign In."));
+                        dispatch(loginFailure(t("Access Denied: Use Admin Sign In.")));
                     } else if (userData?.type === 'Subscriber') {
                         const loginPayload = {
                             data: {
@@ -115,7 +117,7 @@ function SignIn() {
 
             if (userData?.type === 'Admin') {
                 await performLogout(token);
-                dispatch(loginFailure("Access Denied: Use Admin Sign In."));
+                dispatch(loginFailure(t("Access Denied: Use Admin Sign In.")));
                 setIsSubmitting(false);
             } else if (userData?.type === 'Subscriber') {
                 const loginPayload = {
@@ -142,7 +144,7 @@ function SignIn() {
             } else {
                 // If unknown role, logout just in case or show error
                 await performLogout(token);
-                dispatch(loginFailure("Access Denied: Unknown user role."));
+                dispatch(loginFailure(t("Access Denied: Unknown user role.")));
                 setIsSubmitting(false);
             }
         } catch (err) {
@@ -155,7 +157,7 @@ function SignIn() {
 
                     if (userData?.type === 'Admin') {
                         await performLogout(token);
-                        dispatch(loginFailure("Access Denied: Use Admin Sign In."));
+                        dispatch(loginFailure(t("Access Denied: Use Admin Sign In.")));
                         setIsSubmitting(false);
                         return;
                     } else if (userData?.type === 'Subscriber') {
@@ -184,19 +186,19 @@ function SignIn() {
                         return;
                     } else {
                         await performLogout(token);
-                        dispatch(loginFailure("Access Denied: Unknown user role."));
+                        dispatch(loginFailure(t("Access Denied: Unknown user role.")));
                         setIsSubmitting(false);
                         return;
                     }
                 } catch (userErr) {
                     console.error("Failed to recover session:", userErr);
-                    dispatch(loginFailure("Session recovery failed. Please try again."));
+                    dispatch(loginFailure(t("Session recovery failed. Please try again.")));
                     setIsSubmitting(false);
                     return;
                 }
             }
             // Standard error handling
-            dispatch(loginFailure(err.data?.message || "Login failed"));
+            dispatch(loginFailure(err.data?.message || t("Login failed")));
             setIsSubmitting(false);
         }
     };
@@ -212,10 +214,10 @@ function SignIn() {
 
                 <div className="flex flex-col items-center justify-center gap-2 text-center">
                     <span className="text-2xl text-cell-primary">
-                        {`Sign in to your account`}
+                        {t("Sign in to your account")}
                     </span>
                     <span className="text-sm text-cell-secondary">
-                        {'Enter your credentials to sign in'}
+                        {t("Enter your credentials to sign in")}
                     </span>
                 </div>
 
@@ -227,7 +229,7 @@ function SignIn() {
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                placeholder="Enter your email"
+                                placeholder={t("Enter your email")}
                                 className="w-full py-3 px-2 outline-none bg-transparent dark:bg-gray-800 text-cell-primary dark:text-gray-100 dark:placeholder-gray-400"
                                 required
                                 disabled={isLoading || isSubmitting}
@@ -255,11 +257,11 @@ function SignIn() {
                                     onChange={(e) => setRememberMe(e.target.checked)}
                                     disabled={isLoading || isSubmitting}
                                 />
-                                <p className="text-sm text-cell-primary">Remember Me</p>
+                                <p className="text-sm text-cell-primary">{t("Remember Me")}</p>
                             </div>
                             <Link href="/forget-password"
                                 className={`text-sm text-primary-base hover:text-primary-600 underline cursor-pointer ${(isLoading || isSubmitting) ? 'pointer-events-none text-gray-400 dark:text-gray-500' : ''}`}>
-                                Forgot Password?
+                                {t("Forgot Password?")}
                             </Link>
                         </div>
 
@@ -270,7 +272,7 @@ function SignIn() {
                             disabled={isLoading || isSubmitting}
                             className="w-full rounded-lg bg-primary-base dark:bg-primary-200 text-white dark:text-black py-1.5 disabled:opacity-70 disabled:cursor-not-allowed"
                         >
-                            {(isLoading || isSubmitting) ? "Loading..." : "Login"}
+                            {(isLoading || isSubmitting) ? t("Loading...") : t("Login")}
                         </button>
 
                         {/*Google Login Button*/}
@@ -285,10 +287,10 @@ function SignIn() {
                         {/*Return to Sign-in*/}
                         <div className="flex flex-wrap items-center justify-end gap-2 mt-4">
                             <span className="text-md text-cell-secondary">
-                                Not have an account?
+                                {t("Not have an account?")}
                             </span>
 <Link href="/register/subscriber/email" className={`text-primary-500 dark:text-primary-400 hover:text-primary-600 ${(isLoading || isSubmitting) ? 'pointer-events-none text-gray-400 dark:text-gray-500' : ''}`}>
-                                                                Register
+                                                                {t("Register")}
                             </Link>
                         </div>
                     </div>

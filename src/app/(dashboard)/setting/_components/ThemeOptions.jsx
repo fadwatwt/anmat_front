@@ -14,22 +14,22 @@ function ThemeOptions() {
 
     const themeOptions = [
         {
-            title: "Light Mode",
+            title: t("Light Mode"),
             value: "light",
             icon: <IoSunnyOutline />,
-            description: "Pick a clean and classic light theme",
+            description: t("Pick a clean and classic light theme"),
         },
         {
-            title: "Dark Mode",
+            title: t("Dark Mode"),
             value: "dark",
             icon: <MdOutlineDarkMode />,
-            description: "Pick a clean and classic dark theme",
+            description: t("Pick a clean and classic dark theme"),
         },
         {
-            title: "System Mode",
+            title: t("System Mode"),
             value: "system",
             icon: <IoOptionsOutline />,
-            description: "Pick a clean and classic system theme",
+            description: t("Pick a clean and classic system theme"),
         },
     ];
 
@@ -76,10 +76,10 @@ function ThemeOptions() {
                 isOpen={isAlertOpen}
                 onClose={handleCancelTheme}
                 onConfirm={handleConfirmTheme}
-                title="Change Theme"
+                title={t("Change Theme")}
                 message={t("Are you sure you want to change the theme to {{theme}}?", { theme: t(themeOptions.find(o => o.value === pendingTheme)?.title) })}
-                confirmBtnText="Apply"
-                cancelBtnText="Cancel"
+                confirmBtnText={t("Apply")}
+                cancelBtnText={t("Cancel")}
                 type="info"
             />
         </div>

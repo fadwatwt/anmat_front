@@ -204,21 +204,21 @@ function AttendanceTable() {
       {/* Delete Confirmation Alert */}
       <Alert
         type="warning"
-        title="Delete Attendance Record?"
-        message="Are you sure you want to delete this attendance record? This action cannot be undone."
+        title={t("Delete Attendance Record?")}
+        message={t("Are you sure you want to delete this attendance record? This action cannot be undone.")}
         isOpen={isDeleteAlertOpen}
         onClose={() => setIsDeleteAlertOpen(false)}
         onSubmit={confirmDelete}
-        titleCancelBtn="Cancel"
-        titleSubmitBtn="Delete"
+        titleCancelBtn={t("Cancel")}
+        titleSubmitBtn={t("Delete")}
         isBtns={true}
       />
 
       {/* Success Alert */}
       <Alert
         type="success"
-        title="Attendance Record Deleted"
-        message="The attendance record has been successfully deleted."
+        title={t("Attendance Record Deleted")}
+        message={t("The attendance record has been successfully deleted.")}
         isOpen={isSuccessAlertOpen}
         onClose={() => setIsSuccessAlertOpen(false)}
         isBtns={false}

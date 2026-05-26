@@ -34,7 +34,7 @@ function OrganizationCard({ organization, isLoading, onEdit }) {
                 <div className="flex items-center gap-4">
                     <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-primary-500 font-bold text-2xl overflow-hidden">
                         {organization?.logo ? (
-                            <img src={organization.logo} alt="Logo" className="w-full h-full object-cover" />
+                            <img src={organization.logo} alt={t("Logo")} className="w-full h-full object-cover" />
                         ) : (
                             organization?.name?.charAt(0).toUpperCase() || "C"
                         )}

@@ -5,9 +5,11 @@ import Page from "@/components/Page.jsx";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { useGetTokensBalanceQuery, useGetTokenHistoryQuery } from "@/redux/api/aiApi";
 import { CreditCard, Calendar, BarChart3, Receipt, ArrowUpRight, ArrowDownRight, RefreshCw, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
 
 const AnalyticsPage = () => {
+  const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const limit = 10;
 
@@ -28,7 +30,7 @@ const AnalyticsPage = () => {
 
   // Calculate next renewal date (last renewal + 30 days)
   const getNextRenewalDate = () => {
-    if (!balanceData?.last_renewal) return "N/A";
+    if (!balanceData?.last_renewal) return t("N/A");
     const date = new Date(balanceData.last_renewal);
     date.setDate(date.getDate() + 30);
     return format(date, "MMM dd, yyyy");
@@ -40,21 +42,21 @@ const AnalyticsPage = () => {
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400">
             <ArrowUpRight size={12} />
-            Top-up
+            {t("Top-up")}
           </span>
         );
       case "monthly_replenish":
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950/20 dark:text-blue-400">
             <RefreshCw size={12} />
-            Monthly Free
+            {t("Monthly Free")}
           </span>
         );
       default:
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 dark:bg-rose-950/20 dark:text-rose-400">
             <ArrowDownRight size={12} />
-            Consumption
+            {t("Consumption")}
           </span>
         );
     }
@@ -78,17 +80,17 @@ const AnalyticsPage = () => {
         {/* Header */}
         <div>
           <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-            AI Assistant Analytics
+            {t("AI Assistant Analytics")}
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Monitor your token usage, daily consumption trends, and detailed transaction ledger.
+            {t("Monitor your token usage, daily consumption trends, and detailed transaction ledger.")}
           </p>
         </div>
 
         {loadingBalance ? (
           <div className="flex flex-col items-center justify-center py-20 gap-3">
             <Loader2 className="w-10 h-10 text-primary-500 animate-spin" />
-            <span className="text-gray-500 dark:text-gray-400 font-medium">Loading analytics dashboard...</span>
+            <span className="text-gray-500 dark:text-gray-400 font-medium">{t("Loading analytics dashboard...")}</span>
           </div>
         ) : (
           <>
@@ -98,13 +100,13 @@ const AnalyticsPage = () => {
               <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 flex items-start justify-between shadow-sm">
                 <div className="space-y-2">
                   <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
-                    Tokens Balance
+                    {t("Tokens Balance")}
                   </span>
                   <h3 className="text-3xl font-black text-gray-900 dark:text-white">
                     {balanceData?.balance?.toLocaleString() || 0}
                   </h3>
                   <p className="text-xs text-gray-500">
-                    Limit: {balanceData?.free_limit?.toLocaleString() || "5,000"} tokens
+                    {t("Limit:")} {balanceData?.free_limit?.toLocaleString() || "5,000"} {t("tokens")}
                   </p>
                 </div>
                 <div className="p-3.5 bg-blue-50 dark:bg-blue-950/20 rounded-2xl">
@@ -116,13 +118,13 @@ const AnalyticsPage = () => {
               <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 flex items-start justify-between shadow-sm">
                 <div className="space-y-2">
                   <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
-                    30-Day Consumption
+                    {t("30-Day Consumption")}
                   </span>
                   <h3 className="text-3xl font-black text-gray-900 dark:text-white">
                     {totalThirtyDayUsage.toLocaleString()}
                   </h3>
                   <p className="text-xs text-gray-500">
-                    Cumulative tokens deducted in last 30 days
+                    {t("Cumulative tokens deducted in last 30 days")}
                   </p>
                 </div>
                 <div className="p-3.5 bg-rose-50 dark:bg-rose-950/20 rounded-2xl">
@@ -134,13 +136,13 @@ const AnalyticsPage = () => {
               <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 flex items-start justify-between shadow-sm sm:col-span-2 lg:col-span-1">
                 <div className="space-y-2">
                   <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
-                    Replenishment Cycle
+                    {t("Replenishment Cycle")}
                   </span>
                   <h3 className="text-3xl font-black text-gray-900 dark:text-white">
                     {getNextRenewalDate()}
                   </h3>
                   <p className="text-xs text-gray-500">
-                    Date of next monthly free token replenishment
+                    {t("Date of next monthly free token replenishment")}
                   </p>
                 </div>
                 <div className="p-3.5 bg-indigo-50 dark:bg-indigo-950/20 rounded-2xl">
@@ -152,11 +154,11 @@ const AnalyticsPage = () => {
             {/* Consumption Trend Chart */}
             <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 shadow-sm">
               <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-6">
-                Daily Token Consumption (Last 30 Days)
+                {t("Daily Token Consumption (Last 30 Days)")}
               </h2>
               {chartData.length === 0 ? (
                 <div className="h-64 flex items-center justify-center border border-dashed border-gray-200 dark:border-gray-800 rounded-2xl">
-                  <span className="text-gray-400 text-sm">No recent consumption data to display</span>
+                  <span className="text-gray-400 text-sm">{t("No recent consumption data to display")}</span>
                 </div>
               ) : (
                 <div className="h-72 w-full">
@@ -199,7 +201,7 @@ const AnalyticsPage = () => {
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
                   <Receipt size={20} className="text-gray-400" />
-                  Transaction History Log
+                  {t("Transaction History Log")}
                 </h2>
               </div>
 
@@ -209,7 +211,7 @@ const AnalyticsPage = () => {
                 </div>
               ) : !historyData?.transactions || historyData.transactions.length === 0 ? (
                 <div className="text-center py-12 border border-dashed border-gray-200 dark:border-gray-800 rounded-2xl">
-                  <p className="text-gray-400 text-sm">No transaction ledger history found.</p>
+                  <p className="text-gray-400 text-sm">{t("No transaction ledger history found.")}</p>
                 </div>
               ) : (
                 <div className="flex-1 flex flex-col justify-between">
@@ -218,19 +220,19 @@ const AnalyticsPage = () => {
                       <thead className="bg-gray-50 dark:bg-gray-800/50">
                         <tr>
                           <th className="px-6 py-4 text-left text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-                            Transaction Type
+                            {t("Transaction Type")}
                           </th>
                           <th className="px-6 py-4 text-left text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-                            Amount (Tokens)
+                            {t("Amount (Tokens)")}
                           </th>
                           <th className="px-6 py-4 text-left text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-                            Balance After
+                            {t("Balance After")}
                           </th>
                           <th className="px-6 py-4 text-left text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-                            Date
+                            {t("Date")}
                           </th>
                           <th className="px-6 py-4 text-left text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-                            Description
+                            {t("Description")}
                           </th>
                         </tr>
                       </thead>
@@ -262,7 +264,7 @@ const AnalyticsPage = () => {
                   {totalPages > 1 && (
                     <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-100 dark:border-gray-800/80">
                       <span className="text-xs text-gray-500">
-                        Page {page} of {totalPages}
+                        {t("Page")} {page} {t("of")} {totalPages}
                       </span>
                       <div className="flex items-center gap-2">
                         <button

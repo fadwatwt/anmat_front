@@ -1,13 +1,15 @@
-
+import { useTranslation } from "react-i18next";
 import { PieChart, Pie, Cell, ResponsiveContainer, Label } from 'recharts';
 
 const GaugeChart = ({
     percentage = 0,
     primaryColor = "#F59E0B", // تعيين القيم الافتراضية هنا مباشرة
     secondaryColor = "#E5E7EB",
-    label = "DELAY",
+    label,
     footerData = []
 }) => {
+    const { t } = useTranslation();
+    const resolvedLabel = label ?? t("DELAY");
 
     // بيانات الرسم البياني
     const data = [
@@ -45,7 +47,7 @@ const GaugeChart = ({
                                 className="text-4xl font-bold fill-table-title"
                             />
                             <Label
-                                value={label}
+                                value={resolvedLabel}
                                 position="center"
                                 dy={-65}
                                 className="text-sm uppercase font-semibold fill-cell-secondary"

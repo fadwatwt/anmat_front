@@ -8,6 +8,7 @@ import { AiOutlineYoutube } from "react-icons/ai";
 import Tabs from "@/components/Tabs.jsx";
 import Page from "../../../components/Page.jsx";
 import dynamic from "next/dynamic";
+import { useTranslation } from "react-i18next";
 
 const FacebookTab = dynamic(() => import("@/app/(dashboard)/social-media/_Tabs/Facebook.tab.jsx"), {
     loading: () => <div className="flex items-center justify-center w-full p-4"><ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} /></div>,
@@ -20,36 +21,37 @@ const TweeterTab = dynamic(() => import("@/app/(dashboard)/social-media/_Tabs/Tw
 });
 
 function SocialMediaPage() {
+    const { t } = useTranslation();
     const tabsData = [
         {
-            title: "Facebook",
+            title: t("Facebook"),
             icon: RiFacebookFill,
             content: <FacebookTab/>,
         },
         {
-            title: "Twitter",
+            title: t("Twitter"),
             icon: FaTwitter,
             content: <TweeterTab />,
         },
         {
-            title: "Instagram",
+            title: t("Instagram"),
             icon: IoLogoInstagram,
-            content: <div>Instagram content goes here</div>,
+            content: <div>{t("Instagram content goes here")}</div>,
         },
         {
-            title: "Gmail",
+            title: t("Gmail"),
             icon: CgMail,
-            content: <div>Gmail content goes here</div>,
+            content: <div>{t("Gmail content goes here")}</div>,
         },
         {
-            title: "Youtube",
+            title: t("Youtube"),
             icon: AiOutlineYoutube,
-            content: <div>Youtube content goes here</div>,
+            content: <div>{t("Youtube content goes here")}</div>,
         },
     ];
 
     return (
-        <Page title={"Social Media"}>
+        <Page title={t("Social Media")}>
             <Tabs tabs={tabsData}/>
         </Page>
     );

@@ -212,14 +212,14 @@ function TaskMainInfo({ task, type = "project", values, handleChange, setFieldVa
           onChange={handleChange}
           name="start_date"
           title={t("Start Date")}
-          placeholder="DD / MM / YYYY"
+          placeholder={t("DD / MM / YYYY")}
         />
         <DateInput
           value={values?.due_date || ""}
           onChange={handleChange}
           name="due_date"
           title={t("Due Date")}
-          placeholder="DD / MM / YYYY"
+          placeholder={t("DD / MM / YYYY")}
         />
       </div>
 
@@ -231,14 +231,14 @@ function TaskMainInfo({ task, type = "project", values, handleChange, setFieldVa
               onChange={handleChange}
               name="started_in"
               title={t("Started at")}
-              placeholder="DD / MM / YYYY"
+              placeholder={t("DD / MM / YYYY")}
             />
             <DateInput
               value={values?.finished_in || ""}
               onChange={handleChange}
               name="finished_in"
               title={t("Finished at")}
-              placeholder="DD / MM / YYYY"
+              placeholder={t("DD / MM / YYYY")}
             />
           </>
         ) : (
@@ -247,7 +247,7 @@ function TaskMainInfo({ task, type = "project", values, handleChange, setFieldVa
             onChange={handleChange}
             name="end_date"
             title={t("End Date")}
-            placeholder="DD / MM / YYYY"
+            placeholder={t("DD / MM / YYYY")}
           />
         )}
       </div>

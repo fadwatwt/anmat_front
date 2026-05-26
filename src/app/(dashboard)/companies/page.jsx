@@ -8,15 +8,7 @@ import {
 } from "@remixicon/react";
 import Table from "@/components/Tables/Table";
 import Page from "@/components/Page";
-
-const headers = [
-    { label: "Company", width: "300px" },
-    { label: "Industry", width: "150px" },
-    { label: "Subscribed at", width: "150px" },
-    { label: "Users", width: "100px" },
-    { label: "Status", width: "125px" },
-    { label: "", width: "50px" }
-];
+import { useTranslation } from "react-i18next";
 
 // Sample data - replace with your actual data
 const companysData = [
@@ -54,20 +46,30 @@ const companysData = [
     }
 ];
 
-const statusConfig = {
-    Customer: {
-        bgColor: "bg-green-50",
-        icon: <RiCheckboxCircleFill size={15} className="text-green-success" />,
-        textColor: "text-green-success",
-    },
-    Churned: {
-        bgColor: "bg-weak-100",
-        icon: <RiForbidFill size={15} className="text-soft-400" />,
-        textColor: "text-soft-400",
-    }
-};
-
 function Companies() {
+    const { t } = useTranslation();
+
+    const statusConfig = {
+        Customer: {
+            bgColor: "bg-green-50",
+            icon: <RiCheckboxCircleFill size={15} className="text-green-success" />,
+            textColor: "text-green-success",
+        },
+        Churned: {
+            bgColor: "bg-weak-100",
+            icon: <RiForbidFill size={15} className="text-soft-400" />,
+            textColor: "text-soft-400",
+        }
+    };
+
+    const headers = [
+        { label: t("Company"), width: "300px" },
+        { label: t("Industry"), width: "150px" },
+        { label: t("Subscribed at"), width: "150px" },
+        { label: t("Users"), width: "100px" },
+        { label: t("Status"), width: "125px" },
+        { label: "", width: "50px" }
+    ];
 
     const statusCell = (status) => {
         const config = statusConfig[status] || {
@@ -84,7 +86,7 @@ function Companies() {
                 >
                     {config.icon}
                     <span className={`text-xs ${config.textColor}`}>
-                        {status}
+                        {t(status)}
                     </span>
                 </div>
             </div>
@@ -130,23 +132,23 @@ function Companies() {
     ]);
 
     const statusOptions = [
-        { name: "All", value: "All" },
-        { name: "Approved", value: "Approved" },
-        { name: "Pending", value: "Pending" },
-        { name: "Rejected", value: "Rejected" }
+        { name: t("All"), value: "All" },
+        { name: t("Approved"), value: "Approved" },
+        { name: t("Pending"), value: "Pending" },
+        { name: t("Rejected"), value: "Rejected" }
     ];
 
     const industryOptions = [
-        { name: "All", value: "All" },
-        { name: "Design", value: "design" },
-        { name: "Product Management", value: "product management" }
+        { name: t("All"), value: "All" },
+        { name: t("Design"), value: "design" },
+        { name: t("Product Management"), value: "product management" }
     ];
 
     return (
-        <Page title="Companies" isBtn={false}>
+        <Page title={t("Companies")} isBtn={false}>
             <Table
                 classContainer={"rounded-2xl px-8"}
-                title="All Companies"
+                title={t("All Companies")}
                 headers={headers}
                 isActions={true}
                 rows={rows}

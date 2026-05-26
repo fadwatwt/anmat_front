@@ -27,8 +27,8 @@ function InviteEmployeeModal({ isOpen, onClose }) {
         },
         validationSchema: Yup.object({
             email: Yup.string()
-                .email("Invalid email address")
-                .required("Email is required")
+                .email(t("Invalid email address"))
+                .required(t("Email is required"))
         }),
         onSubmit: async (values, { setSubmitting, resetForm }) => {
             try {
@@ -84,7 +84,7 @@ function InviteEmployeeModal({ isOpen, onClose }) {
                 onClose={handleCloseInviteModal}
                 isBtns={false}
                 className={"lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12 px-4 pb-4"}
-                title={"Invite New Employee"}
+                title={t("Invite New Employee")}
             >
                 <form onSubmit={formik.handleSubmit}>
                     <div className="flex flex-col gap-2">
@@ -95,9 +95,9 @@ function InviteEmployeeModal({ isOpen, onClose }) {
 
                             <div className="flex flex-col gap-4">
                                 <InputAndLabel
-                                    title="Email"
+                                    title={t("Email")}
                                     name="email"
-                                    placeholder="Enter employee email"
+                                    placeholder={t("Enter employee email")}
                                     {...formik.getFieldProps("email")}
                                     error={formik.touched.email && formik.errors.email}
                                 />
@@ -106,7 +106,7 @@ function InviteEmployeeModal({ isOpen, onClose }) {
                     </div>
                     <DefaultButton
                         type={'submit'}
-                        title={isLoading || formik.isSubmitting ? "Sending..." : "Invite"}
+                        title={isLoading || formik.isSubmitting ? t("Sending...") : t("Invite")}
                         disabled={isLoading || formik.isSubmitting || !formik.isValid}
                         className={"bg-primary-500 font-medium dark:bg-primary-200 dark:text-black text-white mt-4 w-full"}
                     />
@@ -119,7 +119,7 @@ function InviteEmployeeModal({ isOpen, onClose }) {
                 onClose={handleCloseSuccessModal}
                 isBtns={false}
                 className={"lg:w-5/12 md:w-8/12 sm:w-10/12 w-11/12"}
-                title={"Invitation Sent Successfully"}
+                title={t("Invitation Sent Successfully")}
             >
                 <div className="flex flex-col gap-6 px-4 py-2">
                     {/* Success Icon */}

@@ -178,7 +178,7 @@ const SendAdminNotificationModal = ({ isOpen, onClose, preSelectedUser, sourceTy
                 className={inputClass}
               >
                 {TARGET_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  <option key={opt.value} value={opt.value}>{t(opt.label)}</option>
                 ))}
               </select>
             </div>
@@ -191,7 +191,7 @@ const SendAdminNotificationModal = ({ isOpen, onClose, preSelectedUser, sourceTy
                 className={inputClass}
               >
                 {PRIORITY_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  <option key={opt.value} value={opt.value}>{t(opt.label)}</option>
                 ))}
               </select>
             </div>
@@ -285,7 +285,7 @@ const SendAdminNotificationModal = ({ isOpen, onClose, preSelectedUser, sourceTy
                         }`}
                       >
                         <div className="w-8 h-8 rounded-full flex-shrink-0 bg-gradient-to-tr from-primary-500 to-blue-400 flex items-center justify-center text-white text-xs font-bold">
-                          {(user.name || "U").charAt(0).toUpperCase()}
+                          {(user.name || t("U")).charAt(0).toUpperCase()}
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-cell-primary truncate">

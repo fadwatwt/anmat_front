@@ -1,4 +1,5 @@
 "use client";
+import { useTranslation } from "react-i18next";
 import { ImSpinner2 } from "react-icons/im";
 
 import { useMemo } from "react";
@@ -12,6 +13,7 @@ const COLORS = [
 ];
 
 const IndustriesChart = ({ industries: industriesProp }) => {
+    const { t } = useTranslation();
     const skip = Array.isArray(industriesProp) && industriesProp.length > 0;
     const { data: fallback, isLoading, error } = useGetIndustriesOrganizationsCountQuery(undefined, { skip });
 
@@ -33,21 +35,21 @@ const IndustriesChart = ({ industries: industriesProp }) => {
     }, [skip, industriesProp, fallback]);
 
     if (!skip && isLoading) return <div className="h-[400px] flex items-center justify-center bg-white rounded-2xl border border-gray-100 dark:bg-gray-800 dark:border-gray-700"> <div className="flex items-center justify-center w-full p-4"><ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} /></div> </div>;
-    if (!skip && error) return <div className="h-[400px] flex items-center justify-center bg-white rounded-2xl border border-gray-100 text-red-500 dark:bg-gray-800 dark:border-gray-700">Error loading chart data</div>;
+    if (!skip && error) return <div className="h-[400px] flex items-center justify-center bg-white rounded-2xl border border-gray-100 text-red-500 dark:bg-gray-800 dark:border-gray-700">{t("Error loading chart data")}</div>;
 
     return (
         <DonutChartComponent
-            title={"Industries Organizations"}
+            title={t("Industries Organizations")}
             toolbar={
                 <div className="flex flex-wrap sm:flex-nowrap gap-2 items-center justify-end w-full sm:w-auto">
                     <ChartSelect 
-                        options={[{ id: 1, value: "All Time" }]} 
-                        defaultValue="All Time"
+                        options={[{ id: 1, value: t("All Time") }]} 
+                        defaultValue={t("All Time")}
                         className="w-full sm:w-32"
                     />
                 </div>
             }
-            subtitle={"ORGANIZATIONS"}
+            subtitle={t("ORGANIZATIONS")}
             data={chartData}
         />
     );

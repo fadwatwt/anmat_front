@@ -13,18 +13,20 @@ import InputWithIcon from "@/components/Form/InputWithIcon";
 import TextAreaWithLabel from "@/components/Form/TextAreaWithLabel";
 import { format } from "date-fns";
 
-const validationSchema = Yup.object().shape({
-    employeeId: Yup.string().required("Employee is required"),
-    date: Yup.date().required("Date is required"),
-    leaveTime: Yup.string().required("Leave time is required"),
-    lateMinutes: Yup.number(),
-    comment: Yup.string(),
-});
+
 
 function EditLeaveModal({ isOpen, onClose, leave, onSubmit }) {
     const { t } = useTranslation();
     const { employees } = useSelector((state) => state.employees) || { employees: [] };
     const [submissionError, setSubmissionError] = useState(null);
+
+    const validationSchema = Yup.object().shape({
+        employeeId: Yup.string().required(t("Employee is required")),
+        date: Yup.date().required(t("Date is required")),
+        leaveTime: Yup.string().required(t("Leave time is required")),
+        lateMinutes: Yup.number(),
+        comment: Yup.string(),
+    });
 
     const formik = useFormik({
         initialValues: {
@@ -69,8 +71,8 @@ function EditLeaveModal({ isOpen, onClose, leave, onSubmit }) {
             isOpen={isOpen}
             onClose={onClose}
             isBtns={true}
-            btnApplyTitle="Save"
-            btnCancelTitle="Cancel"
+            btnApplyTitle={t("Save")}
+            btnCancelTitle={t("Cancel")}
             onClick={() => formik.handleSubmit()}
             className="lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12 px-3"
             title={t("Edit an employee Leave")}
@@ -82,18 +84,18 @@ function EditLeaveModal({ isOpen, onClose, leave, onSubmit }) {
                     )}
 
                     <ElementsSelect
-                        title="Employee"
+                        title={t("Employee")}
                         options={employeeOptions}
                         onChange={(selected) => formik.setFieldValue("employeeId", selected[0]?.id || "")}
-                        placeholder="Select Employee"
+                        placeholder={t("Select Employee")}
                         defaultValue={employeeOptions.filter(opt => opt.id === formik.values.employeeId)}
                         isMultiple={false}
                         disabled={true}
                     />
 
                     <DateInput
-                        title="Date"
-                        placeholder="Select Date"
+                        title={t("Date")}
+                        placeholder={t("Select Date")}
                         name="date"
                         value={formik.values.date}
                         onChange={formik.handleChange}
@@ -104,7 +106,7 @@ function EditLeaveModal({ isOpen, onClose, leave, onSubmit }) {
                     )}
 
                     <TimeInput
-                        title="Leave Time"
+                        title={t("Leave Time")}
                         name="leaveTime"
                         value={formik.values.leaveTime}
                         onChange={formik.handleChange}
@@ -113,7 +115,7 @@ function EditLeaveModal({ isOpen, onClose, leave, onSubmit }) {
                     />
 
                     <InputWithIcon
-                        title="Late Minutes"
+                        title={t("Late Minutes")}
                         name="lateMinutes"
                         type="number"
                         value={formik.values.lateMinutes}
@@ -122,12 +124,12 @@ function EditLeaveModal({ isOpen, onClose, leave, onSubmit }) {
                     />
 
                     <TextAreaWithLabel
-                        title="Comment"
+                        title={t("Comment")}
                         name="comment"
                         value={formik.values.comment}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
-                        placeholder="Comment"
+                        placeholder={t("Comment")}
                         rows={4}
                         isOptional={true}
                         error={formik.touched.comment && formik.errors.comment}

@@ -52,20 +52,20 @@ function AddTwitterAccountModal({ isOpen, onClose }) {
             location: "",
         },
         validationSchema: Yup.object({
-            name: Yup.string().trim().required("Account name is required"),
-            email: Yup.string().email("Invalid email").nullable(),
+            name: Yup.string().trim().required(t("Account name is required")),
+            email: Yup.string().email(t("Invalid email")).nullable(),
             phone: Yup.string().nullable(),
-            password: Yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
-            Category: Yup.string().required("Category is required"),
-            Description: Yup.string().max(500, "Too long").nullable(),
+            password: Yup.string().min(6, t("Password must be at least 6 characters")).required(t("Password is required")),
+            Category: Yup.string().required(t("Category is required")),
+            Description: Yup.string().max(500, t("Too long")).nullable(),
             location: Yup.string().nullable(),
             SecretKey: Yup.string()
                 .trim()
-                .matches(/^[A-Z2-7\s]*$/i, "2FA secret key uses base32 characters (A–Z, 2–7) only")
+                .matches(/^[A-Z2-7\s]*$/i, t("2FA secret key uses base32 characters (A–Z, 2–7) only"))
                 .nullable(),
         }),
         onSubmit: async (values) => {
-            showProcessing("Creating Twitter account...");
+            showProcessing(t("Creating Twitter account..."));
             try {
                 const payload = {
                     name: values.name.trim(),
@@ -82,14 +82,14 @@ function AddTwitterAccountModal({ isOpen, onClose }) {
                 setApiResponse({
                     isOpen: true,
                     status: "success",
-                    message: response?.message || "Twitter account created successfully",
+                    message: response?.message || t("Twitter account created successfully"),
                 });
             } catch (error) {
                 const message =
                     error?.data?.message ||
                     error?.data?.error ||
                     error?.error ||
-                    "Failed to create Twitter account";
+                    t("Failed to create Twitter account");
                 setApiResponse({ isOpen: true, status: "error", message });
             } finally {
                 hideProcessing();
@@ -114,9 +114,9 @@ function AddTwitterAccountModal({ isOpen, onClose }) {
             <Modal
                 isOpen={isOpen}
                 onClose={onClose}
-                title="Add Twitter Account"
+                title={t("Add Twitter Account")}
                 isBtns={true}
-                btnApplyTitle={isLoading ? "Saving..." : "Add Account"}
+                btnApplyTitle={isLoading ? t("Saving...") : t("Add Account")}
                 disabled={isLoading || !formik.isValid}
                 onClick={formik.handleSubmit}
                 className="lg:w-5/12 md:w-8/12 sm:w-7/12 w-11/12 p-4"
@@ -129,8 +129,8 @@ function AddTwitterAccountModal({ isOpen, onClose }) {
                     className="flex flex-col gap-3 px-1"
                 >
                     <InputAndLabel
-                        title="Account Name"
-                        placeholder="@username"
+                        title={t("Account Name")}
+                        placeholder={t("@username")}
                         isRequired
                         type="text"
                         name="name"
@@ -140,8 +140,8 @@ function AddTwitterAccountModal({ isOpen, onClose }) {
                         error={formik.touched.name && formik.errors.name}
                     />
                     <PasswordInput
-                        title="Account Password"
-                        placeholder="Account password"
+                        title={t("Account Password")}
+                        placeholder={t("Account password")}
                         isRequired
                         name="password"
                         value={formik.values.password}
@@ -150,8 +150,8 @@ function AddTwitterAccountModal({ isOpen, onClose }) {
                         error={formik.touched.password && formik.errors.password}
                     />
                     <InputAndLabel
-                        title="Email"
-                        placeholder="user@example.com"
+                        title={t("Email")}
+                        placeholder={t("user@example.com")}
                         type="email"
                         name="email"
                         value={formik.values.email}
@@ -160,8 +160,8 @@ function AddTwitterAccountModal({ isOpen, onClose }) {
                         error={formik.touched.email && formik.errors.email}
                     />
                     <InputAndLabel
-                        title="Phone"
-                        placeholder="Phone number"
+                        title={t("Phone")}
+                        placeholder={t("Phone number")}
                         type="text"
                         name="phone"
                         value={formik.values.phone}
@@ -170,8 +170,8 @@ function AddTwitterAccountModal({ isOpen, onClose }) {
                         error={formik.touched.phone && formik.errors.phone}
                     />
                     <InputAndLabel
-                        title="Proxy (Location)"
-                        placeholder="ip:port  or  ip:port:user:pass"
+                        title={t("Proxy (Location)")}
+                        placeholder={t("ip:port  or  ip:port:user:pass")}
                         type="text"
                         name="location"
                         value={formik.values.location}
@@ -181,7 +181,7 @@ function AddTwitterAccountModal({ isOpen, onClose }) {
                     />
                     <div className="flex flex-col gap-1">
                         <SelectAndLabel
-                            title="Category"
+                            title={t("Category")}
                             name="Category"
                             isRequired
                             value={formik.values.Category}
@@ -189,7 +189,7 @@ function AddTwitterAccountModal({ isOpen, onClose }) {
                             onChange={(val) => formik.setFieldValue("Category", val)}
                             onBlur={() => formik.setFieldTouched("Category", true)}
                             error={formik.touched.Category && formik.errors.Category}
-                            placeholder={catsLoading ? "Loading categories..." : "Select category"}
+                            placeholder={catsLoading ? t("Loading categories...") : t("Select category")}
                         />
                         {canCreateCategory && (
                             <button
@@ -212,7 +212,7 @@ function AddTwitterAccountModal({ isOpen, onClose }) {
                             value={formik.values.SecretKey}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
-                            placeholder="ABCD EFGH IJKL MNOP (base32 — leave empty if 2FA is disabled)"
+                            placeholder={t("ABCD EFGH IJKL MNOP (base32 — leave empty if 2FA is disabled)")}
                             autoComplete="off"
                             spellCheck={false}
                             className="py-2 px-2 text-sm bg-status-bg border-status-border border-2 rounded-xl w-full focus:outline-none focus:border-primary-400 text-cell-primary placeholder:text-cell-secondary/50 font-mono tracking-wider"
@@ -225,13 +225,13 @@ function AddTwitterAccountModal({ isOpen, onClose }) {
                         )}
                     </div>
                     <div className="flex flex-col gap-1 w-full items-start">
-                        <label className="text-cell-primary text-sm font-medium">Description</label>
+                        <label className="text-cell-primary text-sm font-medium">{t("Description")}</label>
                         <textarea
                             name="Description"
                             value={formik.values.Description}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
-                            placeholder="Optional description..."
+                            placeholder={t("Optional description...")}
                             rows={3}
                             className="py-2 px-2 text-sm bg-status-bg border-status-border border-2 rounded-xl w-full focus:outline-none focus:border-primary-400 text-cell-primary placeholder:text-cell-secondary/50"
                         />

@@ -8,8 +8,10 @@ import Switch2 from "@/components/Form/Switch2";
 import { useState } from "react";
 import { useCreateAdminMutation, useGetAdminRolesQuery } from "@/redux/system-admins/systemAdminsAPI";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
+import { useTranslation } from "react-i18next";
 
 function CreateAdminModal({ isOpen, onClose, onShowSuccess }) {
+    const { t } = useTranslation();
     const [createAdmin, { isLoading }] = useCreateAdminMutation();
     const [formData, setFormData] = useState({
         name: "",
@@ -39,7 +41,7 @@ function CreateAdminModal({ isOpen, onClose, onShowSuccess }) {
 
     const handleSubmit = async () => {
         if (formData.password !== formData.confirmPassword) {
-            setApiResponse({ isOpen: true, status: "error", message: "Passwords do not match!" });
+            setApiResponse({ isOpen: true, status: "error", message: t("Passwords do not match!") });
             return;
         }
         try {
@@ -75,51 +77,51 @@ function CreateAdminModal({ isOpen, onClose, onShowSuccess }) {
 
     return (
         <>
-        <Modal isOpen={isOpen} onClose={onClose} isBtns={true} title={"Add User"}
-            btnApplyTitle={isLoading ? "Adding..." : "Add"}
+        <Modal isOpen={isOpen} onClose={onClose} isBtns={true} title={t("Add User")}
+            btnApplyTitle={isLoading ? t("Adding...") : t("Add")}
             classNameBtns={"mt-5"}
             onClick={handleSubmit}
         >
             <div className={"w-full flex flex-col gap-5"}>
                 <InputAndLabel
-                    title={"Name"}
+                    title={t("Name")}
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
                 />
                 <InputAndLabel
-                    title={"Email"}
+                    title={t("Email")}
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
                 />
                 <InputAndLabel
-                    title={"Phone"}
+                    title={t("Phone")}
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
                 />
                 <PasswordInput
-                    title={"Password"}
+                    title={t("Password")}
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
                 />
                 <PasswordInput
-                    title={"Confirm Password"}
+                    title={t("Confirm Password")}
                     name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleChange}
                 />
                 <TagInput
                     suggestions={suggestions}
-                    title={"Roles"}
+                    title={t("Roles")}
                     value={formData.rules}
                     onChange={handleRoleChange}
                 />
 
                 <div className="flex items-center gap-2">
-                    <span className="text-sm text-cell-primary">Active Status</span>
+                    <span className="text-sm text-cell-primary">{t("Active Status")}</span>
                     <Switch2
                         isOn={formData.is_active}
                         handleToggle={() => setFormData(prev => ({ ...prev, is_active: !prev.is_active }))}

@@ -1,4 +1,5 @@
 "use client";
+import { useTranslation } from "react-i18next";
 import React, { useEffect, useState } from "react";
 import {
   useGetMessagesQuery,
@@ -20,6 +21,7 @@ import { Phone, Video, Info, ArrowLeft, Search, X } from "lucide-react";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 
 const ChatWindow = ({ activeChat, onBack }) => {
+  const { t } = useTranslation();
   const currentUserId = useSelector((state) => state.auth.user?._id || state.auth.user?.id);
   const { data: messagesData, isLoading } = useGetMessagesQuery(activeChat?._id, {
     skip: !activeChat?._id,
@@ -74,7 +76,7 @@ const ChatWindow = ({ activeChat, onBack }) => {
     try {
       await editMessage({ messageId, content }).unwrap();
     } catch (err) {
-      setApiResponse({ isOpen: true, status: "error", message: "Failed to edit message" });
+      setApiResponse({ isOpen: true, status: "error", message: t("Failed to edit message") });
     }
   };
 
@@ -82,7 +84,7 @@ const ChatWindow = ({ activeChat, onBack }) => {
     try {
       await deleteMessage(messageId).unwrap();
     } catch (err) {
-      setApiResponse({ isOpen: true, status: "error", message: "Failed to delete message" });
+      setApiResponse({ isOpen: true, status: "error", message: t("Failed to delete message") });
     }
   };
 
@@ -100,9 +102,9 @@ const ChatWindow = ({ activeChat, onBack }) => {
         <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-6">
           <Info size={48} className="text-primary" />
         </div>
-        <h2 className="text-2xl font-bold text-cell-primary mb-2">Select a conversation</h2>
+        <h2 className="text-2xl font-bold text-cell-primary mb-2">{t("Select a conversation")}</h2>
         <p className="text-sub-500 max-w-xs">
-          Choose a chat from the list on the left to start messaging your team.
+          {t("Choose a chat from the list on the left to start messaging your team.")}
         </p>
       </div>
     );
@@ -118,7 +120,7 @@ const ChatWindow = ({ activeChat, onBack }) => {
               <Search size={20} className="text-sub-500" />
               <input
                 type="text"
-                placeholder="Search in conversation..."
+                placeholder={t("Search in conversation...")}
                 className="flex-1 bg-main border-none outline-none text-sm px-3 py-2 rounded-lg text-cell-primary"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -160,10 +162,10 @@ const ChatWindow = ({ activeChat, onBack }) => {
                 </div>
                 <div>
                   <h3 className="font-bold text-cell-primary leading-tight">
-                    {activeChat.title || activeChat.participants_ids?.find(p => p._id !== currentUserId)?.name || "Direct Chat"}
+                    {activeChat.title || activeChat.participants_ids?.find(p => p._id !== currentUserId)?.name || t("Direct Chat")}
                   </h3>
                   <span className="text-[11px] text-green-500 font-medium">
-                    {activeChat.isOnline ? "Online" : "Active recently"}
+                    {activeChat.isOnline ? t("Online") : t("Active recently")}
                   </span>
                 </div>
               </div>
@@ -194,11 +196,11 @@ const ChatWindow = ({ activeChat, onBack }) => {
         {/* Messages or Search Results */}
         {showSearch && searchQuery.trim() ? (
           <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar bg-main">
-            <h4 className="text-sm font-semibold text-sub-500 mb-2">Search Results</h4>
+            <h4 className="text-sm font-semibold text-sub-500 mb-2">{t("Search Results")}</h4>
             {isSearching ? (
-              <div className="text-center text-sm text-sub-300 py-8">Searching...</div>
+              <div className="text-center text-sm text-sub-300 py-8">{t("Searching...")}</div>
             ) : searchResults.length === 0 ? (
-              <div className="text-center text-sm text-sub-300 py-8">No messages found for "{searchQuery}"</div>
+              <div className="text-center text-sm text-sub-300 py-8">{t("No messages found for")} "{searchQuery}"</div>
             ) : (
               searchResults.map(msg => (
                 <div key={msg._id} className="bg-surface p-3 rounded-xl border border-status-border shadow-sm flex flex-col gap-1 cursor-pointer hover:bg-weak-50">

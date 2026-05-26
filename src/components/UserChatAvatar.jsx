@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import InitialsAvatar from "@/components/InitialsAvatar";
+import { useTranslation } from "react-i18next";
 
 const PLACEHOLDER_PATHS = ["userProfile.dark.png", "userProfile.png"];
 
@@ -12,13 +13,14 @@ function resolveUserImageUrl(user) {
 
 /** Chat/header avatar: real photo when available, otherwise colored initials like the rest of the app. */
 function UserChatAvatar({ user, size = "40px", fontSize = "text-sm", className = "" }) {
+  const { t } = useTranslation();
   const imageUrl = resolveUserImageUrl(user);
 
   if (imageUrl) {
     return (
       <img
         src={imageUrl}
-        alt={user?.name || "User"}
+        alt={user?.name || t("User")}
         className={`rounded-full object-cover border border-gray-200 dark:border-gray-700 shrink-0 ${className}`}
         style={{ width: size, height: size, minWidth: size, minHeight: size }}
       />

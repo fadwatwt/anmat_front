@@ -82,8 +82,8 @@ const TaskManagementDashboard = () => {
   }, []);
 
   const viewModalList = [
-    { id: "Leave", title: "Leave" },
-    { id: "Financial", title: "Financial" },
+    { id: "Leave", title: t("Leave") },
+    { id: "Financial", title: t("Financial") },
   ];
 
   const [viewMode, setViewMode] = useState("week");
@@ -151,11 +151,11 @@ const TaskManagementDashboard = () => {
   ];
 
   const headers = [
-    { label: "Project/Task Name", width: "200px" },
-    { label: "Department", width: "120px" },
-    { label: "Assigned Employee(s)", width: "180px" },
-    { label: "Delivery Date", width: "120px" },
-    { label: "Rating", width: "120px" },
+    { label: t("Project/Task Name"), width: "200px" },
+    { label: t("Department"), width: "120px" },
+    { label: t("Assigned Employee(s)"), width: "180px" },
+    { label: t("Delivery Date"), width: "120px" },
+    { label: t("Rating"), width: "120px" },
   ];
 
   const rows = taskList.map((task, index) => [
@@ -167,7 +167,7 @@ const TaskManagementDashboard = () => {
           key={idx}
           src={assignee}
           loading="lazy"
-          alt="assignee"
+          alt={t("assignee")}
           className="w-6 h-6 rounded-full border-2 border-white -ml-2 first:ml-0"
         />
       ))}
@@ -186,12 +186,12 @@ const TaskManagementDashboard = () => {
   ]);
 
   const requestHeaders = [
-    { label: "Employee", width: "200px" },
-    { label: "Requested Date", width: "120px" },
-    { label: "Days Requested", width: "120px" },
-    { label: "Days Left", width: "120px" },
-    { label: "Status", width: "120px" },
-    { label: "Actions", width: "200px" },
+    { label: t("Employee"), width: "200px" },
+    { label: t("Requested Date"), width: "120px" },
+    { label: t("Days Requested"), width: "120px" },
+    { label: t("Days Left"), width: "120px" },
+    { label: t("Status"), width: "120px" },
+    { label: t("Actions"), width: "200px" },
   ];
 
   const requestRows = (
@@ -207,12 +207,12 @@ const TaskManagementDashboard = () => {
     request.daysLeft,
     <StatusBadge key={index} status={request.status} />,
     <div key={index} className="flex gap-2">
-      <button className="bg-red-100 text-red-600 px-3 py-1 rounded-md w-fit">Reject</button>
+      <button className="bg-red-100 text-red-600 px-3 py-1 rounded-md w-fit">{t("Reject")}</button>
       <button
         onClick={handelConfirmApprovalAlert}
         className="bg-green-100 text-green-600 px-3 py-1 rounded-md w-fit"
       >
-        Accept
+        {t("Accept")}
       </button>
     </div>,
   ]);
@@ -229,11 +229,11 @@ const TaskManagementDashboard = () => {
             <div className="flex gap-2">
               <DefaultSelect
                 classNameContainer={"w-28"}
-                options={[{ id: "", value: "option" }]}
+                options={[{ id: "", value: t("option") }]}
               />
               <DefaultSelect
                 classNameContainer={"w-28"}
-                options={[{ id: "", value: "Last Month" }]}
+                options={[{ id: "", value: t("Last Month") }]}
               />
             </div>
           </div>
@@ -307,11 +307,11 @@ const TaskManagementDashboard = () => {
             <div className="flex gap-2">
               <DefaultSelect
                 classNameContainer={"w-28"}
-                options={[{ id: "", value: "Department" }]}
+                options={[{ id: "", value: t("Department") }]}
               />
               <DefaultSelect
                 classNameContainer={"w-32"}
-                options={[{ id: "", value: "Last 6 months" }]}
+                options={[{ id: "", value: t("Last 6 months") }]}
               />
             </div>
           </div>
@@ -384,7 +384,7 @@ const TaskManagementDashboard = () => {
         {/* Task/Project Evaluation Section (2/3 of the width) */}
         <div className="bg-white rounded-xl shadow-sm lg:col-span-2">
           <Table
-            title="Task/Project Evaluation"
+            title={t("Task/Project Evaluation")}
             headers={headers}
             rows={rows}
             isCheckInput={false}
@@ -420,17 +420,15 @@ const TaskManagementDashboard = () => {
         project={1}
       />
       <Alert
-        title={"Confirm Approval"}
-        message={
-          "Are you sure you want to approve this leave request for [Employee Name]?  This action cannot be undone."
-        }
+        title={t("Confirm Approval")}
+        message={t("Are you sure you want to approve this leave request for [Employee Name]?  This action cannot be undone.")}
         isOpen={isConfirmApprovalAlert}
         onClose={handelConfirmApprovalAlert}
         type={"warning"}
         isBtns={"true"}
         onSubmit={() => { }}
-        titleSubmitBtn={"Approve"}
-        titleCancelBtn={"Cancel"}
+        titleSubmitBtn={t("Approve")}
+        titleCancelBtn={t("Cancel")}
       />
     </Page>
   );

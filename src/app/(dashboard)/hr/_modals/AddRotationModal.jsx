@@ -36,20 +36,20 @@ function AddRotationModal({ isOpen, onClose }) {
         >
             <div className="flex flex-col gap-4">
                 <ElementsSelect
-                    title="Employee"
+                    title={t("Employee")}
                     name="employee"
                     value={formData.employee}
                     onChange={handleChange}
                     options={[
-                        { id: "1", element: "Fatima Ahmed" },
-                        { id: "2", element: "Sophia Williams" },
-                        { id: "3", element: "James Brown" }
+                        { id: "1", element: t("Fatima Ahmed") },
+                        { id: "2", element: t("Sophia Williams") },
+                        { id: "3", element: t("James Brown") }
                     ]}
                     placeholder={t("Select Employee")}
                 />
 
                 <DateInput
-                    title="Date"
+                    title={t("Date")}
                     name="date"
                     value={formData.date}
                     onChange={handleChange}
@@ -74,14 +74,14 @@ function AddRotationModal({ isOpen, onClose }) {
                 </div>
 
                 <ElementsSelect
-                    title="Rotation"
+                    title={t("Rotation")}
                     name="rotation"
                     value={formData.rotation}
                     onChange={handleChange}
                     options={[
-                        { id: "1", element: "Rotation 1" },
-                        { id: "2", element: "Rotation 2" },
-                        { id: "3", element: "Rotation 3" }
+                        { id: "1", element: t("Rotation 1") },
+                        { id: "2", element: t("Rotation 2") },
+                        { id: "3", element: t("Rotation 3") }
                     ]}
                     placeholder={t("Select Rotation")}
                 />

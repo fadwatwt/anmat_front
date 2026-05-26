@@ -3,10 +3,12 @@ import { ImSpinner2 } from "react-icons/im";
 
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
+import { useTranslation } from "react-i18next";
 import { selectUserType } from "@/redux/auth/authSlice";
 import { useSelector } from "react-redux";
 
 const AnalyticsPage = () => {
+  const { t } = useTranslation();
   const authUserType = useSelector(selectUserType);
 
   // Dynamically import components with loading fallback
@@ -19,7 +21,7 @@ const AnalyticsPage = () => {
       case "Employee":
         return import("@/app/(dashboard)/analytics/_components/EmployeeAnalytics");
       default:
-        return Promise.resolve({ default: () => <div>Unknown User Type</div> });
+        return Promise.resolve({ default: () => <div>{t("Unknown User Type")}</div> });
     }
   }, {
     loading: () => <div className="text-center py-4"> <div className="flex items-center justify-center w-full p-4"><ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} /></div> </div>,

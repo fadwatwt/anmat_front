@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useRequestVerificationMutation, useLazyGetUserQuery } from "@/redux/auth/authAPI";
@@ -7,6 +8,7 @@ import { selectAuth, setUser } from "@/redux/auth/authSlice";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 
 const VerifyEmail = () => {
+    const { t } = useTranslation();
     const dispatch = useDispatch();
     const { user } = useSelector(selectAuth);
     const [requestVerification, { isLoading: isRequesting, isSuccess, isError, error, data }] = useRequestVerificationMutation();
@@ -87,8 +89,8 @@ const VerifyEmail = () => {
 
     return (
         <>
-            {isSuccess && <ApiResponseAlert status="success" message={data?.message || "Verification email sent!"} />}
-            {isError && <ApiResponseAlert status="error" message={error?.data?.message || "Failed to send verification email."} />}
+            {isSuccess && <ApiResponseAlert status="success" message={data?.message || t("Verification email sent!")} />}
+            {isError && <ApiResponseAlert status="error" message={error?.data?.message || t("Failed to send verification email.")} />}
 
             <div className="relative rounded-2xl px-12 py-16 border border-status-border bg-surface shadow-xl">
                 <div className="absolute top-0 left-0 w-full opacity-10">
@@ -108,14 +110,14 @@ const VerifyEmail = () => {
                     <div className="flex flex-col items-center justify-start gap-8 text-center w-full max-w-md">
                         <div className="flex flex-col gap-1 text-2xl w-full font-bold">
                             <span className="text-table-title">
-                                {"Email Verification"}
+                                {t("Email Verification")}
                             </span>
                         </div>
 
                         <span className="block text-cell-secondary text-lg text-wrap px-4 font-medium leading-relaxed">
                             {hasRequested || isSuccess
-                                ? "We have sent you a link to your email for verifying your account, please check your email and continue."
-                                : "To complete your account setup, please verify your email address by clicking the link we sent to your inbox."
+                                ? t("We have sent you a link to your email for verifying your account, please check your email and continue.")
+                                : t("To complete your account setup, please verify your email address by clicking the link we sent to your inbox.")
                             }
                         </span>
 
@@ -125,11 +127,11 @@ const VerifyEmail = () => {
                             className="bg-primary-500 dark:bg-primary-200 text-white dark:text-black font-bold text-nowrap text-md px-12 py-3 rounded-xl cursor-pointer shadow-lg shadow-primary-500/10 active:scale-95
                                         hover:bg-primary-600 text-center disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                         >
-                            {isLoading ? "Sending..." : "Send New Email"}
+                            {isLoading ? t("Sending...") : t("Send New Email")}
                         </button>
                         <div className="flex flex-col gap-2">
                              <span className="block text-cell-secondary text-xs uppercase tracking-widest font-bold">
-                                resend after
+                                {t("resend after")}
                             </span>
                             <span className="text-primary-500 dark:text-primary-400 text-2xl font-black uppercase tabular-nums">
                                 {formatTimeSpaced(timeLeft)}

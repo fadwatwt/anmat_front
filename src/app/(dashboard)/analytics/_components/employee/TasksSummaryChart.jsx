@@ -1,9 +1,11 @@
 "use client";
+import { useTranslation } from "react-i18next";
 
 import DonutChartComponent from "@/components/containers/chart/DonutChartComponent";
 import DefaultSelect from "@/components/Form/DefaultSelect";
 
 const TasksSummaryChart = ({ data }) => {
+    const { t } = useTranslation();
 
     const defaultChartData = {
         total: 0,
@@ -14,13 +16,13 @@ const TasksSummaryChart = ({ data }) => {
 
     return (
         <DonutChartComponent
-            title={"Tasks Summary"}
+            title={t("Tasks Summary")}
             toolbar={
                 <div className="w-32">
-                    <DefaultSelect variant="chart" multi={false} options={[{ id: 1, value: "Last Month" }]} />
+                    <DefaultSelect variant="chart" multi={false} options={[{ id: 1, value: t("Last Month") }]} />
                 </div>
             }
-            subtitle={"TASKS"}
+            subtitle={t("TASKS")}
             data={displayData}
         />
     );
