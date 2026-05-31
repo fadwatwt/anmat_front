@@ -1,8 +1,10 @@
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Label, Tooltip } from 'recharts';
 import PropTypes from 'prop-types';
+import { useTranslation } from "react-i18next";
 
 const DynamicDoughnut = ({ data, centerTitle, centerValue }) => {
+    const { t } = useTranslation();
     // حساب الإجمالي في حال لم يتم تمريره
     const totalValue = centerValue || data.reduce((acc, item) => acc + item.value, 0);
 
@@ -32,7 +34,7 @@ const DynamicDoughnut = ({ data, centerTitle, centerValue }) => {
                                 className="text-3xl font-bold fill-table-title"
                             />
                             <Label
-                                value={centerTitle}
+                                value={t(centerTitle)}
                                 position="center"
                                 dy={25}
                                 className="text-xs uppercase font-semibold fill-cell-secondary"
@@ -49,7 +51,7 @@ const DynamicDoughnut = ({ data, centerTitle, centerValue }) => {
                     <div key={`legend-${index}`} className="flex flex-col items-center">
                         <div className="flex items-center gap-2 mb-1">
                             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
-                            <span className="text-sm text-cell-secondary">{item.name}</span>
+                            <span className="text-sm text-cell-secondary">{t(item.name)}</span>
                         </div>
                         <span className="text-lg font-bold text-cell-primary">{item.value}</span>
                     </div>

@@ -76,24 +76,24 @@ const AdminDashboard = () => {
 
     const industries = industriesResponse?.data || industriesResponse || [];
     const industryOptions = useMemo(() => [
-        { id: null, value: "All" },
+        { id: null, value: t("All") },
         ...industries.map(ind => ({ id: ind._id, value: ind.name }))
     ], [industries]);
 
     const stats = adminStats?.data || adminStats || {};
 
     const subsHeaders = [
-        { label: "Subscriber", width: "180px" },
-        { label: "Company", width: "220px" },
-        { label: "Status", width: "100px" },
-        { label: "Start Date", width: "120px" },
-        { label: "Expiration", width: "120px" },
+        { label: t("Subscriber"), width: "180px" },
+        { label: t("Company"), width: "220px" },
+        { label: t("Status"), width: "100px" },
+        { label: t("Start Date"), width: "120px" },
+        { label: t("Expiration"), width: "120px" },
     ];
 
     const subsRows = subscriptions?.map((item) => [
         <div key={`sub-${item.subscription?._id}`} className="flex flex-col gap-0.5 max-w-[150px]">
             <span className="text-sm font-semibold text-cell-primary truncate" title={item.subscriber?.name}>
-                {item.subscriber?.name || "N/A"}
+                {item.subscriber?.name || t("N/A")}
             </span>
             <span className="text-[11px] text-cell-secondary truncate" title={item.subscriber?.email}>
                 {item.subscriber?.email || ""}
@@ -101,7 +101,7 @@ const AdminDashboard = () => {
         </div>,
         <div key={`org-${item.subscription?._id}`} className="flex flex-col gap-0.5 max-w-[180px]">
             <span className="text-sm font-medium text-table-title truncate" title={item.organization?.name}>
-                {item.organization?.name || "N/A"}
+                {item.organization?.name || t("N/A")}
             </span>
             <span className="text-[11px] text-cell-secondary truncate" title={item.organization?.website || item.organization?.email}>
                 {item.organization?.website || item.organization?.email || ""}
@@ -111,10 +111,10 @@ const AdminDashboard = () => {
             {statusCell(item.subscription?.status, item.subscription?._id)}
         </div>,
         <span key={`start-${item.subscription?._id}`} className="text-sm text-cell-secondary font-medium">
-            {item.subscription?.starts_at ? format(new Date(item.subscription.starts_at), "MMM dd, yyyy") : "N/A"}
+            {item.subscription?.starts_at ? format(new Date(item.subscription.starts_at), "MMM dd, yyyy") : t("N/A")}
         </span>,
         <span key={`expires-${item.subscription?._id}`} className="text-sm text-cell-secondary font-medium">
-            {item.subscription?.expires_at ? format(new Date(item.subscription.expires_at), "MMM dd, yyyy") : "N/A"}
+            {item.subscription?.expires_at ? format(new Date(item.subscription.expires_at), "MMM dd, yyyy") : t("N/A")}
         </span>,
     ]) || [];
 
@@ -150,28 +150,28 @@ const AdminDashboard = () => {
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 w-full">
                             <SummaryCard
-                                title="Total Companies"
+                                title={t("Total Companies")}
                                 value={stats.totalCompanies || 0}
                                 icon={RiBuilding2Line}
                                 color="bg-blue-500"
                                 trend={12}
                             />
                             <SummaryCard
-                                title="Active Projects"
+                                title={t("Active Projects")}
                                 value={stats.totalProjects || 0}
                                 icon={RiProjector2Line}
                                 color="bg-purple-500"
                                 trend={8}
                             />
                             <SummaryCard
-                                title="Total Tasks"
+                                title={t("Total Tasks")}
                                 value={stats.totalTasks || 0}
                                 icon={RiTaskLine}
                                 color="bg-orange-500"
                                 trend={-3}
                             />
                             <SummaryCard
-                                title="System Users"
+                                title={t("System Users")}
                                 value={stats.totalUsers || 0}
                                 icon={RiUser3Line}
                                 color="bg-green-500"
@@ -198,7 +198,7 @@ const AdminDashboard = () => {
                     <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 w-full items-start">
                         <div className="xl:col-span-2">
                             <Table
-                                title="Recent Subscriptions"
+                                title={t("Recent Subscriptions")}
                                 headers={subsHeaders}
                                 rows={subsRows}
                                 isCheckInput={false}
@@ -212,11 +212,11 @@ const AdminDashboard = () => {
                             />
                         </div>
 
-                        <AnalyticsCard title="New Companies Joined">
+                        <AnalyticsCard title={t("New Companies Joined")}>
                             <div className="flex flex-col gap-4 mt-2 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
                                 <div className="mb-2">
                                     <DefaultSelect
-                                        placeholder="Filter by Industry"
+                                        placeholder={t("Filter by Industry")}
                                         options={industryOptions}
                                         value={selectedIndustry}
                                         onChange={setSelectedIndustry}
@@ -261,7 +261,7 @@ const AdminDashboard = () => {
                                 ) : (
                                     <div className="flex flex-col items-center justify-center py-10 text-cell-secondary gap-2">
                                         <RiBuilding2Line size={40} className="opacity-20" />
-                                        <p className="text-sm">No organizations found</p>
+                                        <p className="text-sm">{t("No organizations found")}</p>
                                     </div>
                                 )}
                             </div>

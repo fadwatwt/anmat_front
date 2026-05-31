@@ -21,7 +21,7 @@ import { useGetSubscriberProjectsQuery } from "@/redux/projects/subscriberProjec
 import { useGetOrganizationLogsQuery } from "@/redux/activity-logs/activityLogsApi";
 
 const AdminDashboard = () => {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation();
   const [isConfirmApprovalAlert, setIsConfirmApprovalAlert] = useState(false);
 
   const { data: statsData, isLoading: isStatsLoading } = useGetSubscriberTaskStatisticsStatusQuery();
@@ -53,16 +53,16 @@ const AdminDashboard = () => {
   const getStatusLabel = (status) => {
     const key = status.toLowerCase().replace(/\s+/g, '_');
     const labelMap = {
-      open: "Active",
-      in_progress: "Active",
-      active: "Active",
-      completed: "Completed before due date",
-      completed_before_due_date: "Completed before due date",
-      late_completed: "Late Completed",
-      cancelled: "Cancelled",
-      overdue: "Overdue",
-      on_hold: "On Hold",
-      pending: "Pending",
+      open: t("Active"),
+      in_progress: t("Active"),
+      active: t("Active"),
+      completed: t("Completed before due date"),
+      completed_before_due_date: t("Completed before due date"),
+      late_completed: t("Late Completed"),
+      cancelled: t("Cancelled"),
+      overdue: t("Overdue"),
+      on_hold: t("On Hold"),
+      pending: t("Pending"),
     };
     return labelMap[key] || status.charAt(0).toUpperCase() + status.slice(1).replace(/_/g, " ");
   };
@@ -98,12 +98,12 @@ const AdminDashboard = () => {
   const rawLogs = orgLogsData?.data || [];
 
   const headers = [
-    { label: "Project Name", width: "180px" },
-    { label: "Department", width: "120px" },
-    { label: "Status", width: "100px" },
-    { label: "Progress", width: "120px" },
-    { label: "Assigned Employee(s)", width: "180px" },
-    { label: "Delivery Date", width: "120px" },
+    { label: t("Project Name"), width: "180px" },
+    { label: t("Department"), width: "120px" },
+    { label: t("Status"), width: "100px" },
+    { label: t("Progress"), width: "120px" },
+    { label: t("Assigned Employee(s)"), width: "180px" },
+    { label: t("Delivery Date"), width: "120px" },
   ];
 
   const rows = projects.map((project, index) => {
@@ -116,7 +116,7 @@ const AdminDashboard = () => {
             project.status === 'on_hold' ? 'bg-orange-100 text-orange-700' :
               'bg-status-bg text-cell-secondary border border-status-border'
           }`}>
-          {project.status ? project.status.charAt(0).toUpperCase() + project.status.slice(1).replace(/_/g, " ") : t("Pending")}
+          {project.status ? t(project.status.split(/[-_\s]+/).map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(" ")) : t("Pending")}
         </span>
       </div>,
       <div key={`progress-${index}`} className="flex items-center gap-2 w-full">
@@ -148,17 +148,17 @@ const AdminDashboard = () => {
 
   return (
     <Page isTitle={false}>
-      <ProcessingOverlay isOpen={isPageLoading} message="Loading Dashboard..." />
+      <ProcessingOverlay isOpen={isPageLoading} message={t("Loading Dashboard...")} />
       <div className="flex flex-col md:flex-row items-stretch gap-4 justify-between w-full">
         {/* Tasks Summary Card */}
         <div className="w-full md:w-1/2">
-          <AnalyticsCard title="Tasks Summary">
+          <AnalyticsCard title={t("Tasks Summary")}>
             <DynamicDoughnut data={chartData.records} centerTitle="TASKS" centerValue={chartData.total} />
           </AnalyticsCard>
         </div>
 
         <div className="w-full md:w-1/2">
-          <AnalyticsCard title="Departments" showDropdowns={true} dropdown1Label="Last 6 months">
+          <AnalyticsCard title={t("Departments")} showDropdowns={true} dropdown1Label="Last 6 months">
             <div className="w-full h-[300px]">
               <DepartmentsPerformanceChat data={departmentsData} />
             </div>
@@ -171,7 +171,7 @@ const AdminDashboard = () => {
         {/* Task/Project Evaluation Section (2/3 of the width) */}
         <div className="lg:col-span-2">
           <Table
-            title="Projects Overview"
+            title={t("Projects Overview")}
             headers={headers}
             rows={rows}
             isCheckInput={false}
@@ -181,7 +181,7 @@ const AdminDashboard = () => {
             showStatusFilter={true}
             toolbarCustomContent={
               <button className="bg-status-bg text-cell-secondary hover:bg-gray-50 px-4 py-2flex dark:text-gray-400 text-sm items-baseline p-2 gap-2 rounded-lg border border-status-border dark:border-gray-600">
-                See All
+                {t("See All")}
               </button>
             }
           />
@@ -202,17 +202,15 @@ const AdminDashboard = () => {
       </div>
 
       <Alert
-        title={"Confirm Approval"}
-        message={
-          "Are you sure you want to approve this leave request for [Employee Name]?  This action cannot be undone."
-        }
+        title={t("Confirm Approval")}
+        message={t("Are you sure you want to approve this leave request for [Employee Name]? This action cannot be undone.")}
         isOpen={isConfirmApprovalAlert}
         onClose={handelConfirmApprovalAlert}
         type={"warning"}
         isBtns={"true"}
         onSubmit={() => { }}
-        titleSubmitBtn={"Approve"}
-        titleCancelBtn={"Cancel"}
+        titleSubmitBtn={t("Approve")}
+        titleCancelBtn={t("Cancel")}
       />
     </Page>
   );

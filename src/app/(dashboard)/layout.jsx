@@ -213,7 +213,7 @@ const MainLayout = ({ children }) => {
                     )
                 )}
 
-                <main className="flex-1 overflow-auto bg-main p-4 md:p-6">
+                <main className="flex-1 overflow-auto custom-scroll bg-main p-4 md:p-6">
                     {children}
                 </main>
             </div>

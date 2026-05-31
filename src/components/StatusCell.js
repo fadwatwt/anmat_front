@@ -1,4 +1,5 @@
 import { RiCheckboxCircleFill, RiCloseCircleFill, RiQuestionLine, RiTimeLine, RiErrorWarningFill, RiInformationLine } from "@remixicon/react";
+import i18n from "i18next";
 
 const normalizeStatus = (status) => {
     if (!status) return "";
@@ -146,7 +147,7 @@ const statusCell = (status, _id) => {
             >
                 {config.icon}
                 <span className={`text-xs font-medium capitalize ${config.textColor}`}>
-                    {status?.replace(/[-_]/g, ' ')}
+                    {i18n.t(status ? status.split(/[-_\s]+/).map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(" ") : "")}
                 </span>
             </div>
         </div>

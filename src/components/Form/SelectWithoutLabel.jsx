@@ -40,7 +40,7 @@ function SelectWithoutLabel({
           </option>
           {options?.map((option) => (
             <option key={option._id || option.id || option.value} value={option._id || option.id || option.value}>
-              {option.name}
+              {t(option.name)}
             </option>
           ))}
         </select>

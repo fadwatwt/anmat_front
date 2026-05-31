@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
+import { ar } from 'date-fns/locale';
 import Table from '@/components/Tables/Table';
 import { useSelector } from 'react-redux';
 import { selectUserType } from '@/redux/auth/authSlice';
@@ -17,7 +18,8 @@ import ApiResponseAlert from '@/components/Alerts/ApiResponseAlert';
 import ProcessingOverlay from '@/components/Feedback/ProcessingOverlay';
 
 export default function EmployeeRequests() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dateLocale = i18n.language === 'ar' ? ar : undefined;
   const authUserType = useSelector(selectUserType);
   const [activeTab, setActiveTab] = useState("DAY_OFF"); // "DAY_OFF", "SALARY_ADVANCE", "WORK_DELAY"
   const [selectedRequest, setSelectedRequest] = useState(null);
@@ -138,7 +140,7 @@ export default function EmployeeRequests() {
         </div>
       ),
       <span key={`date-${index}`} className="text-cell-secondary text-sm">
-        {request.created_at ? format(new Date(request.created_at), "dd MMM, yyyy") : 'N/A'}
+        {request.created_at ? format(new Date(request.created_at), "dd MMM, yyyy", { locale: dateLocale }) : 'N/A'}
       </span>,
     ];
 
@@ -146,7 +148,7 @@ export default function EmployeeRequests() {
     if (activeTab === "DAY_OFF") {
       specificCells = [
         <span key={`vacation-${index}`} className="text-cell-secondary text-sm">
-          {request.vacation_date ? format(new Date(request.vacation_date), "dd MMM, yyyy") : "N/A"}
+          {request.vacation_date ? format(new Date(request.vacation_date), "dd MMM, yyyy", { locale: dateLocale }) : "N/A"}
         </span>,
         <div key={`reason-${index}`} className="text-cell-secondary text-sm truncate max-w-[150px]" title={request.reason}>
           {request.reason || "N/A"}
@@ -160,7 +162,7 @@ export default function EmployeeRequests() {
     } else {
       specificCells = [
         <span key={`due-${index}`} className="text-cell-secondary text-sm">
-          {request.work_due_at ? format(new Date(request.work_due_at), "dd MMM, yyyy HH:mm") : "N/A"}
+          {request.work_due_at ? format(new Date(request.work_due_at), "dd MMM, yyyy HH:mm", { locale: dateLocale }) : "N/A"}
         </span>,
         <div key={`reason-${index}`} className="text-cell-secondary text-sm truncate max-w-[150px]" title={request.reason}>
           {request.reason || "N/A"}

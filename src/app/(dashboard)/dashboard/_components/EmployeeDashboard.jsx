@@ -37,7 +37,7 @@ const EmployeeDashboard = () => {
     const chartData = statsData?.data ? {
         total: statsData.data.total,
         records: Object.entries(statsData.data.status_counts).map(([status, count], index) => ({
-            title: status.charAt(0).toUpperCase() + status.slice(1).replace(/_/g, " "),
+            title: t(status.charAt(0).toUpperCase() + status.slice(1).replace(/_/g, " ")),
             value: count,
             color: getStatusColor(status, index),
         })),
@@ -73,7 +73,7 @@ const EmployeeDashboard = () => {
 
     return (
         <Page
-            title="Dashboard"
+            title={t("Dashboard")}
             isBtn={false}
         >
             {/* Companies Analytics */}
@@ -97,7 +97,7 @@ const EmployeeDashboard = () => {
                         isLoading={isTasksLoading}
                         toolbarCustomContent={
                             <button className="bg-status-bg text-cell-secondary hover:bg-gray-50 px-4 py-2flex dark:text-gray-400 text-sm items-baseline p-2 gap-2 rounded-lg border border-status-border dark:border-gray-600">
-                                See All
+                                {t("See All")}
                             </button>
                         }
                     />
