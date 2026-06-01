@@ -623,7 +623,7 @@ const AssistantPage = () => {
                             : "hover:bg-gray-100/70 dark:hover:bg-gray-800/40 text-gray-700 dark:text-gray-300"
                         }`}
                       >
-                        <div className="flex items-center gap-2.5 flex-1 min-w-0 pr-8">
+                        <div className="flex items-center gap-2.5 flex-1 min-w-0 pe-8">
                           <img
                             src="/images/AiAssistant/file.svg"
                             alt={t("Chat icon")}
@@ -833,7 +833,7 @@ const AssistantPage = () => {
                           {editingIdx === idx ? (
                             <div className="flex flex-col w-full">
                               <textarea
-                                className="text-base text-cell-primary w-full font-sans font-semibold leading-relaxed box-border text-left outline-none border-none mb-2 resize-none bg-transparent"
+                                className="text-base text-cell-primary w-full font-sans font-semibold leading-relaxed box-border text-start outline-none border-none mb-2 resize-none bg-transparent"
                                 style={{
                                   wordBreak: 'break-word',
                                   width: editDims[idx]?.width ? editDims[idx].width + 'px' : '100%',
@@ -853,7 +853,7 @@ const AssistantPage = () => {
                             </div>
                           ) : (
                             <>
-                              <div ref={el => userEditRefs.current[idx] = el} className="text-base text-cell-primary w-full font-sans font-semibold leading-relaxed box-border text-left whitespace-pre-wrap" style={{ wordBreak: 'break-word' }} dir="auto">
+                              <div ref={el => userEditRefs.current[idx] = el} className="text-base text-cell-primary w-full font-sans font-semibold leading-relaxed box-border text-start whitespace-pre-wrap" style={{ wordBreak: 'break-word' }} dir="auto">
                                 {msg.text}
                                 {msg.audio && (
                                   <audio controls src={msg.audio} className="mt-2" />
@@ -950,13 +950,13 @@ const AssistantPage = () => {
                           {editingIdx === idx ? (
                             <div className="flex flex-col w-full">
                               {msg.thought && (
-                                <div className="text-gray-400 text-sm mb-2 font-sans font-semibold text-left">
+                                <div className="text-gray-400 text-sm mb-2 font-sans font-semibold text-start">
                                   {msg.thought}
                                 </div>
                               )}
                               {msg.thought && <hr className="my-2 border-gray-200" />}
                               <textarea
-                                className="text-base text-gray-900 w-full font-sans font-semibold leading-relaxed box-border text-left outline-none border-none mb-2 resize-none bg-transparent"
+                                className="text-base text-gray-900 w-full font-sans font-semibold leading-relaxed box-border text-start outline-none border-none mb-2 resize-none bg-transparent"
                                 style={{
                                   wordBreak: 'break-word',
                                   width: editDims[idx]?.width ? editDims[idx].width + 'px' : '100%',
@@ -977,12 +977,12 @@ const AssistantPage = () => {
                           ) : (
                             <>
                               {msg.thought && (
-                                <div className="text-cell-primary text-[18px] mb-2 font-['Almarai'] font-[400] leading-[150%] tracking-[0%] text-left">
+                                <div className="text-cell-primary text-[18px] mb-2 font-['Almarai'] font-[400] leading-[150%] tracking-[0%] text-start">
                                   {msg.thought}
                                 </div>
                               )}
                               {msg.thought && <hr className="my-2 border-gray-200" />}
-                              <div ref={el => aiEditRefs.current[idx] = el} className="w-full text-left" style={{ wordBreak: 'break-word' }}>
+                              <div ref={el => aiEditRefs.current[idx] = el} className="w-full text-start" style={{ wordBreak: 'break-word' }}>
                                 {msg.isStreaming && !msg.text ? (
                                   <span className="inline-flex items-center gap-1.5 text-primary-500">
                                     <span className="w-2 h-2 rounded-full bg-current animate-bounce [animation-delay:-0.2s]"></span>
@@ -993,7 +993,7 @@ const AssistantPage = () => {
                                   <>
                                     <AiMessageContent text={msg.text} />
                                     {msg.isStreaming && (
-                                      <span className="inline-block w-0.5 h-5 ml-1 align-middle bg-primary-500 animate-pulse"></span>
+                                      <span className="inline-block w-0.5 h-5 ms-1 align-middle bg-primary-500 animate-pulse"></span>
                                     )}
                                   </>
                                 )}

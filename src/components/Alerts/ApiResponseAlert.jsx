@@ -43,7 +43,7 @@ function ApiResponseAlert({
       onClose={onClose}
       type={type}
       title={title}
-      message={message}
+      message={typeof message === "string" ? t(message) : message}
       isBtns={true}
       hideCancelBtn={true}
       titleSubmitBtn={t("OK")}

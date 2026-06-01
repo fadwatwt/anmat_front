@@ -12,8 +12,10 @@ import {
 } from "@/redux/permissions/subscriberPermissionsApi";
 import { useSyncSubscriberRolePermissionsMutation } from "@/redux/roles/subscriberRolesApi";
 import { useProcessing } from "@/app/providers";
+import { useTranslation } from "react-i18next";
 
 function SyncSubscriberPermissionsModal({ isOpen, onClose, roleId, roleName, currentPermissions = [] }) {
+    const { t } = useTranslation();
     const [updatePermissions, { isLoading }] = useSyncSubscriberRolePermissionsMutation();
     const { showProcessing, hideProcessing } = useProcessing();
     const [isApprovalOpen, setIsApprovalOpen] = useState(false);
@@ -205,9 +207,9 @@ function SyncSubscriberPermissionsModal({ isOpen, onClose, roleId, roleName, cur
                 isOpen={isApprovalOpen}
                 onClose={() => setIsApprovalOpen(false)}
                 onConfirm={handleConfirmSync}
-                title="Confirm Sync Permissions"
-                message={`Are you sure you want to sync permissions for the ${roleName} role?`}
-                confirmBtnText={isLoading ? "Syncing..." : "Confirm"}
+                title={t("Confirm Sync Permissions")}
+                message={t("Are you sure you want to sync permissions for the ROLE_NAME role?", { ROLE_NAME: roleName })}
+                confirmBtnText={isLoading ? t("Syncing...") : t("Confirm")}
                 type="warning"
             />
 

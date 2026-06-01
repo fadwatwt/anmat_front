@@ -23,7 +23,7 @@ function PermissionsPage() {
 
     const rows = (permissionsData || []).map(permission => [
         <div key="name" className="flex items-center justify-start gap-2">
-            <span className="text-lg text-cell-primary font-medium">
+            <span className=" text-cell-primary font-medium">
                 {permission.name}
             </span>
         </div>,

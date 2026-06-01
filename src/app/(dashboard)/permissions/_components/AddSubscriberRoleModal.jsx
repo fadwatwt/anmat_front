@@ -179,8 +179,8 @@ function AddSubscriberRoleModal({ isOpen, onClose }) {
                 onClose={() => setIsApprovalOpen(false)}
                 onConfirm={handleConfirmCreate}
                 title={t("Confirm Create Role")}
-                message={`Are you sure you want to create the ${formik.values.name} role?`}
-                confirmBtnText={isLoading ? "Creating..." : "Confirm"}
+                message={t("Are you sure you want to create the ROLE_NAME role?", { ROLE_NAME: formik.values.name })}
+                confirmBtnText={isLoading ? t("Creating...") : t("Confirm")}
                 type="warning"
             />
 

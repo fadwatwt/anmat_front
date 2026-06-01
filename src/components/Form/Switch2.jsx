@@ -4,13 +4,13 @@ function Switch2({ isOn, handleToggle, className }) {
         <button
             type={"button"}
             onClick={handleToggle}
-            className={` flex items-center border border-status-border rounded-full ${className ? className : "h-5 w-10"} p-0.5 transition-colors ${isOn
+            className={`flex items-center border border-status-border rounded-full overflow-hidden ${className ? className : "h-5 w-10"} p-0.5 transition-colors ${isOn
                     ? "bg-primary-500 dark:bg-primary-200 dark:text-black"
                     : "bg-status-bg"
                 }`}
         >
             <div
-                className={`relative bg-surface w-1/3 h-[90%] rounded-full shadow-sm transform transition-transform flex items-center justify-center ${isOn ? "translate-x-5" : "translate-x-0"}`}
+                className={`relative bg-surface w-1/3 h-[90%] rounded-full shadow-sm transform transition-transform flex items-center justify-center ${isOn ? "translate-x-5 rtl:translate-x-0" : "translate-x-0 rtl:-translate-x-5"}`}
             >
                 {/* Small Circle Inside */}
                 <div

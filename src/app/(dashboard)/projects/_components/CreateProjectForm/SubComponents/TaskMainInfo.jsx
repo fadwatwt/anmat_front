@@ -223,9 +223,9 @@ function TaskMainInfo({ task, type = "project", values, handleChange, setFieldVa
         />
       </div>
 
-      <div className={"grid grid-cols-1 md:grid-cols-2 gap-4"}>
+      <div className={"w-full"}>
         {type === "project" ? (
-          <>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <DateInput
               value={values?.started_in || ""}
               onChange={handleChange}
@@ -240,7 +240,7 @@ function TaskMainInfo({ task, type = "project", values, handleChange, setFieldVa
               title={t("Finished at")}
               placeholder={t("DD / MM / YYYY")}
             />
-          </>
+          </div>
         ) : (
           <DateInput
             value={values?.end_date || ""}

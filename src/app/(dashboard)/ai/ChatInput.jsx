@@ -28,7 +28,7 @@ const ChatInput = ({
           <svg className="w-6 h-6 text-red-500 shrink-0 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
-          <span className="text-gray-900 dark:text-gray-100 font-medium text-sm sm:text-base text-center sm:text-left">
+          <span className="text-gray-900 dark:text-gray-100 font-medium text-sm sm:text-base text-center sm:text-start">
             {t("You have depleted your tokens balance. Upgrade to continue.")}
           </span>
         </div>
@@ -81,7 +81,7 @@ const ChatInput = ({
                   <button
                     type="button"
                     onClick={() => onRemoveStagedFile(index)}
-                    className="ml-1 p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600"
+                    className="ms-1 p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600"
                   >
                     <X size={14} />
                   </button>

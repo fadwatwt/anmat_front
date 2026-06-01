@@ -43,11 +43,11 @@ function CompanySubscriptions() {
     }
 
     const buttons = {
-        "billing-history": {
-            btnTitle: t("Change Billing Info"),
-            btnOnClick: toggleBillingInfoModal,
-            btnIcon: <RiPencilLine className="text-white text-md dark:text-black" />
-        },
+        // "billing-history": {
+        //     btnTitle: t("Change Billing Info"),
+        //     btnOnClick: toggleBillingInfoModal,
+        //     btnIcon: <RiPencilLine className="text-white text-md dark:text-black" />
+        // },
         "payent-methods": {
             btnTitle: t("Add new method"),
             btnOnClick: toggleNewPaymentModal,

@@ -65,7 +65,7 @@ function AiMessageContent({ text, className = "" }) {
             <hr className="my-4 border-gray-200 dark:border-gray-700" {...props} />
           ),
           blockquote: ({ children, ...props }) => (
-            <blockquote className="border-l-4 border-primary-400 pl-4 my-3 text-gray-600 dark:text-gray-400 italic" {...props}>
+            <blockquote className="border-s-4 border-primary-400 ps-4 my-3 text-gray-600 dark:text-gray-400 italic" {...props}>
               {children}
             </blockquote>
           ),
@@ -97,7 +97,7 @@ function AiMessageContent({ text, className = "" }) {
             </thead>
           ),
           th: ({ children, ...props }) => (
-            <th className="border border-gray-200 dark:border-gray-700 px-4 py-2.5 text-left font-semibold text-gray-700 dark:text-gray-300" {...props}>
+            <th className="border border-gray-200 dark:border-gray-700 px-4 py-2.5 text-start font-semibold text-gray-700 dark:text-gray-300" {...props}>
               {children}
             </th>
           ),
