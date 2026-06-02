@@ -196,7 +196,7 @@ function SignIn() {
                                 <p className="text-sm text-cell-primary">{t("Remember Me")}</p>
                             </div>
                             <Link href="/forget-password"
-                                className={`text-sm text-primary-base hover:text-primary-600 underline cursor-pointer ${(isLoading || isSubmitting) ? 'pointer-events-none text-gray-400 dark:text-gray-500' : ''}`}>
+                                className={`text-sm text-primary-base hover:text-primary-600 underline dark:text-primary-400 cursor-pointer ${(isLoading || isSubmitting) ? 'pointer-events-none text-gray-400 dark:text-gray-500' : ''}`}>
                                 {t("Forgot Password?")}
                             </Link>
                         </div>

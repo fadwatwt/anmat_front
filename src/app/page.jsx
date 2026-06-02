@@ -23,7 +23,7 @@ function Desktop2Page() {
   return (
     <div
       className={
-        "flex flex-col w-full items-center max-h-screen overflow-y-auto"
+        "flex flex-col w-full items-center max-h-screen overflow-y-auto bg-gray-50 dark:bg-gray-900"
       }
     >
       <div
@@ -54,7 +54,7 @@ function Desktop2Page() {
                 {" "}
                 <Link href="sign-in"> {t("Login")}</Link>
               </p>
-              <Link href={"/register/subscriber/email"} className={"bg-white py-1.5 px-3 rounded-md text-sm md:text-base"}>
+              <Link href={"/register/subscriber/email"} className={"bg-white dark:bg-surface dark:text-gray-100 py-1.5 px-3 rounded-md text-sm md:text-base"}>
                 {t("Sign up")}
               </Link>
             </div>
@@ -72,7 +72,7 @@ function Desktop2Page() {
             </p>
           </div>
           <div className={"flex justify-center items-center gap-3"}>
-            <button className={"bg-white py-2 px-3 rounded-md text-sm"}>
+            <button className={"bg-white dark:bg-surface dark:text-gray-100 py-2 px-3 rounded-md text-sm"}>
               <a href="/dashboard"> {t("Get started")}</a>
             </button>
             <p className={"text-primary-200"}>
@@ -83,24 +83,24 @@ function Desktop2Page() {
             <img
               src="/images/LandingPage/dashboardImage.png"
               alt={t("dashboard image")}
-              className={"w-full sm:w-10/12 md:w-8/12"}
+              className={"w-full sm:w-10/12 md:w-8/12 rounded-xl dark:shadow-2xl dark:shadow-primary-900/30"}
             />
           </div>
         </div>
       </div>
       <div
         className={
-          "w-full max-w-[87rem] flex flex-col justify-center items-center gap-10 px-4"
+          "w-full max-w-[87rem] flex flex-col justify-center items-center gap-10 px-4 py-8"
         }
       >
         <div className={"flex flex-col py-10 text-center"}>
-          <p className={"text-blue-500 text-sm"}>{t("Main Features")}</p>
-          <p className={"text-3xl sm:text-4xl font-bold text-black "}>{t("Key Features")}</p>
+          <p className={"text-blue-500 dark:text-blue-400 text-sm"}>{t("Main Features")}</p>
+          <p className={"text-3xl sm:text-4xl font-bold text-black dark:text-white "}>{t("Key Features")}</p>
         </div>
         <div className={"w-full grid grid-cols-1 md:grid-cols-2 gap-6"}>
           <div
             className={
-              "bg-gradient-to-tr from-[#FED2CC] to-[#FFDFDB80] py-0 w-full rounded-xl"
+              "bg-gradient-to-tr from-[#FED2CC] to-[#FFDFDB80] dark:from-[#3a2020] dark:to-[#2a181880] py-0 w-full rounded-xl"
             }
           >
             <div className={"flex flex-col gap-2 items-start "}>
@@ -109,10 +109,10 @@ function Desktop2Page() {
                   " pt-10 px-10 pb-4 flex-col items-start gap-2 text-start"
                 }
               >
-                <p className={"text-lg font-bold text-black"}>
+                <p className={"text-lg font-bold text-black dark:text-white"}>
                   {t("Performance Analytics")}
                 </p>
-                <p className={"text-black text-wrap"}>
+                <p className={"text-black dark:text-gray-300 text-wrap"}>
                   {t("Track performance across tasks, employees, and departments.")}
                 </p>
               </div>
@@ -136,7 +136,7 @@ function Desktop2Page() {
           </div>
           <div
             className={
-              "bg-gradient-to-tr from-[#D2C3FE] to-[#E2D6FF80] w-full rounded-md"
+              "bg-gradient-to-tr from-[#D2C3FE] to-[#E2D6FF80] dark:from-[#2a2040] dark:to-[#1e183080] w-full rounded-md"
             }
           >
             <div className={"flex flex-col gap-2 items-start "}>
@@ -145,10 +145,10 @@ function Desktop2Page() {
                   " pt-10 px-6 sm:px-10 pb-4 flex-col items-start gap-2 text-start"
                 }
               >
-                <p className={"text-lg font-bold text-black"}>
+                <p className={"text-lg font-bold text-black dark:text-white"}>
                   {t("Performance Analytics")}
                 </p>
-                <p className={"text-black text-wrap"}>
+                <p className={"text-black dark:text-gray-300 text-wrap"}>
                   {t("Track performance across tasks, employees, and departments.")}
                 </p>
               </div>
@@ -167,7 +167,7 @@ function Desktop2Page() {
           </div>
           <div
             className={
-              "bg-gradient-to-tr from-[#BFDDD1] to-[#D6EAE180] w-full rounded-xl"
+              "bg-gradient-to-tr from-[#BFDDD1] to-[#D6EAE180] dark:from-[#1e2e28] dark:to-[#18282080] w-full rounded-xl"
             }
           >
             <div className={"flex flex-col gap-2 items-start "}>
@@ -176,10 +176,10 @@ function Desktop2Page() {
                   " pt-10 px-6 sm:px-10 pb-4 flex-col items-start gap-2 text-start"
                 }
               >
-                <p className={"text-lg font-bold text-black"}>
+                <p className={"text-lg font-bold text-black dark:text-white"}>
                   {t("Performance Analytics")}
                 </p>
-                <p className={"text-black text-wrap"}>
+                <p className={"text-black dark:text-gray-300 text-wrap"}>
                   {t("Track performance across tasks, employees, and departments.")}
                 </p>
               </div>
@@ -203,7 +203,7 @@ function Desktop2Page() {
           </div>
           <div
             className={
-              "bg-gradient-to-tr from-[#C7D5FF] to-[#E5EBFF80] w-full rounded-xl"
+              "bg-gradient-to-tr from-[#C7D5FF] to-[#E5EBFF80] dark:from-[#1e2240] dark:to-[#181e3080] w-full rounded-xl"
             }
           >
             <div className={"flex flex-col gap-2 items-start "}>
@@ -212,10 +212,10 @@ function Desktop2Page() {
                   " pt-10 px-6 sm:px-10 pb-4 flex-col items-start gap-2 text-start"
                 }
               >
-                <p className={"text-lg font-bold text-black"}>
+                <p className={"text-lg font-bold text-black dark:text-white"}>
                   {t("Performance Analytics")}
                 </p>
-                <p className={"text-black text-wrap"}>
+                <p className={"text-black dark:text-gray-300 text-wrap"}>
                   {t("Track performance across tasks, employees, and departments.")}
                 </p>
               </div>
@@ -277,7 +277,7 @@ function Desktop2Page() {
               <div className={"w-full md:w-1/2"}>
                 <button
                   className={
-                    "py-2 rounded-xl w-full bg-primary-100 text-primary-900"
+                    "py-2 rounded-xl w-full bg-primary-100 dark:bg-primary-800 text-primary-900 dark:text-primary-50"
                   }
                 >
                   {" "}
@@ -296,14 +296,14 @@ function Desktop2Page() {
         </div>
         <div className={"flex flex-col w-full "}>
           <div className={"flex flex-col py-10 gap-12"}>
-            <div className={"flex flex-col"}>
-              <p className={"text-blue-500 text-sm"}>{t("Main Features")}</p>
-              <p className={"text-4xl font-bold text-black "}>
+            <div className={"flex flex-col items-center w-full"}>
+              <p className={"text-blue-500 dark:text-blue-400 text-sm"}>{t("Main Features")}</p>
+              <p className={"text-4xl font-bold text-black dark:text-white "}>
                 {t("Plans tailored for your team")}
               </p>
             </div>
             <div className={"flex items-center justify-center gap-3 relative"}>
-              <p className={!isOnSwitch ? "font-bold text-primary-600" : ""}>{t("Pay Monthly")}</p>
+              <p className={!isOnSwitch ? "font-bold text-primary-600 dark:text-primary-300" : "dark:text-gray-300"}>{t("Pay Monthly")}</p>
               <button
                 type={"button"}
                 onClick={() => setIsOnSwitch(!isOnSwitch)}
@@ -313,14 +313,14 @@ function Desktop2Page() {
                   }`}
               >
                 <div
-                  className={`relative bg-white dark:shadow-inner dark:shadow-gray-500 dark:bg-gray-800 w-3.5 h-3.5 rounded-full transform transition-transform flex items-center justify-center ${isOnSwitch ? (i18n?.language === "ar" ? "-translate-x-5" : "translate-x-5") : ""}`}
+                  className={`relative bg-white dark:bg-gray-400 dark:shadow-inner dark:shadow-gray-500 w-3.5 h-3.5 rounded-full transform transition-transform flex items-center justify-center ${isOnSwitch ? (i18n?.language === "ar" ? "-translate-x-5" : "translate-x-5") : ""}`}
                 >
                   <div
                     className={`w-1.5 h-1.5 rounded-full dark:shadow-inner drop-shadow shadow-gray-500 `}
                   />
                 </div>
               </button>
-              <p className={isOnSwitch ? "font-bold text-primary-600" : ""}>{t("Pay Yearly")}</p>
+              <p className={isOnSwitch ? "font-bold text-primary-600 dark:text-primary-300" : "dark:text-gray-300"}>{t("Pay Yearly")}</p>
               <img
                 src="/images/LandingPage/arrowSwitchImage.png"
                 alt={t("arrow")}
@@ -329,70 +329,71 @@ function Desktop2Page() {
             </div>
             <div className={"w-full flex justify-center items-center gap-6 flex-wrap px-4"}>
               {isLoading ? (
-                <div className="flex justify-center items-center py-20 w-full text-primary-600 font-bold text-xl">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mr-3"></div> <div className="flex items-center justify-center w-full p-4"><ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} /></div> </div>
+                <div className="flex justify-center items-center py-20 w-full text-primary-600 dark:text-primary-300 font-bold text-xl">
+                  <ImSpinner2 className="animate-spin text-primary-base dark:text-primary-300" size={36} />
+                </div>
               ) : plans?.filter(p => p.is_active)?.length > 0 ? (
                 plans?.filter(plan => plan.is_active).map((plan) => {
                   const currentInterval = isOnSwitch ? "year" : "month";
                   const pricing = plan.pricing?.find(p => p.interval === currentInterval && p.is_active);
-                  const Icon = plan.name?.toLowerCase().includes('enterprise') ? RiBuilding4Line : 
-                               plan.name?.toLowerCase().includes('pro') ? RiCopperDiamondLine : RiFlashlightLine;
-                  
+                  const Icon = plan.name?.toLowerCase().includes('enterprise') ? RiBuilding4Line :
+                    plan.name?.toLowerCase().includes('pro') ? RiCopperDiamondLine : RiFlashlightLine;
+
                   const isHighlighted = plan.name?.toLowerCase().includes('pro');
-                  
+
                   return (
                     <div
                       key={plan._id}
                       className={`
                         w-full md:w-[45%] lg:w-[30%] xl:w-[28%] rounded-2xl border shadow-lg flex flex-col gap-6 py-10 px-8 transition-all duration-300 hover:-translate-y-2
-                        ${isHighlighted ? 'border-primary-500 bg-primary-50 transform scale-105 shadow-primary-200' : 'border-gray-200 bg-white hover:shadow-xl'}
+                        ${isHighlighted ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30 transform scale-105 shadow-primary-200' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-surface hover:shadow-xl'}
                       `}
                     >
                       <div className={"flex flex-col gap-3 justify-center items-center text-center"}>
-                        <div className={`rounded-full w-14 h-14 flex items-center justify-center ${isHighlighted ? 'bg-primary-500' : 'bg-primary-100'}`}>
-                          <span className={`rounded-full p-2 flex items-center justify-center ${isHighlighted ? 'bg-primary-400' : 'bg-primary-200'}`}>
-                            <Icon size={"28"} className={isHighlighted ? "text-white" : "text-primary-700"} />
+                        <div className={`rounded-full w-14 h-14 flex items-center justify-center ${isHighlighted ? 'bg-primary-500' : 'bg-primary-100 dark:bg-primary-800'}`}>
+                          <span className={`rounded-full p-2 flex items-center justify-center ${isHighlighted ? 'bg-primary-400' : 'bg-primary-200 dark:bg-primary-700'}`}>
+                            <Icon size={"28"} className={isHighlighted ? "text-white" : "text-primary-700 dark:text-primary-200"} />
                           </span>
                         </div>
-                        <h3 className={"text-primary-800 text-2xl font-extrabold mt-2"}>{plan.name}</h3>
+                        <h3 className={"text-primary-800 dark:text-primary-200 text-2xl font-extrabold mt-2"}>{plan.name}</h3>
                         <div className={"flex items-end justify-center gap-1"}>
-                          <span className={"text-5xl font-black text-gray-900"}>
+                          <span className={"text-5xl font-black text-gray-900 dark:text-gray-100"}>
                             ${pricing ? pricing.price : '-'}
                           </span>
-                          <span className="text-gray-500 font-medium mb-1">
+                          <span className="text-gray-500 dark:text-gray-400 font-medium mb-1">
                             /{currentInterval === 'month' ? t('mo') : t('yr')}
                           </span>
                         </div>
-                        <p className={"text-gray-500 text-sm h-12 line-clamp-2 mt-2"}>
+                        <p className={"text-gray-500 dark:text-gray-400 text-sm h-12 line-clamp-2 mt-2"}>
                           {plan.description || t("Everything you need to manage your business efficiently.")}
                         </p>
                       </div>
-                      
+
                       <div className={"flex-1 w-full mt-4"}>
                         <div className={"flex flex-col items-start gap-4"}>
                           {plan.features?.slice(0, 6).map((feature, fIdx) => (
                             <div key={fIdx} className={"flex items-center gap-3 w-full"}>
-                              <div className={`w-6 h-6 flex justify-center items-center rounded-full shrink-0 ${isHighlighted ? 'bg-primary-500' : 'bg-primary-100'}`}>
-                                <RiCheckLine size={"16"} className={isHighlighted ? "text-white" : "text-primary-700"} />
+                              <div className={`w-6 h-6 flex justify-center items-center rounded-full shrink-0 ${isHighlighted ? 'bg-primary-500' : 'bg-primary-100 dark:bg-primary-800'}`}>
+                                <RiCheckLine size={"16"} className={isHighlighted ? "text-white" : "text-primary-700 dark:text-primary-200"} />
                               </div>
-                              <p className={"text-sm font-medium text-gray-700"}>
+                              <p className={"text-sm font-medium text-gray-700 dark:text-gray-300"}>
                                 {feature.plan_feature?.title || feature.feature_type?.title}
-                                {feature.properties?.[0] && <span className="text-gray-500"> ({feature.properties[0].value})</span>}
+                                {feature.properties?.[0] && <span className="text-gray-500 dark:text-gray-400"> ({feature.properties[0].value})</span>}
                               </p>
                             </div>
                           ))}
                         </div>
                       </div>
-                      
+
                       <Link
                         href={pricing ? `/register/subscriber/email?plan=${plan._id}&interval=${currentInterval}` : '#'}
                         className={`
                           rounded-xl w-full py-3.5 text-center font-bold text-lg transition-all
-                          ${!pricing 
-                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
-                            : isHighlighted 
-                              ? 'bg-primary-600 hover:bg-primary-700 text-white shadow-md hover:shadow-lg' 
-                              : 'bg-primary-100 hover:bg-primary-200 text-primary-800'}
+                          ${!pricing
+                            ? 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-100 cursor-not-allowed'
+                            : isHighlighted
+                              ? 'bg-primary-600 hover:bg-primary-700 text-white shadow-md hover:shadow-lg'
+                              : 'bg-primary-100 dark:bg-primary-800 hover:bg-primary-200 dark:hover:bg-primary-700 text-primary-800 dark:text-primary-50'}
                         `}
                       >
                         {pricing ? t('Get started') : t('Not available')}
@@ -401,48 +402,48 @@ function Desktop2Page() {
                   );
                 })
               ) : (
-                 <div className="flex justify-center py-20 w-full text-gray-500 text-lg">{t("No active plans available at the moment.")}</div>
+                <div className="flex justify-center py-20 w-full text-gray-500 dark:text-gray-400 text-lg">{t("No active plans available at the moment.")}</div>
               )}
             </div>
 
           </div>
         </div>
-        <div className={"flex flex-col gap-5 justify-center items-center w-full px-4"}>
-          <p className={"text-base sm:text-lg text-gray-400"}>{t("Trusted by X companies")}</p>
-          <div className={"flex flex-wrap items-center justify-center max-w-full px-4 sm:px-10 gap-6 sm:gap-8"}>
+        <div className={"flex flex-col gap-5 justify-center items-center w-full px-4 py-8"}>
+          <p className={"text-base sm:text-lg text-gray-400 dark:text-gray-500"}>{t("Trusted by X companies")}</p>
+          <div className={"flex flex-wrap items-center justify-center max-w-full px-4 sm:px-10 gap-6 sm:gap-8 opacity-60 dark:opacity-40"}>
             <img
               src="/images/LandingPage/Companys/company1.png"
               alt={""}
-              className={"w-28 sm:w-36 md:w-44"}
+              className={"w-28 sm:w-36 md:w-44 dark:brightness-0 dark:invert"}
             />
             <img
               src="/images/LandingPage/Companys/company2.png"
               alt={""}
-              className={"w-28 sm:w-36 md:w-44"}
+              className={"w-28 sm:w-36 md:w-44 dark:brightness-0 dark:invert"}
             />
             <img
               src="/images/LandingPage/Companys/company3.png"
               alt={""}
-              className={"w-28 sm:w-36 md:w-44"}
+              className={"w-28 sm:w-36 md:w-44 dark:brightness-0 dark:invert"}
             />
             <img
               src="/images/LandingPage/Companys/company4.png"
               alt={""}
-              className={"w-28 sm:w-36 md:w-44"}
+              className={"w-28 sm:w-36 md:w-44 dark:brightness-0 dark:invert"}
             />
             <img
               src="/images/LandingPage/Companys/company5.png"
               alt={""}
-              className={"w-28 sm:w-36 md:w-44"}
+              className={"w-28 sm:w-36 md:w-44 dark:brightness-0 dark:invert"}
             />
           </div>
         </div>
         <div className={"flex flex-col gap-5 w-full md:w-3/4 lg:w-1/2 px-4"}>
-          <div className={"flex flex-col gap-5 text-center md:text-start"}>
-            <p className={"text-black text-xl sm:text-2xl font-bold"}>
+          <div className={"flex flex-col gap-5 text-center md:text-start items-center"}>
+            <p className={"text-black text-xl sm:text-2xl font-bold dark:text-white"}>
               {t("Frequently asked questions")}
             </p>
-            <p className={"text-gray-500 text-sm sm:text-base"}>
+            <p className={"text-gray-500 dark:text-gray-400 text-sm sm:text-base"}>
               {t("Everything you need to know about managing your dashboard.")}
             </p>
           </div>
@@ -496,13 +497,13 @@ function Desktop2Page() {
                 </div>
               </div>
               <div className={"flex flex-col gap-2"}>
-                <p className={"text-xl text-black"}>{t("Connect with us")}</p>
-                <p className={"text-gray-600 text-sm"}>
+                <p className={"text-xl text-black dark:text-white"}>{t("Connect with us")}</p>
+                <p className={"text-gray-600 dark:text-gray-400 text-sm"}>
                   {t("Quickly get started by exploring our product today!")}
                 </p>
               </div>
               <button
-                className={"bg-primary-base text-white rounded-xl py-2 px-3"}
+                className={"bg-primary-base dark:bg-primary-600 text-white rounded-xl py-2 px-3"}
               >
                 {t("Get started")}
               </button>
@@ -512,7 +513,7 @@ function Desktop2Page() {
       </div>
       <div
         className={
-          "footer w-full flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-0 bg-gray-700 px-4 sm:px-7 py-8 sm:py-12 text-center sm:text-start"
+          "footer w-full flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-0 bg-gray-700 dark:bg-gray-800 px-4 sm:px-7 py-8 sm:py-12 text-center sm:text-start"
         }
       >
         <div className={"icons flex items-center gap-3"}>

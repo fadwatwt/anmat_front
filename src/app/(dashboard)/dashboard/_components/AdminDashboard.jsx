@@ -135,7 +135,7 @@ const AdminDashboard = () => {
     return (
         <Page isTitle={false} className="gap-6">
             {/* Header */}
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1 py-2 px-4">
                 <h1 className="text-2xl font-bold text-table-title">{t("Dashboard Overview")}</h1>
                 <p className="text-sm text-cell-secondary">{t("Welcome back, here's what's happening with the system today.")}</p>
             </div>
@@ -145,7 +145,7 @@ const AdminDashboard = () => {
                 <>
                     {statsLoading ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 w-full">
-                            {[1,2,3,4].map(i => <SectionSkeleton key={i} />)}
+                            {[1, 2, 3, 4].map(i => <SectionSkeleton key={i} />)}
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 w-full">
@@ -227,7 +227,7 @@ const AdminDashboard = () => {
 
                                 {orgsLoading ? (
                                     <div className="flex flex-col gap-4">
-                                        {[1,2,3].map(i => (
+                                        {[1, 2, 3].map(i => (
                                             <div key={i} className="flex gap-4 animate-pulse">
                                                 <div className="w-12 h-12 rounded-full bg-status-bg" />
                                                 <div className="flex-1 flex flex-col gap-2 justify-center">

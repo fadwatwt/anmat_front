@@ -62,10 +62,10 @@ export const aiApi = apiSlice.injectEndpoints({
             transformResponse: (response) => response.data || response,
         }),
         sendMessage: builder.mutation({
-            query: ({ message, conversation_id, attachment_urls }) => ({
+            query: ({ message, conversation_id, attachment_urls, model }) => ({
                 url: "api/ai/chat",
                 method: "POST",
-                body: { message, conversation_id, attachment_urls },
+                body: { message, conversation_id, attachment_urls, model },
             }),
             invalidatesTags: (result, error, { conversation_id }) => [
                 "AITokens",

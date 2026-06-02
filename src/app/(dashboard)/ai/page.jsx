@@ -12,6 +12,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useSelector } from "react-redux";
 import { selectUser } from "@/redux/auth/authSlice";
 import { useTranslation } from "react-i18next";
+import { DEFAULT_MODEL } from "@/config/aiModels";
 import {
   useGetTokensBalanceQuery,
   useListConversationsQuery,
@@ -85,6 +86,7 @@ const AssistantPage = () => {
   const [stagedFiles, setStagedFiles] = useState([]); // New state for staged files
   const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
   const [conversationId, setConversationId] = useState(null);
+  const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL);
   const typingTimeoutsRef = useRef([]);
 
   // Sidebar editing states
@@ -233,6 +235,7 @@ const AssistantPage = () => {
         message: userMessage.text,
         conversation_id: conversationId || undefined,
         attachment_urls: (userMessage.files || []).map((f) => f.url).filter(Boolean),
+        model: selectedModel,
       }).unwrap();
 
       if (data?.conversation_id && !conversationId) {
@@ -565,11 +568,10 @@ const AssistantPage = () => {
 
         {/* Left Sidebar: Chat History & Token usage (hidden until toggled) */}
         <aside
-          className={`absolute md:absolute inset-y-0 left-0 z-30 w-80 max-w-[85vw] flex-shrink-0 border-r border-gray-200 dark:border-gray-800 flex flex-col bg-gray-50/95 dark:bg-gray-900/95 backdrop-blur-sm shadow-xl transition-transform duration-300 ease-out ${
-            isHistoryOpen ? "translate-x-0" : "-translate-x-full pointer-events-none"
-          }`}
+          className={`absolute md:absolute inset-y-0 left-0 z-30 w-80 max-w-[85vw] flex-shrink-0 border-r border-gray-200 dark:border-gray-800 flex flex-col bg-gray-50/95 dark:bg-gray-900/95 backdrop-blur-sm shadow-xl transition-transform duration-300 ease-out ${isHistoryOpen ? "translate-x-0" : "-translate-x-full pointer-events-none"
+            }`}
         >
-          
+
           {/* Sidebar header */}
           <div className="p-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between gap-2">
             <h2 className="text-sm font-bold text-gray-900 dark:text-gray-100">{t("Chat History")}</h2>
@@ -597,7 +599,7 @@ const AssistantPage = () => {
           <div className="flex-1 overflow-y-auto hide-scrollbar p-3 space-y-4">
             {loadingConversations ? (
               <div className="flex justify-center py-8">
-                <div className="w-6 h-6 border-2 border-gray-300 border-t-primary-500 rounded-full animate-spin"></div>
+                <div className="w-6 h-6 border-2 border-gray-300 dark:border-gray-600 border-t-primary-500 rounded-full animate-spin"></div>
               </div>
             ) : Object.keys(groupedConversations).length === 0 ? (
               <div className="text-center text-gray-400 py-8 text-sm">
@@ -617,11 +619,10 @@ const AssistantPage = () => {
                       <div
                         key={conv._id}
                         onClick={() => !isEditing && handleSelectConversation(conv._id)}
-                        className={`group relative flex items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-150 ${
-                          isActive
-                            ? "bg-primary-50 dark:bg-primary-950/20 text-primary-600 dark:text-primary-400 font-medium"
-                            : "hover:bg-gray-100/70 dark:hover:bg-gray-800/40 text-gray-700 dark:text-gray-300"
-                        }`}
+                        className={`group relative flex items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-150 ${isActive
+                          ? "bg-primary-50 dark:bg-primary-950/20 text-primary-600 dark:text-primary-400 font-medium"
+                          : "hover:bg-gray-100/70 dark:hover:bg-gray-800/40 text-gray-700 dark:text-gray-300"
+                          }`}
                       >
                         <div className="flex items-center gap-2.5 flex-1 min-w-0 pe-8">
                           <img
@@ -681,7 +682,7 @@ const AssistantPage = () => {
           <div className="p-4 border-t border-gray-200 dark:border-gray-800 bg-gray-50/80 dark:bg-gray-900/50">
             {balanceLoading ? (
               <div className="flex items-center justify-center py-4">
-                <div className="w-5 h-5 border-2 border-gray-300 border-t-primary-500 rounded-full animate-spin"></div>
+                <div className="w-5 h-5 border-2 border-gray-300 dark:border-gray-600 border-t-primary-500 rounded-full animate-spin"></div>
               </div>
             ) : hasUnlimitedAiAccess ? (
               <div className="bg-white dark:bg-gray-800 border border-gray-200/60 dark:border-gray-700/60 rounded-2xl p-4 flex flex-col gap-2 shadow-sm">
@@ -743,7 +744,7 @@ const AssistantPage = () => {
 
         {/* Right Chat Panel */}
         <div className="flex-1 flex flex-col h-full bg-white dark:bg-gray-900 relative min-w-0">
-          
+
           {/* Active Chat Header */}
           <div className="px-4 sm:px-6 py-3 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 min-w-0">
@@ -796,12 +797,12 @@ const AssistantPage = () => {
           <div className="flex-1 overflow-y-auto hide-scrollbar p-6 space-y-6 flex flex-col" ref={chatContainerRef}>
             {loadingMessages ? (
               <div className="flex flex-col items-center justify-center h-full gap-3">
-                <div className="w-8 h-8 border-4 border-gray-200 border-t-primary-500 rounded-full animate-spin"></div>
+                <div className="w-8 h-8 border-4 border-gray-200 dark:border-gray-700 border-t-primary-500 rounded-full animate-spin"></div>
                 <span className="text-sm text-gray-500">{t("Loading conversation...")}</span>
               </div>
             ) : !hasStarted ? (
               <div className="flex flex-col items-center justify-center h-full max-w-xl mx-auto text-center gap-6">
-                <img src="/images/AiAssistant/file.svg" alt={t("Assistant Logo")} style={{ width: '80px', height: '80px' }} />
+                <img src="/images/AiAssistant/file.svg" alt={t("Assistant Logo")} style={{ width: '80px', height: '80px' }} className="" />
                 <div>
                   <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                     {t("Welcome to AI Assistant")}
@@ -847,8 +848,8 @@ const AssistantPage = () => {
                                 rows={1}
                               />
                               <div className="flex gap-2 mt-1">
-                                <button onClick={() => handleCopy(editValue)} title={t("Copy")} className="text-gray-400 hover:text-primary-500"><Copy size={18} /></button>
-                                <button onClick={() => handleEditSave(idx)} title={t("Save")} className="text-gray-400 hover:text-primary-500"><Save size={18} /></button>
+                                <button onClick={() => handleCopy(editValue)} title={t("Copy")} className="text-gray-400 dark:text-gray-500 hover:text-primary-500"><Copy size={18} /></button>
+                                <button onClick={() => handleEditSave(idx)} title={t("Save")} className="text-gray-400 dark:text-gray-500 hover:text-primary-500"><Save size={18} /></button>
                               </div>
                             </div>
                           ) : (
@@ -873,19 +874,19 @@ const AssistantPage = () => {
                                       ) : (
                                         <div key={fileIdx} className="rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow flex items-center w-full sm:w-[492px] h-[68px] px-5 py-4 gap-2.5">
                                           {isDocument(file.type, file.name) ? (
-                                            <span className="inline-flex items-center justify-center w-8 h-8 bg-primary-50 rounded-lg shrink-0">
-                                              <img src="/images/AiAssistant/document-text.svg" alt={t("Document")} className="w-6 h-6" />
+                                            <span className="inline-flex items-center justify-center w-8 h-8 bg-primary-50 dark:bg-primary-900/30 rounded-lg shrink-0">
+                                              <img src="/images/AiAssistant/document-text.svg" alt={t("Document")} className="w-6 h-6 dark:invert dark:brightness-200" />
                                             </span>
                                           ) : (
-                                            <span className="inline-flex items-center justify-center w-8 h-8 bg-primary-50 rounded-lg shrink-0">
-                                              <img src="/images/AiAssistant/file.svg" alt={t("File")} className="w-6 h-6" />
+                                            <span className="inline-flex items-center justify-center w-8 h-8 bg-primary-50 dark:bg-primary-900/30 rounded-lg shrink-0">
+                                              <img src="/images/AiAssistant/file.svg" alt={t("File")} className="w-6 h-6 dark:invert dark:brightness-200" />
                                             </span>
                                           )}
                                           <div className="flex-1 min-w-0">
                                             <div className="font-semibold text-lg text-gray-900 dark:text-gray-100 truncate">{file.name}</div>
                                           </div>
                                           <a href={file.url} download={file.name} className="flex items-center justify-center text-primary-500 hover:text-primary-700 shrink-0" title={t("Download")}>
-                                            <img src="/images/AiAssistant/lucide_download.svg" alt={t("Download")} className="w-6 h-6" style={{ width: 24, height: 24 }} />
+                                            <img src="/images/AiAssistant/lucide_download.svg" alt={t("Download")} className="w-6 h-6 dark:invert dark:brightness-200" style={{ width: 24, height: 24 }} />
                                           </a>
                                         </div>
                                       )
@@ -895,8 +896,8 @@ const AssistantPage = () => {
                               </div>
                               {(!msg.audio && !msg.files) && (
                                 <div className="flex gap-2 mt-1">
-                                  <button onClick={() => handleEdit(idx, msg.text)} title={t("Edit")} className="text-gray-400 hover:text-primary-500"><img src="/images/AiAssistant/edit.svg" alt={t("Edit")} className="w-5 h-5" /></button>
-                                  <button onClick={() => handleCopy(msg.text)} title={t("Copy")} className="text-gray-400 hover:text-primary-500"><img src="/images/AiAssistant/copy.svg" alt={t("Copy")} className="w-5 h-5" /></button>
+                                  <button onClick={() => handleEdit(idx, msg.text)} title={t("Edit")} className="text-gray-400 dark:text-gray-500 hover:text-primary-500"><img src="/images/AiAssistant/edit.svg" alt={t("Edit")} className="w-5 h-5 dark:invert dark:brightness-200" /></button>
+                                  <button onClick={() => handleCopy(msg.text)} title={t("Copy")} className="text-gray-400 dark:text-gray-500 hover:text-primary-500"><img src="/images/AiAssistant/copy.svg" alt={t("Copy")} className="w-5 h-5 dark:invert dark:brightness-200" /></button>
                                 </div>
                               )}
                             </>
@@ -954,9 +955,9 @@ const AssistantPage = () => {
                                   {msg.thought}
                                 </div>
                               )}
-                              {msg.thought && <hr className="my-2 border-gray-200" />}
+                              {msg.thought && <hr className="my-2 border-gray-200 dark:border-gray-700" />}
                               <textarea
-                                className="text-base text-gray-900 w-full font-sans font-semibold leading-relaxed box-border text-start outline-none border-none mb-2 resize-none bg-transparent"
+                                className="text-base text-gray-900 dark:text-gray-100 w-full font-sans font-semibold leading-relaxed box-border text-start outline-none border-none mb-2 resize-none bg-transparent"
                                 style={{
                                   wordBreak: 'break-word',
                                   width: editDims[idx]?.width ? editDims[idx].width + 'px' : '100%',
@@ -970,8 +971,8 @@ const AssistantPage = () => {
                                 rows={1}
                               />
                               <div className="flex gap-2 mt-1">
-                                <button onClick={() => handleCopy(editValue)} title={t("Copy")} className="text-gray-400 hover:text-primary-500"><Copy size={18} /></button>
-                                <button onClick={() => handleEditSave(idx)} title={t("Save")} className="text-gray-400 hover:text-primary-500"><Save size={18} /></button>
+                                <button onClick={() => handleCopy(editValue)} title={t("Copy")} className="text-gray-400 dark:text-gray-500 hover:text-primary-500"><Copy size={18} /></button>
+                                <button onClick={() => handleEditSave(idx)} title={t("Save")} className="text-gray-400 dark:text-gray-500 hover:text-primary-500"><Save size={18} /></button>
                               </div>
                             </div>
                           ) : (
@@ -981,7 +982,7 @@ const AssistantPage = () => {
                                   {msg.thought}
                                 </div>
                               )}
-                              {msg.thought && <hr className="my-2 border-gray-200" />}
+                              {msg.thought && <hr className="my-2 border-gray-200 dark:border-gray-700" />}
                               <div ref={el => aiEditRefs.current[idx] = el} className="w-full text-start" style={{ wordBreak: 'break-word' }}>
                                 {msg.isStreaming && !msg.text ? (
                                   <span className="inline-flex items-center gap-1.5 text-primary-500">
@@ -1083,8 +1084,8 @@ const AssistantPage = () => {
                               )}
                               {!msg.isStreaming && (
                                 <div className="flex gap-2 mt-1">
-                                  <button onClick={() => handleEdit(idx, msg.text)} title={t("Edit")} className="text-gray-400 hover:text-primary-500"><img src="/images/AiAssistant/edit.svg" alt={t("Edit")} className="w-5 h-5" /></button>
-                                  <button onClick={() => handleCopy(msg.text)} title={t("Copy")} className="text-gray-400 hover:text-primary-500"><img src="/images/AiAssistant/copy.svg" alt={t("Copy")} className="w-5 h-5" /></button>
+                                  <button onClick={() => handleEdit(idx, msg.text)} title={t("Edit")} className="text-gray-400 dark:text-gray-500 hover:text-primary-500"><img src="/images/AiAssistant/edit.svg" alt={t("Edit")} className="w-5 h-5 dark:invert dark:brightness-200" /></button>
+                                  <button onClick={() => handleCopy(msg.text)} title={t("Copy")} className="text-gray-400 dark:text-gray-500 hover:text-primary-500"><img src="/images/AiAssistant/copy.svg" alt={t("Copy")} className="w-5 h-5 dark:invert dark:brightness-200" /></button>
                                 </div>
                               )}
                             </>
@@ -1145,14 +1146,14 @@ const AssistantPage = () => {
                       </defs>
                     </svg>
                   </span>
-                  <div className="rounded-xl px-6 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 shadow-sm shrink-0">
+                  <div className="rounded-xl px-6 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/40 dark:to-indigo-950/40 border border-blue-200 dark:border-blue-800 shadow-sm shrink-0">
                     <div className="flex items-center gap-3">
                       <div className="flex gap-1">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                        <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                        <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                        <div className="w-2 h-2 bg-blue-500 dark:bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                        <div className="w-2 h-2 bg-blue-500 dark:bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                        <div className="w-2 h-2 bg-blue-500 dark:bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
                       </div>
-                      <span className="text-blue-700 font-medium">{t("Thinking...")}</span>
+                      <span className="text-blue-700 dark:text-blue-300 font-medium">{t("Thinking...")}</span>
                     </div>
                   </div>
                 </div>
@@ -1177,6 +1178,8 @@ const AssistantPage = () => {
             onRemoveStagedFile={onRemoveStagedFile}
             isGated={isGated}
             onUpgradeClick={() => router.push("/ai/pricing")}
+            selectedModel={selectedModel}
+            onSelectModel={setSelectedModel}
           />
         </div>
       </div>
@@ -1188,10 +1191,10 @@ const AssistantPage = () => {
             <img src={openImageUrl} alt={t("Preview")} className="max-h-[80vh] max-w-[90vw] rounded-xl shadow-lg" />
             <button
               onClick={() => setOpenImageUrl(null)}
-              className="absolute top-2 right-2 bg-white bg-opacity-80 rounded-full p-1 hover:bg-opacity-100 transition"
+              className="absolute top-2 right-2 bg-white dark:bg-gray-800 bg-opacity-80 dark:bg-opacity-80 rounded-full p-1 hover:bg-opacity-100 dark:hover:bg-opacity-100 transition"
               title={t("Close")}
             >
-              <X size={24} className="text-gray-700" />
+              <X size={24} className="text-gray-700 dark:text-gray-300" />
             </button>
           </div>
         </div>

@@ -14,9 +14,9 @@ client.interceptors.request.use((config) => {
 });
 
 export const aiService = {
-  sendMessage: ({ message, conversation_id, attachment_urls } = {}) =>
+  sendMessage: ({ message, conversation_id, attachment_urls, model } = {}) =>
     client
-      .post("/chat", { message, conversation_id, attachment_urls })
+      .post("/chat", { message, conversation_id, attachment_urls, model })
       .then((r) => r.data?.data),
 
   confirmAction: (pending_action_id) =>
