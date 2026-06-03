@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Elements } from "@stripe/react-stripe-js";
 import getStripe from "@/lib/stripe-client";
 import CheckoutForm from "./CheckoutForm";
@@ -11,7 +11,7 @@ import { useSelector } from "react-redux";
 import { selectAuth } from "@/redux/auth/authSlice";
 import { RootRoute } from "@/Root.Route";
 
-const StripePaymentWrapper = ({ amount, onFinish, userEmail, userName, userPhone, priceId, trialDays, planId }) => {
+const StripePaymentWrapper = ({ amount, onFinish, userEmail, userName, userPhone, priceId, trialDays, planId, autoRenew = true }) => {
     const { t } = useTranslation();
     const { token } = useSelector(selectAuth);
     const [clientSecret, setClientSecret] = useState("");
@@ -43,7 +43,7 @@ const StripePaymentWrapper = ({ amount, onFinish, userEmail, userName, userPhone
                     setLoading(false);
                 }
             })
-            .catch((err) => {
+            .catch(() => {
                 setError(t("Failed to initialize payment."));
                 setLoading(false);
             });
@@ -93,6 +93,7 @@ const StripePaymentWrapper = ({ amount, onFinish, userEmail, userName, userPhone
                         priceId={priceId}
                         planId={planId}
                         trialDays={trialDays}
+                        autoRenew={autoRenew}
                     />
                 </Elements>
             )}

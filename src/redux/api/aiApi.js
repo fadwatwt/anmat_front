@@ -32,6 +32,7 @@ export const aiApi = apiSlice.injectEndpoints({
                 method: "POST",
                 body: { package_id },
             }),
+            invalidatesTags: ["AITokens"],
             transformResponse: (response) => response.data || response,
         }),
         confirmTokenCheckout: builder.mutation({

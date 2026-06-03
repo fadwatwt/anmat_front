@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import Page from "@/components/Page.jsx";
 import { Zap, Crown, Rocket, Sparkles, Check, ArrowRight, Loader2 } from "lucide-react";
 import { useCreateTokenCheckoutMutation, useGetTokenPackagesQuery } from "@/redux/api/aiApi";
@@ -39,7 +39,14 @@ const PricingPage = () => {
     try {
       const response = await createCheckout({ package_id: packageId }).unwrap();
       const checkoutUrl = response?.checkout_url || response?.url;
-      if (checkoutUrl) {
+      if (response?.paid_with_default_card) {
+        setApiResponse({
+          isOpen: true,
+          status: "success",
+          message: t("Tokens purchased successfully using your default card."),
+        });
+        setPurchasingId(null);
+      } else if (checkoutUrl) {
         window.location.href = checkoutUrl;
       } else {
         throw new Error(t("No checkout URL returned from server."));
@@ -144,7 +151,7 @@ const PricingPage = () => {
                     {isPurchasing ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin" />
-                        <span>{t("Redirecting to Stripe...")}</span>
+                        <span>{t("Processing payment...")}</span>
                       </>
                     ) : (
                       <>

@@ -1,7 +1,7 @@
 "use client";
 
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
     PaymentElement,
     useStripe,
@@ -15,7 +15,7 @@ import { useSelector } from "react-redux";
 import { selectAuth } from "@/redux/auth/authSlice";
 import { RootRoute } from "@/Root.Route";
 
-const CheckoutForm = ({ amount, onFinish, clientSecret, userName, userEmail, userPhone, priceId, planId, trialDays }) => {
+const CheckoutForm = ({ amount, onFinish, clientSecret, userName, userEmail, userPhone, priceId, planId, autoRenew = true }) => {
     const { t } = useTranslation();
     const stripe = useStripe();
     const elements = useElements();
@@ -163,19 +163,21 @@ const CheckoutForm = ({ amount, onFinish, clientSecret, userName, userEmail, use
                     body: JSON.stringify({
                         plan_id: planId,
                         price_id: priceId,
-                        stripe_payment_method_id: currentIntent.payment_method
+                        stripe_payment_method_id: currentIntent.payment_method,
+                        auto_renew: autoRenew,
                     }),
                 });
 
                 const result = await finalizeRes.json();
                 const finalizeData = result.data || result;
 
-                if (finalizeData.error || result.status === 'error') {
+                if (finalizeData.error || result.status === 'error' || result.status === 'failed') {
                     throw new Error(finalizeData.error || result.message || "Finalization failed.");
                 }
                 console.log("Subscription finalized successfully via backend.");
             }
 
+                onFinish?.();
                 // 6. Direct user to success page
                 router.push('/account-setup/subscriber/plans/success');
         } catch (err) {

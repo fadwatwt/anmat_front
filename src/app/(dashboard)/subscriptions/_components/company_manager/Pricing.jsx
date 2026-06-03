@@ -5,13 +5,16 @@
 
 
 
-import { RiFlashlightLine, RiCheckboxCircleFill } from "@remixicon/react";
-import React, { useState } from "react";
+import { RiFlashlightLine, RiCheckboxCircleFill, RiLoader4Line } from "@remixicon/react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import Switch2 from "@/components/Form/Switch2";
 import Modal from "@/components/Modal/Modal";
 import StripePaymentWrapper from "@/components/stripe/StripePaymentWrapper";
-import { selectUser } from "@/redux/auth/authSlice";
+import { selectAuth, selectUser } from "@/redux/auth/authSlice";
+import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
+import { RootRoute } from "@/Root.Route";
+import { useGetPaymentMethodsQuery } from "@/redux/payment-methods/paymentMethodsApi";
 import { useGetSubscriberSubscriptionPlansQuery } from "@/redux/plans/subscriptionPlansApi";
 import { useGetMySubscriptionQuery } from "@/redux/subscriptions/subscriptionsApi";
 
@@ -22,27 +25,70 @@ import { useTranslation } from "react-i18next";
 function Pricing() {
     const { t } = useTranslation();
     const user = useSelector(selectUser);
+    const { token } = useSelector(selectAuth);
     const { data: plans = [], isLoading } = useGetSubscriberSubscriptionPlansQuery();
-    const { data: currentSubscription } = useGetMySubscriptionQuery();
+    const { data: paymentMethods = [] } = useGetPaymentMethodsQuery();
+    const { data: currentSubscription, refetch: refetchSubscription } = useGetMySubscriptionQuery();
     const [billingCycle, setBillingCycle] = useState("month"); // "month" or "year"
     const [selectedPlanInfo, setSelectedPlanInfo] = useState(null);
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+    const [autoRenew, setAutoRenew] = useState(true);
+    const [isPayingWithDefault, setIsPayingWithDefault] = useState(false);
+    const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
+
+    const defaultPaymentMethod = paymentMethods.find((method) => method.is_default && method.is_active);
 
     const handleToggleBillingCycle = () => {
         setBillingCycle(prev => prev === "month" ? "year" : "month");
     }
 
-    const handleSelectPlan = (plan) => {
+    const handleSelectPlan = async (plan) => {
         const pricingIndex = plan.pricing?.findIndex(p => p.interval === billingCycle && p.is_active);
         const idx = pricingIndex >= 0 ? pricingIndex : 0;
         const selectedPricing = plan.pricing?.[idx];
         if (!selectedPricing) return;
-        setSelectedPlanInfo({
+        const nextPlanInfo = {
             plan,
             price: selectedPricing.price,
             priceId: plan.stripe_price_ids?.[idx],
             trialDays: plan.trial?.is_active ? plan.trial?.trial_days : 0,
-        });
+        };
+
+        if (defaultPaymentMethod?._id) {
+            setIsPayingWithDefault(true);
+            try {
+                const res = await fetch(`${RootRoute}/api/subscriptions/subscriber/subscribe`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                        plan_id: nextPlanInfo.plan._id,
+                        price_id: nextPlanInfo.priceId,
+                        payment_method_id: defaultPaymentMethod._id,
+                        auto_renew: autoRenew,
+                    }),
+                });
+                const result = await res.json();
+                if (!res.ok || result.status === "failed" || result.status === "error") {
+                    throw new Error(result?.message || t("Failed to complete subscription."));
+                }
+                setApiResponse({ isOpen: true, status: "success", message: t("Subscription updated successfully") });
+                refetchSubscription();
+            } catch (error) {
+                setApiResponse({
+                    isOpen: true,
+                    status: "error",
+                    message: error?.message || t("Failed to complete subscription."),
+                });
+            } finally {
+                setIsPayingWithDefault(false);
+            }
+            return;
+        }
+
+        setSelectedPlanInfo(nextPlanInfo);
         setIsCheckoutOpen(true);
     };
 
@@ -117,7 +163,14 @@ function Pricing() {
 
     return (
         <div className="flex flex-col items-stretch justify-start gap-6">
-            <div className={"flex justify-end items-baseline"}>
+            <div className={"flex flex-col md:flex-row justify-between items-start md:items-center gap-4"}>
+                <label className="flex items-center gap-3 rounded-xl border border-status-border bg-surface px-4 py-3 cursor-pointer">
+                    <Switch2 isOn={autoRenew} handleToggle={() => setAutoRenew(prev => !prev)} />
+                    <div className="flex flex-col">
+                        <span className="!text-table-title text-sm font-semibold">{t("Auto renewal")}</span>
+                        <span className="!text-cell-secondary text-xs">{t("Enabled by default and charged from your default card")}</span>
+                    </div>
+                </label>
                 <div className={"flex *:text-sm gap-3 items-center"}>
                     <span>{t("Pay Monthly")}</span>
                     <Switch2 isOn={billingCycle === "year"} handleToggle={handleToggleBillingCycle} />
@@ -171,7 +224,7 @@ function Pricing() {
                         <div className="px-8 py-4 bg-status-bg w-full">
                             <button
                                 type="button"
-                                disabled={isCurrentPlan}
+                                disabled={isCurrentPlan || isPayingWithDefault}
                                 onClick={() => handleSelectPlan(plan)}
                                 className={`text-md font-light w-full rounded-xl py-2 cursor-pointer transition-colors ${
                                     isCurrentPlan
@@ -179,7 +232,12 @@ function Pricing() {
                                     : "!text-white bg-primary-500 hover:bg-primary-600"
                                 }`}
                             >
-                                {isCurrentPlan ? t("Current Plan") : t("Upgrade / Subscribe")}
+                                {isPayingWithDefault ? (
+                                    <span className="inline-flex items-center justify-center gap-2">
+                                        <RiLoader4Line className="animate-spin" size={18} />
+                                        {t("Processing...")}
+                                    </span>
+                                ) : isCurrentPlan ? t("Current Plan") : t("Upgrade / Subscribe")}
                             </button>
                         </div>
                     </div>
@@ -225,11 +283,19 @@ function Pricing() {
                                 userEmail={user?.email}
                                 userName={user?.name}
                                 userPhone={user?.phone}
+                                autoRenew={autoRenew}
                             />
                         </div>
                     </div>
                 )}
             </Modal>
+
+            <ApiResponseAlert
+                isOpen={apiResponse.isOpen}
+                status={apiResponse.status}
+                message={apiResponse.message}
+                onClose={() => setApiResponse({ isOpen: false, status: "", message: "" })}
+            />
 
         </div>
     );
