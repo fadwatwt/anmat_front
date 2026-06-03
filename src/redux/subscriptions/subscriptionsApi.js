@@ -59,6 +59,27 @@ export const subscriptionsApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["Subscriptions"],
         }),
+        cancelRenewal: builder.mutation({
+            query: (subscriptionId) => ({
+                url: `api/subscriptions/subscriber/${subscriptionId}/cancel-renewal`,
+                method: "POST",
+            }),
+            invalidatesTags: ["Subscriptions"],
+        }),
+        reactivateRenewal: builder.mutation({
+            query: (subscriptionId) => ({
+                url: `api/subscriptions/subscriber/${subscriptionId}/reactivate-renewal`,
+                method: "POST",
+            }),
+            invalidatesTags: ["Subscriptions"],
+        }),
+        retryPayment: builder.mutation({
+            query: (subscriptionId) => ({
+                url: `api/subscriptions/subscriber/${subscriptionId}/retry-payment`,
+                method: "POST",
+            }),
+            invalidatesTags: ["Subscriptions"],
+        }),
     }),
 });
 
@@ -70,4 +91,7 @@ export const {
     useGetMySubscriptionQuery,
     useGetMyPaymentsQuery,
     useUpdateExtraFeaturesMutation,
+    useCancelRenewalMutation,
+    useReactivateRenewalMutation,
+    useRetryPaymentMutation,
 } = subscriptionsApi;

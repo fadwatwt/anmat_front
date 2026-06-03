@@ -2327,5 +2327,7 @@
   "Payment method added successfully": "تمت إضافة طريقة الدفع بنجاح",
   "Failed to add payment method": "فشل في إضافة طريقة الدفع",
   "All Roles": "جميع الادوار",
-  "All Permissions": "جميع الأذونات"
+  "All Permissions": "جميع الأذونات",
+  "Auto renewal":"تجديد تلقائي",
+"Enabled by default and charged from your default card":"مُفعّل افتراضيًا ويتم خصم المبلغ من بطاقتك الافتراضية"
 }

@@ -1,13 +1,19 @@
 "use client"
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { RiVipDiamondLine } from "react-icons/ri";
 import CheckAlert from "@/components/Alerts/CheckِِAlert";
-import { useGetMySubscriptionQuery } from "@/redux/subscriptions/subscriptionsApi";
+import { useGetMySubscriptionQuery, useCancelRenewalMutation, useReactivateRenewalMutation } from "@/redux/subscriptions/subscriptionsApi";
 import { format } from "date-fns";
+import toast from "react-hot-toast";
 
 function Details({ onUpgradeClick }) {
     const { t } = useTranslation();
     const { data: subscription, isLoading, error } = useGetMySubscriptionQuery();
+    const [cancelRenewal, { isLoading: isCancelling }] = useCancelRenewalMutation();
+    const [reactivateRenewal, { isLoading: isReactivating }] = useReactivateRenewalMutation();
+    const [showCancelAlert, setShowCancelAlert] = useState(false);
+    const [showReactivateAlert, setShowReactivateAlert] = useState(false);
 
     if (isLoading) return <div className="p-5 text-center">{t("Loading...")}</div>;
     if (error) return <div className="p-5 text-center text-red-500">{t("Error loading subscription details")}</div>;
@@ -106,12 +112,25 @@ function Details({ onUpgradeClick }) {
 
                 {/* actions */}
                 <div className="flex items-start justify-center gap-4">
-                    <button
-                        type="button"
-                        className="text-sm bg-surface !text-red-600 px-4 py-2 w-96 rounded-lg hover:bg-status-bg transition-colors border border-status-border"
-                    >
-                        {t("Cancel subscription renewal")}
-                    </button>
+                    {subscription.auto_renew ? (
+                        <button
+                            type="button"
+                            onClick={() => setShowCancelAlert(true)}
+                            disabled={isCancelling}
+                            className="text-sm bg-surface !text-red-600 px-4 py-2 w-96 rounded-lg hover:bg-status-bg transition-colors border border-status-border disabled:opacity-50"
+                        >
+                            {isCancelling ? t("Cancelling...") : t("Cancel subscription renewal")}
+                        </button>
+                    ) : (
+                        <button
+                            type="button"
+                            onClick={() => setShowReactivateAlert(true)}
+                            disabled={isReactivating}
+                            className="text-sm bg-surface !text-green-600 px-4 py-2 w-96 rounded-lg hover:bg-green-50 transition-colors border border-green-200 disabled:opacity-50"
+                        >
+                            {isReactivating ? t("Reactivating...") : t("Reactivate subscription renewal")}
+                        </button>
+                    )}
                     <button
                         type="button"
                         onClick={onUpgradeClick}
@@ -123,18 +142,49 @@ function Details({ onUpgradeClick }) {
             </div>
 
             <CheckAlert
-                isOpen={false}
-                onClose={() => {}}
+                isOpen={showCancelAlert}
+                onClose={() => setShowCancelAlert(false)}
                 type="cancel"
-                title="Cancel Renewal Confirmation"
-                confirmBtnText="Yes, Stop"
+                title={t("Cancel Renewal Confirmation")}
+                confirmBtnText={t("Yes, Stop")}
                 description={
                     <p>
-                        Are you sure you want to <span className="font-bold text-black dark:text-gray-100">cancel renewal</span> of the
-                        <span className="font-bold text-black dark:text-gray-100"> {plan.name}</span> with <span className="font-bold text-black dark:text-gray-100">${price}/mth</span>?
+                        {t("Are you sure you want to")} <span className="font-bold text-black dark:text-gray-100">{t("cancel renewal")}</span> {t("of the")}
+                        <span className="font-bold text-black dark:text-gray-100"> {plan.name}</span> {t("with")} <span className="font-bold text-black dark:text-gray-100">${price}/mth</span>?
                     </p>
                 }
-                onSubmit={() => {}}
+                onSubmit={async () => {
+                    try {
+                        await cancelRenewal(subscription._id).unwrap();
+                        toast.success(t("Subscription renewal cancelled successfully"));
+                        setShowCancelAlert(false);
+                    } catch (err) {
+                        toast.error(err?.data?.message || t("Failed to cancel renewal"));
+                    }
+                }}
+            />
+
+            <CheckAlert
+                isOpen={showReactivateAlert}
+                onClose={() => setShowReactivateAlert(false)}
+                type="confirm"
+                title={t("Reactivate Renewal Confirmation")}
+                confirmBtnText={t("Yes, Reactivate")}
+                description={
+                    <p>
+                        {t("Do you want to")} <span className="font-bold text-black dark:text-gray-100">{t("reactivate renewal")}</span> {t("for")}
+                        <span className="font-bold text-black dark:text-gray-100"> {plan.name}</span>?
+                    </p>
+                }
+                onSubmit={async () => {
+                    try {
+                        await reactivateRenewal(subscription._id).unwrap();
+                        toast.success(t("Subscription renewal reactivated successfully"));
+                        setShowReactivateAlert(false);
+                    } catch (err) {
+                        toast.error(err?.data?.message || t("Failed to reactivate renewal"));
+                    }
+                }}
             />
         </div>
     );
