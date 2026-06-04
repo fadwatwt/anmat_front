@@ -32,7 +32,7 @@ const ModelSelector = ({ selectedModel, onSelectModel }) => {
       </button>
 
       {isOpen && (
-        <div className="absolute bottom-full mb-2 left-0 w-72 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-50 py-2 animate-scale-in">
+        <div className="absolute bottom-full mb-2 left-0 w-72 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-50 py-2 animate-scale-in max-h-[420px] overflow-y-auto">
           {Object.entries(providers).map(([provider, models]) => (
             <div key={provider}>
               <div className="px-3 py-1.5 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">

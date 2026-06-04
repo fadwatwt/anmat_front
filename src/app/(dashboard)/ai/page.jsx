@@ -18,6 +18,7 @@ import {
   useListConversationsQuery,
   useGetConversationMessagesQuery,
   useSendMessageMutation,
+  useUploadAiFilesMutation,
   useConfirmPendingActionMutation,
   useCancelPendingActionMutation,
   useRenameConversationMutation,
@@ -57,6 +58,7 @@ const AssistantPage = () => {
   const { data: balanceData, isLoading: balanceLoading } = useGetTokensBalanceQuery();
   const { data: conversations, isLoading: loadingConversations } = useListConversationsQuery();
   const [sendMessageMutation] = useSendMessageMutation();
+  const [uploadAiFiles] = useUploadAiFilesMutation();
   const [confirmPendingAction] = useConfirmPendingActionMutation();
   const [cancelPendingAction] = useCancelPendingActionMutation();
   const [renameConversation] = useRenameConversationMutation();
@@ -112,10 +114,11 @@ const AssistantPage = () => {
             return {
               sender: "user",
               text: m.content || "",
-              files: (m.attachment_urls || []).map((url) => ({
-                name: url.split("/").pop() || "Attached File",
-                type: url.match(/\.(jpeg|jpg|gif|png)$/i) ? "image/png" : "application/octet-stream",
-                url,
+              files: (m.attachments || []).map((att) => ({
+                name: att.name,
+                type: att.type,
+                has_content: att.has_content,
+                has_base64: att.has_base64,
               })),
             };
           } else {
@@ -198,8 +201,8 @@ const AssistantPage = () => {
       const newStagedFiles = Array.from(files).map(file => ({
         name: file.name,
         type: file.type,
-        url: URL.createObjectURL(file),
-        file: file // Store the actual file object
+        file: file,
+        preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : null,
       }));
       setStagedFiles(prev => [...prev, ...newStagedFiles]);
     }
@@ -214,27 +217,38 @@ const AssistantPage = () => {
 
     const userMessage = { sender: "user", text: input };
     if (stagedFiles.length > 0) {
-      userMessage.files = stagedFiles.map(f => ({ name: f.name, type: f.type, url: f.url }));
+      userMessage.files = stagedFiles.map(f => ({
+        name: f.name,
+        type: f.type,
+        preview: f.preview,
+      }));
     }
 
     setMessages(prev => [...prev, userMessage]);
     setInput("");
-    setStagedFiles([]); // Clear staged files after sending
+    setStagedFiles([]);
     setLoading(true);
     setThinking(true);
 
-    // Refocus input after sending message
     setTimeout(() => {
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
+      if (inputRef.current) inputRef.current.focus();
     }, 0);
 
     try {
+      let attachments = [];
+
+      if (userMessage.files && userMessage.files.length > 0) {
+        const rawFiles = stagedFiles.map(f => f.file).filter(Boolean);
+        if (rawFiles.length > 0) {
+          const uploadResult = await uploadAiFiles(rawFiles).unwrap();
+          attachments = uploadResult?.data || uploadResult || [];
+        }
+      }
+
       const data = await sendMessageMutation({
         message: userMessage.text,
         conversation_id: conversationId || undefined,
-        attachment_urls: (userMessage.files || []).map((f) => f.url).filter(Boolean),
+        attachments: attachments.length > 0 ? attachments : undefined,
         model: selectedModel,
       }).unwrap();
 
@@ -862,20 +876,24 @@ const AssistantPage = () => {
                                 {msg.files && msg.files.length > 0 && (
                                   <div className="mt-4 flex flex-col gap-2">
                                     {msg.files.map((file, fileIdx) => (
-                                      file.type.startsWith('image') ? (
+                                      file.preview ? (
                                         <img
                                           key={fileIdx}
-                                          src={file.url}
+                                          src={file.preview}
                                           alt={file.name}
                                           className="max-w-full rounded-xl shadow border border-gray-100 cursor-pointer"
                                           style={{ maxHeight: '400px' }}
-                                          onClick={() => setOpenImageUrl(file.url)}
+                                          onClick={() => setOpenImageUrl(file.preview)}
                                         />
                                       ) : (
                                         <div key={fileIdx} className="rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow flex items-center w-full sm:w-[492px] h-[68px] px-5 py-4 gap-2.5">
                                           {isDocument(file.type, file.name) ? (
                                             <span className="inline-flex items-center justify-center w-8 h-8 bg-primary-50 dark:bg-primary-900/30 rounded-lg shrink-0">
                                               <img src="/images/AiAssistant/document-text.svg" alt={t("Document")} className="w-6 h-6 dark:invert dark:brightness-200" />
+                                            </span>
+                                          ) : file.type?.startsWith('image') ? (
+                                            <span className="inline-flex items-center justify-center w-8 h-8 bg-primary-50 dark:bg-primary-900/30 rounded-lg shrink-0">
+                                              <img src="/images/AiAssistant/file.svg" alt={t("Image")} className="w-6 h-6 dark:invert dark:brightness-200" />
                                             </span>
                                           ) : (
                                             <span className="inline-flex items-center justify-center w-8 h-8 bg-primary-50 dark:bg-primary-900/30 rounded-lg shrink-0">
@@ -885,9 +903,6 @@ const AssistantPage = () => {
                                           <div className="flex-1 min-w-0">
                                             <div className="font-semibold text-lg text-gray-900 dark:text-gray-100 truncate">{file.name}</div>
                                           </div>
-                                          <a href={file.url} download={file.name} className="flex items-center justify-center text-primary-500 hover:text-primary-700 shrink-0" title={t("Download")}>
-                                            <img src="/images/AiAssistant/lucide_download.svg" alt={t("Download")} className="w-6 h-6 dark:invert dark:brightness-200" style={{ width: 24, height: 24 }} />
-                                          </a>
                                         </div>
                                       )
                                     ))}

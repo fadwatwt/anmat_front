@@ -65,6 +65,7 @@ const ChatInput = ({
             style={{ display: "none" }}
             onChange={handleFileChange}
             multiple
+            accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.json,.xml,.md,.js,.ts,.py,.java,.html,.css"
           />
           <div className="flex-1 flex flex-col">
             <input
@@ -80,6 +81,9 @@ const ChatInput = ({
               <div className="flex flex-wrap gap-2 mt-2 px-4">
                 {stagedFiles.map((file, index) => (
                   <div key={index} className="flex items-center bg-gray-100 dark:bg-gray-700 rounded-full pl-3 pr-2 py-1 text-sm text-gray-700 dark:text-gray-300">
+                    {file.preview && (
+                      <img src={file.preview} alt={file.name} className="w-5 h-5 rounded mr-2 object-cover" />
+                    )}
                     <span>{file.name}</span>
                     <button
                       type="button"

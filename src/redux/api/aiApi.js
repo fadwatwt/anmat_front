@@ -62,11 +62,24 @@ export const aiApi = apiSlice.injectEndpoints({
             ],
             transformResponse: (response) => response.data || response,
         }),
+        uploadAiFiles: builder.mutation({
+            query: (files) => {
+                const formData = new FormData();
+                files.forEach((file) => {
+                    formData.append("files", file);
+                });
+                return {
+                    url: "api/ai/upload",
+                    method: "POST",
+                    body: formData,
+                };
+            },
+        }),
         sendMessage: builder.mutation({
-            query: ({ message, conversation_id, attachment_urls, model }) => ({
+            query: ({ message, conversation_id, attachments, model }) => ({
                 url: "api/ai/chat",
                 method: "POST",
-                body: { message, conversation_id, attachment_urls, model },
+                body: { message, conversation_id, attachments, model },
             }),
             invalidatesTags: (result, error, { conversation_id }) => [
                 "AITokens",
@@ -148,6 +161,7 @@ export const {
     useConfirmTokenCheckoutMutation,
     useListConversationsQuery,
     useGetConversationMessagesQuery,
+    useUploadAiFilesMutation,
     useSendMessageMutation,
     useConfirmPendingActionMutation,
     useCancelPendingActionMutation,
