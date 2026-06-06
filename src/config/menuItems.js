@@ -1,5 +1,5 @@
 // dashboardSideMenuItems.js
-import { Setting, Edit, Share, Messages1, Category, Profile2User, TaskSquare, NoteText, Chart2, Cpu, PercentageCircle, Buildings, Stickynote, Setting4, Setting5, ReceiptText, Category2, Tag, EmptyWallet, Calendar } from 'iconsax-react';
+import { Setting, Edit, Share, Messages1, Category, Profile2User, TaskSquare, NoteText, Chart2, Cpu, PercentageCircle, Buildings, Stickynote, Setting4, Setting5, ReceiptText, Category2, Tag, EmptyWallet, Calendar, CalendarTick } from 'iconsax-react';
 
 // ['Admin', 'Subscriber', 'Employee']
 //
@@ -172,6 +172,13 @@ export const dashboardSideMenuItems = [
         path: '/tasks',
         icon: <TaskSquare />,
         permission_any_of: ['tasks.track_all', 'tasks.track_department'],
+    },
+    {
+        allowed_to: ['Subscriber', 'Employee'],
+        title: 'Appointments',
+        path: '/appointments',
+        icon: <CalendarTick />,
+        permission_any_of: ['appointments.track_all', 'appointments.track_department'],
     },
     {
         allowed_to: ['Employee'],

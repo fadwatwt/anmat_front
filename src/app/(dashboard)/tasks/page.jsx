@@ -11,7 +11,7 @@ import { selectUserType } from "@/redux/auth/authSlice";
 import { usePermission } from "@/Hooks/usePermission";
 import { convertToSlug } from "@/functions/AnotherFunctions";
 import { translateDate } from "@/functions/Days";
-import { RiEyeLine, RiDeleteBinLine, RiEditLine } from "react-icons/ri";
+import { RiEyeLine, RiDeleteBinLine, RiEditLine, RiCalendarScheduleLine } from "react-icons/ri";
 import StatusActions from "@/components/Dropdowns/StatusActions";
 import {
   useGetSubscriberTasksQuery,
@@ -22,6 +22,7 @@ import Modal from "@/components/Modal/Modal.jsx";
 import EvaluationModal from "@/components/Modal/EvaluationModal";
 import StarRating from "@/components/StarRating";
 import { useProcessing } from "@/app/providers";
+import CreateAppointmentFromTaskModal from "@/components/Appointments/CreateAppointmentFromTaskModal";
 
 // ✅ Lazy-loaded components
 const NameAndDescription = dynamic(() => import("@/app/(dashboard)/projects/_components/TableInfo/NameAndDescription"), { ssr: false });
@@ -58,6 +59,8 @@ function TasksPage() {
   const [taskToUpdateStatus, setTaskToUpdateStatus] = useState(null);
   const [isOpenEvaluationModal, setIsOpenEvaluationModal] = useState(false);
   const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
+  const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
+  const [taskForAppointment, setTaskForAppointment] = useState(null);
 
   const allowedStatuses = ['open', 'pending', 'in-progress', 'completed', 'done', 'rejected', 'cancelled'];
 
@@ -192,6 +195,15 @@ function TasksPage() {
         onClick: () => handleDeleteConfirmation(task),
       });
     }
+
+    actions.push({
+      text: t("Create Appointment"),
+      icon: <RiCalendarScheduleLine size={16} className="text-green-500" />,
+      onClick: () => {
+        setTaskForAppointment(task);
+        setIsAppointmentModalOpen(true);
+      },
+    });
 
     return (
       <StatusActions states={actions} />
@@ -340,6 +352,22 @@ function TasksPage() {
         type="task"
         hasStages={taskToUpdateStatus?.stages && taskToUpdateStatus.stages.length > 0}
         isSubmitting={false}
+      />
+
+      <CreateAppointmentFromTaskModal
+        isOpen={isAppointmentModalOpen}
+        onClose={() => {
+          setIsAppointmentModalOpen(false);
+          setTaskForAppointment(null);
+        }}
+        task={taskForAppointment}
+        onCreated={() => {
+          setApiResponse({
+            isOpen: true,
+            status: "success",
+            message: t("Appointment created successfully"),
+          });
+        }}
       />
     </>
   );
