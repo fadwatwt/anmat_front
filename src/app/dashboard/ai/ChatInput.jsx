@@ -41,6 +41,7 @@ const ChatInput = ({
         style={{ display: "none" }}
         onChange={handleFileChange}
         multiple
+        accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.json,.xml,.md,.js,.ts,.py,.java,.html,.css"
       />
       <div className="flex-1 flex flex-col">
         <input

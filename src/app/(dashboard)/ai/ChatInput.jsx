@@ -1,7 +1,6 @@
 import React from "react";
 import { X } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import ModelSelector from "@/components/AI/ModelSelector";
 
 const ChatInput = ({
   input,
@@ -19,8 +18,6 @@ const ChatInput = ({
   onRemoveStagedFile,
   isGated,
   onUpgradeClick,
-  selectedModel,
-  onSelectModel,
 }) => {
   const { t } = useTranslation();
   return (
@@ -65,7 +62,7 @@ const ChatInput = ({
             style={{ display: "none" }}
             onChange={handleFileChange}
             multiple
-            accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.json,.xml,.md,.js,.ts,.py,.java,.html,.css"
+            accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.json,.xml,.md,.js,.ts,.py,.java,.html,.css"
           />
           <div className="flex-1 flex flex-col">
             <input
@@ -97,7 +94,6 @@ const ChatInput = ({
               </div>
             )}
           </div>
-          <ModelSelector selectedModel={selectedModel} onSelectModel={onSelectModel} />
           <button
             type="submit"
             className={`p-2 rounded-lg transition-colors ${((input.trim() || stagedFiles.length > 0) && !loading) ? 'text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900' : 'text-gray-300'}`}

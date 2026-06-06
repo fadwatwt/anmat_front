@@ -12,7 +12,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useSelector } from "react-redux";
 import { selectUser } from "@/redux/auth/authSlice";
 import { useTranslation } from "react-i18next";
-import { DEFAULT_MODEL } from "@/config/aiModels";
 import {
   useGetTokensBalanceQuery,
   useListConversationsQuery,
@@ -88,7 +87,6 @@ const AssistantPage = () => {
   const [stagedFiles, setStagedFiles] = useState([]); // New state for staged files
   const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
   const [conversationId, setConversationId] = useState(null);
-  const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL);
   const typingTimeoutsRef = useRef([]);
 
   // Sidebar editing states
@@ -249,7 +247,7 @@ const AssistantPage = () => {
         message: userMessage.text,
         conversation_id: conversationId || undefined,
         attachments: attachments.length > 0 ? attachments : undefined,
-        model: selectedModel,
+        model: "auto",
       }).unwrap();
 
       if (data?.conversation_id && !conversationId) {
@@ -1193,8 +1191,6 @@ const AssistantPage = () => {
             onRemoveStagedFile={onRemoveStagedFile}
             isGated={isGated}
             onUpgradeClick={() => router.push("/ai/pricing")}
-            selectedModel={selectedModel}
-            onSelectModel={setSelectedModel}
           />
         </div>
       </div>
