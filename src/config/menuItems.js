@@ -175,7 +175,7 @@ export const dashboardSideMenuItems = [
     },
     {
         allowed_to: ['Subscriber', 'Employee'],
-        title: 'Appointments',
+        title: 'Agenda',
         path: '/appointments',
         icon: <CalendarTick />,
         permission_any_of: ['appointments.track_all', 'appointments.track_department'],

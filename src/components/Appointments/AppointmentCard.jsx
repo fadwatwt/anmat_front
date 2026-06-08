@@ -12,8 +12,37 @@ import {
   RiCloseLine,
   RiShareLine,
   RiTaskLine,
+  RiStickyNoteLine,
+  RiPushpinLine,
 } from "react-icons/ri";
 import AppointmentCategoryBadge from "./AppointmentCategoryBadge";
+
+const PriorityBadge = ({ priority }) => {
+  const { t } = useTranslation();
+  const config = {
+    low: { bg: "bg-gray-100 dark:bg-gray-700", text: "text-gray-600 dark:text-gray-400", label: t("Low") },
+    medium: { bg: "bg-blue-100 dark:bg-blue-900/30", text: "text-blue-600 dark:text-blue-400", label: t("Medium") },
+    high: { bg: "bg-orange-100 dark:bg-orange-900/30", text: "text-orange-600 dark:text-orange-400", label: t("High") },
+    urgent: { bg: "bg-red-100 dark:bg-red-900/30", text: "text-red-600 dark:text-red-400", label: t("Urgent") },
+  };
+  const c = config[priority] || config.medium;
+  return (
+    <span className={`text-xs px-1.5 py-0.5 rounded ${c.bg} ${c.text}`}>{c.label}</span>
+  );
+};
+
+const TypeBadge = ({ type }) => {
+  const { t } = useTranslation();
+  const config = {
+    appointment: { bg: "bg-blue-100 dark:bg-blue-900/30", text: "text-blue-600 dark:text-blue-400", label: t("Appointment") },
+    daily_task: { bg: "bg-green-100 dark:bg-green-900/30", text: "text-green-600 dark:text-green-400", label: t("Daily Task") },
+    personal: { bg: "bg-purple-100 dark:bg-purple-900/30", text: "text-purple-600 dark:text-purple-400", label: t("Personal") },
+  };
+  const c = config[type] || config.appointment;
+  return (
+    <span className={`text-xs px-1.5 py-0.5 rounded ${c.bg} ${c.text}`}>{c.label}</span>
+  );
+};
 
 const CountdownBadge = ({ countdownDays }) => {
   const { t } = useTranslation();
@@ -136,6 +165,12 @@ function AppointmentCard({
               size={isSmall ? "sm" : "md"}
             />
             <StatusBadge status={appointment.status} />
+            {appointment.priority && appointment.priority !== "medium" && (
+              <PriorityBadge priority={appointment.priority} />
+            )}
+            {appointment.type && appointment.type !== "appointment" && (
+              <TypeBadge type={appointment.type} />
+            )}
           </div>
 
           <h3
@@ -187,6 +222,13 @@ function AppointmentCard({
             <div className="flex items-center gap-1 mt-2 text-sm text-blue-500 dark:text-blue-400">
               <RiTaskLine size={14} />
               <span className="truncate">{appointment.task.title}</span>
+            </div>
+          )}
+
+          {!isSmall && appointment.notes && (
+            <div className="flex items-start gap-1 mt-2 text-sm text-gray-500 dark:text-gray-400">
+              <RiStickyNoteLine size={14} className="mt-0.5 flex-shrink-0" />
+              <span className="line-clamp-2">{appointment.notes}</span>
             </div>
           )}
         </div>

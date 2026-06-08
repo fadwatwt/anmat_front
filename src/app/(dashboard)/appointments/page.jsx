@@ -2,41 +2,48 @@
 
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useRouter } from "next/navigation";
 import {
   useGetAppointmentsQuery,
+  useGetDailyTasksQuery,
   useDeleteAppointmentMutation,
   useCompleteAppointmentMutation,
   useCancelAppointmentMutation,
 } from "@/redux/appointments/appointmentsApi";
 import Page from "@/components/Page.jsx";
 import AppointmentCard from "@/components/Appointments/AppointmentCard";
-import TodayAppointments from "@/components/Appointments/TodayAppointments";
-import CountdownWidget from "@/components/Appointments/CountdownWidget";
 import ShareAppointment from "@/components/Appointments/ShareAppointment";
 import Alert from "@/components/Alerts/Alert";
-import useAuthStore from "@/store/authStore";
-import { RiAddLine, RiFilterLine } from "react-icons/ri";
+import MonthlyCalendar from "@/components/Agenda/MonthlyCalendar";
+import DayDetailSidebar from "@/components/Agenda/DayDetailSidebar";
+import AgendaHeader from "@/components/Agenda/AgendaHeader";
+import DailyTaskCard from "@/components/Agenda/DailyTaskCard";
+import CreateAgendaModal from "@/components/Agenda/CreateAgendaModal";
 
 function AppointmentsPage() {
   const { t } = useTranslation();
-  const router = useRouter();
-  const { authUserType } = useAuthStore();
 
-  const [filters, setFilters] = useState({
-    status: "",
-    category: "",
-  });
+  const [view, setView] = useState("calendar");
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [filters, setFilters] = useState({ status: "", category: "" });
 
   const [shareAppointment, setShareAppointment] = useState(null);
   const [appointmentToDelete, setAppointmentToDelete] = useState(null);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
+
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [createModalDate, setCreateModalDate] = useState(null);
+  const [createModalTab, setCreateModalTab] = useState("appointment");
 
   const {
     data: appointments = [],
     isLoading,
     error,
   } = useGetAppointmentsQuery(filters);
+
+  const {
+    data: dailyTasks = [],
+    isLoading: loadingTasks,
+  } = useGetDailyTasksQuery(filters);
 
   const [deleteAppointment] = useDeleteAppointmentMutation();
   const [completeAppointment] = useCompleteAppointmentMutation();
@@ -70,6 +77,12 @@ function AppointmentsPage() {
     }
   };
 
+  const openCreateModal = (date = null, tab = "appointment") => {
+    setCreateModalDate(date);
+    setCreateModalTab(tab);
+    setIsCreateModalOpen(true);
+  };
+
   const upcomingAppointments = appointments.filter(
     (a) => a.status === "upcoming"
   );
@@ -77,11 +90,14 @@ function AppointmentsPage() {
     (a) => a.status === "completed"
   );
 
+  const pendingTasks = dailyTasks.filter((t) => t.status !== "completed");
+  const completedTasks = dailyTasks.filter((t) => t.status === "completed");
+
   if (error) {
     return (
-      <Page title={t("Appointments")}>
+      <Page title={t("Agenda")}>
         <div className="text-center text-red-500 mt-8">
-          {t("Failed to load appointments. Please try again later.")}
+          {t("Failed to load agenda. Please try again later.")}
         </div>
       </Page>
     );
@@ -89,111 +105,166 @@ function AppointmentsPage() {
 
   return (
     <>
-      <Page
-        title={t("Appointments")}
-        isBtn={true}
-        btnOnClick={() => router.push("/appointments/create")}
-        btnTitle={t("Create Appointment")}
-      >
-        <div className="flex flex-col gap-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2">
-              <TodayAppointments maxItems={5} />
-            </div>
-            <div>
-              <CountdownWidget maxItems={3} />
-            </div>
-          </div>
+      <Page title={t("Agenda")} isBtn={false}>
+        <div className="space-y-6">
+          <AgendaHeader
+            view={view}
+            setView={setView}
+            onAdd={() => openCreateModal(null, "appointment")}
+          />
 
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-gray-900 dark:text-white">
-                {t("All Appointments")}
-              </h3>
-              <div className="flex items-center gap-2">
-                <select
-                  value={filters.status}
-                  onChange={(e) =>
-                    setFilters({ ...filters, status: e.target.value })
-                  }
-                  className="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                >
-                  <option value="">{t("All Status")}</option>
-                  <option value="upcoming">{t("Upcoming")}</option>
-                  <option value="completed">{t("Completed")}</option>
-                  <option value="cancelled">{t("Cancelled")}</option>
-                </select>
-
-                <select
-                  value={filters.category}
-                  onChange={(e) =>
-                    setFilters({ ...filters, category: e.target.value })
-                  }
-                  className="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                >
-                  <option value="">{t("All Categories")}</option>
-                  <option value="meeting">🤝 {t("Meeting")}</option>
-                  <option value="task">📋 {t("Task")}</option>
-                  <option value="project">📁 {t("Project")}</option>
-                  <option value="interview">🎤 {t("Interview")}</option>
-                  <option value="training">📚 {t("Training")}</option>
-                  <option value="deadline">⏰ {t("Deadline")}</option>
-                  <option value="other">📌 {t("Other")}</option>
-                </select>
+          {view === "calendar" ? (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <MonthlyCalendar
+                  onDaySelect={setSelectedDate}
+                  selectedDate={selectedDate}
+                />
+              </div>
+              <div>
+                <DayDetailSidebar
+                  selectedDate={selectedDate}
+                  onAddAppointment={(date) => openCreateModal(date, "appointment")}
+                  onAddTask={(date) => openCreateModal(date, "daily_task")}
+                />
               </div>
             </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 space-y-6">
+                <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-semibold text-gray-900 dark:text-white">
+                      {t("Appointments")}
+                    </h3>
+                    <div className="flex items-center gap-2">
+                      <select
+                        value={filters.status}
+                        onChange={(e) =>
+                          setFilters({ ...filters, status: e.target.value })
+                        }
+                        className="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                      >
+                        <option value="">{t("All Status")}</option>
+                        <option value="upcoming">{t("Upcoming")}</option>
+                        <option value="completed">{t("Completed")}</option>
+                        <option value="cancelled">{t("Cancelled")}</option>
+                      </select>
 
-            {isLoading ? (
-              <div className="text-center py-6">{t("Loading...")}</div>
-            ) : appointments.length === 0 ? (
-              <div className="text-center py-6 text-gray-500 dark:text-gray-400">
-                {t("No appointments found")}
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {upcomingAppointments.length > 0 && (
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
-                      {t("Upcoming")} ({upcomingAppointments.length})
-                    </h4>
-                    <div className="space-y-2">
-                      {upcomingAppointments.map((appointment) => (
-                        <AppointmentCard
-                          key={appointment._id}
-                          appointment={appointment}
-                          size="md"
-                          showCountdown={true}
-                          onComplete={handleComplete}
-                          onCancel={handleCancel}
-                          onShare={setShareAppointment}
-                        />
-                      ))}
+                      <select
+                        value={filters.category}
+                        onChange={(e) =>
+                          setFilters({ ...filters, category: e.target.value })
+                        }
+                        className="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                      >
+                        <option value="">{t("All Categories")}</option>
+                        <option value="meeting">🤝 {t("Meeting")}</option>
+                        <option value="task">📋 {t("Task")}</option>
+                        <option value="project">📁 {t("Project")}</option>
+                        <option value="interview">🎤 {t("Interview")}</option>
+                        <option value="training">📚 {t("Training")}</option>
+                        <option value="deadline">⏰ {t("Deadline")}</option>
+                        <option value="other">📌 {t("Other")}</option>
+                      </select>
                     </div>
                   </div>
-                )}
 
-                {completedAppointments.length > 0 && (
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
-                      {t("Completed")} ({completedAppointments.length})
-                    </h4>
-                    <div className="space-y-2">
-                      {completedAppointments.map((appointment) => (
-                        <AppointmentCard
-                          key={appointment._id}
-                          appointment={appointment}
-                          size="sm"
-                          showCountdown={false}
-                        />
-                      ))}
+                  {isLoading ? (
+                    <div className="text-center py-6">{t("Loading...")}</div>
+                  ) : appointments.length === 0 ? (
+                    <div className="text-center py-6 text-gray-500 dark:text-gray-400">
+                      {t("No appointments found")}
                     </div>
-                  </div>
-                )}
+                  ) : (
+                    <div className="space-y-3">
+                      {upcomingAppointments.length > 0 && (
+                        <div>
+                          <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+                            {t("Upcoming")} ({upcomingAppointments.length})
+                          </h4>
+                          <div className="space-y-2">
+                            {upcomingAppointments.map((appointment) => (
+                              <AppointmentCard
+                                key={appointment._id}
+                                appointment={appointment}
+                                size="md"
+                                showCountdown={true}
+                                onComplete={handleComplete}
+                                onCancel={handleCancel}
+                                onShare={setShareAppointment}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {completedAppointments.length > 0 && (
+                        <div>
+                          <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+                            {t("Completed")} ({completedAppointments.length})
+                          </h4>
+                          <div className="space-y-2">
+                            {completedAppointments.map((appointment) => (
+                              <AppointmentCard
+                                key={appointment._id}
+                                appointment={appointment}
+                                size="sm"
+                                showCountdown={false}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
-            )}
-          </div>
+
+              <div className="space-y-6">
+                <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-4">
+                    {t("Daily Tasks")}
+                  </h3>
+                  {loadingTasks ? (
+                    <div className="text-center py-6">{t("Loading...")}</div>
+                  ) : dailyTasks.length === 0 ? (
+                    <div className="text-center py-6 text-gray-500 dark:text-gray-400">
+                      {t("No daily tasks")}
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {pendingTasks.map((task) => (
+                        <DailyTaskCard key={task._id} task={task} size="sm" />
+                      ))}
+                      {completedTasks.length > 0 && (
+                        <div className="mt-4">
+                          <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+                            {t("Completed")} ({completedTasks.length})
+                          </h4>
+                          {completedTasks.map((task) => (
+                            <DailyTaskCard key={task._id} task={task} size="sm" />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </Page>
+
+      <CreateAgendaModal
+        isOpen={isCreateModalOpen}
+        onClose={(success) => {
+          setIsCreateModalOpen(false);
+          setCreateModalDate(null);
+        }}
+        initialDate={createModalDate}
+        initialTab={createModalTab}
+      />
 
       <ShareAppointment
         appointment={shareAppointment}
