@@ -2,37 +2,35 @@
 
 import { useTranslation } from "react-i18next";
 import AgendaSearch from "./AgendaSearch";
-import { RiAddLine, RiCalendarScheduleLine, RiTaskLine } from "react-icons/ri";
+import { RiAddLine, RiCalendarScheduleLine, RiTaskLine, RiSunLine } from "react-icons/ri";
 
 function AgendaHeader({ view, setView, onAdd }) {
   const { t } = useTranslation();
+
+  const tabs = [
+    { id: "today", icon: <RiSunLine size={16} />, label: t("Today") },
+    { id: "calendar", icon: <RiCalendarScheduleLine size={16} />, label: t("Calendar") },
+    { id: "list", icon: <RiTaskLine size={16} />, label: t("List") },
+  ];
 
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
       <div className="flex items-center gap-3">
         <div className="flex items-center bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
-          <button
-            onClick={() => setView("calendar")}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-              view === "calendar"
-                ? "bg-white dark:bg-gray-600 text-primary-600 shadow-sm"
-                : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-            }`}
-          >
-            <RiCalendarScheduleLine size={16} />
-            {t("Calendar")}
-          </button>
-          <button
-            onClick={() => setView("list")}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-              view === "list"
-                ? "bg-white dark:bg-gray-600 text-primary-600 shadow-sm"
-                : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-            }`}
-          >
-            <RiTaskLine size={16} />
-            {t("Tasks")}
-          </button>
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setView(tab.id)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                view === tab.id
+                  ? "bg-white dark:bg-gray-600 text-primary-600 shadow-sm"
+                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+              }`}
+            >
+              {tab.icon}
+              {tab.label}
+            </button>
+          ))}
         </div>
       </div>
 

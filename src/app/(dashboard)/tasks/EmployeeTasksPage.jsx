@@ -13,8 +13,9 @@ import useAuthStore from '@/store/authStore.js';
 import { convertToSlug } from "@/functions/AnotherFunctions";
 import { translateDate } from "@/functions/Days";
 
-import { RiEyeLine, RiDeleteBinLine, RiEditLine } from "react-icons/ri";
+import { RiEyeLine, RiDeleteBinLine, RiEditLine, RiCalendarCheckLine } from "react-icons/ri";
 import StatusActions from "@/components/Dropdowns/StatusActions";
+const AddToAgendaModal = dynamic(() => import("@/components/Agenda/AddToAgendaModal"), { ssr: false });
 
 // ✅ Lazy-loaded components
 const NameAndDescription = dynamic(() => import("@/app/(dashboard)/projects/_components/TableInfo/NameAndDescription"), { ssr: false });
@@ -40,6 +41,7 @@ function EmployeeTasksPage() {
     const error = reduxTasks?.error || null;
     const [isOpenDeleteAlert, setIsOpenDeleteAlert] = useState(false);
     const [taskToDelete, setTaskToDelete] = useState(null);
+    const [agendaTask, setAgendaTask] = useState(null);
 
     // Define authUserType (e.g., from context or state management)
     const { authUserType } = useAuthStore();
@@ -91,6 +93,11 @@ function EmployeeTasksPage() {
                 text: t("Edit"),
                 icon: <RiEditLine size={16} className="text-primary-500" />,
                 onClick: () => router.push(`/tasks/${task._id}-${convertToSlug(task.title)}/edit`),
+            },
+            {
+                text: t("Add to Agenda"),
+                icon: <RiCalendarCheckLine size={16} className="text-purple-500" />,
+                onClick: () => setAgendaTask(task),
             },
         ];
 
@@ -166,6 +173,12 @@ function EmployeeTasksPage() {
                 onClose={() => setIsOpenDeleteAlert(false)}
                 onSubmit={handleDeleteTask}
                 isBtns={1}
+            />
+
+            <AddToAgendaModal
+                isOpen={!!agendaTask}
+                onClose={() => setAgendaTask(null)}
+                task={agendaTask}
             />
         </>
     );

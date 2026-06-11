@@ -18,11 +18,13 @@ import DayDetailSidebar from "@/components/Agenda/DayDetailSidebar";
 import AgendaHeader from "@/components/Agenda/AgendaHeader";
 import DailyTaskCard from "@/components/Agenda/DailyTaskCard";
 import CreateAgendaModal from "@/components/Agenda/CreateAgendaModal";
+import TodayView from "@/components/Agenda/TodayView";
+import YesterdayTasksNotice from "@/components/Agenda/YesterdayTasksNotice";
 
 function AppointmentsPage() {
   const { t } = useTranslation();
 
-  const [view, setView] = useState("calendar");
+  const [view, setView] = useState("today");
   const [selectedDate, setSelectedDate] = useState(null);
   const [filters, setFilters] = useState({ status: "", category: "" });
 
@@ -38,12 +40,12 @@ function AppointmentsPage() {
     data: appointments = [],
     isLoading,
     error,
-  } = useGetAppointmentsQuery(filters);
+  } = useGetAppointmentsQuery(filters, { skip: view !== "list" });
 
   const {
     data: dailyTasks = [],
     isLoading: loadingTasks,
-  } = useGetDailyTasksQuery(filters);
+  } = useGetDailyTasksQuery(filters, { skip: view !== "list" });
 
   const [deleteAppointment] = useDeleteAppointmentMutation();
   const [completeAppointment] = useCompleteAppointmentMutation();
@@ -77,19 +79,14 @@ function AppointmentsPage() {
     }
   };
 
-  const openCreateModal = (date = null, tab = "appointment") => {
-    setCreateModalDate(date);
+  const openCreateModal = (tab = "appointment", date = null) => {
     setCreateModalTab(tab);
+    setCreateModalDate(date);
     setIsCreateModalOpen(true);
   };
 
-  const upcomingAppointments = appointments.filter(
-    (a) => a.status === "upcoming"
-  );
-  const completedAppointments = appointments.filter(
-    (a) => a.status === "completed"
-  );
-
+  const upcomingAppointments = appointments.filter((a) => a.status === "upcoming");
+  const completedAppointments = appointments.filter((a) => a.status === "completed");
   const pendingTasks = dailyTasks.filter((t) => t.status !== "completed");
   const completedTasks = dailyTasks.filter((t) => t.status === "completed");
 
@@ -106,14 +103,23 @@ function AppointmentsPage() {
   return (
     <>
       <Page title={t("Agenda")} isBtn={false}>
-        <div className="space-y-6">
+        <div className="space-y-4">
           <AgendaHeader
             view={view}
             setView={setView}
-            onAdd={() => openCreateModal(null, "appointment")}
+            onAdd={() => openCreateModal("appointment")}
           />
 
-          {view === "calendar" ? (
+          {/* Yesterday's incomplete tasks notice — only show on today tab */}
+          {view === "today" && <YesterdayTasksNotice />}
+
+          {/* Today view */}
+          {view === "today" && (
+            <TodayView onOpenCreateModal={openCreateModal} />
+          )}
+
+          {/* Calendar view */}
+          {view === "calendar" && (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2">
                 <MonthlyCalendar
@@ -124,12 +130,15 @@ function AppointmentsPage() {
               <div>
                 <DayDetailSidebar
                   selectedDate={selectedDate}
-                  onAddAppointment={(date) => openCreateModal(date, "appointment")}
-                  onAddTask={(date) => openCreateModal(date, "daily_task")}
+                  onAddAppointment={(date) => openCreateModal("appointment", date)}
+                  onAddTask={(date) => openCreateModal("task", date)}
                 />
               </div>
             </div>
-          ) : (
+          )}
+
+          {/* List view */}
+          {view === "list" && (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 space-y-6">
                 <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
@@ -258,7 +267,7 @@ function AppointmentsPage() {
 
       <CreateAgendaModal
         isOpen={isCreateModalOpen}
-        onClose={(success) => {
+        onClose={() => {
           setIsCreateModalOpen(false);
           setCreateModalDate(null);
         }}
