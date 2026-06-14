@@ -1,22 +1,25 @@
-import React, { useState } from 'react';
 import { useTranslation } from "react-i18next";
 import Table from "@/components/Tables/Table";
+import { useGetChatPermissionsQuery } from "@/redux/conversations/conversationsAPI";
 
 function ChatPermissionsTab() {
     const { t } = useTranslation();
+
+    const { data: permissionsData } = useGetChatPermissionsQuery();
+    const permissions = permissionsData?.data || permissionsData || [];
 
     const headers = [
         { label: t("Permission Title"), width: "60%" },
         { label: t("Description"), width: "40%" },
     ];
 
-    const rows = Array.from({ length: 9 }).map((_, index) => [
-        <div key={`title-${index}`} className="text-gray-900 dark:text-gray-200 font-medium">
-            Lorem Ipsum
+    const rows = permissions.map((perm) => [
+        <div key={`title-${perm._id}`} className="text-gray-900 dark:text-gray-200 font-medium">
+            {t(perm.name)}
         </div>,
-        <div key={`desc-${index}`} className="text-gray-500 dark:text-gray-400">
-            Lorem Ipsum dummy text, Lorem Ipsum dummy text...
-        </div>
+        <div key={`desc-${perm._id}`} className="text-gray-500 dark:text-gray-400">
+            {perm.description ? t(perm.description) : "—"}
+        </div>,
     ]);
 
     return (

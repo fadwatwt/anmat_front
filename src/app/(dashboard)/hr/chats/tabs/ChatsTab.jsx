@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Table from "@/components/Tables/Table";
 import CreateChatGroupModal from "@/app/(dashboard)/hr/chats/modals/CreateChatGroupModal";
 import { statusCell } from "@/components/StatusCell";
@@ -6,6 +6,11 @@ import { useTranslation } from "react-i18next";
 import { RiEyeLine, RiPencilLine, RiDeleteBinLine } from "@remixicon/react";
 import Modal from "@/components/Modal/Modal";
 import { IoAdd } from "react-icons/io5";
+import {
+    useGetChatsQuery,
+    useArchiveChatMutation,
+} from "@/redux/conversations/conversationsAPI";
+import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 
 function ChatsTab() {
     const { t } = useTranslation();
@@ -13,45 +18,14 @@ function ChatsTab() {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedChat, setSelectedChat] = useState(null);
     const [isEdit, setIsEdit] = useState(false);
+    const [isView, setIsView] = useState(false);
+    const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
-    // Mock Data
-    const [rows, setRows] = useState([
-        {
-            id: 1,
-            title: "IP Lover Group",
-            admins: ["user1", "user2"],
-            participantsCount: 4,
-            status: "Active",
-        },
-        {
-            id: 2,
-            title: "IP Lover Group",
-            admins: ["user3"],
-            participantsCount: 16,
-            status: "Active",
-        },
-        {
-            id: 3,
-            title: "IP Lover Group",
-            admins: ["user1"],
-            participantsCount: 22,
-            status: "In-active",
-        },
-        {
-            id: 4,
-            title: "IP Lover Group",
-            admins: ["user1"],
-            participantsCount: 22,
-            status: "Active",
-        },
-        {
-            id: 5,
-            title: "IP Lover Group",
-            admins: ["user1"],
-            participantsCount: 22,
-            status: "In-active",
-        },
-    ]);
+    const { data: chatsData } = useGetChatsQuery();
+    const [archiveChat, { isLoading: isArchiving }] = useArchiveChatMutation();
+
+    // Only group chats belong in this management screen.
+    const rows = (chatsData?.data || chatsData || []).filter((c) => c.is_group);
 
     const headers = [
         { label: t("Chat Group Title"), width: "100px" },
@@ -63,12 +37,21 @@ function ChatsTab() {
 
     const handleOpenCreateModal = () => {
         setIsEdit(false);
+        setIsView(false);
         setSelectedChat(null);
+        setIsCreateModalOpen(true);
+    };
+
+    const handleView = (index) => {
+        setIsView(true);
+        setIsEdit(false);
+        setSelectedChat(rows[index]);
         setIsCreateModalOpen(true);
     };
 
     const handleEdit = (index) => {
         setIsEdit(true);
+        setIsView(false);
         setSelectedChat(rows[index]);
         setIsCreateModalOpen(true);
     };
@@ -78,42 +61,78 @@ function ChatsTab() {
         setIsDeleteModalOpen(true);
     };
 
-    const confirmDelete = () => {
-        setRows(rows.filter((r) => r.id !== selectedChat.id));
-        setIsDeleteModalOpen(false);
-        setSelectedChat(null);
+    // The backend has no hard-delete for chats; archiving is the supported action.
+    const confirmDelete = async () => {
+        if (!selectedChat?._id) return;
+        try {
+            await archiveChat({ chatId: selectedChat._id, is_archived: true }).unwrap();
+            setApiResponse({ isOpen: true, status: "success", message: t("Chat group archived successfully") });
+        } catch (err) {
+            setApiResponse({
+                isOpen: true,
+                status: "error",
+                message: err?.data?.message || t("Failed to archive chat group"),
+            });
+        } finally {
+            setIsDeleteModalOpen(false);
+            setSelectedChat(null);
+        }
     };
 
-    const renderAdmins = (admins) => {
+    const renderAdmins = (chat) => {
+        const adminIds = (chat?.group_details?.admins || []).map((a) =>
+            typeof a === "object" ? a.toString() : a
+        );
+        const adminUsers = (chat?.participants_ids || []).filter((p) =>
+            adminIds.includes((p?._id || p)?.toString())
+        );
+
+        if (adminUsers.length === 0) {
+            return <span className="text-gray-400 text-sm">—</span>;
+        }
+
+        const visible = adminUsers.slice(0, 4);
+        const extra = adminUsers.length - visible.length;
+
         return (
-            <div className="flex -space-x-2">
-                {admins.map((admin, idx) => (
+            <div className="flex -space-x-2 items-center">
+                {visible.map((admin, idx) => (
                     <div
-                        key={idx}
-                        className="w-8 h-8 rounded-full bg-gray-300 border-2 border-white flex items-center justify-center text-xs font-bold text-gray-700"
-                        title={admin}
+                        key={admin?._id || idx}
+                        className="w-8 h-8 rounded-full bg-gray-300 border-2 border-white dark:border-gray-800 flex items-center justify-center text-xs font-bold text-gray-700"
+                        title={admin?.name}
                     >
-                        {admin.charAt(0).toUpperCase()}
-                        {/* Replace with <img src={...} /> if avatar URL is available */}
+                        {(admin?.name || "?").charAt(0).toUpperCase()}
                     </div>
                 ))}
+                {extra > 0 && (
+                    <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 border-2 border-white dark:border-gray-800 flex items-center justify-center text-xs font-bold text-gray-600 dark:text-gray-300">
+                        +{extra}
+                    </div>
+                )}
             </div>
         );
     };
 
     const tableRows = rows.map((row) => [
-        <div key={row.id} className="flex items-center gap-2 font-medium text-gray-900 dark:text-gray-200">
-            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"> <span className="text-xs">IMG</span> </div>
-            {row.title}
+        <div key={row._id} className="flex items-center gap-2 font-medium text-gray-900 dark:text-gray-200">
+            <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/40 overflow-hidden flex items-center justify-center text-blue-600">
+                {row.image ? (
+                    <img src={row.image} alt={row.title} className="w-full h-full object-cover" />
+                ) : (
+                    <span className="text-xs">{(row.title || "G").charAt(0).toUpperCase()}</span>
+                )}
+            </div>
+            {row.title || t("Untitled Group")}
         </div>,
-        renderAdmins(row.admins),
-        row.participantsCount,
-        statusCell(row.status, row.id)
+        renderAdmins(row),
+        (row.participants_ids || []).length,
+        statusCell(row.is_archived ? "In-active" : "Active", row._id),
     ]);
 
     const customActions = (index) => (
         <div className="absolute right-0 mt-2 w-32 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 border border-gray-200 dark:border-gray-700 p-1 flex flex-col">
-            <button className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left rounded-md">
+            <button onClick={() => handleView(index)} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left rounded-md">
                 <RiEyeLine size={16} className="text-blue-500" /> {t("View")}
             </button>
             <button onClick={() => handleEdit(index)} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left rounded-md">
@@ -150,16 +169,17 @@ function ChatsTab() {
                 isOpen={isCreateModalOpen}
                 onClose={() => setIsCreateModalOpen(false)}
                 isEdit={isEdit}
+                isView={isView}
                 editData={selectedChat}
             />
 
-            {/* Delete Confirmation Modal */}
+            {/* Delete (archive) Confirmation Modal */}
             <Modal
                 isOpen={isDeleteModalOpen}
                 onClose={() => setIsDeleteModalOpen(false)}
                 title={t("Delete Chat Group")}
                 isBtns={true}
-                btnApplyTitle={t("Yes, Save")}
+                btnApplyTitle={isArchiving ? t("Saving...") : t("Yes, Delete")}
                 onClick={confirmDelete}
                 className="lg:w-[30%] md:w-1/2 w-11/12 p-6"
             >
@@ -168,10 +188,17 @@ function ChatsTab() {
                         <RiDeleteBinLine size={32} />
                     </div>
                     <p className="text-gray-800 dark:text-gray-200 text-lg font-medium">
-                        {t("Are you sure you want to delete")} <span className="font-bold">"{selectedChat?.title}"</span> {t("Group Chat?")}
+                        {t("Are you sure you want to delete")} <span className="font-bold">&quot;{selectedChat?.title}&quot;</span> {t("Group Chat?")}
                     </p>
                 </div>
             </Modal>
+
+            <ApiResponseAlert
+                isOpen={apiResponse.isOpen}
+                status={apiResponse.status}
+                message={apiResponse.message}
+                onClose={() => setApiResponse({ ...apiResponse, isOpen: false })}
+            />
         </>
     );
 }
