@@ -1,18 +1,16 @@
-import React, { useState, useEffect } from "react";
-import PropTypes, { element } from "prop-types";
+import { useState, useEffect, useMemo } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import Modal from "@/components/Modal/Modal";
 import InputAndLabel from "@/components/Form/InputAndLabel";
-import DefaultSelect from "@/components/Form/DefaultSelect";
 import DateInput from "@/components/Form/DateInput";
-import InputWithIcon from "@/components/Form/InputWithIcon";
 import ElementsSelect from "@/components/Form/ElementsSelect";
-import { RiTimeLine } from "@remixicon/react";
-import { employeesFactory } from "@/functions/FactoryData";
 import TextAreaWithLabel from "@/components/Form/TextAreaWithLabel";
 import TimeInput from "@/components/Form/TimeInput";
+import { useGetEmployeesQuery } from "@/redux/employees/employeesApi";
+import { useGetDepartmentsQuery } from "@/redux/departments/departmentsApi";
 
-function CreateMeetingModal({ isOpen, onClose, isEdit, editData }) {
+function CreateMeetingModal({ isOpen, onClose, isEdit, editData, onSubmit }) {
     const { t } = useTranslation();
 
     const [formData, setFormData] = useState({
@@ -28,16 +26,38 @@ function CreateMeetingModal({ isOpen, onClose, isEdit, editData }) {
         meetingLink: "",
     });
 
-    const departmentOptions = [
-        { id: "dept1", value: "Development", label: "Development", name: "Development" },
-        { id: "dept2", value: "Sales", label: "Sales", name: "Sales" },
-        { id: "dept3", value: "Marketing", label: "Marketing", name: "Marketing" },
-        { id: "dept4", value: "HR", label: "HR", name: "HR" },
-    ];
+    const { data: employees = [] } = useGetEmployeesQuery(undefined, { skip: !isOpen });
+    const { data: departments = [] } = useGetDepartmentsQuery(undefined, { skip: !isOpen });
+
+    const departmentOptions = useMemo(
+        () => departments.map((d) => ({ id: d._id, name: d.name, element: d.name })),
+        [departments],
+    );
+
+    const employeeOptions = useMemo(
+        () =>
+            employees.map((e) => {
+                const name = e.user?.name || t("Unknown Employee");
+                const image = e.user?.image;
+                return {
+                    id: e.user?._id || e._id,
+                    name,
+                    element: (
+                        <div className="flex items-center gap-2">
+                            {image ? (
+                                <img src={image} alt={name} className="w-6 h-6 rounded-full object-cover" />
+                            ) : null}
+                            <span>{name}</span>
+                        </div>
+                    ),
+                };
+            }),
+        [employees, t],
+    );
 
     const typeOptions = [
-        { id: "online", element: "Online", name: "Online" },
-        { id: "person", element: "In Person", name: "In Person" },
+        { id: "online", element: t("Online"), name: "Online" },
+        { id: "person", element: t("In Person"), name: "In Person" },
     ];
 
     useEffect(() => {
@@ -79,8 +99,12 @@ function CreateMeetingModal({ isOpen, onClose, isEdit, editData }) {
     };
 
     const handleSave = () => {
-        console.log("Saving Meeting:", formData);
-        onClose();
+        if (!formData.title.trim()) return;
+        if (onSubmit) {
+            onSubmit(formData);
+        } else {
+            onClose();
+        }
     };
 
     return (
@@ -105,7 +129,7 @@ function CreateMeetingModal({ isOpen, onClose, isEdit, editData }) {
 
                 <ElementsSelect
                     title={t("Departments")}
-                    options={departmentOptions.map(dept => ({ ...dept, element: <span>{dept.name}</span> }))}
+                    options={departmentOptions}
                     defaultValue={formData.departments}
                     onChange={(val) => handleSelectChange("departments", val)}
                     isMultiple={true}
@@ -128,43 +152,17 @@ function CreateMeetingModal({ isOpen, onClose, isEdit, editData }) {
                 />
 
                 <ElementsSelect
-                    title={t("Admins")}
-                    options={employeesFactory.map((emp) => ({
-                        id: emp.id,
-                        element: (
-                            <div className="flex items-center gap-2">
-                                <img
-                                    src={emp.imageProfile}
-                                    alt={emp.name}
-                                    className="w-6 h-6 rounded-full object-cover"
-                                />
-                                <span>{emp.name}</span>
-                            </div>
-                        ),
-                        ...emp,
-                    }))}
+                    title={t("Organizers")}
+                    options={employeeOptions}
                     defaultValue={formData.admins}
                     onChange={(val) => handleSelectChange("admins", val)}
                     isMultiple={true}
-                    placeholder={t("Select Admins")}
+                    placeholder={t("Select Organizers")}
                 />
 
                 <ElementsSelect
                     title={t("Participants")}
-                    options={employeesFactory.map((emp) => ({
-                        id: emp.id,
-                        element: (
-                            <div className="flex items-center gap-2">
-                                <img
-                                    src={emp.imageProfile}
-                                    alt={emp.name}
-                                    className="w-6 h-6 rounded-full object-cover"
-                                />
-                                <span>{emp.name}</span>
-                            </div>
-                        ),
-                        ...emp,
-                    }))}
+                    options={employeeOptions}
                     defaultValue={formData.participants}
                     onChange={(val) => handleSelectChange("participants", val)}
                     isMultiple={true}
@@ -214,6 +212,7 @@ CreateMeetingModal.propTypes = {
     onClose: PropTypes.func.isRequired,
     isEdit: PropTypes.bool,
     editData: PropTypes.object,
+    onSubmit: PropTypes.func,
 };
 
 export default CreateMeetingModal;

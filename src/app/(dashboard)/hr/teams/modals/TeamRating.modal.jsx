@@ -6,7 +6,7 @@ import StarRatingInput from "@/components/Form/StarRatingInput";
 import TextAreaWithLabel from "@/components/Form/TextAreaWithLabel";
 import { useTranslation } from "react-i18next";
 
-function TeamRatingModal({ isOpen, onClose, team }) {
+function TeamRatingModal({ isOpen, onClose, team, onSubmit }) {
     const { t } = useTranslation();
     const teamName = team?.name || "Publishing Team";
     const [ratings, setRatings] = useState({
@@ -28,9 +28,15 @@ function TeamRatingModal({ isOpen, onClose, team }) {
     ];
 
     const handleSubmit = () => {
-        // Handle submit logic here
-        console.log("Submitted Rating", { teamName, ratings, comments });
-        onClose();
+        const values = [ratings.timeDelivery, ratings.quality, ratings.communication];
+        const filled = values.filter((v) => v > 0);
+        const avg = filled.length ? filled.reduce((a, b) => a + b, 0) / filled.length : 0;
+        const score = Math.round(avg * 10) / 10;
+        if (onSubmit) {
+            onSubmit({ score, comments });
+        } else {
+            onClose();
+        }
     };
 
     return (
@@ -85,6 +91,7 @@ TeamRatingModal.propTypes = {
     isOpen: PropTypes.bool,
     onClose: PropTypes.func,
     team: PropTypes.object,
+    onSubmit: PropTypes.func,
 };
 
 export default TeamRatingModal;

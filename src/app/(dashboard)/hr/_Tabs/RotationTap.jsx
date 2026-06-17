@@ -1,4 +1,5 @@
 "use client";
+import PropTypes from "prop-types";
 import { ImSpinner2 } from "react-icons/im";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -6,10 +7,10 @@ import { useDispatch, useSelector } from "react-redux";
 // import { format, parseISO } from "date-fns";
 import Table from "@/components/Tables/Table.jsx";
 import { fetchAllRotations } from "@/redux/rotation/rotationAPI";
-import { HiPlus, HiChevronLeft, HiChevronRight } from "react-icons/hi";
-import AddRotationModal from "@/app/(dashboard)/hr/_modals/AddRotationModal.jsx";
+import { HiChevronLeft, HiChevronRight } from "react-icons/hi";
 import { fetchDepartments } from "@/redux/departments/departmentAPI";
 import { useGetLeavesQuery } from "@/redux/leaves/leavesApi";
+import { useGetHolidaysQuery } from "@/redux/holidays/holidaysApi";
 
 const OffBadge = () => (
   <div className="w-full flex justify-center">
@@ -19,6 +20,20 @@ const OffBadge = () => (
     </div>
   </div>
 );
+
+const HolidayBadge = ({ name }) => (
+  <div
+    title={name}
+    className="flex items-center justify-center gap-1 px-1.5 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded border border-purple-200 dark:border-purple-800/50 text-[9px] max-w-[120px]"
+  >
+    <span className="w-1.5 h-1.5 bg-purple-500 rounded-full shrink-0" />
+    <span className="truncate">{name}</span>
+  </div>
+);
+
+HolidayBadge.propTypes = {
+  name: PropTypes.string,
+};
 
 function RotationTap() {
   const { t } = useTranslation();
@@ -31,11 +46,21 @@ function RotationTap() {
   const [selectedDepartment, setSelectedDepartment] = useState("all");
   const [currentDate, setCurrentDate] = useState(new Date());
   const [searchTerm, setSearchTerm] = useState("");
-  const [isAddRotationModalOpen, setIsAddRotationModalOpen] = useState(false);
 
   // Fetch leaves for the current period
   const { data: leavesData } = useGetLeavesQuery();
   const leaves = leavesData || [];
+
+  // Fetch org holidays and index them by YYYY-MM-DD for quick per-day lookup.
+  const { data: holidaysData } = useGetHolidaysQuery();
+  const holidaysByDate = (holidaysData || []).reduce((acc, h) => {
+    if (!h?.date) return acc;
+    const d = new Date(h.date);
+    if (Number.isNaN(d.getTime())) return acc;
+    const key = d.toISOString().split("T")[0];
+    (acc[key] = acc[key] || []).push(h);
+    return acc;
+  }, {});
 
   const generateDates = (date, mode) => {
     const start = new Date(date);
@@ -149,10 +174,15 @@ function RotationTap() {
       const shifts = displayDates.map((date) => {
         const dateStr = date.toISOString().split("T")[0];
         const entry = attendances[dateStr];
+        const dayHolidays = holidaysByDate[dateStr] || [];
 
         if (!entry) return (
           <div key={dateStr} className="flex flex-col gap-1 items-center">
-            <OffBadge />
+            {dayHolidays.length > 0 ? (
+              dayHolidays.map((h) => <HolidayBadge key={h._id} name={h.name} />)
+            ) : (
+              <OffBadge />
+            )}
             {leaves.filter(l => (l.employee_id === employee.id || l.employee?._id === employee.id) && l.date === dateStr).map(l => (
               <div key={l._id} className="text-[9px] bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 px-1 rounded border border-orange-200 dark:border-orange-800/50">
                 {t("Permit")}: {l.start_time}-{l.end_time}
@@ -163,6 +193,7 @@ function RotationTap() {
 
         return (
           <div key={dateStr} className="flex flex-col gap-1 items-center">
+            {dayHolidays.map((h) => <HolidayBadge key={h._id} name={h.name} />)}
             <div className="flex flex-col text-xs dark:text-sub-300 text-center text-blue-600 dark:text-blue-400 font-medium">
               <span>{entry.start_time} to</span>
               <span>{entry.end_time || "..."}</span>
@@ -277,14 +308,6 @@ function RotationTap() {
           ))}
         </select>
       </div>
-
-      <button
-        onClick={() => setIsAddRotationModalOpen(true)}
-        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors shadow-sm"
-      >
-        <HiPlus size={16} />
-        {t("Add")}
-      </button>
     </div>
   );
 
@@ -306,11 +329,6 @@ function RotationTap() {
           viewModalList={[]}
         />
       </div>
-
-      <AddRotationModal
-        isOpen={isAddRotationModalOpen}
-        onClose={() => setIsAddRotationModalOpen(false)}
-      />
     </div>
   );
 }

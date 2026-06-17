@@ -84,9 +84,24 @@ export const dashboardSideMenuItems = [
                 permission_any_of: ['departments.list'],
             },
             {
+                title: 'Teams',
+                path: '/hr/teams',
+                permission_any_of: ['teams.list'],
+            },
+            {
                 title: 'Positions',
                 path: '/hr/positions',
                 permission_any_of: ['positions.list'],
+            },
+            {
+                title: 'Meetings',
+                path: '/hr/meetings',
+                permission_any_of: ['meetings.list'],
+            },
+            {
+                title: 'Holidays',
+                path: '/hr/holidays',
+                permission_any_of: ['holidays.list'],
             },
             {
                 allowed_to: ['Employee'],

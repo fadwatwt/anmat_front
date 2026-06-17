@@ -1,39 +1,73 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
-import { useDispatch } from "react-redux";
 import CreateTeamModal from "@/app/(dashboard)/hr/teams/modals/CreateTeam.modal";
 import CreateChatGroupModal from "@/app/(dashboard)/hr/departments/modals/CreateChatGroup.modal";
 import TeamRatingModal from "@/app/(dashboard)/hr/teams/modals/TeamRating.modal";
-// import EvaluationModal from "@/app/(dashboard)/hr/teams/modals/EvaluationModal";
-import AccountDetails from "@/app/(dashboard)/projects/_components/TableInfo/AccountDetails.jsx";
+import SendNotificationModal from "@/app/(dashboard)/hr/employees/modals/SendNotification.modal.jsx";
 import { RiEditLine, RiDeleteBin7Line, RiNotification4Line, RiChat1Line, RiStarLine } from "@remixicon/react";
 import StatusActions from "@/components/Dropdowns/StatusActions";
 import Alert from "@/components/Alerts/Alert";
-import Table from "@/components/Tables/Table"
+import Table from "@/components/Tables/Table";
 import Page from "@/components/Page";
-import { teamsFactory } from "@/functions/FactoryData";
+import {
+    useGetTeamsQuery,
+    useCreateTeamMutation,
+    useUpdateTeamMutation,
+    useRateTeamMutation,
+    useDeleteTeamMutation,
+} from "@/redux/teams/teamsApi";
 
-import SendNotificationModal from "@/app/(dashboard)/hr/employees/modals/SendNotification.modal.jsx";
+// Always produce a valid image URL: use the real image, else an initials-based avatar.
+const avatarUrl = (name, image) =>
+    image || `https://ui-avatars.com/api/?background=375DFB&color=fff&name=${encodeURIComponent(name || "?")}`;
+
+function NamedAvatar({ name, image, path }) {
+    const router = useRouter();
+    const clickable = !!path;
+    return (
+        <div
+            className={`flex items-center gap-2 ${clickable ? "cursor-pointer" : ""}`}
+            onClick={clickable ? () => router.push(path) : undefined}
+        >
+            <img
+                src={avatarUrl(name, image)}
+                alt={name || ""}
+                className="w-8 h-8 rounded-full object-cover"
+            />
+            <p title={name} className="text-sm text-cell-primary truncate">{name}</p>
+        </div>
+    );
+}
+
+NamedAvatar.propTypes = {
+    name: PropTypes.string,
+    image: PropTypes.string,
+    path: PropTypes.string,
+};
 
 function TeamsPage() {
-    const dispatch = useDispatch();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     const [isOpenCreateModal, setIsOpenCreateModal] = useState(false);
     const [isOpenCreateChatGroupModal, setIsOpenCreateChatGroupModal] = useState(false);
     const [isOpenEvaluationModal, setIsOpenEvaluationModal] = useState(false);
-    const [isOpenSendNotificationModal, setIsOpenSendNotificationModal] = useState(false); // Added state
+    const [isOpenSendNotificationModal, setIsOpenSendNotificationModal] = useState(false);
 
-    // Edit & Deletion states
-    const [isOpenEditModal, setIsOpenEditModal] = useState(false);
     const [selectedTeam, setSelectedTeam] = useState(null);
     const [selectedDeleteTeam, setSelectedDeleteTeam] = useState(null);
     const [isOpenDeleteAlert, setIsOpenDeleteAlert] = useState(false);
     const [isOpenSuccessDeleteAlert, setIsOpenSuccessDeleteAlert] = useState(false);
 
-    // Filters
     const [selectedDepartment, setSelectedDepartment] = useState(null);
+
+    const { data: teams = [], isLoading } = useGetTeamsQuery();
+    const [createTeam, { isLoading: isCreating }] = useCreateTeamMutation();
+    const [updateTeam, { isLoading: isUpdating }] = useUpdateTeamMutation();
+    const [rateTeam] = useRateTeamMutation();
+    const [deleteTeam] = useDeleteTeamMutation();
 
     const headers = [
         { label: t("Teams"), width: "250px" },
@@ -46,9 +80,52 @@ function TeamsPage() {
         { label: "", width: "50px" },
     ];
 
+    const handleDeleteTeam = (team) => {
+        setSelectedDeleteTeam(team);
+        setIsOpenDeleteAlert(true);
+    };
+
+    const handleDeleteConfirmation = async (isConfirmed) => {
+        setIsOpenDeleteAlert(false);
+        if (isConfirmed && selectedDeleteTeam?._id) {
+            try {
+                await deleteTeam(selectedDeleteTeam._id).unwrap();
+                setIsOpenSuccessDeleteAlert(true);
+            } catch {
+                // error surfaced by RTK Query
+            }
+        }
+    };
+
+    const handleSubmitTeam = async (form) => {
+        try {
+            if (selectedTeam?._id) {
+                await updateTeam({ id: selectedTeam._id, ...form }).unwrap();
+            } else {
+                await createTeam(form).unwrap();
+            }
+            setIsOpenCreateModal(false);
+            setSelectedTeam(null);
+        } catch {
+            // error surfaced by RTK Query
+        }
+    };
+
+    const handleSubmitRating = async ({ score }) => {
+        try {
+            if (selectedTeam?._id) {
+                await rateTeam({ id: selectedTeam._id, score }).unwrap();
+            }
+            setIsOpenEvaluationModal(false);
+            setSelectedTeam(null);
+        } catch {
+            // error surfaced by RTK Query
+        }
+    };
+
+    // eslint-disable-next-line react/prop-types
     const TeamActions = ({ actualRowIndex }) => {
-        const { t, i18n } = useTranslation();
-        const team = teamsFactory[actualRowIndex];
+        const team = teams[actualRowIndex];
 
         const statesActions = [
             {
@@ -65,7 +142,7 @@ function TeamsPage() {
                 onClick: () => {
                     setSelectedTeam(team);
                     setIsOpenSendNotificationModal(true);
-                }
+                },
             },
             {
                 text: t("Delete"),
@@ -78,91 +155,77 @@ function TeamsPage() {
                 onClick: () => {
                     setSelectedTeam(team);
                     setIsOpenCreateChatGroupModal(true);
-                }
-            }
-        ]
+                },
+            },
+        ];
         return (
-            <StatusActions states={statesActions} className={`${i18n.language === "ar" ? "left-0" : "right-0"
-                }`} />
+            <StatusActions states={statesActions} className={`${i18n.language === "ar" ? "left-0" : "right-0"}`} />
         );
-    }
+    };
 
-    const TeamRowTable = (teams) => {
-        return teams?.map((team, index) => [
-            <AccountDetails
-                key={`team-${index}`}
-                path={`/hr/teams/${team.id}`}
-                account={{
-                    name: team.name,
-                    imageProfile: team.icon || "/images/icons/team-placeholder.png",
-                }}
-            />,
-            <AccountDetails
-                key={`related-${index}`}
-                path={`/hr/departments/${team.id}`} // Or project path based on type
-                account={{
-                    name: team.relatedModel?.name || "-",
-                    imageProfile: team.relatedModel?.image,
-                }}
-                subTitle={team.relatedModel?.typeSubtitle} // Pass subtitle if AccountDetails supports it or custom component needed
-            />,
-            <AccountDetails
-                key={`leader-${index}`}
-                path={`/hr/employees/${team.leader?.id}`}
-                account={{
-                    name: team.leader?.name || t("No Leader"),
-                    imageProfile: team.leader?.imageProfile,
-                }}
-            />,
-            <div key={`members-${index}`} className="flex items-center">
-                <div className="flex -space-x-3 rtl:space-x-reverse overflow-hidden p-1">
-                    {team.members?.slice(0, 4).map((member, i) => (
-                        <div key={i} className="relative z-10 w-8 h-8 rounded-full border-2 border-white dark:border-gray-800">
-                            <img src={member.imageProfile} alt="" className="w-full h-full rounded-full object-cover" />
-                        </div>
-                    ))}
-                    {team.members_count > 0 && (
-                        <div className="relative z-20 flex items-center justify-center w-8 h-8 rounded-full border-2 border-white bg-gray-100 text-[10px] font-medium text-gray-600 dark:border-gray-800 dark:bg-gray-700 dark:text-gray-300">
-                            +{team.members_count}
+    const TeamRowTable = (list) => {
+        return list?.map((team, index) => {
+            const leader = team.leader_id || null;
+            const members = Array.isArray(team.members_ids) ? team.members_ids : [];
+            const extraMembers = Math.max(0, members.length - 4);
+            const relatedName = team.related_model?.name || team.related_model_type || "-";
+            return [
+                <NamedAvatar
+                    key={`team-${index}`}
+                    name={team.name}
+                    image={team.icon}
+                    path={`/hr/teams/${team._id}`}
+                />,
+                <span key={`related-${index}`} className="text-sm text-cell-primary">
+                    {relatedName}
+                </span>,
+                <NamedAvatar
+                    key={`leader-${index}`}
+                    name={leader?.name || t("No Leader")}
+                    image={leader?.image}
+                    path={leader?._id ? `/hr/employees/${leader._id}` : undefined}
+                />,
+                <div key={`members-${index}`} className="flex items-center">
+                    {members.length === 0 ? (
+                        <span className="text-sm text-gray-400">-</span>
+                    ) : (
+                        <div className="flex -space-x-3 rtl:space-x-reverse overflow-hidden p-1">
+                            {members.slice(0, 4).map((member, i) => (
+                                <div key={i} className="relative z-10 w-8 h-8 rounded-full border-2 border-white dark:border-gray-800">
+                                    <img
+                                        src={avatarUrl(member.name, member.image)}
+                                        alt={member.name || ""}
+                                        className="w-full h-full rounded-full object-cover"
+                                    />
+                                </div>
+                            ))}
+                            {extraMembers > 0 && (
+                                <div className="relative z-20 flex items-center justify-center w-8 h-8 rounded-full border-2 border-white bg-gray-100 text-[10px] font-medium text-gray-600 dark:border-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                                    +{extraMembers}
+                                </div>
+                            )}
                         </div>
                     )}
-                </div>
-            </div>,
-            <div key={`stats-${index}`} className="flex items-center text-sm text-gray-500 py-2">
-                <span className="font-medium text-gray-600">
-                    {team.tasks_count || 0}
-                </span>
-            </div>,
-            <div key={`employees-${index}`} className="flex items-center text-sm text-gray-500 py-2">
-                <span className="font-medium text-gray-600 px-4">
-                    {team.employees_count || 0}
-                </span>
-            </div>,
-            <button
-                key={`score-${index}`}
-                onClick={() => {
-                    setSelectedTeam(team);
-                    setIsOpenEvaluationModal(true);
-                }}
-                className="flex items-center gap-1 px-3 py-1 border border-gray-200 bg-gray-50   rounded-lg text-sm hover:bg-gray-100 transition-colors"
-            >
-                <RiStarLine className="text-orange-400" size={16} />
-                {t("Rate")}
-            </button>
-        ]);
-    };
-
-    const handleDeleteTeam = (team) => {
-        setSelectedDeleteTeam(team);
-        setIsOpenDeleteAlert(true);
-    };
-
-    const handleDeleteConfirmation = async (isConfirmed) => {
-        setIsOpenDeleteAlert(false);
-        if (isConfirmed && selectedDeleteTeam) {
-            console.log("Deleting team:", selectedDeleteTeam.id);
-            setIsOpenSuccessDeleteAlert(true);
-        }
+                </div>,
+                <div key={`stats-${index}`} className="flex items-center text-sm text-gray-500 py-2">
+                    <span className="font-medium text-gray-600">{team.active_tasks_count ?? 0}</span>
+                </div>,
+                <div key={`employees-${index}`} className="flex items-center text-sm text-gray-500 py-2">
+                    <span className="font-medium text-gray-600 px-4">{team.employees_count ?? members.length}</span>
+                </div>,
+                <button
+                    key={`score-${index}`}
+                    onClick={() => {
+                        setSelectedTeam(team);
+                        setIsOpenEvaluationModal(true);
+                    }}
+                    className="flex items-center gap-1 px-3 py-1 border border-gray-200 bg-gray-50 rounded-lg text-sm hover:bg-gray-100 transition-colors"
+                >
+                    <RiStarLine className="text-orange-400" size={16} />
+                    {team.score > 0 ? team.score : t("Rate")}
+                </button>,
+            ];
+        });
     };
 
     return (
@@ -172,6 +235,7 @@ function TeamsPage() {
                     <Table
                         title={t("Teams")}
                         headers={headers}
+                        isLoading={isLoading}
                         isActions={false}
                         isCheckInput={true}
                         showListOfDepartments={true}
@@ -180,7 +244,7 @@ function TeamsPage() {
                         customActions={(actualRowIndex) => (
                             <TeamActions actualRowIndex={actualRowIndex} />
                         )}
-                        rows={TeamRowTable(teamsFactory)}
+                        rows={TeamRowTable(teams)}
                         headerActions={
                             <div className="flex gap-2 items-center">
                                 <button
@@ -189,7 +253,7 @@ function TeamsPage() {
                                     {t("Send Notification")}
                                 </button>
                                 <button
-                                    onClick={() => setIsOpenCreateModal(true)}
+                                    onClick={() => { setSelectedTeam(null); setIsOpenCreateModal(true); }}
                                     className="bg-[#375DFB] text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2">
                                     <span>+</span>
                                     {t("Create a Team")}
@@ -202,7 +266,10 @@ function TeamsPage() {
 
             <CreateTeamModal
                 isOpen={isOpenCreateModal}
-                onClose={() => setIsOpenCreateModal(false)}
+                onClose={() => { setIsOpenCreateModal(false); setSelectedTeam(null); }}
+                onSubmit={handleSubmitTeam}
+                editData={selectedTeam}
+                isSaving={isCreating || isUpdating}
             />
 
             <CreateChatGroupModal
@@ -211,17 +278,9 @@ function TeamsPage() {
                     setIsOpenCreateChatGroupModal(false);
                     setSelectedTeam(null);
                 }}
-                departmentData={selectedTeam} // Reusing prop, potentially rename prop in future
+                departmentData={selectedTeam}
             />
 
-            {/* <EvaluationModal
-                isOpen={isOpenEvaluationModal}
-                onClose={() => {
-                    setIsOpenEvaluationModal(false);
-                    setSelectedTeam(null);
-                }}
-                team={selectedTeam}
-            /> */}
             <TeamRatingModal
                 isOpen={isOpenEvaluationModal}
                 onClose={() => {
@@ -229,6 +288,7 @@ function TeamsPage() {
                     setSelectedTeam(null);
                 }}
                 team={selectedTeam}
+                onSubmit={handleSubmitRating}
             />
 
             <SendNotificationModal

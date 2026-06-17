@@ -2,18 +2,31 @@
 import Modal from "@/components/Modal/Modal";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import InputWithIcon from "@/components/Form/InputWithIcon";
 import DateInput from "@/components/Form/DateInput";
 import TextAreaWithLabel from "@/components/Form/TextAreaWithLabel";
 
-function AddHolidayModal({ isOpen, onClose }) {
+const toDateInput = (value) => {
+    if (!value) return "";
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return "";
+    return d.toISOString().slice(0, 10);
+};
+
+function AddHolidayModal({ isOpen, onClose, onSubmit, editData, isSaving }) {
     const { t } = useTranslation();
-    const [formData, setFormData] = useState({
-        name: "",
-        date: "",
-        description: ""
-    });
+    const [formData, setFormData] = useState({ name: "", date: "", description: "" });
+
+    useEffect(() => {
+        if (isOpen) {
+            setFormData({
+                name: editData?.name || "",
+                date: toDateInput(editData?.date),
+                description: editData?.description || "",
+            });
+        }
+    }, [isOpen, editData]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -21,15 +34,15 @@ function AddHolidayModal({ isOpen, onClose }) {
     };
 
     const handleSave = () => {
-        console.log("Saving holiday:", formData);
-        onClose();
+        if (!formData.name.trim() || !formData.date) return;
+        onSubmit?.(formData);
     };
 
     return (
         <Modal
             isOpen={isOpen}
             onClose={onClose}
-            title={t("Add a Holiday")}
+            title={editData ? t("Edit Holiday") : t("Add a Holiday")}
             size="md"
         >
             <div className="flex flex-col gap-4">
@@ -65,9 +78,10 @@ function AddHolidayModal({ isOpen, onClose }) {
                     </button>
                     <button
                         onClick={handleSave}
-                        className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+                        disabled={isSaving}
+                        className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-60"
                     >
-                        {t("Create")}
+                        {editData ? t("Save") : t("Create")}
                     </button>
                 </div>
             </div>
@@ -78,6 +92,9 @@ function AddHolidayModal({ isOpen, onClose }) {
 AddHolidayModal.propTypes = {
     isOpen: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
+    onSubmit: PropTypes.func,
+    editData: PropTypes.object,
+    isSaving: PropTypes.bool,
 };
 
 export default AddHolidayModal;
