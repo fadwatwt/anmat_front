@@ -2218,5 +2218,9 @@
   "Failed to set reminder": "Failed to set reminder",
   "In Person": "In Person",
   "Organizers": "Organizers",
-  "Select Organizers": "Select Organizers"
+  "Select Organizers": "Select Organizers",
+  "Remove Reminder": "Remove Reminder",
+  "Reminder Removed": "Reminder Removed",
+  "The reminder for \"{{name}}\" has been removed.": "The reminder for \"{{name}}\" has been removed.",
+  "Failed to remove reminder": "Failed to remove reminder"
 }

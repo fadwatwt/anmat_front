@@ -19,9 +19,13 @@ function CreateChatGroupModal({ isOpen, onClose, departmentData }) {
     const dispatch = useDispatch();
     const { showProcessing, hideProcessing } = useProcessing();
     
+    // departmentData can be either a Department or a Team object.
+    // For departments we fetch the profile to get members; for teams the members_ids are already populated.
+    const isTeam = !!(departmentData?.members_ids);
+
     const { data: departmentProfile, isLoading: isProfileLoading } = useGetDepartmentProfileQuery(
         departmentData?._id,
-        { skip: !departmentData?._id }
+        { skip: !departmentData?._id || isTeam }
     );
     const [createChat] = useCreateChatMutation();
 
@@ -33,16 +37,24 @@ function CreateChatGroupModal({ isOpen, onClose, departmentData }) {
     useEffect(() => {
         if (departmentData) {
             setGroupName(`${departmentData.name} Group`);
-            // Reset selection when department changes
             setSelectedMembers([]);
         }
     }, [departmentData]);
 
-    const employees = departmentProfile?.employees || [];
-    const membersOptions = employees.map(emp => ({
-        id: emp.user?._id || emp._id,
-        element: emp.user?.name || t("Unknown Employee")
-    }));
+    // Build employees list: from team members_ids (already populated) or department profile
+    const employees = isTeam
+        ? (departmentData?.members_ids || [])
+        : (departmentProfile?.employees || []);
+
+    const membersOptions = isTeam
+        ? employees.map(emp => ({
+            id: emp._id || emp.user?._id,
+            element: emp.name || emp.user?.name || t("Unknown Employee")
+          }))
+        : employees.map(emp => ({
+            id: emp.user?._id || emp._id,
+            element: emp.user?.name || t("Unknown Employee")
+          }));
 
     const handleCreateGroup = async () => {
         if (!groupName.trim()) {
@@ -64,7 +76,7 @@ function CreateChatGroupModal({ isOpen, onClose, departmentData }) {
                 title: groupName,
                 participants_ids: memberIds,
                 is_group: true,
-                model_type: "Department",
+                model_type: isTeam ? "Team" : "Department",
                 model_id: departmentData._id
             }).unwrap();
 
@@ -113,7 +125,7 @@ function CreateChatGroupModal({ isOpen, onClose, departmentData }) {
                         title={t("Add Members")}
                         isMultiple={true}
                         options={membersOptions}
-                        placeholder={isProfileLoading ? t("Loading employees...") : t("Select members")}
+                        placeholder={!isTeam && isProfileLoading ? t("Loading employees...") : t("Select members")}
                         onChange={(selected) => setSelectedMembers(selected)}
                         value={selectedMembers}
                     />

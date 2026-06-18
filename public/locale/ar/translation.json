@@ -2219,5 +2219,9 @@
   "Failed to set reminder": "فشل في ضبط التذكير",
   "In Person": "حضوري",
   "Organizers": "المنظّمون",
-  "Select Organizers": "اختر المنظّمين"
+  "Select Organizers": "اختر المنظّمين",
+  "Remove Reminder": "إزالة التذكير",
+  "Reminder Removed": "تمت إزالة التذكير",
+  "The reminder for \"{{name}}\" has been removed.": "تمت إزالة التذكير الخاص بـ \"{{name}}\".",
+  "Failed to remove reminder": "فشل في إزالة التذكير"
 }

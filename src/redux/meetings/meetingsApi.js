@@ -42,6 +42,20 @@ export const meetingsApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["Meetings"],
         }),
+        setMeetingReminder: builder.mutation({
+            query: (id) => ({
+                url: `api/subscriber/organization/meetings/${id}/reminder`,
+                method: "POST",
+            }),
+            invalidatesTags: ["Meetings", "Appointments"],
+        }),
+        removeMeetingReminder: builder.mutation({
+            query: (id) => ({
+                url: `api/subscriber/organization/meetings/${id}/reminder`,
+                method: "DELETE",
+            }),
+            invalidatesTags: ["Meetings", "Appointments"],
+        }),
     }),
 });
 
@@ -51,4 +65,6 @@ export const {
     useUpdateMeetingMutation,
     useUpdateMeetingStatusMutation,
     useDeleteMeetingMutation,
+    useSetMeetingReminderMutation,
+    useRemoveMeetingReminderMutation,
 } = meetingsApi;

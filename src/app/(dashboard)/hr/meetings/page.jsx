@@ -4,7 +4,7 @@ import Page from "@/components/Page";
 import Table from "@/components/Tables/Table";
 import { statusCell } from "@/components/StatusCell";
 import { useTranslation } from "react-i18next";
-import { RiEyeLine, RiPencilLine, RiDeleteBinLine, RiUserAddLine, RiCalendarEventLine, RiFileCopyLine, RiShareForwardLine, RiLink } from "@remixicon/react";
+import { RiEyeLine, RiPencilLine, RiDeleteBinLine, RiUserAddLine, RiCalendarEventLine, RiCalendarCheckLine, RiFileCopyLine, RiShareForwardLine, RiLink } from "@remixicon/react";
 import { IoAdd } from "react-icons/io5";
 import CreateMeetingModal from "./modals/CreateMeetingModal";
 import InviteNewEmployeeModal from "../employees/modals/InviteNewEmployee,modal";
@@ -16,8 +16,9 @@ import {
     useUpdateMeetingMutation,
     useUpdateMeetingStatusMutation,
     useDeleteMeetingMutation,
+    useSetMeetingReminderMutation,
+    useRemoveMeetingReminderMutation,
 } from "@/redux/meetings/meetingsApi";
-import { useCreateAppointmentMutation } from "@/redux/appointments/appointmentsApi";
 
 const formatDateTime = (value) => {
     if (!value) return "-";
@@ -50,14 +51,15 @@ function MeetingManagementPage() {
     const [isEdit, setIsEdit] = useState(false);
 
     const [copiedId, setCopiedId] = useState(null);
-    const [reminderAlert, setReminderAlert] = useState({ open: false, success: true, title: "" });
+    const [reminderAlert, setReminderAlert] = useState({ open: false, success: true, action: "set", title: "" });
 
     const { data: meetings = [], isLoading } = useGetMeetingsQuery();
     const [createMeeting] = useCreateMeetingMutation();
     const [updateMeeting] = useUpdateMeetingMutation();
     const [updateMeetingStatus] = useUpdateMeetingStatusMutation();
     const [deleteMeeting] = useDeleteMeetingMutation();
-    const [createAppointment] = useCreateAppointmentMutation();
+    const [setMeetingReminder] = useSetMeetingReminderMutation();
+    const [removeMeetingReminder] = useRemoveMeetingReminderMutation();
 
     const openMeetingLink = (link) => {
         if (!link) return;
@@ -94,25 +96,20 @@ function MeetingManagementPage() {
         }
     };
 
-    // Create a reminder appointment from a meeting (so it shows in the agenda with alerts).
-    const handleSetReminder = async (meeting) => {
+    // Toggle a single agenda reminder per meeting: create if none, remove if exists.
+    const handleToggleReminder = async (meeting) => {
         if (!meeting?._id) return;
-        const scheduled = meeting.scheduled_at ? new Date(meeting.scheduled_at) : new Date();
-        const date = scheduled.toISOString().slice(0, 10);
-        const start_time = scheduled.toTimeString().slice(0, 5);
+        const hasReminder = !!meeting.reminder_appointment_id;
         try {
-            await createAppointment({
-                title: meeting.title,
-                description: meeting.description || meeting.topics || undefined,
-                location: meeting.meeting_link || undefined,
-                date,
-                start_time,
-                category: "meeting",
-                enable_reminders: true,
-            }).unwrap();
-            setReminderAlert({ open: true, success: true, title: meeting.title });
+            if (hasReminder) {
+                await removeMeetingReminder(meeting._id).unwrap();
+                setReminderAlert({ open: true, success: true, action: "removed", title: meeting.title });
+            } else {
+                await setMeetingReminder(meeting._id).unwrap();
+                setReminderAlert({ open: true, success: true, action: "set", title: meeting.title });
+            }
         } catch {
-            setReminderAlert({ open: true, success: false, title: meeting.title });
+            setReminderAlert({ open: true, success: false, action: hasReminder ? "removed" : "set", title: meeting.title });
         }
     };
 
@@ -272,6 +269,7 @@ function MeetingManagementPage() {
     const customActions = (index) => {
         const meeting = meetings[index];
         const hasLink = !!meeting?.meeting_link;
+        const hasReminder = !!meeting?.reminder_appointment_id;
         return (
             <div className="absolute right-0 mt-2 w-52 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 border border-gray-200 dark:border-gray-700 p-1 flex flex-col">
                 <button className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left rounded-md">
@@ -283,8 +281,16 @@ function MeetingManagementPage() {
                 <button onClick={() => handleInvite(index)} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left rounded-md">
                     <RiUserAddLine size={16} className="text-blue-500" /> {t("Invite Employee")}
                 </button>
-                <button onClick={() => handleSetReminder(meeting)} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left rounded-md">
-                    <RiCalendarEventLine size={16} className="text-amber-500" /> {t("Set Reminder")}
+                <button onClick={() => handleToggleReminder(meeting)} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left rounded-md">
+                    {hasReminder ? (
+                        <>
+                            <RiCalendarCheckLine size={16} className="text-green-600" /> {t("Remove Reminder")}
+                        </>
+                    ) : (
+                        <>
+                            <RiCalendarEventLine size={16} className="text-amber-500" /> {t("Set Reminder")}
+                        </>
+                    )}
                 </button>
                 <button onClick={() => handleCancelClick(index)} className="flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 w-full text-left rounded-md">
                     <RiDeleteBinLine size={16} className="text-red-500" /> {t("Cancel")}
@@ -379,12 +385,20 @@ function MeetingManagementPage() {
                 type={reminderAlert.success ? "success" : "delete"}
                 isOpen={reminderAlert.open}
                 onClose={() => setReminderAlert((p) => ({ ...p, open: false }))}
-                title={reminderAlert.success ? t("Reminder Set") : t("Error")}
+                title={
+                    !reminderAlert.success
+                        ? t("Error")
+                        : reminderAlert.action === "removed"
+                            ? t("Reminder Removed")
+                            : t("Reminder Set")
+                }
                 isBtns={false}
                 message={
-                    reminderAlert.success
-                        ? t('A reminder for "{{name}}" has been added to your agenda.', { name: reminderAlert.title })
-                        : t("Failed to set reminder")
+                    !reminderAlert.success
+                        ? (reminderAlert.action === "removed" ? t("Failed to remove reminder") : t("Failed to set reminder"))
+                        : reminderAlert.action === "removed"
+                            ? t('The reminder for "{{name}}" has been removed.', { name: reminderAlert.title })
+                            : t('A reminder for "{{name}}" has been added to your agenda.', { name: reminderAlert.title })
                 }
             />
         </Page>
