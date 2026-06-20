@@ -1,4 +1,7 @@
 {
+  "Subscription Inactive": "Subscription Inactive",
+  "Your organization's subscription has expired. Please contact your organization administrator to renew the subscription and restore access.": "Your organization's subscription has expired. Please contact your organization administrator to renew the subscription and restore access.",
+  "Sign Out": "Sign Out",
   "8": "8",
   "14": "14",
   "1200": "1200",
@@ -2222,5 +2225,9 @@
   "Remove Reminder": "Remove Reminder",
   "Reminder Removed": "Reminder Removed",
   "The reminder for \"{{name}}\" has been removed.": "The reminder for \"{{name}}\" has been removed.",
-  "Failed to remove reminder": "Failed to remove reminder"
+  "Failed to remove reminder": "Failed to remove reminder",
+  "Time Delivery": "Time Delivery",
+  "Quality": "Quality",
+  "Communication": "Communication",
+  "Write your comments here": "Write your comments here"
 }

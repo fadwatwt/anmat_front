@@ -30,6 +30,33 @@ function SignIn() {
     const [triggerGetUser] = useLazyGetUserQuery();
     const [triggerLogout] = useLazyLogoutQuery();
 
+    // Decide where to send a user after a successful login based on their type,
+    // setup state, and (for both subscribers and employees) subscription access.
+    const routeAfterLogin = (userData) => {
+        if (userData?.type === 'Subscriber') {
+            if (userData.has_subscription_access === false || !userData.active_subscription_id) {
+                router.push("/account-setup/subscriber/plans");
+                return;
+            }
+            router.push("/dashboard");
+            return;
+        }
+        if (userData?.type === 'Employee') {
+            if (!userData.employee_detail || !userData.is_active) {
+                router.push("/account-setup/employee");
+                return;
+            }
+            // Organization subscription lapsed → block the employee.
+            if (userData.has_subscription_access === false) {
+                router.push("/subscription-inactive");
+                return;
+            }
+            router.push("/dashboard");
+            return;
+        }
+        router.push("/dashboard");
+    };
+
     const performLogout = async (tokenToUse) => {
         const token = tokenToUse || localStorage.getItem('token');
         if (token) {
@@ -64,7 +91,7 @@ function SignIn() {
                             }
                         };
                         dispatch(loginSuccess(loginPayload));
-                        router.push("/dashboard");
+                        routeAfterLogin(userData);
                     } else if (userData?.type === 'Employee') {
                         const loginPayload = {
                             data: {
@@ -73,11 +100,7 @@ function SignIn() {
                             }
                         };
                         dispatch(loginSuccess(loginPayload));
-                        if (!userData.employee_detail || !userData.is_active) {
-                            router.push("/account-setup/employee");
-                        } else {
-                            router.push("/dashboard");
-                        }
+                        routeAfterLogin(userData);
                     } else {
                         // Default fallback or other types
                         setIsCheckingAuth(false);
@@ -127,7 +150,7 @@ function SignIn() {
                     }
                 };
                 dispatch(loginSuccess(loginPayload));
-                router.push("/dashboard");
+                routeAfterLogin(userData);
             } else if (userData?.type === 'Employee') {
                 const loginPayload = {
                     data: {
@@ -136,11 +159,7 @@ function SignIn() {
                     }
                 };
                 dispatch(loginSuccess(loginPayload));
-                if (!userData.employee_detail || !userData.is_active) {
-                    router.push("/account-setup/employee");
-                } else {
-                    router.push("/dashboard");
-                }
+                routeAfterLogin(userData);
             } else {
                 // If unknown role, logout just in case or show error
                 await performLogout(token);
@@ -168,7 +187,7 @@ function SignIn() {
                             }
                         };
                         dispatch(loginSuccess(loginPayload));
-                        router.push("/dashboard");
+                        routeAfterLogin(userData);
                         return;
                     } else if (userData?.type === 'Employee') {
                         const loginPayload = {
@@ -178,11 +197,7 @@ function SignIn() {
                             }
                         };
                         dispatch(loginSuccess(loginPayload));
-                        if (!userData.employee_detail || !userData.is_active) {
-                            router.push("/account-setup/employee");
-                        } else {
-                            router.push("/dashboard");
-                        }
+                        routeAfterLogin(userData);
                         return;
                     } else {
                         await performLogout(token);

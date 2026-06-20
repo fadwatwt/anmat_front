@@ -1,4 +1,7 @@
 {
+  "Subscription Inactive": "الاشتراك غير مُفعّل",
+  "Your organization's subscription has expired. Please contact your organization administrator to renew the subscription and restore access.": "انتهى اشتراك مؤسستك. يرجى التواصل مع مدير المؤسسة لتجديد الاشتراك واستعادة الوصول.",
+  "Sign Out": "تسجيل الخروج",
   "8": "8",
   "14": "14",
   "1200": "1200",
@@ -2223,5 +2226,9 @@
   "Remove Reminder": "إزالة التذكير",
   "Reminder Removed": "تمت إزالة التذكير",
   "The reminder for \"{{name}}\" has been removed.": "تمت إزالة التذكير الخاص بـ \"{{name}}\".",
-  "Failed to remove reminder": "فشل في إزالة التذكير"
+  "Failed to remove reminder": "فشل في إزالة التذكير",
+  "Time Delivery": "التسليم في الوقت",
+  "Quality": "الجودة",
+  "Communication": "التواصل",
+  "Write your comments here": "اكتب تعليقاتك هنا"
 }

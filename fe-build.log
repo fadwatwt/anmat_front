@@ -1,0 +1,134 @@
+
+> next-new-dashboard@0.1.0 build
+> next build
+
+   ▲ Next.js 15.5.12
+   - Environments: .env.local
+
+   Creating an optimized production build ...
+Browserslist: browsers data (caniuse-lite) is 12 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+ ✓ Compiled successfully in 118s
+   Skipping linting
+   Checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/84) ...
+Render MainLayout
+Render Menu { isSlidebarOpen: false }
+Render MainLayout
+Render Menu { isSlidebarOpen: false }
+   Generating static pages (21/84) 
+Render MainLayout
+Render Menu { isSlidebarOpen: false }
+   Generating static pages (42/84) 
+   Generating static pages (63/84) 
+ ✓ Generating static pages (84/84)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                          Size  First Load JS
+┌ ○ /                                             6.89 kB         158 kB
+├ ○ /_not-found                                      1 kB         104 kB
+├ ○ /account-setup/employee                       1.95 kB         111 kB
+├ ○ /account-setup/employee/email/verification    8.08 kB         156 kB
+├ ○ /account-setup/subscriber/business-selection  2.46 kB         825 kB
+├ ○ /account-setup/subscriber/org-profile-setup   11.5 kB         205 kB
+├ ○ /account-setup/subscriber/plans               14.6 kB         163 kB
+├ ○ /account-setup/subscriber/plans/subscribe     3.21 kB         136 kB
+├ ○ /account-setup/subscriber/plans/success       2.75 kB         150 kB
+├ ○ /admin                                        5.13 kB         377 kB
+├ ○ /admin/sign-in                                4.37 kB         141 kB
+├ ○ /ai                                           57.6 kB         217 kB
+├ ○ /ai-analytics                                 10.6 kB         252 kB
+├ ○ /ai/pricing                                   5.94 kB         162 kB
+├ ○ /analytics                                    1.23 kB         120 kB
+├ ƒ /api/create-payment-intent                      128 B         104 kB
+├ ○ /appointments                                 14.2 kB         192 kB
+├ ƒ /appointments/[id]                            3.09 kB         181 kB
+├ ○ /appointments/create                          6.74 kB         177 kB
+├ ○ /attendance                                   7.96 kB         244 kB
+├ ○ /companies                                    8.89 kB         153 kB
+├ ○ /conversations                                30.1 kB         269 kB
+├ ○ /dashboard                                    1.23 kB         118 kB
+├ ○ /dashboard/ai                                 10.5 kB         141 kB
+├ ○ /employee/projects                            5.96 kB         150 kB
+├ ƒ /employee/projects/[slug]/details             14.8 kB         220 kB
+├ ○ /employee/tasks                               9.26 kB         238 kB
+├ ○ /forget-password                              3.68 kB         155 kB
+├ ○ /forget-password/reset                        3.69 kB         155 kB
+├ ○ /forget-password/sent                         1.88 kB         111 kB
+├ ○ /hr/attendances                               4.22 kB         279 kB
+├ ○ /hr/chats                                     13.3 kB         223 kB
+├ ○ /hr/departments                               4.43 kB         267 kB
+├ ƒ /hr/departments/[slug]/profile                  14 kB         188 kB
+├ ○ /hr/employees                                 29.8 kB         302 kB
+├ ƒ /hr/employees/[slug]/profile                  27.1 kB         202 kB
+├ ○ /hr/holidays                                  12.3 kB         170 kB
+├ ○ /hr/leaves                                    10.3 kB         274 kB
+├ ○ /hr/meetings                                  14.1 kB         207 kB
+├ ○ /hr/positions                                 6.21 kB         257 kB
+├ ○ /hr/requests                                  10.2 kB         213 kB
+├ ○ /hr/salary                                    10.9 kB         263 kB
+├ ○ /hr/teams                                     7.08 kB         259 kB
+├ ○ /industries                                   8.13 kB         888 kB
+├ ○ /leaves                                       8.66 kB         173 kB
+├ ○ /mail-invitation                              2.33 kB         112 kB
+├ ○ /money-receiving                              4.17 kB         191 kB
+├ ○ /notifications                                13.3 kB         146 kB
+├ ○ /old_dashboard                                5.12 kB         377 kB
+├ ○ /old_dashboard/projects                       6.82 kB         276 kB
+├ ƒ /old_dashboard/projects/details/[slug]        11.3 kB         290 kB
+├ ○ /old_dashboard/tasks                          8.91 kB         169 kB
+├ ƒ /old_dashboard/tasks/details/[slug]           16.1 kB         274 kB
+├ ○ /orders                                       8.91 kB         153 kB
+├ ○ /payment                                      6.26 kB         137 kB
+├ ○ /permissions                                  7.24 kB         224 kB
+├ ○ /permissions/admins                           9.32 kB         162 kB
+├ ○ /plans                                        11.9 kB         247 kB
+├ ƒ /plans/[slug]/details                         12.2 kB         191 kB
+├ ○ /plans/ai-plans                                 897 B         228 kB
+├ ○ /profile                                      1.22 kB         118 kB
+├ ○ /projects                                     11.2 kB         280 kB
+├ ƒ /projects/[slug]/details                      11.8 kB         291 kB
+├ ○ /projects/create                              4.86 kB         249 kB
+├ ƒ /projects/templates/[slug]                    11.7 kB         217 kB
+├ ƒ /projects/templates/[slug]/edit               1.52 kB         266 kB
+├ ○ /projects/templates/create                    2.04 kB         267 kB
+├ ○ /register/employee                             7.3 kB         181 kB
+├ ○ /register/subscriber/complete-profile          7.5 kB         197 kB
+├ ○ /register/subscriber/email                     3.3 kB         139 kB
+├ ○ /register/subscriber/email/verify             1.94 kB         111 kB
+├ ○ /requests                                     11.8 kB         270 kB
+├ ○ /roles/admins                                 11.2 kB         259 kB
+├ ○ /roles/employees                              7.72 kB         258 kB
+├ ○ /salary                                       9.58 kB         162 kB
+├ ○ /setting                                      17.6 kB         248 kB
+├ ○ /sign-in                                      4.57 kB         141 kB
+├ ○ /social-media                                 2.95 kB         129 kB
+├ ○ /social-media/categories                      8.82 kB         243 kB
+├ ○ /subscribers                                  3.35 kB         243 kB
+├ ƒ /subscribers/[slug]                           20.8 kB         277 kB
+├ ○ /subscription-inactive                        2.28 kB         125 kB
+├ ○ /subscriptions                                1.18 kB         118 kB
+├ ○ /support-tickets                              6.53 kB         208 kB
+├ ƒ /support-tickets/[id]                         9.25 kB         249 kB
+├ ○ /system-admins                                5.85 kB         237 kB
+├ ○ /tasks                                        12.8 kB         249 kB
+├ ƒ /tasks/[slug]/details                         17.5 kB         223 kB
+├ ƒ /tasks/[slug]/edit                            3.52 kB         248 kB
+├ ○ /tasks/create                                 3.13 kB         248 kB
+├ ○ /test_dashboard                               2.52 kB         112 kB
+├ ○ /test_dashboard/projects                      7.17 kB         276 kB
+├ ○ /time-line                                    4.88 kB         130 kB
+├ ○ /verify/email                                 1.94 kB         107 kB
+└ ○ /verify/phone                                 2.44 kB         108 kB
++ First Load JS shared by all                      103 kB
+  ├ chunks/1255-ad409e5887c155b0.js               45.7 kB
+  ├ chunks/4bd1b696-100b9d70ed4e49c1.js           54.2 kB
+  └ other shared chunks (total)                   3.54 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

@@ -58,7 +58,7 @@ function TeamRatingModal({ isOpen, onClose, team, onSubmit }) {
                     {categories.map((cat) => (
                         <StarRatingInput
                             key={cat.key}
-                            title={t(cat.label) + ":"}
+                            title={cat.label}
                             value={ratings[cat.key]}
                             onChange={(val) => handleRating(cat.key, val)}
                         />

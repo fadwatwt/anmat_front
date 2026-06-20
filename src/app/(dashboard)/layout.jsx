@@ -62,7 +62,9 @@ const MainLayout = ({ children }) => {
                                 router.push("/account-setup/subscriber/business-selection");
                                 return;
                             }
-                            if (!userData.active_subscription_id) {
+                            // No subscription at all, or it expired / was cancelled:
+                            // send the subscriber to the plans page to (re)subscribe.
+                            if (!userData.active_subscription_id || userData.has_subscription_access === false) {
                                 router.push("/account-setup/subscriber/plans");
                                 return;
                             }
@@ -73,6 +75,12 @@ const MainLayout = ({ children }) => {
                             }
                             if (!userData.employee_detail || !userData.is_active) {
                                 router.push("/account-setup/employee");
+                                return;
+                            }
+                            // The employee's organization subscription has lapsed:
+                            // employees are fully blocked until the owner renews.
+                            if (userData.has_subscription_access === false) {
+                                router.push("/subscription-inactive");
                                 return;
                             }
                         }
@@ -93,7 +101,7 @@ const MainLayout = ({ children }) => {
                         router.push("/account-setup/subscriber/business-selection");
                         return;
                     }
-                    if (!user.active_subscription_id) {
+                    if (!user.active_subscription_id || user.has_subscription_access === false) {
                         router.push("/account-setup/subscriber/plans");
                         return;
                     }
@@ -104,6 +112,10 @@ const MainLayout = ({ children }) => {
                     }
                     if (!user.employee_detail || !user.is_active) {
                         router.push("/account-setup/employee");
+                        return;
+                    }
+                    if (user.has_subscription_access === false) {
+                        router.push("/subscription-inactive");
                         return;
                     }
                 }
