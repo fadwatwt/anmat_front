@@ -79,6 +79,37 @@ export const employeesApi = apiSlice.injectEndpoints({
             }),
             transformResponse: (response) => response.data,
         }),
+        getEmployeeDocuments: builder.query({
+            query: (employeeId) => ({
+                url: `api/subscriber/organization/employees/${employeeId}/documents`,
+                method: "GET",
+            }),
+            transformResponse: (response) => response.data,
+            providesTags: (result, error, employeeId) => [
+                { type: "EmployeeDocuments", id: employeeId },
+            ],
+        }),
+        uploadEmployeeDocument: builder.mutation({
+            query: ({ employeeId, formData }) => ({
+                url: `api/subscriber/organization/employees/${employeeId}/documents`,
+                method: "POST",
+                body: formData,
+            }),
+            invalidatesTags: (result, error, { employeeId }) => [
+                { type: "EmployeeDocuments", id: employeeId },
+                { type: "Employees", id: employeeId },
+            ],
+        }),
+        deleteEmployeeDocument: builder.mutation({
+            query: ({ employeeId, attachmentId }) => ({
+                url: `api/subscriber/organization/employees/${employeeId}/documents/${attachmentId}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: (result, error, { employeeId }) => [
+                { type: "EmployeeDocuments", id: employeeId },
+                { type: "Employees", id: employeeId },
+            ],
+        }),
     }),
 });
 
@@ -93,4 +124,7 @@ export const {
     useCreateEmployeeDetailMutation,
     useGetEmployeeProfileQuery,
     useGetInvitationInfoQuery,
+    useGetEmployeeDocumentsQuery,
+    useUploadEmployeeDocumentMutation,
+    useDeleteEmployeeDocumentMutation,
 } = employeesApi;

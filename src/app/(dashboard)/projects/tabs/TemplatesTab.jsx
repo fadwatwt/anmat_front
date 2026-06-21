@@ -153,7 +153,7 @@ function TemplatesTab() {
     );
 
     if (isLoading) return <Loading />;
-    if (isError) return <div className="text-red-500 p-4">Error loading templates</div>;
+    if (isError) return <div className="text-red-500 p-4">{t("Error loading templates")}</div>;
 
     const rows = templates.map((template) => [
         <NameAndDescription

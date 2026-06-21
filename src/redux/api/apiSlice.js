@@ -17,6 +17,6 @@ export const apiSlice = createApi({
     baseQuery,
     // Initialize generic tag types here.
     // Features can add their own tags later (e.g. 'Projects', 'Tasks')
-    tagTypes: ["User", "Auth", "SystemAdmins", "AdminRoles", "AdminPermissions", "Industries", "SubscriptionPlans", "SubscriptionPlansHistory", "SubscriptionFeatureTypes", "Subscriptions", "Subscribers", "Organizations", "MoneyReceivingMethods", "Positions", "Departments", "Employees", "Attendances", "Leaves", "Salaries", "EmployeeRequests", "Permissions", "Roles", "Projects", "Tasks", "Notifications", "Analytics", "ActivityLogs", "SubscriberNotifications", "SubscriberNotificationTypes", "PaymentMethods", "SupportTickets", "SocialMediaQuota", "AIConversation", "AITokens", "TokenPackages", "Appointments", "Holidays", "Meetings", "Teams"],
+    tagTypes: ["User", "Auth", "SystemAdmins", "AdminRoles", "AdminPermissions", "Industries", "SubscriptionPlans", "SubscriptionPlansHistory", "SubscriptionFeatureTypes", "Subscriptions", "Subscribers", "Organizations", "MoneyReceivingMethods", "Positions", "Departments", "Employees", "Attendances", "Leaves", "Salaries", "EmployeeRequests", "Permissions", "Roles", "Projects", "Tasks", "Notifications", "Analytics", "ActivityLogs", "SubscriberNotifications", "SubscriberNotificationTypes", "PaymentMethods", "SupportTickets", "SocialMediaQuota", "AIConversation", "AITokens", "TokenPackages", "Appointments", "Holidays", "Meetings", "Teams", "EmployeeDocuments"],
     endpoints: () => ({}), // Start empty, inject endpoints in other files
 });

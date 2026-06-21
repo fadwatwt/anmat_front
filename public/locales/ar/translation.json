@@ -2453,5 +2453,17 @@
   "Location": "المكان",
   "Created by": "أنشأه",
   "Attendees": "الحضور",
-  "more": "أخرى"
+  "more": "أخرى",
+  "Employee Documents": "مستندات الموظف",
+  "Upload Document": "رفع مستند",
+  "No documents uploaded yet": "لا توجد مستندات مرفوعة بعد",
+  "Are you sure you want to delete this document?": "هل أنت متأكد من حذف هذا المستند؟",
+  "Failed to upload document": "فشل رفع المستند",
+  "File is too large. Maximum size is {{size}} MB.": "حجم الملف كبير جداً. الحد الأقصى {{size}} ميجابايت.",
+  "Contract": "عقد",
+  "CV / Resume": "السيرة الذاتية",
+  "National ID": "صورة الهوية",
+  "Certificate": "شهادة",
+  "Delete Document": "حذف المستند",
+  "Are you sure you want to delete this document? This action cannot be undone.": "هل أنت متأكد من حذف هذا المستند؟ لا يمكن التراجع عن هذا الإجراء."
 }

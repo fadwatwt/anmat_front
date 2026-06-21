@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useState } from "react";
+import { isValidElement, useState } from "react";
 import { createPortal } from "react-dom";
 import {
     MdOutlineKeyboardArrowLeft,
@@ -56,7 +56,10 @@ function Table({
     hideSearchInput = false,
     toolbarCustomContent = null,
     headerActions = null,
-    onRowClick
+    onRowClick,
+    showExport = true,
+    onExport,
+    exportFileName,
 }) {
     const { t, i18n } = useTranslation();
     const [isAllSelected, setIsAllSelected] = useState(false);
@@ -65,15 +68,116 @@ function Table({
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [dropdownOpen, setDropdownOpen] = useDropdown();
     const [dropdownPosition, setDropdownPosition] = useState({});
+    const [searchQuery, setSearchQuery] = useState("");
+    const [internalStatus, setInternalStatus] = useState("");
 
-    const totalPages = Math.ceil(rows.length / rowsPerPage);
+    // Recursively pull plain text out of a cell which may be a string,
+    // number, array, or a React element (badge, button, link, etc.).
+    // Cells are often custom/lazy components whose text lives in props
+    // (name, title, type, ...) rather than in children, so we look there too.
+    const TEXT_PROPS = [
+        "name",
+        "description",
+        "label",
+        "text",
+        "value",
+        "type",
+        "status",
+        "rating",
+        "rate",
+        "score",
+        "title",
+        "alt",
+        "aria-label",
+    ];
+
+    const extractText = (node) => {
+        if (node === null || node === undefined || typeof node === "boolean") {
+            return "";
+        }
+        if (typeof node === "string" || typeof node === "number") {
+            return String(node);
+        }
+        if (Array.isArray(node)) {
+            return node.map(extractText).filter(Boolean).join(" ");
+        }
+        if (isValidElement(node)) {
+            const nodeProps = node.props || {};
+            const childrenText = extractText(nodeProps.children);
+            if (childrenText.trim()) {
+                return childrenText;
+            }
+            // No rendered children text (e.g. lazy component, icon-only badge,
+            // star rating): fall back to descriptive text props.
+            const propTexts = TEXT_PROPS.map((key) => {
+                const value = nodeProps[key];
+                return typeof value === "string" || typeof value === "number"
+                    ? String(value)
+                    : "";
+            }).filter(Boolean);
+            // De-duplicate (title often mirrors a visible label).
+            return [...new Set(propTexts)].join(" ");
+        }
+        return "";
+    };
+
+    const rowText = (row) =>
+        (row || [])
+            .map((cell) => extractText(cell))
+            .join(" ")
+            .toLowerCase();
+
+    // Filter rows by the search box and, when the status filter is used in
+    // uncontrolled mode, by the selected status. Keep a reference to each
+    // row's original index so action/checkbox callbacks stay correct.
+    const isStatusControlled = typeof onStatusChange === "function";
+    const activeStatus = isStatusControlled ? selectedStatus : internalStatus;
+    const normalizedQuery = searchQuery.trim().toLowerCase();
+
+    // Build the set of text variants to match a selected status against the
+    // visible row text: the raw value and the option's translated display name.
+    const statusMatchTerms = (() => {
+        if (isStatusControlled || !showStatusFilter || !activeStatus || activeStatus === "all") {
+            return [];
+        }
+        const options = statusOptions.length ? statusOptions : defaultStatusOptions;
+        const matched = options.find(
+            (opt) => String(opt._id ?? opt.id ?? opt.value) === String(activeStatus)
+        );
+        const terms = [String(activeStatus)];
+        if (matched?.name) {
+            terms.push(t(matched.name));
+        }
+        return terms.map((term) => term.toLowerCase()).filter(Boolean);
+    })();
+
+    const filtered = rows
+        .map((row, originalIndex) => ({ row, originalIndex }))
+        .filter(({ row }) => {
+            const text = rowText(row);
+            if (normalizedQuery && !text.includes(normalizedQuery)) {
+                return false;
+            }
+            // Status filtering happens here only in uncontrolled mode
+            // (controlled parents filter their own data).
+            if (statusMatchTerms.length && !statusMatchTerms.some((term) => text.includes(term))) {
+                return false;
+            }
+            return true;
+        });
+
+    const filteredRows = filtered.map((item) => item.row);
+
+    const totalPages = Math.max(1, Math.ceil(filteredRows.length / rowsPerPage));
 
     const handleHeaderCheckboxChange = () => {
+        const pageItems = filtered.slice(
+            (currentPage - 1) * rowsPerPage,
+            currentPage * rowsPerPage
+        );
         const newSelectedRows = isAllSelected
             ? []
-            : rows
-                .slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
-                .map((_, index) => index + (currentPage - 1) * rowsPerPage);
+            : pageItems.map((item) => item.originalIndex);
 
         setIsAllSelected(!isAllSelected);
         setSelectedRows(newSelectedRows);
@@ -117,7 +221,84 @@ function Table({
     };
 
     const startIndex = (currentPage - 1) * rowsPerPage;
-    const currentRows = rows.slice(startIndex, startIndex + rowsPerPage);
+    // Page slice over the filtered set; each item carries its original index.
+    const currentItems = filtered.slice(startIndex, startIndex + rowsPerPage);
+
+    const escapeCsv = (value) => {
+        const text = String(value ?? "").replace(/"/g, '""');
+        return `"${text}"`;
+    };
+
+    // Build a descriptive file name, e.g. "tasks-table".
+    const resolveFileName = () => {
+        if (exportFileName) {
+            return exportFileName;
+        }
+        const rawTitle =
+            (typeof title === "string" && title) ||
+            extractText(customTitle) ||
+            "";
+        const slug = String(t(rawTitle) || rawTitle)
+            .trim()
+            .toLowerCase()
+            .replace(/[^\p{L}\p{N}]+/gu, "-")
+            .replace(/^-+|-+$/g, "");
+        return slug ? `${slug}-table` : "table";
+    };
+
+    const handleExport = () => {
+        // Export the selected rows when any are checked; otherwise export the
+        // currently filtered set (search / status applied), falling back to all.
+        const rowsToExport =
+            selectedRows.length > 0
+                ? selectedRows
+                    .slice()
+                    .sort((a, b) => a - b)
+                    .map((index) => rows[index])
+                    .filter(Boolean)
+                : filteredRows;
+
+        if (onExport) {
+            onExport(rowsToExport);
+            return;
+        }
+
+        // Map headers to labels, but keep only as many columns as the data has
+        // so an empty trailing "actions" header doesn't shift columns. Blank
+        // header labels (e.g. the actions placeholder) are dropped.
+        const columnCount = rowsToExport.reduce(
+            (max, row) => Math.max(max, (row || []).length),
+            0
+        );
+        const headerLabels = (headers || [])
+            .filter(Boolean)
+            .map((header) =>
+                typeof header.label === "string" ? t(header.label) : extractText(header.label)
+            )
+            .filter((label) => label && label.trim())
+            .slice(0, columnCount);
+
+        const csvLines = [
+            headerLabels.map(escapeCsv).join(","),
+            ...rowsToExport.map((row) =>
+                (row || [])
+                    .map((cell) => escapeCsv(extractText(cell).trim().replace(/\s+/g, " ")))
+                    .join(",")
+            ),
+        ];
+
+        // Prepend UTF-8 BOM so Excel renders Arabic text correctly.
+        const csvContent = "﻿" + csvLines.join("\r\n");
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `${resolveFileName()}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    };
 
     return (
         <div className={"rounded-2xl md:w-full pb-10 tab-content bg-surface border border-status-border p-3 flex flex-col gap-4 " + (classContainer ? classContainer : "")}>
@@ -160,7 +341,15 @@ function Table({
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2">
-                        {!hideSearchInput && <SearchInput />}
+                        {!hideSearchInput && (
+                            <SearchInput
+                                value={searchQuery}
+                                onChange={(e) => {
+                                    setSearchQuery(e.target.value);
+                                    setCurrentPage(1);
+                                }}
+                            />
+                        )}
                         {showDatePicker && (
                             <div className={"flex items-center justify-center"}>
                                 <DateInput
@@ -186,8 +375,16 @@ function Table({
                         {showStatusFilter && (
                             <SelectWithoutLabel
                                 options={statusOptions.length ? statusOptions : defaultStatusOptions}
-                                value={selectedStatus}
-                                onChange={onStatusChange}
+                                value={activeStatus}
+                                onChange={(selectedValue) => {
+                                    setCurrentPage(1);
+                                    if (isStatusControlled) {
+                                        // SelectWithoutLabel passes the raw value.
+                                        onStatusChange(selectedValue);
+                                    } else {
+                                        setInternalStatus(selectedValue);
+                                    }
+                                }}
                                 placeholder={t("Status")}
                                 className="w-28"
                             />
@@ -201,10 +398,16 @@ function Table({
                                 placeholder={t("Department")}
                             />
                         )}
-                        <button className="flex dark:text-gray-400 text-sm items-baseline p-2 gap-2 rounded-lg border border-gray-200 dark:border-gray-600">
-                            <TfiImport size={15} />
-                            {t("Export")}
-                        </button>
+                        {showExport && (
+                            <button
+                                type="button"
+                                onClick={handleExport}
+                                className="flex dark:text-gray-400 text-sm items-baseline p-2 gap-2 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                            >
+                                <TfiImport size={15} />
+                                {t("Export")}
+                            </button>
+                        )}
                         {toolbarCustomContent}
                     </div>
                 </div>
@@ -241,8 +444,10 @@ function Table({
                             </tr>
                         </thead>
                         <tbody>
-                            {currentRows?.map((row, rowIndex) => {
-                                const actualRowIndex = rowIndex + startIndex;
+                            {currentItems?.map(({ row, originalIndex }) => {
+                                // Use the row's original index so action / checkbox
+                                // callbacks line up with the unfiltered data set.
+                                const actualRowIndex = originalIndex;
                                 return (
                                     <tr 
                                         key={actualRowIndex} 
@@ -402,7 +607,10 @@ Table.propTypes = {
     hideSearchInput: PropTypes.bool,
     toolbarCustomContent: PropTypes.node,
     headerActions: PropTypes.node,
-    onRowClick: PropTypes.func
+    onRowClick: PropTypes.func,
+    showExport: PropTypes.bool,
+    onExport: PropTypes.func,
+    exportFileName: PropTypes.string,
 };
 
 export default Table;

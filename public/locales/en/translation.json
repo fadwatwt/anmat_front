@@ -2446,5 +2446,17 @@
   "Location": "Location",
   "Created by": "Created by",
   "Attendees": "Attendees",
-  "more": "more"
+  "more": "more",
+  "Employee Documents": "Employee Documents",
+  "Upload Document": "Upload Document",
+  "No documents uploaded yet": "No documents uploaded yet",
+  "Are you sure you want to delete this document?": "Are you sure you want to delete this document?",
+  "Failed to upload document": "Failed to upload document",
+  "File is too large. Maximum size is {{size}} MB.": "File is too large. Maximum size is {{size}} MB.",
+  "Contract": "Contract",
+  "CV / Resume": "CV / Resume",
+  "National ID": "National ID",
+  "Certificate": "Certificate",
+  "Delete Document": "Delete Document",
+  "Are you sure you want to delete this document? This action cannot be undone.": "Are you sure you want to delete this document? This action cannot be undone."
 }

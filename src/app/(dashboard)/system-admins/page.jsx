@@ -18,6 +18,7 @@ import { RiAddCircleLine, RiCloseLine, RiNotification4Line } from "@remixicon/re
 import SendAdminNotificationModal from "@/components/Modal/SendAdminNotificationModal";
 
 function SystemAdminsPage() {
+    const { t } = useTranslation();
     const { data: adminsResponse, isLoading } = useGetAdminsQuery();
     const adminsData = adminsResponse?.data || [];
 
@@ -73,9 +74,9 @@ function SystemAdminsPage() {
         // Status cell
         <div key={`${adminUser._id}_status`}>
             {adminUser?.is_active ? (
-                <span className="py-1 px-2 rounded-lg bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-xs font-medium border border-green-200 dark:border-green-800">Active</span>
+                <span className="py-1 px-2 rounded-lg bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-xs font-medium border border-green-200 dark:border-green-800">{t("Active")}</span>
             ) : (
-                <span className="py-1 px-2 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-medium border border-red-200 dark:border-red-800">Inactive</span>
+                <span className="py-1 px-2 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-medium border border-red-200 dark:border-red-800">{t("Inactive")}</span>
             )}
         </div>,
     ]);

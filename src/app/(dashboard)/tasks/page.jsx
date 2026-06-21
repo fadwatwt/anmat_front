@@ -11,7 +11,7 @@ import { selectUserType } from "@/redux/auth/authSlice";
 import { usePermission } from "@/Hooks/usePermission";
 import { convertToSlug } from "@/functions/AnotherFunctions";
 import { translateDate } from "@/functions/Days";
-import { RiEyeLine, RiDeleteBinLine, RiEditLine, RiCalendarScheduleLine } from "react-icons/ri";
+import { RiEyeLine, RiDeleteBinLine, RiEditLine, RiCalendarCheckLine } from "react-icons/ri";
 import StatusActions from "@/components/Dropdowns/StatusActions";
 import {
   useGetSubscriberTasksQuery,
@@ -63,6 +63,21 @@ function TasksPage() {
   const [taskForAppointment, setTaskForAppointment] = useState(null);
 
   const allowedStatuses = ['open', 'pending', 'in-progress', 'completed', 'done', 'rejected', 'cancelled'];
+
+  // Options for the table's status filter (value matches the raw task status).
+  const taskStatusOptions = useMemo(
+    () => [
+      { value: "all", name: "Status" },
+      { value: "open", name: "Open" },
+      { value: "pending", name: "Pending" },
+      { value: "in-progress", name: "In-Progress" },
+      { value: "completed", name: "Completed" },
+      { value: "done", name: "Done" },
+      { value: "rejected", name: "Rejected" },
+      { value: "cancelled", name: "Cancelled" },
+    ],
+    []
+  );
 
 
   // Headers matching the design and important info
@@ -197,8 +212,8 @@ function TasksPage() {
     }
 
     actions.push({
-      text: t("Create Appointment"),
-      icon: <RiCalendarScheduleLine size={16} className="text-green-500" />,
+      text: t("Add to Agenda"),
+      icon: <RiCalendarCheckLine size={16} className="text-purple-500" />,
       onClick: () => {
         setTaskForAppointment(task);
         setIsAppointmentModalOpen(true);
@@ -254,8 +269,8 @@ function TasksPage() {
         <span className="text-xs font-medium text-cell-secondary">{task.progress || 0}%</span>
       </div>,
       <div key={`rating-${task._id}`} className="flex items-center">
-        {task.ratings?.length > 0 ? (
-          <StarRating rating={task.ratings.reduce((acc, r) => acc + (r.score || 0), 0) / task.ratings.length} />
+        {task.rate > 0 ? (
+          <StarRating rating={Math.round(task.rate * 10) / 10} />
         ) : (
           <span className="text-xs text-cell-secondary italic opacity-60">
             {t("No rating yet")}
@@ -297,6 +312,8 @@ function TasksPage() {
                 isCheckInput={true}
                 customActions={customActions}
                 showStatusFilter={true}
+                statusOptions={taskStatusOptions}
+                exportFileName="tasks-table"
                 isActions={false}
               />
             )}

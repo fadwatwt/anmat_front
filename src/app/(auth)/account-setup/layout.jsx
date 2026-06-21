@@ -53,8 +53,19 @@ function AccountSetupLayout({ children }) {
 
                 // Subscriber specific logic
                 if (userData.type === "Subscriber") {
-                    // If already fully set up (Org + Subscription), go to dashboard
-                    if (userData.is_organization_registered && userData.active_subscription_id) {
+                    // If already fully set up (Org + an *active* subscription), go
+                    // to dashboard. We must check has_subscription_access here, not
+                    // just active_subscription_id: an expired subscriber still has a
+                    // stale active_subscription_id but access === false. Sending such
+                    // a user to /dashboard makes the dashboard bounce them back to
+                    // /account-setup/subscriber/plans (it checks has_subscription_access),
+                    // which then lands here again — an infinite redirect loop that
+                    // leaves the app stuck on the "Verifying access..." spinner.
+                    if (
+                        userData.is_organization_registered &&
+                        userData.active_subscription_id &&
+                        userData.has_subscription_access !== false
+                    ) {
                         router.push("/dashboard");
                         return;
                     }

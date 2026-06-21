@@ -3,10 +3,12 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { I18nextProvider } from 'react-i18next'
 import i18n from '../../public/lib/i18n'
 import PropTypes from "prop-types";
-import { Provider } from "react-redux";
+import { Provider, useSelector } from "react-redux";
 import { store } from "@/redux/store";
+import { selectIsMutating } from "@/redux/ui/processingSlice";
 import NotificationListener from '@/components/NotificationListener';
 import ProcessingOverlay from '@/components/Feedback/ProcessingOverlay';
+import NavigationProgress from '@/components/Feedback/NavigationProgress';
 import { setLanguage } from "@/functions/Days";
 
 const updateHtmlAttributes = (lang) => {
@@ -78,6 +80,21 @@ const ProcessingProvider = ({ children }) => {
     const [isProcessing, setIsProcessing] = useState(false);
     const [processingMessage, setProcessingMessage] = useState(null);
 
+    // Automatically true whenever any (non-silent) RTK Query mutation is in
+    // flight, so every write request shows the overlay without manual wiring.
+    const isMutating = useSelector(selectIsMutating);
+
+    // Delay the auto overlay slightly so very fast mutations don't flash it.
+    const [showAutoOverlay, setShowAutoOverlay] = useState(false);
+    useEffect(() => {
+        if (!isMutating) {
+            setShowAutoOverlay(false);
+            return;
+        }
+        const timer = setTimeout(() => setShowAutoOverlay(true), 250);
+        return () => clearTimeout(timer);
+    }, [isMutating]);
+
     const showProcessing = (message) => {
         setProcessingMessage(message);
         setIsProcessing(true);
@@ -88,10 +105,14 @@ const ProcessingProvider = ({ children }) => {
         setProcessingMessage(null);
     };
 
+    // Manual message takes priority; otherwise fall back to a generic label.
+    const overlayOpen = isProcessing || showAutoOverlay;
+    const overlayMessage = isProcessing ? processingMessage : null;
+
     return (
         <ProcessingContext.Provider value={{ showProcessing, hideProcessing, isProcessing }}>
             {children}
-            <ProcessingOverlay isOpen={isProcessing} message={processingMessage} />
+            <ProcessingOverlay isOpen={overlayOpen} message={overlayMessage} />
         </ProcessingContext.Provider>
     );
 };
@@ -109,6 +130,7 @@ const Providers = ({ children }) => {
 
     return (
         <Provider store={store}>
+            <NavigationProgress />
             <NotificationListener />
             <ThemeProvider>
                 <ProcessingProvider>
@@ -122,6 +144,14 @@ const Providers = ({ children }) => {
 };
 
 Providers.propTypes = {
+    children: PropTypes.node.isRequired,
+}
+
+ThemeProvider.propTypes = {
+    children: PropTypes.node.isRequired,
+}
+
+ProcessingProvider.propTypes = {
     children: PropTypes.node.isRequired,
 }
 

@@ -216,10 +216,7 @@ function Subscribers() {
         title={t("Cancel Subscription")}
         confirmBtnText={t("Yes, Stop")}
         description={
-          <p className="text-cell-secondary">
-            Are you sure you want to <span className="font-bold text-cell-primary">Delete Subscription</span> of the
-            <span className="font-bold text-cell-primary"> this client</span>?
-          </p>
+          <p className="text-cell-secondary">{t("Are you sure you want to delete the subscription of this client?")}</p>
         }
         onSubmit={() => { }}
       />

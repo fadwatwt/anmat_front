@@ -9,11 +9,13 @@ import {
     ResponsiveContainer,
     Legend
 } from 'recharts';
+import { useTranslation } from 'react-i18next';
 
 const TimelineLine = ({ data = [] }) => {
+    const { t } = useTranslation();
     return (
         <div className="h-full w-full">
-            <p className="text-[10px] text-cell-secondary mb-2 absolute top-0 left-0">Hours</p>
+            <p className="text-[10px] text-cell-secondary mb-2 absolute top-0 left-0">{t("Hours")}</p>
             <ResponsiveContainer width="100%" height="100%">
                 <LineChart
                     data={data}

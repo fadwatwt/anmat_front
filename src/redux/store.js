@@ -15,6 +15,8 @@ import industriesReducer from "./industries/industriesSlice";
 import notificationsReducer from "./notifications/notificationsSlice";
 import { apiSlice } from "./api/apiSlice";
 import { twitterAccountsApi } from "./socialMedia/twitterAccountsApi";
+import processingReducer from "./ui/processingSlice";
+import { processingMiddleware } from "./ui/processingMiddleware";
 
 export const store = configureStore({
   reducer: {
@@ -34,11 +36,13 @@ export const store = configureStore({
     conversations: conversationsReducer,
     industries: industriesReducer,
     notifications: notificationsReducer,
+    processing: processingReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
       apiSlice.middleware,
       conversationsAPI.middleware,
-      twitterAccountsApi.middleware
+      twitterAccountsApi.middleware,
+      processingMiddleware
     ),
 });

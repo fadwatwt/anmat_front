@@ -33,6 +33,7 @@ import { RiDeleteBin7Line, RiErrorWarningLine, RiBellLine, RiInformationLine, Ri
 import { useGetSentSubscriberNotificationsQuery } from "@/redux/subscriber-notifications/subscriberNotificationsApi";
 import SendNotificationModal from "@/app/(dashboard)/hr/employees/modals/SendNotification.modal";
 import { usePermission } from "@/Hooks/usePermission";
+import EmployeeDocumentsCard from "@/app/(dashboard)/hr/employees/components/EmployeeDocumentsCard";
 
 // Map icon name strings from backend to actual icon components
 const ICON_MAP = {
@@ -525,6 +526,10 @@ function SingleEmployeeProfile() {
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    <div className={"col-span-12 mt-6"}>
+                        <EmployeeDocumentsCard employeeId={employeeId} />
                     </div>
 
                     <div className={"col-span-12 mt-6"}>

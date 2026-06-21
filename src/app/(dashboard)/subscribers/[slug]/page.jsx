@@ -502,10 +502,7 @@ function AdminProfile() {
                     title={t("Cancel Subscription")}
                     confirmBtnText={t("Yes, Stop")}
                     description={
-                        <p className="text-cell-secondary">
-                            Are you sure you want to <span className="font-bold text-cell-primary">Delete Catalog</span> of the
-                            <span className="font-bold text-cell-primary"> Account subscription</span>?
-                        </p>
+                        <p className="text-cell-secondary">{t("Are you sure you want to delete the catalog of the account subscription?")}</p>
                     }
                     onSubmit={() => { }}
                 />
