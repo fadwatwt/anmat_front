@@ -10,6 +10,7 @@ import {
   useCreateDailyTaskMutation,
   useCompleteAppointmentMutation,
   useDeleteAppointmentMutation,
+  useUpdateAppointmentMutation,
   useUpdateDailyTaskMutation,
 } from "@/redux/appointments/appointmentsApi";
 import Alert from "@/components/Alerts/Alert";
@@ -26,6 +27,8 @@ import {
   RiBellLine,
   RiTimeLine,
   RiArrowDownSLine,
+  RiCalendarEventLine,
+  RiCloseLine,
 } from "react-icons/ri";
 import { format } from "date-fns";
 
@@ -43,6 +46,11 @@ const REMINDER_LABELS = {
   "1_day":  { ar: "قبل يوم",    en: "1d before" },
   "1_week": { ar: "قبل أسبوع",  en: "1w before" },
 };
+
+const INPUT_CLASS =
+  "w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white text-sm";
+
+const LABEL_CLASS = "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1";
 
 /* ── sub-components ── */
 
@@ -155,7 +163,7 @@ function TaskItem({ task, onComplete, onDelete, onEdit }) {
   );
 }
 
-function ReminderItem({ reminder, onComplete, onDelete, isArabic }) {
+function ReminderItem({ reminder, onComplete, onDelete, onEdit, isArabic }) {
   const { t } = useTranslation();
   const done = reminder.status === "completed";
   const firstType = reminder.reminder_types?.[0];
@@ -196,7 +204,56 @@ function ReminderItem({ reminder, onComplete, onDelete, isArabic }) {
             <RiCheckLine size={14} />
           </button>
         )}
+        {onEdit && (
+          <button onClick={() => onEdit(reminder)} className="p-0.5 text-primary-500 hover:bg-primary-100 dark:hover:bg-primary-900/30 rounded" title={t("Edit")}>
+            <RiEditLine size={14} />
+          </button>
+        )}
         <button onClick={() => onDelete(reminder._id)} className="p-0.5 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 rounded" title={t("Delete")}>
+          <RiDeleteBinLine size={14} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function AppointmentItem({ appointment, onComplete, onDelete, isArabic }) {
+  const { t } = useTranslation();
+  const color = appointment.color || "#3B82F6";
+  const done = appointment.status === "completed";
+
+  const formatTime = (timeStr) => {
+    if (!timeStr) return "";
+    const [h, m] = timeStr.split(":").map(Number);
+    const period = h >= 12 ? (isArabic ? "م" : "PM") : (isArabic ? "ص" : "AM");
+    const display = h > 12 ? h - 12 : h === 0 ? 12 : h;
+    return `${display}:${String(m).padStart(2, "0")} ${period}`;
+  };
+
+  return (
+    <div className={`flex items-center gap-2 p-2 rounded-lg border border-gray-100 dark:border-gray-700 group ${done ? "opacity-50" : "hover:bg-gray-50 dark:hover:bg-gray-700/50"}`}>
+      <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
+      <div className="flex-1 min-w-0">
+        <p className={`text-sm truncate ${done ? "line-through text-gray-400 dark:text-gray-500" : "text-gray-900 dark:text-white"}`}>
+          {appointment.title}
+        </p>
+        {appointment.start_time && (
+          <span className="flex items-center gap-0.5 text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+            <RiTimeLine size={10} />
+            {formatTime(appointment.start_time)}
+            {appointment.location && (
+              <span className="truncate ml-1">• {appointment.location}</span>
+            )}
+          </span>
+        )}
+      </div>
+      <div className="flex-shrink-0 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        {!done && (
+          <button onClick={() => onComplete(appointment._id)} className="p-0.5 text-green-600 hover:bg-green-100 dark:hover:bg-green-900/30 rounded" title={t("Complete")}>
+            <RiCheckLine size={14} />
+          </button>
+        )}
+        <button onClick={() => onDelete(appointment._id)} className="p-0.5 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 rounded" title={t("Delete")}>
           <RiDeleteBinLine size={14} />
         </button>
       </div>
@@ -238,6 +295,7 @@ function TodayRightPanel({ onOpenCreateModal }) {
   const [createTask]          = useCreateDailyTaskMutation();
   const [completeAppointment] = useCompleteAppointmentMutation();
   const [deleteAppointment]   = useDeleteAppointmentMutation();
+  const [updateAppointment]   = useUpdateAppointmentMutation();
   const [updateDailyTask]     = useUpdateDailyTaskMutation();
 
   const [notesText,  setNotesText]  = useState("");
@@ -250,10 +308,16 @@ function TodayRightPanel({ onOpenCreateModal }) {
   const [isCompleteReminderAlertOpen, setIsCompleteReminderAlertOpen] = useState(false);
   const [reminderToDelete, setReminderToDelete] = useState(null);
   const [isDeleteReminderAlertOpen, setIsDeleteReminderAlertOpen] = useState(false);
+  const [reminderToEdit, setReminderToEdit] = useState(null);
+  const [isEditReminderModalOpen, setIsEditReminderModalOpen] = useState(false);
+  const [editReminderData, setEditReminderData] = useState({ title: "", date: "", start_time: "", reminder_types: [], notes: "" });
 
   /* derived */
   const priorityTasks  = todayTasks.filter((t) => t.priority === "urgent" || t.priority === "high").slice(0, 3);
   const regularTasks   = todayTasks.filter((t) => t.priority !== "urgent" && t.priority !== "high");
+  const todayAppts = todayAppointments
+    .filter((a) => a.category !== "reminder")
+    .sort((a, b) => (a.start_time || "").localeCompare(b.start_time || ""));
   const todayReminders = todayAppointments
     .filter((a) => a.category === "reminder")
     .sort((a, b) => (a.start_time || "").localeCompare(b.start_time || ""));
@@ -261,6 +325,8 @@ function TodayRightPanel({ onOpenCreateModal }) {
   /* handlers */
   const handleCompleteTask   = async (id) => { try { await completeTask(id).unwrap(); } catch {} };
   const handleDeleteTask     = async (id) => { try { await deleteTask(id).unwrap();   } catch {} };
+  const handleCompleteAppt   = async (id) => { try { await completeAppointment(id).unwrap(); } catch {} };
+  const handleDeleteAppt     = async (id) => { try { await deleteAppointment(id).unwrap();   } catch {} };
   const requestEditTask = (task) => {
     setTaskToEdit(task);
     setIsEditTaskModalOpen(true);
@@ -284,6 +350,34 @@ function TodayRightPanel({ onOpenCreateModal }) {
     const reminder = todayReminders.find((r) => r._id === id);
     setReminderToDelete(reminder);
     setIsDeleteReminderAlertOpen(true);
+  };
+
+  const requestEditReminder = (reminder) => {
+    setReminderToEdit(reminder);
+    setEditReminderData({
+      title: reminder.title || "",
+      date: reminder.date || "",
+      start_time: reminder.start_time || "",
+      reminder_types: reminder.reminder_types || [],
+      notes: reminder.notes || "",
+    });
+    setIsEditReminderModalOpen(true);
+  };
+
+  const handleEditReminderSave = async () => {
+    if (!reminderToEdit) return;
+    try {
+      await updateAppointment({
+        id: reminderToEdit._id,
+        title: editReminderData.title,
+        date: editReminderData.date,
+        start_time: editReminderData.start_time,
+        reminder_types: editReminderData.reminder_types,
+        notes: editReminderData.notes,
+      }).unwrap();
+      setIsEditReminderModalOpen(false);
+      setReminderToEdit(null);
+    } catch {}
   };
 
   const handleCompleteReminder = async () => {
@@ -394,6 +488,35 @@ function TodayRightPanel({ onOpenCreateModal }) {
         <QuickAddInput onAdd={handleQuickAddTask} placeholder={t("Add task...")} />
       </div>
 
+      {/* ── Today's Appointments ── */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <RiCalendarEventLine size={16} className="text-blue-500" />
+            <h4 className="text-sm font-semibold text-gray-900 dark:text-white">{t("Appointments")}</h4>
+            {todayAppts.length > 0 && (
+              <span className="text-xs text-gray-400 dark:text-gray-500">{todayAppts.length}</span>
+            )}
+          </div>
+        </div>
+
+        {todayAppts.length === 0 ? (
+          <p className="text-xs text-gray-400 dark:text-gray-500 text-center py-2">{t("No appointments today")}</p>
+        ) : (
+          <div className="space-y-1">
+            {todayAppts.map((apt) => (
+              <AppointmentItem
+                key={apt._id}
+                appointment={apt}
+                onComplete={handleCompleteAppt}
+                onDelete={handleDeleteAppt}
+                isArabic={isArabic}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* ── Reminders ── */}
       <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
         <div className="flex items-center justify-between mb-3">
@@ -432,6 +555,7 @@ function TodayRightPanel({ onOpenCreateModal }) {
                 reminder={reminder}
                 onComplete={requestCompleteReminder}
                 onDelete={requestDeleteReminder}
+                onEdit={requestEditReminder}
                 isArabic={isArabic}
               />
             ))}
@@ -469,6 +593,85 @@ function TodayRightPanel({ onOpenCreateModal }) {
         onClose={() => { setIsEditTaskModalOpen(false); setTaskToEdit(null); }}
         onSave={handleEditTaskSave}
       />
+
+      {/* Edit Reminder Modal */}
+      {isEditReminderModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="fixed inset-0 bg-black/50" onClick={() => { setIsEditReminderModalOpen(false); setReminderToEdit(null); }} />
+          <div className="relative bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md mx-4">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{t("Edit Reminder")}</h3>
+              <button onClick={() => { setIsEditReminderModalOpen(false); setReminderToEdit(null); }} className="p-1 text-gray-400 hover:text-gray-600 rounded-lg">
+                <RiCloseLine size={24} />
+              </button>
+            </div>
+            <div className="p-4 space-y-4">
+              <div>
+                <label className={LABEL_CLASS}>{t("Title")} *</label>
+                <input type="text" value={editReminderData.title}
+                  onChange={(e) => setEditReminderData((p) => ({ ...p, title: e.target.value }))}
+                  className={INPUT_CLASS} />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className={LABEL_CLASS}>{t("Date")} *</label>
+                  <input type="date" value={editReminderData.date}
+                    onChange={(e) => setEditReminderData((p) => ({ ...p, date: e.target.value }))}
+                    className={INPUT_CLASS} />
+                </div>
+                <div>
+                  <label className={LABEL_CLASS}>{t("Time")} *</label>
+                  <input type="time" value={editReminderData.start_time}
+                    onChange={(e) => setEditReminderData((p) => ({ ...p, start_time: e.target.value }))}
+                    className={INPUT_CLASS} />
+                </div>
+              </div>
+              <div>
+                <label className={LABEL_CLASS}>{isArabic ? "التنبيه قبل" : "Notify me"}</label>
+                <div className="flex flex-wrap gap-2 mt-1">
+                  {Object.entries(REMINDER_LABELS).map(([value, labels]) => {
+                    const active = editReminderData.reminder_types.includes(value);
+                    return (
+                      <button key={value} type="button"
+                        onClick={() => setEditReminderData((p) => ({
+                          ...p,
+                          reminder_types: active
+                            ? p.reminder_types.filter((r) => r !== value)
+                            : [...p.reminder_types, value],
+                        }))}
+                        className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors ${
+                          active
+                            ? "bg-amber-100 dark:bg-amber-900/40 border-amber-400 text-amber-700 dark:text-amber-300"
+                            : "bg-gray-100 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
+                        }`}
+                      >
+                        {isArabic ? labels.ar : labels.en}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+              <div>
+                <label className={LABEL_CLASS}>{t("Notes")}</label>
+                <textarea value={editReminderData.notes}
+                  onChange={(e) => setEditReminderData((p) => ({ ...p, notes: e.target.value }))}
+                  rows={2} className={INPUT_CLASS} />
+              </div>
+            </div>
+            <div className="flex items-center justify-end gap-3 p-4 border-t border-gray-200 dark:border-gray-700">
+              <button onClick={() => { setIsEditReminderModalOpen(false); setReminderToEdit(null); }}
+                className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                {t("Cancel")}
+              </button>
+              <button onClick={handleEditReminderSave}
+                disabled={!editReminderData.title.trim()}
+                className="px-4 py-2 text-sm font-medium text-white bg-amber-500 hover:bg-amber-600 rounded-lg transition-colors disabled:bg-gray-300 disabled:dark:bg-gray-600">
+                {t("Save")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Confirmation dialogs */}
       <Alert

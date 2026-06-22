@@ -2229,5 +2229,10 @@
   "Time Delivery": "Time Delivery",
   "Quality": "Quality",
   "Communication": "Communication",
-  "Write your comments here": "Write your comments here"
+  "Write your comments here": "Write your comments here",
+  "Move to today": "Move to today",
+  "Moving...": "Moving...",
+  "You have {{count}} incomplete tasks from yesterday": "You have {{count}} incomplete task from yesterday",
+  "You have {{count}} incomplete tasks from yesterday_plural": "You have {{count}} incomplete tasks from yesterday",
+  "Edit Reminder": "Edit Reminder"
 }

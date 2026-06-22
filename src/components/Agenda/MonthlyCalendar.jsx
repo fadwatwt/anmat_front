@@ -10,6 +10,9 @@ import {
   RiArrowLeftLine,
   RiArrowRightLine,
   RiCalendarLine,
+  RiCalendarEventLine,
+  RiCheckboxCircleLine,
+  RiBellLine,
 } from "react-icons/ri";
 
 const DAYSOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -81,7 +84,11 @@ function MonthlyCalendar({ onDaySelect, selectedDate }) {
     const totalItems = dayAppointments.length + dayTasks.length;
     const isToday = dateStr === today;
     const isSelected = dateStr === selectedDate;
-    const hasAppointments = dayAppointments.length > 0;
+
+    const dayReminders = dayAppointments.filter((a) => a.category === "reminder");
+    const dayRegularApps = dayAppointments.filter((a) => a.category !== "reminder");
+    // Show regular appointments first, then reminders, then tasks
+    const maxVisible = 3;
 
     days.push(
       <div
@@ -108,26 +115,37 @@ function MonthlyCalendar({ onDaySelect, selectedDate }) {
           )}
         </div>
         <div className="space-y-0.5 overflow-hidden">
-          {dayAppointments.slice(0, 2).map((apt) => (
+          {dayRegularApps.slice(0, maxVisible).map((apt) => (
             <div
               key={apt._id}
-              className="text-xs truncate px-1 py-0.5 rounded"
+              className="text-xs truncate px-1 py-0.5 rounded flex items-center gap-1"
               style={{ backgroundColor: `${apt.color || "#3B82F6"}20`, color: apt.color || "#3B82F6" }}
             >
-              {apt.start_time?.substring(0, 5)} {apt.title}
+              <RiCalendarEventLine size={10} className="flex-shrink-0" />
+              <span className="truncate">{apt.start_time?.substring(0, 5)} {apt.title}</span>
             </div>
           ))}
-          {dayTasks.slice(0, 1).map((task) => (
+          {dayReminders.slice(0, maxVisible - dayRegularApps.length).map((rem) => (
+            <div
+              key={rem._id}
+              className="text-xs truncate px-1 py-0.5 rounded flex items-center gap-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300"
+            >
+              <RiBellLine size={10} className="flex-shrink-0" />
+              <span className="truncate">{rem.start_time?.substring(0, 5)} {rem.title}</span>
+            </div>
+          ))}
+          {dayTasks.slice(0, Math.max(0, maxVisible - dayRegularApps.length - dayReminders.length)).map((task) => (
             <div
               key={task._id}
-              className="text-xs truncate px-1 py-0.5 rounded bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
+              className="text-xs truncate px-1 py-0.5 rounded flex items-center gap-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
             >
-              {task.title}
+              <RiCheckboxCircleLine size={10} className="flex-shrink-0" />
+              <span className="truncate">{task.title}</span>
             </div>
           ))}
-          {totalItems > 3 && (
+          {totalItems > maxVisible && (
             <div className="text-xs text-gray-500 dark:text-gray-400 px-1">
-              +{totalItems - 3} {t("more")}
+              +{totalItems - maxVisible} {t("more")}
             </div>
           )}
         </div>
@@ -164,6 +182,21 @@ function MonthlyCalendar({ onDaySelect, selectedDate }) {
             <RiArrowRightLine size={18} className="text-gray-600 dark:text-gray-400" />
           </button>
         </div>
+      </div>
+
+      <div className="flex items-center gap-4 mb-3 text-xs text-gray-500 dark:text-gray-400">
+        <span className="flex items-center gap-1">
+          <RiCalendarEventLine size={12} className="text-blue-500" />
+          {t("Appointments")}
+        </span>
+        <span className="flex items-center gap-1">
+          <RiBellLine size={12} className="text-amber-500" />
+          {t("Reminders")}
+        </span>
+        <span className="flex items-center gap-1">
+          <RiCheckboxCircleLine size={12} className="text-green-500" />
+          {t("Tasks")}
+        </span>
       </div>
 
       <div className="grid grid-cols-7 gap-1 mb-2">

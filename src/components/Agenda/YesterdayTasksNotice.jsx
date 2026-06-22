@@ -10,8 +10,7 @@ import {
 import { RiArrowRightLine, RiCloseLine, RiHistoryLine } from "react-icons/ri";
 
 function YesterdayTasksNotice() {
-  const { t, i18n } = useTranslation();
-  const isArabic = i18n.language === "ar";
+  const { t } = useTranslation();
 
   const [dismissed, setDismissed] = useState(false);
   const [moved, setMoved] = useState(false);
@@ -52,9 +51,7 @@ function YesterdayTasksNotice() {
 
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
-          {isArabic
-            ? `لديك ${incompleteTasks.length} ${incompleteTasks.length === 1 ? "مهمة" : "مهام"} من الأمس لم تُكمل`
-            : `You have ${incompleteTasks.length} incomplete ${incompleteTasks.length === 1 ? "task" : "tasks"} from yesterday`}
+          {t("You have {{count}} incomplete tasks from yesterday", { count: incompleteTasks.length })}
         </p>
         <p className="text-xs text-amber-600 dark:text-amber-400 truncate">
           {incompleteTasks
@@ -72,13 +69,7 @@ function YesterdayTasksNotice() {
           className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-amber-800 dark:text-amber-200 bg-amber-100 dark:bg-amber-800/50 hover:bg-amber-200 dark:hover:bg-amber-700/50 rounded-lg transition-colors disabled:opacity-50"
         >
           <RiArrowRightLine size={14} />
-          {isArabic
-            ? isMoving
-              ? "جارٍ النقل..."
-              : "نقل لليوم"
-            : isMoving
-            ? "Moving..."
-            : "Move to today"}
+          {isMoving ? t("Moving...") : t("Move to today")}
         </button>
 
         <button

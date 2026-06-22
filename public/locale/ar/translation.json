@@ -2457,5 +2457,10 @@
   "Select Account(s)": "اختر الحساب/الحسابات",
   "Error loading templates": "خطأ في تحميل القوالب",
   "Are you sure you want to delete the subscription of this client?": "هل أنت متأكد أنك تريد حذف اشتراك هذا العميل؟",
-  "Are you sure you want to delete the catalog of the account subscription?": "هل أنت متأكد أنك تريد حذف كتالوج اشتراك الحساب؟"
+  "Are you sure you want to delete the catalog of the account subscription?": "هل أنت متأكد أنك تريد حذف كتالوج اشتراك الحساب؟",
+  "Move to today": "نقل لليوم",
+  "Moving...": "جارٍ النقل...",
+  "You have {{count}} incomplete tasks from yesterday": "لديك {{count}} مهام من الأمس لم تُكمل",
+  "You have {{count}} incomplete tasks from yesterday_plural": "لديك {{count}} مهام من الأمس لم تُكمل",
+  "Edit Reminder": "تعديل التذكير"
 }

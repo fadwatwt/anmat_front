@@ -33,6 +33,11 @@ const categoryConfig = {
     defaultColor: "#EF4444",
     labelKey: "Deadline",
   },
+  reminder: {
+    icon: "🔔",
+    defaultColor: "#F59E0B",
+    labelKey: "Reminder",
+  },
   other: {
     icon: "📌",
     defaultColor: "#6B7280",

@@ -2458,5 +2458,9 @@
   "National ID": "National ID",
   "Certificate": "Certificate",
   "Delete Document": "Delete Document",
-  "Are you sure you want to delete this document? This action cannot be undone.": "Are you sure you want to delete this document? This action cannot be undone."
+  "Are you sure you want to delete this document? This action cannot be undone.": "Are you sure you want to delete this document? This action cannot be undone.",
+  "Move to today": "Move to today",
+  "Moving...": "Moving...",
+  "You have {{count}} incomplete tasks from yesterday": "You have {{count}} incomplete task from yesterday",
+  "You have {{count}} incomplete tasks from yesterday_plural": "You have {{count}} incomplete tasks from yesterday"
 }
