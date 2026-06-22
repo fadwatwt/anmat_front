@@ -10,10 +10,12 @@ import {
   useCompleteAppointmentMutation,
   useCancelAppointmentMutation,
   useDeleteAppointmentMutation,
+  useUpdateAppointmentMutation,
 } from "@/redux/appointments/appointmentsApi";
 import Page from "@/components/Page.jsx";
 import AppointmentNotes from "@/components/Agenda/AppointmentNotes";
 import ShareAppointment from "@/components/Appointments/ShareAppointment";
+import EditAppointmentModal from "@/components/Appointments/EditAppointmentModal";
 import Alert from "@/components/Alerts/Alert";
 import {
   RiArrowLeftLine,
@@ -39,11 +41,15 @@ function AppointmentDetailPage() {
 
   const [shareAppointment, setShareAppointment] = useState(null);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
+  const [isCompleteAlertOpen, setIsCompleteAlertOpen] = useState(false);
+  const [isCancelAlertOpen, setIsCancelAlertOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const { data: appointment, isLoading, error } = useGetAppointmentDetailsQuery(appointmentId);
   const [completeAppointment] = useCompleteAppointmentMutation();
   const [cancelAppointment] = useCancelAppointmentMutation();
   const [deleteAppointment] = useDeleteAppointmentMutation();
+  const [updateAppointment] = useUpdateAppointmentMutation();
 
   const formatDate = (dateStr) => {
     try {
@@ -66,6 +72,7 @@ function AppointmentDetailPage() {
   const handleComplete = async () => {
     try {
       await completeAppointment(appointmentId).unwrap();
+      setIsCompleteAlertOpen(false);
     } catch (error) {
       console.error("Failed to complete appointment:", error);
     }
@@ -74,6 +81,7 @@ function AppointmentDetailPage() {
   const handleCancel = async () => {
     try {
       await cancelAppointment(appointmentId).unwrap();
+      setIsCancelAlertOpen(false);
     } catch (error) {
       console.error("Failed to cancel appointment:", error);
     }
@@ -86,6 +94,15 @@ function AppointmentDetailPage() {
       router.push("/appointments");
     } catch (error) {
       console.error("Failed to delete appointment:", error);
+    }
+  };
+
+  const handleEditSave = async (data) => {
+    try {
+      await updateAppointment({ id: appointmentId, ...data }).unwrap();
+      setIsEditModalOpen(false);
+    } catch (error) {
+      console.error("Failed to update appointment:", error);
     }
   };
 
@@ -168,6 +185,13 @@ function AppointmentDetailPage() {
                 </div>
 
                 <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setIsEditModalOpen(true)}
+                    className="p-2 text-gray-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
+                    title={t("Edit")}
+                  >
+                    <RiEditLine size={20} />
+                  </button>
                   <button
                     onClick={() => setShareAppointment(appointment)}
                     className="p-2 text-gray-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
@@ -286,14 +310,14 @@ function AppointmentDetailPage() {
               {appointment.status === "upcoming" && (
                 <div className="flex items-center gap-3 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
                   <button
-                    onClick={handleComplete}
+                    onClick={() => setIsCompleteAlertOpen(true)}
                     className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-green-500 hover:bg-green-600 rounded-lg transition-colors"
                   >
                     <RiCheckLine size={16} />
                     {t("Mark as Completed")}
                   </button>
                   <button
-                    onClick={handleCancel}
+                    onClick={() => setIsCancelAlertOpen(true)}
                     className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg transition-colors"
                   >
                     <RiCloseLine size={16} />
@@ -313,7 +337,31 @@ function AppointmentDetailPage() {
       />
 
       <Alert
+        type="success"
+        title={t("Complete Appointment?")}
+        message={t("Are you sure you want to mark this appointment as completed?")}
+        titleCancelBtn={t("Cancel")}
+        titleSubmitBtn={t("Complete")}
+        isOpen={isCompleteAlertOpen}
+        onClose={() => setIsCompleteAlertOpen(false)}
+        onSubmit={handleComplete}
+        isBtns={1}
+      />
+
+      <Alert
         type="warning"
+        title={t("Cancel Appointment?")}
+        message={t("Are you sure you want to cancel this appointment?")}
+        titleCancelBtn={t("No")}
+        titleSubmitBtn={t("Yes, Cancel")}
+        isOpen={isCancelAlertOpen}
+        onClose={() => setIsCancelAlertOpen(false)}
+        onSubmit={handleCancel}
+        isBtns={1}
+      />
+
+      <Alert
+        type="delete"
         title={t("Delete Appointment?")}
         message={t("Are you sure you want to delete this appointment?")}
         titleCancelBtn={t("Cancel")}
@@ -322,6 +370,13 @@ function AppointmentDetailPage() {
         onClose={() => setIsDeleteAlertOpen(false)}
         onSubmit={handleDelete}
         isBtns={1}
+      />
+
+      <EditAppointmentModal
+        appointment={appointment}
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSave={handleEditSave}
       />
     </>
   );

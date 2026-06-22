@@ -19,6 +19,10 @@ import {
     defaultStatusOptions,
 } from "@/functions/FactoryData.jsx";
 import DateInput from "@/components/Form/DateInput.jsx";
+import { usePermission } from "@/Hooks/usePermission.js";
+
+// Capability required to see/use the data export button anywhere in the app.
+export const EXPORT_PERMISSION = "reports.export";
 
 function Table({
     customTitle = null,
@@ -62,6 +66,8 @@ function Table({
     exportFileName,
 }) {
     const { t, i18n } = useTranslation();
+    // Only users granted the export capability may see/use the export button.
+    const canExport = usePermission(EXPORT_PERMISSION);
     const [isAllSelected, setIsAllSelected] = useState(false);
     const [selectedRows, setSelectedRows] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -398,7 +404,7 @@ function Table({
                                 placeholder={t("Department")}
                             />
                         )}
-                        {showExport && (
+                        {showExport && canExport && (
                             <button
                                 type="button"
                                 onClick={handleExport}

@@ -13,10 +13,13 @@ import { selectUser } from "@/redux/auth/authSlice";
 import { RootRoute } from "@/Root.Route";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import { useIsAlertOpen } from "@/store/alertStore";
+import { usePermission } from "@/Hooks/usePermission.js";
 
 const ChatDetailsModal = ({ activeChat, onClose }) => {
   const { t } = useTranslation();
   const currentUser = useSelector(selectUser);
+  // Subscribers bypass via wildcard; employees need the explicit chats.export grant.
+  const canExportChat = usePermission("chats.export");
   const [archiveChat, { isLoading: isArchiving }] = useArchiveChatMutation();
   const [addParticipants, { isLoading: isAdding }] = useAddParticipantsMutation();
   const [removeParticipant] = useRemoveParticipantMutation();
@@ -67,7 +70,7 @@ const ChatDetailsModal = ({ activeChat, onClose }) => {
   };
 
   const handleExport = () => {
-    if (!isSubscriber) {
+    if (!canExportChat) {
       setApiResponse({ isOpen: true, status: "error", message: t("You don't have permission to export chats.") });
       return;
     }
@@ -150,7 +153,7 @@ const ChatDetailsModal = ({ activeChat, onClose }) => {
                   {activeChat.is_archived ? t("Unarchive Chat") : t("Archive Chat")}
                 </button>
 
-                {isSubscriber && (
+                {canExportChat && (
                   <button
                     onClick={handleExport}
                     className="w-full flex items-center gap-3 p-3 bg-weak-50 hover:bg-weak-100 rounded-xl text-cell-primary font-medium transition-colors border border-status-border"

@@ -11,6 +11,8 @@ import {
   RiCheckLine,
   RiCloseLine,
   RiShareLine,
+  RiEditLine,
+  RiDeleteBinLine,
   RiTaskLine,
   RiStickyNoteLine,
   RiPushpinLine,
@@ -125,6 +127,8 @@ function AppointmentCard({
   onComplete,
   onCancel,
   onShare,
+  onEdit,
+  onDelete,
 }) {
   const { t } = useTranslation();
 
@@ -238,9 +242,9 @@ function AppointmentCard({
         )}
       </div>
 
-      {!isSmall && appointment.status === "upcoming" && (
+      {!isSmall && (
         <div className="flex items-center gap-2 mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
-          {onComplete && (
+          {appointment.status === "upcoming" && onComplete && (
             <button
               onClick={() => onComplete(appointment._id)}
               className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors"
@@ -250,13 +254,33 @@ function AppointmentCard({
             </button>
           )}
 
-          {onCancel && (
+          {appointment.status === "upcoming" && onCancel && (
             <button
               onClick={() => onCancel(appointment._id)}
               className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
             >
               <RiCloseLine size={16} />
               {t("Cancel")}
+            </button>
+          )}
+
+          {onEdit && (
+            <button
+              onClick={() => onEdit(appointment)}
+              className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-primary-600 hover:text-primary-700 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
+            >
+              <RiEditLine size={16} />
+              {t("Edit")}
+            </button>
+          )}
+
+          {onDelete && (
+            <button
+              onClick={() => onDelete(appointment)}
+              className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+            >
+              <RiDeleteBinLine size={16} />
+              {t("Delete")}
             </button>
           )}
 

@@ -8,10 +8,12 @@ import {
   useDeleteAppointmentMutation,
   useCompleteAppointmentMutation,
   useCancelAppointmentMutation,
+  useUpdateAppointmentMutation,
 } from "@/redux/appointments/appointmentsApi";
 import Page from "@/components/Page.jsx";
 import AppointmentCard from "@/components/Appointments/AppointmentCard";
 import ShareAppointment from "@/components/Appointments/ShareAppointment";
+import EditAppointmentModal from "@/components/Appointments/EditAppointmentModal";
 import Alert from "@/components/Alerts/Alert";
 import MonthlyCalendar from "@/components/Agenda/MonthlyCalendar";
 import DayDetailSidebar from "@/components/Agenda/DayDetailSidebar";
@@ -31,6 +33,12 @@ function AppointmentsPage() {
   const [shareAppointment, setShareAppointment] = useState(null);
   const [appointmentToDelete, setAppointmentToDelete] = useState(null);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
+  const [appointmentToComplete, setAppointmentToComplete] = useState(null);
+  const [isCompleteAlertOpen, setIsCompleteAlertOpen] = useState(false);
+  const [appointmentToCancel, setAppointmentToCancel] = useState(null);
+  const [isCancelAlertOpen, setIsCancelAlertOpen] = useState(false);
+  const [appointmentToEdit, setAppointmentToEdit] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [createModalDate, setCreateModalDate] = useState(null);
@@ -50,6 +58,7 @@ function AppointmentsPage() {
   const [deleteAppointment] = useDeleteAppointmentMutation();
   const [completeAppointment] = useCompleteAppointmentMutation();
   const [cancelAppointment] = useCancelAppointmentMutation();
+  const [updateAppointment] = useUpdateAppointmentMutation();
 
   const handleDelete = async () => {
     if (appointmentToDelete) {
@@ -63,19 +72,61 @@ function AppointmentsPage() {
     }
   };
 
-  const handleComplete = async (id) => {
-    try {
-      await completeAppointment(id).unwrap();
-    } catch (error) {
-      console.error("Failed to complete appointment:", error);
+  const requestDelete = (appointment) => {
+    setAppointmentToDelete(appointment);
+    setIsDeleteAlertOpen(true);
+  };
+
+  const requestEdit = (appointment) => {
+    setAppointmentToEdit(appointment);
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditSave = async (data) => {
+    if (appointmentToEdit) {
+      try {
+        await updateAppointment({ id: appointmentToEdit._id, ...data }).unwrap();
+        setIsEditModalOpen(false);
+        setAppointmentToEdit(null);
+      } catch (error) {
+        console.error("Failed to update appointment:", error);
+      }
     }
   };
 
-  const handleCancel = async (id) => {
-    try {
-      await cancelAppointment(id).unwrap();
-    } catch (error) {
-      console.error("Failed to cancel appointment:", error);
+  const requestComplete = (id) => {
+    const appt = appointments.find((a) => a._id === id);
+    setAppointmentToComplete(appt);
+    setIsCompleteAlertOpen(true);
+  };
+
+  const requestCancel = (id) => {
+    const appt = appointments.find((a) => a._id === id);
+    setAppointmentToCancel(appt);
+    setIsCancelAlertOpen(true);
+  };
+
+  const handleComplete = async () => {
+    if (appointmentToComplete) {
+      try {
+        await completeAppointment(appointmentToComplete._id).unwrap();
+        setIsCompleteAlertOpen(false);
+        setAppointmentToComplete(null);
+      } catch (error) {
+        console.error("Failed to complete appointment:", error);
+      }
+    }
+  };
+
+  const handleCancel = async () => {
+    if (appointmentToCancel) {
+      try {
+        await cancelAppointment(appointmentToCancel._id).unwrap();
+        setIsCancelAlertOpen(false);
+        setAppointmentToCancel(null);
+      } catch (error) {
+        console.error("Failed to cancel appointment:", error);
+      }
     }
   };
 
@@ -199,8 +250,10 @@ function AppointmentsPage() {
                                 appointment={appointment}
                                 size="md"
                                 showCountdown={true}
-                                onComplete={handleComplete}
-                                onCancel={handleCancel}
+                                onComplete={requestComplete}
+                                onCancel={requestCancel}
+                                onEdit={requestEdit}
+                                onDelete={requestDelete}
                                 onShare={setShareAppointment}
                               />
                             ))}
@@ -281,14 +334,45 @@ function AppointmentsPage() {
         onClose={() => setShareAppointment(null)}
       />
 
+      <EditAppointmentModal
+        appointment={appointmentToEdit}
+        isOpen={isEditModalOpen}
+        onClose={() => { setIsEditModalOpen(false); setAppointmentToEdit(null); }}
+        onSave={handleEditSave}
+      />
+
+      <Alert
+        type="success"
+        title={t("Complete Appointment?")}
+        message={t("Are you sure you want to mark this appointment as completed?")}
+        titleCancelBtn={t("Cancel")}
+        titleSubmitBtn={t("Complete")}
+        isOpen={isCompleteAlertOpen}
+        onClose={() => { setIsCompleteAlertOpen(false); setAppointmentToComplete(null); }}
+        onSubmit={handleComplete}
+        isBtns={1}
+      />
+
       <Alert
         type="warning"
+        title={t("Cancel Appointment?")}
+        message={t("Are you sure you want to cancel this appointment?")}
+        titleCancelBtn={t("No")}
+        titleSubmitBtn={t("Yes, Cancel")}
+        isOpen={isCancelAlertOpen}
+        onClose={() => { setIsCancelAlertOpen(false); setAppointmentToCancel(null); }}
+        onSubmit={handleCancel}
+        isBtns={1}
+      />
+
+      <Alert
+        type="delete"
         title={t("Delete Appointment?")}
         message={t("Are you sure you want to delete this appointment?")}
         titleCancelBtn={t("Cancel")}
         titleSubmitBtn={t("Delete")}
         isOpen={isDeleteAlertOpen}
-        onClose={() => setIsDeleteAlertOpen(false)}
+        onClose={() => { setIsDeleteAlertOpen(false); setAppointmentToDelete(null); }}
         onSubmit={handleDelete}
         isBtns={1}
       />

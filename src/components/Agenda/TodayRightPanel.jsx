@@ -10,13 +10,17 @@ import {
   useCreateDailyTaskMutation,
   useCompleteAppointmentMutation,
   useDeleteAppointmentMutation,
+  useUpdateDailyTaskMutation,
 } from "@/redux/appointments/appointmentsApi";
+import Alert from "@/components/Alerts/Alert";
+import EditDailyTaskModal from "@/components/Agenda/EditDailyTaskModal";
 import {
   RiStarFill,
   RiCheckboxCircleLine,
   RiCheckLine,
   RiAddLine,
   RiDeleteBinLine,
+  RiEditLine,
   RiStickyNoteLine,
   RiAlertLine,
   RiBellLine,
@@ -42,7 +46,7 @@ const REMINDER_LABELS = {
 
 /* ── sub-components ── */
 
-function PriorityItem({ task, onComplete, onDelete }) {
+function PriorityItem({ task, onComplete, onDelete, onEdit }) {
   const { t } = useTranslation();
   const cfg = PRIORITY_COLORS[task.priority] || PRIORITY_COLORS.medium;
   const done = task.status === "completed";
@@ -58,6 +62,9 @@ function PriorityItem({ task, onComplete, onDelete }) {
             <RiCheckLine size={14} />
           </button>
         )}
+        <button onClick={() => onEdit(task)} className="p-0.5 text-primary-500 hover:bg-primary-100 dark:hover:bg-primary-900/30 rounded" title={t("Edit")}>
+          <RiEditLine size={14} />
+        </button>
         <button onClick={() => onDelete(task._id)} className="p-0.5 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 rounded" title={t("Delete")}>
           <RiDeleteBinLine size={14} />
         </button>
@@ -66,7 +73,7 @@ function PriorityItem({ task, onComplete, onDelete }) {
   );
 }
 
-function TaskItem({ task, onComplete, onDelete }) {
+function TaskItem({ task, onComplete, onDelete, onEdit }) {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const done = task.status === "completed";
@@ -116,6 +123,9 @@ function TaskItem({ task, onComplete, onDelete }) {
               <RiArrowDownSLine size={14} className={`transition-transform ${expanded ? "rotate-180" : ""}`} />
             </button>
           )}
+          <button onClick={() => onEdit(task)} className="p-0.5 text-primary-500 hover:bg-primary-100 dark:hover:bg-primary-900/30 rounded" title={t("Edit")}>
+            <RiEditLine size={14} />
+          </button>
           {!done && (
             <button
               onClick={() => onDelete(task._id)}
@@ -228,9 +238,18 @@ function TodayRightPanel({ onOpenCreateModal }) {
   const [createTask]          = useCreateDailyTaskMutation();
   const [completeAppointment] = useCompleteAppointmentMutation();
   const [deleteAppointment]   = useDeleteAppointmentMutation();
+  const [updateDailyTask]     = useUpdateDailyTaskMutation();
 
   const [notesText,  setNotesText]  = useState("");
   const [notesSaved, setNotesSaved] = useState(false);
+
+  const [taskToEdit, setTaskToEdit] = useState(null);
+  const [isEditTaskModalOpen, setIsEditTaskModalOpen] = useState(false);
+
+  const [reminderToComplete, setReminderToComplete] = useState(null);
+  const [isCompleteReminderAlertOpen, setIsCompleteReminderAlertOpen] = useState(false);
+  const [reminderToDelete, setReminderToDelete] = useState(null);
+  const [isDeleteReminderAlertOpen, setIsDeleteReminderAlertOpen] = useState(false);
 
   /* derived */
   const priorityTasks  = todayTasks.filter((t) => t.priority === "urgent" || t.priority === "high").slice(0, 3);
@@ -242,8 +261,50 @@ function TodayRightPanel({ onOpenCreateModal }) {
   /* handlers */
   const handleCompleteTask   = async (id) => { try { await completeTask(id).unwrap(); } catch {} };
   const handleDeleteTask     = async (id) => { try { await deleteTask(id).unwrap();   } catch {} };
-  const handleCompleteReminder = async (id) => { try { await completeAppointment(id).unwrap(); } catch {} };
-  const handleDeleteReminder   = async (id) => { try { await deleteAppointment(id).unwrap();   } catch {} };
+  const requestEditTask = (task) => {
+    setTaskToEdit(task);
+    setIsEditTaskModalOpen(true);
+  };
+  const handleEditTaskSave = async (data) => {
+    if (taskToEdit) {
+      try {
+        await updateDailyTask({ id: taskToEdit._id, ...data }).unwrap();
+        setIsEditTaskModalOpen(false);
+        setTaskToEdit(null);
+      } catch {}
+    }
+  };
+  const requestCompleteReminder = (id) => {
+    const reminder = todayReminders.find((r) => r._id === id);
+    setReminderToComplete(reminder);
+    setIsCompleteReminderAlertOpen(true);
+  };
+
+  const requestDeleteReminder = (id) => {
+    const reminder = todayReminders.find((r) => r._id === id);
+    setReminderToDelete(reminder);
+    setIsDeleteReminderAlertOpen(true);
+  };
+
+  const handleCompleteReminder = async () => {
+    if (reminderToComplete) {
+      try {
+        await completeAppointment(reminderToComplete._id).unwrap();
+        setIsCompleteReminderAlertOpen(false);
+        setReminderToComplete(null);
+      } catch {}
+    }
+  };
+
+  const handleDeleteReminder = async () => {
+    if (reminderToDelete) {
+      try {
+        await deleteAppointment(reminderToDelete._id).unwrap();
+        setIsDeleteReminderAlertOpen(false);
+        setReminderToDelete(null);
+      } catch {}
+    }
+  };
 
   const handleQuickAddPriority = async (title) => {
     try { await createTask({ title, date: today, priority: "high",   category: "other", is_personal: true }).unwrap(); } catch {}
@@ -287,7 +348,7 @@ function TodayRightPanel({ onOpenCreateModal }) {
         ) : (
           <div className="space-y-1">
             {priorityTasks.map((task) => (
-              <PriorityItem key={task._id} task={task} onComplete={handleCompleteTask} onDelete={handleDeleteTask} />
+              <PriorityItem key={task._id} task={task} onComplete={handleCompleteTask} onDelete={handleDeleteTask} onEdit={requestEditTask} />
             ))}
           </div>
         )}
@@ -316,7 +377,7 @@ function TodayRightPanel({ onOpenCreateModal }) {
         ) : (
           <div className="space-y-1">
             {regularTasks.filter((t) => t.status !== "completed").map((task) => (
-              <TaskItem key={task._id} task={task} onComplete={handleCompleteTask} onDelete={handleDeleteTask} />
+              <TaskItem key={task._id} task={task} onComplete={handleCompleteTask} onDelete={handleDeleteTask} onEdit={requestEditTask} />
             ))}
             {regularTasks.filter((t) => t.status === "completed").length > 0 && (
               <div className="mt-2 pt-2 border-t border-gray-100 dark:border-gray-700">
@@ -324,7 +385,7 @@ function TodayRightPanel({ onOpenCreateModal }) {
                   {t("Completed")} ({regularTasks.filter((t) => t.status === "completed").length})
                 </p>
                 {regularTasks.filter((t) => t.status === "completed").map((task) => (
-                  <TaskItem key={task._id} task={task} onComplete={handleCompleteTask} onDelete={handleDeleteTask} />
+                  <TaskItem key={task._id} task={task} onComplete={handleCompleteTask} onDelete={handleDeleteTask} onEdit={requestEditTask} />
                 ))}
               </div>
             )}
@@ -369,8 +430,8 @@ function TodayRightPanel({ onOpenCreateModal }) {
               <ReminderItem
                 key={reminder._id}
                 reminder={reminder}
-                onComplete={handleCompleteReminder}
-                onDelete={handleDeleteReminder}
+                onComplete={requestCompleteReminder}
+                onDelete={requestDeleteReminder}
                 isArabic={isArabic}
               />
             ))}
@@ -401,6 +462,38 @@ function TodayRightPanel({ onOpenCreateModal }) {
         </div>
       </div>
 
+      {/* Edit Task Modal */}
+      <EditDailyTaskModal
+        task={taskToEdit}
+        isOpen={isEditTaskModalOpen}
+        onClose={() => { setIsEditTaskModalOpen(false); setTaskToEdit(null); }}
+        onSave={handleEditTaskSave}
+      />
+
+      {/* Confirmation dialogs */}
+      <Alert
+        type="success"
+        title={t("Complete Reminder?")}
+        message={t("Are you sure you want to mark this reminder as completed?")}
+        titleCancelBtn={t("Cancel")}
+        titleSubmitBtn={t("Complete")}
+        isOpen={isCompleteReminderAlertOpen}
+        onClose={() => { setIsCompleteReminderAlertOpen(false); setReminderToComplete(null); }}
+        onSubmit={handleCompleteReminder}
+        isBtns={1}
+      />
+
+      <Alert
+        type="delete"
+        title={t("Delete Reminder?")}
+        message={t("Are you sure you want to delete this reminder?")}
+        titleCancelBtn={t("Cancel")}
+        titleSubmitBtn={t("Delete")}
+        isOpen={isDeleteReminderAlertOpen}
+        onClose={() => { setIsDeleteReminderAlertOpen(false); setReminderToDelete(null); }}
+        onSubmit={handleDeleteReminder}
+        isBtns={1}
+      />
     </div>
   );
 }

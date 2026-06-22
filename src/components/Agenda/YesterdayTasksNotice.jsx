@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { format, subDays } from "date-fns";
 import {
   useGetDailyTasksQuery,
-  useCreateDailyTaskMutation,
+  useUpdateDailyTaskMutation,
 } from "@/redux/appointments/appointmentsApi";
 import { RiArrowRightLine, RiCloseLine, RiHistoryLine } from "react-icons/ri";
 
@@ -21,7 +21,7 @@ function YesterdayTasksNotice() {
   const today = format(new Date(), "yyyy-MM-dd");
 
   const { data: yesterdayTasks = [] } = useGetDailyTasksQuery({ date: yesterday });
-  const [createDailyTask] = useCreateDailyTaskMutation();
+  const [updateDailyTask] = useUpdateDailyTaskMutation();
 
   const incompleteTasks = yesterdayTasks.filter((t) => t.status !== "completed");
 
@@ -33,15 +33,7 @@ function YesterdayTasksNotice() {
     try {
       await Promise.all(
         incompleteTasks.map((task) =>
-          createDailyTask({
-            title: task.title,
-            description: task.description || "",
-            date: today,
-            priority: task.priority || "medium",
-            category: task.category || "other",
-            is_personal: task.is_personal ?? true,
-            notes: task.notes || "",
-          }).unwrap()
+          updateDailyTask({ id: task._id, date: today }).unwrap()
         )
       );
       setMoved(true);
