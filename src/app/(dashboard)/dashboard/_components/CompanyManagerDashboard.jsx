@@ -4,6 +4,30 @@ import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import dynamic from "next/dynamic";
 
+function AssigneeAvatar({ assignee, idx }) {
+  const [imageFailed, setImageFailed] = useState(false);
+  const initial = assignee.name?.charAt(0)?.toUpperCase() || "?";
+  const colors = ["bg-blue-500", "bg-green-500", "bg-purple-500", "bg-orange-500", "bg-pink-500"];
+  return (
+    <div
+      className={`w-6 h-6 rounded-full border-2 border-white -ml-2 first:ml-0 flex items-center justify-center text-[10px] font-medium text-white ${colors[idx % 5]} flex-shrink-0`}
+      title={assignee.name || ""}
+    >
+      {assignee.image && !imageFailed ? (
+        <img
+          src={assignee.image}
+          loading="lazy"
+          alt={assignee.name || "assignee"}
+          onError={() => setImageFailed(true)}
+          className="w-full h-full rounded-full object-cover"
+        />
+      ) : (
+        initial
+      )}
+    </div>
+  );
+}
+
 // Dynamic imports
 const Table = dynamic(() => import("@/components/Tables/Table"), { ssr: false });
 const ActivityLogs = dynamic(() => import("@/components/ActivityLogs"), { ssr: false });
@@ -130,13 +154,7 @@ const AdminDashboard = () => {
       </div>,
       <div key={`assignees-${index}`} className="flex">
         {project.assignees?.map((assignee, idx) => (
-          <img
-            key={idx}
-            src={assignee.image || "/api/placeholder/32/32"}
-            loading="lazy"
-            alt="assignee"
-            className="w-6 h-6 rounded-full border-2 border-white -ml-2 first:ml-0"
-          />
+          <AssigneeAvatar key={idx} assignee={assignee} idx={idx} />
         ))}
         {(!project.assignees || project.assignees.length === 0) && (
           <span className="text-cell-secondary text-xs italic">{t("No Assignees")}</span>
