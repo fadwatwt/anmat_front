@@ -1,10 +1,40 @@
-
+import { useState, useEffect } from "react";
 import DefaultButton from "@/components/Form/DefaultButton";
 import { useTranslation } from "react-i18next";
 import InlineAlert from "@/components/InlineAlert.jsx";
+import { useGetUserPreferencesQuery, useUpdateUserPreferencesMutation } from "@/redux/api/settingsApi";
+import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 
 function NotificationMethods() {
   const { t } = useTranslation();
+  const { data: preferences, isLoading } = useGetUserPreferencesQuery();
+  const [updatePreferences, { isLoading: isUpdating }] = useUpdateUserPreferencesMutation();
+
+  const [methods, setMethods] = useState({ email: true, push: true });
+  const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
+
+  useEffect(() => {
+    if (preferences?.notification_methods) {
+      setMethods((prev) => ({ ...prev, ...preferences.notification_methods }));
+    }
+  }, [preferences]);
+
+  const handleToggle = (key) => {
+    setMethods((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const handleSave = async () => {
+    try {
+      await updatePreferences({ notification_methods: methods }).unwrap();
+      setApiResponse({ isOpen: true, status: "success", message: t("Notification methods updated successfully") });
+    } catch (error) {
+      setApiResponse({
+        isOpen: true,
+        status: "error",
+        message: error?.data?.message || t("Failed to update notification methods"),
+      });
+    }
+  };
 
   const notificationMethods = [
     {
@@ -18,6 +48,8 @@ function NotificationMethods() {
       description: "Get real-time updates and alerts directly on your device",
     },
   ];
+
+  if (isLoading) return <div className="p-4">{t("Loading...")}</div>;
 
   return (
     <div className="w-full flex flex-col gap-6 items-start overflow-hidden">
@@ -38,9 +70,14 @@ function NotificationMethods() {
           {notificationMethods.map(({ key, label, description }) => (
             <div
               key={key}
-              className="flex items-center gap-3 p-3  rounded-lg w-full overflow-hidden"
+              className="flex items-center gap-3 p-3 rounded-lg w-full overflow-hidden"
             >
-              <input type="checkbox" className="checkbox-custom" />
+              <input
+                type="checkbox"
+                className="checkbox-custom"
+                checked={methods[key]}
+                onChange={() => handleToggle(key)}
+              />
               <div className="text-start overflow-hidden">
                 <p className="text-sm md:text-base font-medium dark:text-gray-200 overflow-hidden text-ellipsis whitespace-nowrap">
                   {t(label)}
@@ -65,10 +102,18 @@ function NotificationMethods() {
         />
         <DefaultButton
           type="button"
+          disabled={isUpdating}
+          onClick={handleSave}
           title={t("Save Changes")}
           className="bg-primary-500 font-medium dark:bg-primary-200 dark:text-black text-white"
         />
       </div>
+      <ApiResponseAlert
+        isOpen={apiResponse.isOpen}
+        status={apiResponse.status}
+        message={apiResponse.message}
+        onClose={() => setApiResponse({ ...apiResponse, isOpen: false })}
+      />
     </div>
   );
 }

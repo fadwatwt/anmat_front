@@ -1,20 +1,45 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Switch from "./Switch.jsx";
 import DefaultButton from "@/components/Form/DefaultButton.jsx";
 import { useTranslation } from "react-i18next";
 import InlineAlert from "@/components/InlineAlert.jsx";
+import { useGetUserPreferencesQuery, useUpdateUserPreferencesMutation } from "@/redux/api/settingsApi";
+import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 
 function NotificationPreferences() {
   const { t } = useTranslation();
+  const { data: preferences, isLoading } = useGetUserPreferencesQuery();
+  const [updatePreferences, { isLoading: isUpdating }] = useUpdateUserPreferencesMutation();
+
   const [notifications, setNotifications] = useState({
     newsUpdates: true,
     remindersEvents: true,
     leaveAttendance: false,
     deadlineNotification: true,
   });
+  const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
+
+  useEffect(() => {
+    if (preferences?.notifications) {
+      setNotifications((prev) => ({ ...prev, ...preferences.notifications }));
+    }
+  }, [preferences]);
 
   const handleToggle = (key) => {
     setNotifications((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const handleApplyChanges = async () => {
+    try {
+      await updatePreferences({ notifications }).unwrap();
+      setApiResponse({ isOpen: true, status: "success", message: t("Notification preferences updated successfully") });
+    } catch (error) {
+      setApiResponse({
+        isOpen: true,
+        status: "error",
+        message: error?.data?.message || t("Failed to update notification preferences"),
+      });
+    }
   };
 
   const notificationOptions = [
@@ -39,6 +64,8 @@ function NotificationPreferences() {
       description: "Receive timely reminders before ",
     },
   ];
+
+  if (isLoading) return <div className="p-4">{t("Loading...")}</div>;
 
   return (
     <div className="w-full flex flex-col gap-6 items-start">
@@ -85,10 +112,18 @@ function NotificationPreferences() {
         />
         <DefaultButton
           type="button"
+          disabled={isUpdating}
+          onClick={handleApplyChanges}
           title={t("Apply Changes")}
           className="bg-primary-500 font-medium dark:bg-primary-200 dark:text-black text-white"
         />
       </div>
+      <ApiResponseAlert
+        isOpen={apiResponse.isOpen}
+        status={apiResponse.status}
+        message={apiResponse.message}
+        onClose={() => setApiResponse({ ...apiResponse, isOpen: false })}
+      />
     </div>
   );
 }

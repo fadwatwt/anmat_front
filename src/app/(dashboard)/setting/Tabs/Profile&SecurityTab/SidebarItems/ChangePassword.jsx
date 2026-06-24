@@ -4,7 +4,11 @@ import DefaultButton from "@/components/Form/DefaultButton.jsx";
 import { RiCheckboxCircleFill, RiCloseCircleFill, RiLock2Line } from "@remixicon/react";
 import PasswordInput from "@/components/Form/PasswordInput.jsx";
 import { useState } from "react";
-import {useTranslation} from "react-i18next";
+import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
+import { useUpdatePasswordMutation, useAdminUpdatePasswordMutation } from "@/redux/auth/authAPI";
+import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
+import * as Yup from "yup";
 
 function ChangePassword() {
     const [passwordStrength, setPasswordStrength] = useState({
@@ -12,7 +16,14 @@ function ChangePassword() {
         uppercase: false,
         number: false,
     });
-    const {t} = useTranslation()
+    const { t } = useTranslation();
+    const user = useSelector((state) => state.auth.user);
+    const isAdmin = user?.type === "Admin";
+    const [updatePassword, { isLoading: isUpdating }] = useUpdatePasswordMutation();
+    const [adminUpdatePassword, { isLoading: isAdminUpdating }] = useAdminUpdatePasswordMutation();
+    const isLoading = isUpdating || isAdminUpdating;
+
+    const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
     const validatePassword = (password) => {
         const strength = {
@@ -23,6 +34,41 @@ function ChangePassword() {
         setPasswordStrength(strength);
     };
 
+    const handleSubmit = async (values, { resetForm }) => {
+        try {
+            const payload = {
+                old_password: values.currentPassword,
+                new_password: values.newPassword,
+                new_password_confirmation: values.confirmPassword,
+            };
+            if (isAdmin) {
+                await adminUpdatePassword(payload).unwrap();
+            } else {
+                await updatePassword(payload).unwrap();
+            }
+            setApiResponse({ isOpen: true, status: "success", message: t("Password updated successfully") });
+            resetForm();
+            setPasswordStrength({ length: false, uppercase: false, number: false });
+        } catch (error) {
+            setApiResponse({
+                isOpen: true,
+                status: "error",
+                message: error?.data?.message || t("Failed to update password"),
+            });
+        }
+    };
+
+    const validationSchema = Yup.object({
+        currentPassword: Yup.string().required(t("Required")),
+        newPassword: Yup.string()
+            .min(8, t("At least 8 characters"))
+            .matches(/[A-Z]/, t("At least 1 uppercase letter"))
+            .matches(/\d/, t("At least 1 number"))
+            .required(t("Required")),
+        confirmPassword: Yup.string()
+            .oneOf([Yup.ref("newPassword")], t("Passwords must match"))
+            .required(t("Required")),
+    });
 
     return (
         <div className="flex flex-col justify-start gap-1 items-center p-3">
@@ -32,8 +78,12 @@ function ChangePassword() {
             </div>
             <WordTheMiddleAndLine />
             <div className="w-full form">
-                <Formik initialValues={{}} onSubmit={() => {}}>
-                    {({ values, handleChange, handleSubmit }) => (
+                <Formik
+                    initialValues={{ currentPassword: "", newPassword: "", confirmPassword: "" }}
+                    validationSchema={validationSchema}
+                    onSubmit={handleSubmit}
+                >
+                    {({ values, handleChange, handleBlur, handleSubmit, errors, touched }) => (
                         <Form className="w-full flex flex-col gap-3" onSubmit={handleSubmit}>
                             <div className="w-full flex flex-col gap-2">
                                 <PasswordInput
@@ -42,7 +92,9 @@ function ChangePassword() {
                                     title="Current Password"
                                     name="currentPassword"
                                     onChange={handleChange}
+                                    onBlur={handleBlur}
                                     value={values.currentPassword}
+                                    error={touched.currentPassword && errors.currentPassword}
                                 />
                                 <PasswordInput
                                     isRequired={true}
@@ -51,9 +103,11 @@ function ChangePassword() {
                                         handleChange(e);
                                         validatePassword(e.target.value);
                                     }}
+                                    onBlur={handleBlur}
                                     title="New Password"
                                     name="newPassword"
                                     value={values.newPassword}
+                                    error={touched.newPassword && errors.newPassword}
                                 />
                                 <PasswordInput
                                     isRequired={true}
@@ -61,7 +115,9 @@ function ChangePassword() {
                                     title="Confirm New Password"
                                     name="confirmPassword"
                                     onChange={handleChange}
+                                    onBlur={handleBlur}
                                     value={values.confirmPassword}
+                                    error={touched.confirmPassword && errors.confirmPassword}
                                 />
                             </div>
 
@@ -79,8 +135,8 @@ function ChangePassword() {
 
                                 <div className="flex items-center gap-1">
                                     {passwordStrength.uppercase ?
-                                        <RiCheckboxCircleFill size="15" className="text-green-600"/> :
-                                        <RiCloseCircleFill size="15" className="text-gray-500"/>
+                                        <RiCheckboxCircleFill size="15" className="text-green-600" /> :
+                                        <RiCloseCircleFill size="15" className="text-gray-500" />
                                     }
                                     <span
                                         className={`text-xs ${passwordStrength.uppercase ? "text-green-600" : "text-gray-500 dark:text-gray-400"}`}>
@@ -90,8 +146,8 @@ function ChangePassword() {
 
                                 <div className="flex items-center gap-1">
                                     {passwordStrength.number ?
-                                        <RiCheckboxCircleFill size="15" className="text-green-600"/> :
-                                        <RiCloseCircleFill size="15" className="text-gray-500"/>
+                                        <RiCheckboxCircleFill size="15" className="text-green-600" /> :
+                                        <RiCloseCircleFill size="15" className="text-gray-500" />
                                     }
                                     <span
                                         className={`text-xs ${passwordStrength.number ? "text-green-600" : "text-gray-500 dark:text-gray-400"}`}>
@@ -101,8 +157,8 @@ function ChangePassword() {
 
                                 <div className="flex items-center gap-1">
                                     {passwordStrength.length ?
-                                        <RiCheckboxCircleFill size="15" className="text-green-600"/> :
-                                        <RiCloseCircleFill size="15" className="text-gray-500"/>
+                                        <RiCheckboxCircleFill size="15" className="text-green-600" /> :
+                                        <RiCloseCircleFill size="15" className="text-gray-500" />
                                     }
                                     <span
                                         className={`text-xs ${passwordStrength.length ? "text-green-600" : "text-gray-500 dark:text-gray-400"}`}>
@@ -114,11 +170,10 @@ function ChangePassword() {
                             <div className="w-full flex flex-col items-start gap-4">
                                 <div className="w-full justify-start flex gap-2">
                                     <DefaultButton type="button" title="Cancel"
-                                                   className="font-medium dark:text-gray-200"/>
-                                    <DefaultButton type="button" onClick={() => {
-                                    }}
-                                                   title="Apply Changes"
-                                                   className="bg-primary-500 font-medium dark:bg-primary-200 dark:text-black text-white"
+                                        className="font-medium dark:text-gray-200" />
+                                    <DefaultButton type="submit" disabled={isLoading}
+                                        title="Apply Changes"
+                                        className="bg-primary-500 font-medium dark:bg-primary-200 dark:text-black text-white"
                                     />
                                 </div>
                             </div>
@@ -126,6 +181,12 @@ function ChangePassword() {
                     )}
                 </Formik>
             </div>
+            <ApiResponseAlert
+                isOpen={apiResponse.isOpen}
+                status={apiResponse.status}
+                message={apiResponse.message}
+                onClose={() => setApiResponse({ ...apiResponse, isOpen: false })}
+            />
         </div>
     );
 }

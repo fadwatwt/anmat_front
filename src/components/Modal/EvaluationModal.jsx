@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Modal from './Modal';
 import { useTranslation } from 'react-i18next';
 import StarRatingInput from '../Form/StarRatingInput';
@@ -6,17 +6,38 @@ import DefaultSelect from '../Form/DefaultSelect';
 import DefaultButton from '../Form/DefaultButton';
 import FileUpload from '../Form/FileUpload';
 import TextAreaWithLabel from '../Form/TextAreaWithLabel';
+import { useGetSubscriberOrganizationQuery } from '@/redux/organizations/organizationsApi';
+
+const DEFAULT_CATEGORIES = [
+    { key: 'quality', title: 'Quality of Deliverables' },
+    { key: 'speed', title: 'Adherence to Deadlines' },
+    { key: 'communication', title: 'Team Collaboration' },
+];
+
+const toKey = (str) => str.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
 
 const EvaluationModal = ({ isOpen, onClose, onSubmit, type = 'task', hasStages = false, isSubmitting = false }) => {
     const { t } = useTranslation();
+    const { data: orgData } = useGetSubscriberOrganizationQuery(undefined, { skip: !isOpen });
+
+    const categories = useMemo(() => {
+        const types = orgData?.rating_types;
+        if (Array.isArray(types) && types.length > 0) {
+            return types.map((title) => ({ key: toKey(title), title }));
+        }
+        return DEFAULT_CATEGORIES;
+    }, [orgData]);
+
     const [evaluationMethod, setEvaluationMethod] = useState('MANUAL');
-    const [ratings, setRatings] = useState({
-        quality: 0,
-        speed: 0,
-        communication: 0,
-    });
+    const [ratings, setRatings] = useState({});
     const [comment, setComment] = useState("");
     const [attachment, setAttachment] = useState(null);
+
+    useEffect(() => {
+        const initial = {};
+        categories.forEach((cat) => { initial[cat.key] = 0; });
+        setRatings(initial);
+    }, [categories]);
 
     const handleRatingChange = (key, value) => {
         setRatings(prev => ({ ...prev, [key]: value }));
@@ -38,7 +59,8 @@ const EvaluationModal = ({ isOpen, onClose, onSubmit, type = 'task', hasStages =
             return;
         }
 
-        const avgRating = (ratings.quality + ratings.speed + ratings.communication) / 3;
+        const values = Object.values(ratings);
+        const avgRating = values.length > 0 ? values.reduce((a, b) => a + b, 0) / values.length : 0;
         
         if (type === 'task') {
             onSubmit({ 
@@ -71,16 +93,17 @@ const EvaluationModal = ({ isOpen, onClose, onSubmit, type = 'task', hasStages =
         evaluationOptions.push({ id: 'AUTO', value: t("Auto (Average of employee performance)") });
     }
 
+    const allZero = Object.values(ratings).every(v => v === 0);
+    const isManualValid = !allZero;
+
     const handleMethodChange = (val) => {
         if (val && val.length > 0) {
             const newMethod = val[0].id;
             setEvaluationMethod(newMethod);
             if (newMethod !== 'MANUAL') {
-                setRatings({
-                    quality: 0,
-                    speed: 0,
-                    communication: 0,
-                });
+                const reset = {};
+                categories.forEach((cat) => { reset[cat.key] = 0; });
+                setRatings(reset);
             }
         } else {
             setEvaluationMethod('MANUAL');
@@ -95,7 +118,7 @@ const EvaluationModal = ({ isOpen, onClose, onSubmit, type = 'task', hasStages =
             isBtns={true}
             btnApplyTitle={t("Submit Evaluation")}
             onClick={handleSubmit}
-            disabled={isSubmitting || (evaluationMethod === 'MANUAL' && (ratings.quality === 0 || ratings.speed === 0 || ratings.communication === 0))}
+            disabled={isSubmitting || (evaluationMethod === 'MANUAL' && !isManualValid)}
             className="lg:w-[500px] md:w-8/12 sm:w-10/12 w-11/12 p-6"
         >
             <div className="flex flex-col gap-6 py-2">
@@ -114,21 +137,14 @@ const EvaluationModal = ({ isOpen, onClose, onSubmit, type = 'task', hasStages =
 
                 {evaluationMethod === 'MANUAL' && (
                     <div className="space-y-6 bg-gray-50/50 dark:bg-white/5 p-4 rounded-xl border border-status-border">
-                        <StarRatingInput 
-                            title={t("Quality of Deliverables")} 
-                            value={ratings.quality} 
-                            onChange={(val) => handleRatingChange('quality', val)} 
-                        />
-                        <StarRatingInput 
-                            title={t("Adherence to Deadlines")} 
-                            value={ratings.speed} 
-                            onChange={(val) => handleRatingChange('speed', val)} 
-                        />
-                        <StarRatingInput 
-                            title={t("Team Collaboration")} 
-                            value={ratings.communication} 
-                            onChange={(val) => handleRatingChange('communication', val)} 
-                        />
+                        {categories.map((cat) => (
+                            <StarRatingInput 
+                                key={cat.key}
+                                title={t(cat.title)} 
+                                value={ratings[cat.key] || 0} 
+                                onChange={(val) => handleRatingChange(cat.key, val)} 
+                            />
+                        ))}
                     </div>
                 )}
                 

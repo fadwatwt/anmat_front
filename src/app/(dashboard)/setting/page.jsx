@@ -8,7 +8,6 @@ import ConversationsTab from "./Tabs/Conversations.tab.jsx";
 import TasksTab from "./Tabs/TasksTab/Tasks.tab.jsx";
 import ProfileSecurityTab from "./Tabs/Profile&SecurityTab/ProfileSecurity.tab.jsx";
 import NotificationsTab from "./Tabs/NotificationsTab/NotificationsTab.jsx";
-import AddPermissionTab from "./Tabs/AddPermissionTab/AddPermissionTab.jsx";
 import AiSettingsTab from "./Tabs/AiSettings.tab.jsx";
 import { RiSettings3Line } from "@remixicon/react";
 import { useSelector } from "react-redux";
@@ -42,10 +41,7 @@ function SettingPage() {
       title: "Privacy & Security",
       content: <ProfileSecurityTab />,
     },
-    {
-      title: "Add Permission",
-      content: <AddPermissionTab />,
-    },
+
   ];
 
   if (user?.type === "Admin") {

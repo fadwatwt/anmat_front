@@ -1,21 +1,35 @@
 import Modal from "@/components/Modal/Modal.jsx";
 import PropTypes from "prop-types";
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import FileUpload from "@/components/Form/FileUpload.jsx";
 import { FaStar } from "react-icons/fa";
 import StateOfTask from "@/app/(dashboard)/projects/[slug]/_components/StateOfTask.jsx";
 import { useTranslation } from "react-i18next";
+import { useGetSubscriberOrganizationQuery } from "@/redux/organizations/organizationsApi";
+
+const DEFAULT_CATEGORIES = ["Time Evaluation", "Content Quality", "Video Quality"];
+
+const toKey = (str) => str.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
 
 function ProjectRatingModal({ isOpen, onClose, project, onSubmit }) {
-  const [ratings, setRatings] = useState({
-    time: 0,
-    content: 0,
-    video: 0,
-  });
+  const { data: orgData } = useGetSubscriberOrganizationQuery(undefined, { skip: !isOpen });
+  const { t } = useTranslation();
 
+  const categories = useMemo(() => {
+    const types = orgData?.rating_types;
+    if (Array.isArray(types) && types.length > 0) return types;
+    return DEFAULT_CATEGORIES;
+  }, [orgData]);
+
+  const [ratings, setRatings] = useState({});
   const [comments, setComments] = useState("");
   const [attachment, setAttachment] = useState(null);
-  const { t } = useTranslation();
+
+  useEffect(() => {
+    const initial = {};
+    categories.forEach((cat) => { initial[toKey(cat)] = 0; });
+    setRatings(initial);
+  }, [categories]);
 
   const handleRating = (category, rating) => {
     setRatings((prev) => ({ ...prev, [category]: rating }));
@@ -56,33 +70,31 @@ function ProjectRatingModal({ isOpen, onClose, project, onSubmit }) {
 
         {/* Ratings Section */}
         <div className="flex flex-col w-full items-start gap-4">
-          {["Time Evaluation", "Content Quality", "Video Quality"].map(
-            (category, index) => {
-              const key = category.toLowerCase().replace(" ", "");
-              return (
-                <div
-                  key={index}
-                  className="w-full flex flex-col items-start gap-2"
-                >
-                  <p className="text-sm dark:text-gray-200">{t(category)}:</p>
-                  <div className="flex justify-around w-full">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <FaStar
-                        key={star}
-                        size={25}
-                        className={`cursor-pointer ${
-                          ratings[key] >= star
-                            ? "text-yellow-500"
-                            : "text-gray-300"
-                        }`}
-                        onClick={() => handleRating(key, star)}
-                      />
-                    ))}
-                  </div>
+          {categories.map((category, index) => {
+            const key = toKey(category);
+            return (
+              <div
+                key={index}
+                className="w-full flex flex-col items-start gap-2"
+              >
+                <p className="text-sm dark:text-gray-200">{t(category)}:</p>
+                <div className="flex justify-around w-full">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <FaStar
+                      key={star}
+                      size={25}
+                      className={`cursor-pointer ${
+                        ratings[key] >= star
+                          ? "text-yellow-500"
+                          : "text-gray-300"
+                      }`}
+                      onClick={() => handleRating(key, star)}
+                    />
+                  ))}
                 </div>
-              );
-            }
-          )}
+              </div>
+            );
+          })}
         </div>
 
         {/* File Upload Section */}

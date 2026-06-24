@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState, startTransition } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 
 // A thin top-of-screen progress bar shown during client-side route changes,
@@ -33,8 +33,10 @@ function NavigationProgressInner() {
         clearTimers();
         activeRef.current = true;
         startedAtRef.current = Date.now();
-        setVisible(true);
-        setProgress(8);
+        startTransition(() => {
+            setVisible(true);
+            setProgress(8);
+        });
         const steps = [
             [80, 30],
             [200, 55],
