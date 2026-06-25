@@ -81,7 +81,7 @@ function CreateEmployeeModal({ isOpen, onClose }) {
             setApiResponse({
                 isOpen: true,
                 status: "error",
-                message: error?.data?.message || t("Failed to create employee")
+                message: t(error?.data?.message || "Failed to create employee")
             });
         }
     };

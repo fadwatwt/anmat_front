@@ -82,10 +82,10 @@ const EmployeeRegistration = () => {
                 setAlertConfig({
                     isOpen: true,
                     status: "success",
-                    message: response?.message || t("Account registered successfully!")
+                    message: t(response?.message || "Account registered successfully!")
                 });
             } catch (err) {
-                setError(err.data?.message || err.message || t("Registration failed"));
+                setError(t(err.data?.message || err.message || "Registration failed"));
             }
         },
     });

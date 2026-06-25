@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { isValidElement, useState } from "react";
+import { isValidElement, useState, useRef } from "react";
 import { createPortal } from "react-dom";
 import {
     MdOutlineKeyboardArrowLeft,
@@ -12,6 +12,11 @@ import ActionsBtns from "../ActionsBtns.jsx";
 import { useTranslation } from "react-i18next";
 import SearchInput from "../Form/SearchInput.jsx";
 import { TfiImport } from "react-icons/tfi";
+import {
+    MdDescription,
+    MdPictureAsPdf,
+} from "react-icons/md";
+import { FaFileExcel } from "react-icons/fa";
 import SelectWithoutLabel from "../Form/SelectWithoutLabel.jsx";
 import useDropdown from "@/Hooks/useDropdown.js";
 import {
@@ -20,6 +25,7 @@ import {
 } from "@/functions/FactoryData.jsx";
 import DateInput from "@/components/Form/DateInput.jsx";
 import { usePermission } from "@/Hooks/usePermission.js";
+import { downloadExport } from "@/services/exportService.js";
 
 // Capability required to see/use the data export button anywhere in the app.
 export const EXPORT_PERMISSION = "reports.export";
@@ -76,6 +82,9 @@ function Table({
     const [dropdownPosition, setDropdownPosition] = useState({});
     const [searchQuery, setSearchQuery] = useState("");
     const [internalStatus, setInternalStatus] = useState("");
+    const [exportMenuOpen, setExportMenuOpen] = useState(false);
+    const [exportMenuPosition, setExportMenuPosition] = useState({});
+    const exportBtnRef = useRef(null);
 
     // Recursively pull plain text out of a cell which may be a string,
     // number, array, or a React element (badge, button, link, etc.).
@@ -252,6 +261,47 @@ function Table({
         return slug ? `${slug}-table` : "table";
     };
 
+    const getRowsToExport = () =>
+        selectedRows.length > 0
+            ? selectedRows
+                .slice()
+                .sort((a, b) => a - b)
+                .map((index) => rows[index])
+                .filter(Boolean)
+            : filteredRows;
+
+    const getHeaderLabels = () => {
+        const columnCount = getRowsToExport().reduce(
+            (max, row) => Math.max(max, (row || []).length),
+            0
+        );
+        return (headers || [])
+            .filter(Boolean)
+            .map((header) =>
+                typeof header.label === "string" ? t(header.label) : extractText(header.label)
+            )
+            .filter((label) => label && label.trim())
+            .slice(0, columnCount);
+    };
+
+    const handleServerExport = async (format) => {
+        setExportMenuOpen(false);
+        const rowsToExport = getRowsToExport();
+        const headerLabels = getHeaderLabels();
+        const plainRows = rowsToExport.map((row) =>
+            (row || []).map((cell) => extractText(cell).trim().replace(/\s+/g, " "))
+        );
+        const token = typeof window !== "undefined" ? localStorage.getItem("token") : "";
+        try {
+            await downloadExport(
+                { headers: headerLabels, rows: plainRows, format, fileName: resolveFileName() },
+                token
+            );
+        } catch (err) {
+            console.error("Export failed:", err);
+        }
+    };
+
     const handleExport = () => {
         // Export the selected rows when any are checked; otherwise export the
         // currently filtered set (search / status applied), falling back to all.
@@ -405,14 +455,73 @@ function Table({
                             />
                         )}
                         {showExport && canExport && (
-                            <button
-                                type="button"
-                                onClick={handleExport}
-                                className="flex dark:text-gray-400 text-sm items-baseline p-2 gap-2 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                            >
-                                <TfiImport size={15} />
-                                {t("Export")}
-                            </button>
+                            <div className="relative inline-block" ref={exportBtnRef}>
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        const rect = e.currentTarget.getBoundingClientRect();
+                                        const spaceBelow = window.innerHeight - rect.bottom;
+                                        setExportMenuOpen((v) => !v);
+                                        setExportMenuPosition({
+                                            top: spaceBelow < 200 ? rect.top + window.scrollY : rect.bottom + window.scrollY,
+                                            isUpwards: spaceBelow < 200,
+                                            left: rect.left + window.scrollX,
+                                            right: rect.right + window.scrollX,
+                                        });
+                                    }}
+                                    className="flex dark:text-gray-400 text-sm items-baseline p-2 gap-2 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                                >
+                                    <TfiImport size={15} />
+                                    {t("Export")}
+                                </button>
+                                {exportMenuOpen && createPortal(
+                                    <>
+                                        <div
+                                            className="fixed inset-0 z-40"
+                                            onClick={() => setExportMenuOpen(false)}
+                                        />
+                                        <div
+                                            className="bg-surface border border-status-border rounded-lg shadow-lg z-50 py-1 min-w-[160px]"
+                                            style={{
+                                                position: "absolute",
+                                                top: exportMenuPosition.top,
+                                                left: i18n?.language === "ar" ? exportMenuPosition.left : exportMenuPosition.right,
+                                                transform: `${i18n?.language === "ar" ? "" : "translateX(-100%)"} ${exportMenuPosition.isUpwards ? "translateY(-100%)" : ""}`.trim(),
+                                            }}
+                                        >
+                                            <button
+                                                onClick={() => { handleExport(); setExportMenuOpen(false); }}
+                                                className="flex items-center gap-3 w-full px-3 py-2 text-sm text-cell-primary hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                                            >
+                                                <TfiImport size={14} />
+                                                {t("CSV")}
+                                            </button>
+                                            <button
+                                                onClick={() => handleServerExport("xlsx")}
+                                                className="flex items-center gap-3 w-full px-3 py-2 text-sm text-cell-primary hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                                            >
+                                                <FaFileExcel size={14} className="text-green-600" />
+                                                {t("Excel")}
+                                            </button>
+                                            <button
+                                                onClick={() => handleServerExport("pdf")}
+                                                className="flex items-center gap-3 w-full px-3 py-2 text-sm text-cell-primary hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                                            >
+                                                <MdPictureAsPdf size={14} className="text-red-500" />
+                                                {t("PDF")}
+                                            </button>
+                                            <button
+                                                onClick={() => handleServerExport("docx")}
+                                                className="flex items-center gap-3 w-full px-3 py-2 text-sm text-cell-primary hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                                            >
+                                                <MdDescription size={14} className="text-blue-600" />
+                                                {t("Word")}
+                                            </button>
+                                        </div>
+                                    </>,
+                                    document.body
+                                )}
+                            </div>
                         )}
                         {toolbarCustomContent}
                     </div>
