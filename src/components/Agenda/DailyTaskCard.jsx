@@ -19,6 +19,7 @@ import {
   RiCalendarLine,
   RiCloseLine,
   RiSaveLine,
+  RiArrowDownSLine,
 } from "react-icons/ri";
 
 const PRIORITY_CONFIG = {
@@ -45,6 +46,7 @@ function DailyTaskCard({ task, size = "md", onUpdate }) {
   const isCompleted = task.status === "completed";
 
   const [showNotes, setShowNotes] = useState(false);
+  const [showNotesView, setShowNotesView] = useState(false);
   const [noteText,  setNoteText]  = useState(task.notes || "");
   const [editing,   setEditing]   = useState(false);
   const [editData,  setEditData]  = useState({
@@ -229,16 +231,20 @@ function DailyTaskCard({ task, size = "md", onUpdate }) {
             )}
           </div>
 
-          {!isSmall && task.notes && !showNotes && (
-            <div className="mt-2 p-2 bg-gray-50 dark:bg-gray-700/50 rounded text-xs text-gray-600 dark:text-gray-400">
-              {task.notes}
-            </div>
-          )}
         </div>
 
         {/* ── Action buttons — always visible on hover, regardless of size ── */}
         {!isCompleted && (
           <div className={`flex items-center gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity`}>
+            {task.notes && (
+              <button
+                onClick={() => setShowNotesView((v) => !v)}
+                className="p-1.5 text-gray-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
+                title={showNotesView ? t("Hide details") : t("View details")}
+              >
+                <RiArrowDownSLine size={isSmall ? 14 : 16} className={`transition-transform ${showNotesView ? "rotate-180" : ""}`} />
+              </button>
+            )}
             <button
               onClick={() => setEditing(true)}
               className="p-1.5 text-gray-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
@@ -247,7 +253,7 @@ function DailyTaskCard({ task, size = "md", onUpdate }) {
               <RiEditLine size={isSmall ? 14 : 16} />
             </button>
             <button
-              onClick={() => { setShowNotes(!showNotes); setEditing(false); }}
+              onClick={() => { setShowNotes(!showNotes); setEditing(false); setShowNotesView(false); }}
               className="p-1.5 text-gray-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
               title={t("Add Note")}
             >
@@ -263,6 +269,18 @@ function DailyTaskCard({ task, size = "md", onUpdate }) {
           </div>
         )}
       </div>
+
+      {/* Expandable details view */}
+      {showNotesView && (task.description || task.notes) && (
+        <div className="mt-2 p-2 space-y-1 bg-gray-50 dark:bg-gray-700/50 rounded text-xs">
+          {task.description && (
+            <p className="text-gray-600 dark:text-gray-400">{task.description}</p>
+          )}
+          {task.notes && (
+            <p className="text-gray-500 dark:text-gray-500">{task.notes}</p>
+          )}
+        </div>
+      )}
 
       {/* Notes panel */}
       {showNotes && (

@@ -127,7 +127,7 @@ function SingleEmployeeProfile() {
     };
 
     const formatStorage = (bytes) => {
-        if (!bytes) return "0 MB";
+        if (bytes === null || bytes === undefined) return "0 MB";
         return (bytes / (1024 * 1024)).toFixed(2) + " MB";
     };
 
@@ -446,7 +446,7 @@ function SingleEmployeeProfile() {
                                     <div className="flex flex-col">
                                         <span className={"text-cell-secondary text-xs"}>{t("Storage")}</span>
                                         <p className={"text-cell-primary text-sm font-semibold"}>
-                                            {formatStorage(employee?.used_storage)} / {employee?.storage_quota ? formatStorage(employee.storage_quota) : t("Unlimited")}
+                                            {formatStorage(employee?.used_storage)} / {employee?.storage_quota !== null && employee?.storage_quota !== undefined ? formatStorage(employee.storage_quota) : t("Unlimited")}
                                         </p>
                                     </div>
                                 </div>

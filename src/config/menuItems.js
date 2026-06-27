@@ -189,7 +189,7 @@ export const dashboardSideMenuItems = [
         permission_any_of: ['tasks.track_all', 'tasks.track_department'],
     },
     {
-        allowed_to: ['Subscriber', 'Employee'],
+        allowed_to: ['Subscriber'],
         title: 'Agenda',
         path: '/appointments',
         icon: <CalendarTick />,
@@ -219,6 +219,12 @@ export const dashboardSideMenuItems = [
         title: 'Short Leaves',
         path: '/leaves',
         icon: <Stickynote size={20} />
+    },
+    {
+        allowed_to: ['Employee'],
+        title: 'My Agenda',
+        path: '/appointments',
+        icon: <CalendarTick />,
     },
     {
         allowed_to: ['Employee'],

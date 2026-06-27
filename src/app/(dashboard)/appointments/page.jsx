@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { RiBellLine } from "react-icons/ri";
 import {
   useGetAppointmentsQuery,
   useGetDailyTasksQuery,
@@ -14,6 +15,8 @@ import Page from "@/components/Page.jsx";
 import AppointmentCard from "@/components/Appointments/AppointmentCard";
 import ShareAppointment from "@/components/Appointments/ShareAppointment";
 import EditAppointmentModal from "@/components/Appointments/EditAppointmentModal";
+import EditReminderModal from "@/components/Agenda/EditReminderModal";
+import ReminderCard from "@/components/Agenda/ReminderCard";
 import Alert from "@/components/Alerts/Alert";
 import MonthlyCalendar from "@/components/Agenda/MonthlyCalendar";
 import DayDetailSidebar from "@/components/Agenda/DayDetailSidebar";
@@ -39,6 +42,13 @@ function AppointmentsPage() {
   const [isCancelAlertOpen, setIsCancelAlertOpen] = useState(false);
   const [appointmentToEdit, setAppointmentToEdit] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const [reminderToEdit, setReminderToEdit] = useState(null);
+  const [isEditReminderModalOpen, setIsEditReminderModalOpen] = useState(false);
+  const [reminderToComplete, setReminderToComplete] = useState(null);
+  const [isCompleteReminderAlertOpen, setIsCompleteReminderAlertOpen] = useState(false);
+  const [reminderToDelete, setReminderToDelete] = useState(null);
+  const [isDeleteReminderAlertOpen, setIsDeleteReminderAlertOpen] = useState(false);
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [createModalDate, setCreateModalDate] = useState(null);
@@ -78,8 +88,59 @@ function AppointmentsPage() {
   };
 
   const requestEdit = (appointment) => {
+    if (appointment.category === "reminder") {
+      setReminderToEdit(appointment);
+      setIsEditReminderModalOpen(true);
+      return;
+    }
     setAppointmentToEdit(appointment);
     setIsEditModalOpen(true);
+  };
+
+  const handleEditReminderSave = async ({ _id, title, date, start_time, reminder_types, notes }) => {
+    try {
+      await updateAppointment({ id: _id, title, date, start_time, reminder_types, notes }).unwrap();
+      setIsEditReminderModalOpen(false);
+      setReminderToEdit(null);
+    } catch (error) {
+      console.error("Failed to update reminder:", error);
+    }
+  };
+
+  const requestCompleteReminder = (id) => {
+    const reminder = appointments.find((a) => a._id === id);
+    setReminderToComplete(reminder);
+    setIsCompleteReminderAlertOpen(true);
+  };
+
+  const handleCompleteReminder = async () => {
+    if (reminderToComplete) {
+      try {
+        await completeAppointment(reminderToComplete._id).unwrap();
+        setIsCompleteReminderAlertOpen(false);
+        setReminderToComplete(null);
+      } catch (error) {
+        console.error("Failed to complete reminder:", error);
+      }
+    }
+  };
+
+  const requestDeleteReminder = (id) => {
+    const reminder = appointments.find((a) => a._id === id);
+    setReminderToDelete(reminder);
+    setIsDeleteReminderAlertOpen(true);
+  };
+
+  const handleDeleteReminder = async () => {
+    if (reminderToDelete) {
+      try {
+        await deleteAppointment(reminderToDelete._id).unwrap();
+        setIsDeleteReminderAlertOpen(false);
+        setReminderToDelete(null);
+      } catch (error) {
+        console.error("Failed to delete reminder:", error);
+      }
+    }
   };
 
   const handleEditSave = async (data) => {
@@ -136,8 +197,10 @@ function AppointmentsPage() {
     setIsCreateModalOpen(true);
   };
 
-  const upcomingAppointments = appointments.filter((a) => a.status === "upcoming");
-  const completedAppointments = appointments.filter((a) => a.status === "completed");
+  const upcomingAppointments = appointments.filter((a) => a.status === "upcoming" && a.category !== "reminder");
+  const completedAppointments = appointments.filter((a) => a.status === "completed" && a.category !== "reminder");
+  const upcomingReminders = appointments.filter((a) => a.status === "upcoming" && a.category === "reminder");
+  const completedReminders = appointments.filter((a) => a.status === "completed" && a.category === "reminder");
   const pendingTasks = dailyTasks.filter((t) => t.status !== "completed");
   const completedTasks = dailyTasks.filter((t) => t.status === "completed");
 
@@ -281,6 +344,63 @@ function AppointmentsPage() {
                     </div>
                   )}
                 </div>
+
+                {/* Reminders section */}
+                <div className="bg-white dark:bg-gray-800 rounded-lg border border-amber-200 dark:border-amber-900/40 p-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                      <RiBellLine size={16} className="text-amber-500" />
+                      {t("Reminders")}
+                    </h3>
+                  </div>
+
+                  {isLoading ? (
+                    <div className="text-center py-6">{t("Loading...")}</div>
+                  ) : upcomingReminders.length === 0 && completedReminders.length === 0 ? (
+                    <div className="text-center py-6 text-gray-500 dark:text-gray-400">
+                      {t("No reminders found")}
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {upcomingReminders.length > 0 && (
+                        <div>
+                          <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+                            {t("Upcoming")} ({upcomingReminders.length})
+                          </h4>
+                          <div className="space-y-2">
+                            {upcomingReminders.map((reminder) => (
+                              <ReminderCard
+                                key={reminder._id}
+                                reminder={reminder}
+                                onComplete={requestCompleteReminder}
+                                onDelete={requestDeleteReminder}
+                                onEdit={requestEdit}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {completedReminders.length > 0 && (
+                        <div>
+                          <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+                            {t("Completed")} ({completedReminders.length})
+                          </h4>
+                          <div className="space-y-2">
+                            {completedReminders.map((reminder) => (
+                              <ReminderCard
+                                key={reminder._id}
+                                reminder={reminder}
+                                onComplete={requestCompleteReminder}
+                                onDelete={requestDeleteReminder}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="space-y-6">
@@ -339,6 +459,37 @@ function AppointmentsPage() {
         isOpen={isEditModalOpen}
         onClose={() => { setIsEditModalOpen(false); setAppointmentToEdit(null); }}
         onSave={handleEditSave}
+      />
+
+      <EditReminderModal
+        isOpen={isEditReminderModalOpen}
+        reminder={reminderToEdit}
+        onClose={() => { setIsEditReminderModalOpen(false); setReminderToEdit(null); }}
+        onSave={handleEditReminderSave}
+      />
+
+      <Alert
+        type="success"
+        title={t("Complete Reminder?")}
+        message={t("Are you sure you want to mark this reminder as completed?")}
+        titleCancelBtn={t("Cancel")}
+        titleSubmitBtn={t("Complete")}
+        isOpen={isCompleteReminderAlertOpen}
+        onClose={() => { setIsCompleteReminderAlertOpen(false); setReminderToComplete(null); }}
+        onSubmit={handleCompleteReminder}
+        isBtns={1}
+      />
+
+      <Alert
+        type="delete"
+        title={t("Delete Reminder?")}
+        message={t("Are you sure you want to delete this reminder?")}
+        titleCancelBtn={t("Cancel")}
+        titleSubmitBtn={t("Delete")}
+        isOpen={isDeleteReminderAlertOpen}
+        onClose={() => { setIsDeleteReminderAlertOpen(false); setReminderToDelete(null); }}
+        onSubmit={handleDeleteReminder}
+        isBtns={1}
       />
 
       <Alert

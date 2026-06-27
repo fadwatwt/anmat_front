@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
@@ -20,6 +21,7 @@ import {
   RiCloseLine,
   RiCheckboxCircleLine,
   RiTaskLine,
+  RiArrowDownSLine,
 } from "react-icons/ri";
 
 const TimeBadge = ({ time }) => {
@@ -48,6 +50,69 @@ const PriorityBadge = ({ priority }) => {
     <span className={`text-xs px-1.5 py-0.5 rounded ${c.bg} ${c.text}`}>{c.label}</span>
   );
 };
+
+function DailyTaskRow({ task, onComplete, t }) {
+  const [expanded, setExpanded] = useState(false);
+  const hasDetails = task.description || task.notes;
+  return (
+    <div
+      className={`rounded-lg border border-gray-100 dark:border-gray-700 transition-colors ${
+        task.status === "completed"
+          ? "bg-green-50 dark:bg-green-900/10 opacity-60"
+          : "hover:bg-gray-50 dark:hover:bg-gray-700/50"
+      }`}
+    >
+      <div className="flex items-start justify-between gap-2 p-3">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <p
+              className={`font-medium text-sm ${
+                task.status === "completed"
+                  ? "line-through text-gray-500 dark:text-gray-400"
+                  : "text-gray-900 dark:text-white"
+              }`}
+            >
+              {task.title}
+            </p>
+            <PriorityBadge priority={task.priority} />
+          </div>
+        </div>
+        <div className="flex items-center gap-1 flex-shrink-0">
+          {hasDetails && (
+            <button
+              onClick={() => setExpanded((v) => !v)}
+              className="p-1 text-gray-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded"
+              title={expanded ? t("Hide details") : t("View details")}
+            >
+              <RiArrowDownSLine size={14} className={`transition-transform ${expanded ? "rotate-180" : ""}`} />
+            </button>
+          )}
+          {task.status !== "completed" && (
+            <button
+              onClick={() => onComplete(task._id)}
+              className="p-1 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded"
+              title={t("Complete")}
+            >
+              <RiCheckboxCircleLine size={14} />
+            </button>
+          )}
+        </div>
+      </div>
+      {expanded && hasDetails && (
+        <div className="px-3 pb-3 pt-1 space-y-1 border-t border-gray-100 dark:border-gray-700">
+          {task.description && (
+            <p className="text-xs text-gray-600 dark:text-gray-400">{task.description}</p>
+          )}
+          {task.notes && (
+            <p className="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 rounded px-2 py-1">
+              {task.notes}
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function DayDetailSidebar({ selectedDate, onAddAppointment, onAddTask }) {
   const { t, i18n } = useTranslation();
@@ -211,45 +276,7 @@ function DayDetailSidebar({ selectedDate, onAddAppointment, onAddTask }) {
               </h4>
               <div className="space-y-2">
                 {dailyTasks.map((task) => (
-                  <div
-                    key={task._id}
-                    className={`p-3 rounded-lg border border-gray-100 dark:border-gray-700 transition-colors ${
-                      task.status === "completed"
-                        ? "bg-green-50 dark:bg-green-900/10 opacity-60"
-                        : "hover:bg-gray-50 dark:hover:bg-gray-700/50"
-                    }`}
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <p
-                            className={`font-medium text-sm ${
-                              task.status === "completed"
-                                ? "line-through text-gray-500 dark:text-gray-400"
-                                : "text-gray-900 dark:text-white"
-                            }`}
-                          >
-                            {task.title}
-                          </p>
-                          <PriorityBadge priority={task.priority} />
-                        </div>
-                        {task.notes && (
-                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">
-                            {task.notes}
-                          </p>
-                        )}
-                      </div>
-                      {task.status !== "completed" && (
-                        <button
-                          onClick={() => handleCompleteTask(task._id)}
-                          className="p-1 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded"
-                          title={t("Complete")}
-                        >
-                          <RiCheckboxCircleLine size={14} />
-                        </button>
-                      )}
-                    </div>
-                  </div>
+                  <DailyTaskRow key={task._id} task={task} onComplete={handleCompleteTask} t={t} />
                 ))}
               </div>
             </div>

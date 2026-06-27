@@ -17,7 +17,7 @@ import {
     RiMailLine, RiMoneyDollarCircleLine, RiTimeLine,
     RiUserLine, RiBriefcaseLine, RiBuilding2Line, RiPhoneLine,
     RiCalendarEventLine, RiDeleteBin7Line,
-    RiErrorWarningLine, RiBellLine, RiInformationLine
+    RiErrorWarningLine, RiBellLine, RiInformationLine, RiDatabase2Line
 } from "@remixicon/react";
 import { useGetMySubscriberNotificationsQuery, useMarkSubscriberNotificationAsReadMutation } from "@/redux/subscriber-notifications/subscriberNotificationsApi";
 
@@ -34,12 +34,13 @@ const COLOR_MAP = {
     blue: "text-blue-500 bg-blue-50 dark:bg-blue-500/10",
 };
 import { useSelector } from 'react-redux';
-import { selectUser } from '@/redux/auth/authSlice';
+import { selectUser, selectUserId } from '@/redux/auth/authSlice';
 import {
     useGetEmployeeAuthRequestsQuery,
     useUpdateEmployeeDetailMutation,
     useCancelEmployeeRequestMutation
 } from '@/redux/employees/employeeAuthRequestsApi';
+import { useGetEmployeeProfileQuery } from '@/redux/employees/employeesApi';
 import { translateDate } from '@/functions/Days';
 import dayjs from 'dayjs';
 import ContentCard from "@/components/containers/ContentCard";
@@ -50,7 +51,12 @@ function EmployeeProfile() {
 
     const { t, i18n } = useTranslation()
     const user = useSelector(selectUser);
+    const userId = useSelector(selectUserId);
     const employeeDetail = user?.employee_detail || {};
+
+    const { data: freshProfile } = useGetEmployeeProfileQuery(userId, { skip: !userId });
+    const storageQuota = freshProfile?.storage_quota ?? employeeDetail.storage_quota;
+    const usedStorage = freshProfile?.used_storage ?? employeeDetail.used_storage;
 
     const canCreateLeave = usePermission("leaves.create"); // Or check for list if it exists
     const canCreateRequest = usePermission("employee_requests.create");
@@ -80,6 +86,11 @@ function EmployeeProfile() {
     const [isChangePasswordModal, setIsChangePasswordModal] = useState(false);
 
     const [updateProfile, { isLoading: isUpdatingProfile }] = useUpdateEmployeeDetailMutation();
+
+    const formatStorage = (bytes) => {
+        if (bytes === null || bytes === undefined) return "0 MB";
+        return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+    };
 
     const calculateAge = (dob) => {
         if (!dob) return "-";
@@ -369,6 +380,15 @@ function EmployeeProfile() {
                                     <div className="flex flex-col">
                                         <span className={"text-cell-secondary text-xs"}>{t("Weekend")}</span>
                                         <p className={"text-cell-primary text-sm font-semibold"}> {employeeDetail.weekend_days?.join(" - ") || "-"}</p>
+                                    </div>
+                                </div>
+                                <div className={"name-profile flex items-center gap-2"}>
+                                    <div className="p-2 bg-indigo-50 dark:bg-indigo-500/10 rounded-lg"><RiDatabase2Line size={18} className={"text-indigo-500"} /></div>
+                                    <div className="flex flex-col">
+                                        <span className={"text-cell-secondary text-xs"}>{t("Storage")}</span>
+                                        <p className={"text-cell-primary text-sm font-semibold"}>
+                                            {formatStorage(usedStorage)} / {storageQuota !== null && storageQuota !== undefined ? formatStorage(storageQuota) : t("Unlimited")}
+                                        </p>
                                     </div>
                                 </div>
                             </div>

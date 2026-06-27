@@ -35,7 +35,8 @@ function CreateEmployeeModal({ isOpen, onClose }) {
             yearly_day_offs: 0,
             weekend_days: [],
             date_of_birth: "",
-            roles_ids: []
+            roles_ids: [],
+            storage_quota: ""
         }
     });
 
@@ -69,6 +70,12 @@ function CreateEmployeeModal({ isOpen, onClose }) {
             }
             if (!cleansedData.employee_detail.position_id) {
                 delete cleansedData.employee_detail.position_id;
+            }
+
+            if (cleansedData.employee_detail.storage_quota !== "" && cleansedData.employee_detail.storage_quota !== null) {
+                cleansedData.employee_detail.storage_quota = Number(cleansedData.employee_detail.storage_quota) * 1024 * 1024;
+            } else {
+                cleansedData.employee_detail.storage_quota = null;
             }
 
             const response = await createEmployee(cleansedData).unwrap();

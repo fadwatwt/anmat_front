@@ -16,6 +16,11 @@ const VerifyEmail = () => {
     const [timeLeft, setTimeLeft] = useState(0);
     const [hasRequested, setHasRequested] = useState(false);
     const [isRefreshing, setIsRefreshing] = useState(false);
+    const [alertConfig, setAlertConfig] = useState({ isOpen: false, status: '', message: '' });
+
+    const handleAlertClose = () => {
+        setAlertConfig({ isOpen: false, status: '', message: '' });
+    };
 
     const nextSendAt = user?.email_verification?.next_send_at;
 
@@ -66,22 +71,29 @@ const VerifyEmail = () => {
 
         try {
             setIsRefreshing(true);
-            await requestVerification().unwrap();
+            const res = await requestVerification().unwrap();
             setHasRequested(true);
+            setAlertConfig({ isOpen: true, status: 'success', message: res?.message || t("Verification email sent!") });
+        } catch (err) {
+            console.error("Failed to resend verification email:", err);
+            setAlertConfig({ isOpen: true, status: 'error', message: err?.data?.message || t("Failed to send verification email.") });
+            return;
+        } finally {
+            setIsRefreshing(false);
+        }
 
-            // Fetch user data to update next_send_at timer from the latest API state
-            const token = localStorage.getItem("token");
-            if (token) {
+        // Fetch user data to update next_send_at timer from the latest API state
+        const token = localStorage.getItem("token");
+        if (token) {
+            try {
                 const userResult = await triggerGetUser(token).unwrap();
                 const userData = userResult?.data || userResult;
                 if (userData) {
                     dispatch(setUser(userData));
                 }
+            } catch (err) {
+                console.error("Failed to refresh user data:", err);
             }
-        } catch (err) {
-            console.error("Failed to resend verification email:", err);
-        } finally {
-            setIsRefreshing(false);
         }
     };
 
@@ -89,8 +101,7 @@ const VerifyEmail = () => {
 
     return (
         <>
-            {isSuccess && <ApiResponseAlert status="success" message={data?.message || t("Verification email sent!")} />}
-            {isError && <ApiResponseAlert status="error" message={error?.data?.message || t("Failed to send verification email.")} />}
+            <ApiResponseAlert isOpen={alertConfig.isOpen} status={alertConfig.status} message={alertConfig.message} onClose={handleAlertClose} />
 
             <div className="relative rounded-2xl px-12 py-16 border border-status-border bg-surface shadow-xl">
                 <div className="absolute top-0 left-0 w-full opacity-10">
