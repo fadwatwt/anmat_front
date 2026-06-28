@@ -101,9 +101,11 @@ export const useChat = (chatId) => {
           conversationsAPI.util.updateQueryData("getMessages", chatId, (draft) => {
             const messages = draft?.data;
             if (Array.isArray(messages)) {
-              const messageExists = messages.some((m) => m._id?.toString() === message._id?.toString());
-              if (!messageExists) {
+              const existingIdx = messages.findIndex((m) => m._id?.toString() === message._id?.toString());
+              if (existingIdx === -1) {
                 messages.unshift(message);
+              } else {
+                messages[existingIdx] = message;
               }
             }
           })

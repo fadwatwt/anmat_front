@@ -17,8 +17,10 @@ import MessageInput from "./MessageInput";
 import ThreadSidebar from "./ThreadSidebar";
 import CreatePollModal from "./CreatePollModal";
 import ChatDetailsModal from "./ChatDetailsModal";
-import { Phone, Video, Info, ArrowLeft, Search, X } from "lucide-react";
+import { Phone, Video, Info, ArrowLeft, Search, X, PhoneCall } from "lucide-react";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
+import { useCall } from "@/components/Call/CallProvider";
+import { usePermission } from "@/Hooks/usePermission";
 
 const ChatWindow = ({ activeChat, onBack }) => {
   const { t } = useTranslation();
@@ -71,6 +73,8 @@ const ChatWindow = ({ activeChat, onBack }) => {
     : (Array.isArray(searchData?.data) ? searchData.data : (Array.isArray(searchData) ? searchData : []));
 
   const { sendMessage, setTyping } = useChat(activeChat?._id);
+  const { initiateCall, callState, isVideoCall } = useCall();
+  const canCall = usePermission("chats.call");
 
   const handleEditMessage = async (messageId, content) => {
     try {
@@ -114,7 +118,7 @@ const ChatWindow = ({ activeChat, onBack }) => {
     <div className="flex-1 flex h-full bg-surface overflow-hidden relative">
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
-        <div className="p-4 border-b border-status-border flex items-center justify-between shadow-sm z-10 bg-surface">
+        <div className={`p-4 border-b border-status-border flex items-center justify-between shadow-sm z-10 bg-surface ${callState === "connected" && isVideoCall ? "hidden" : ""}`}>
           {showSearch ? (
             <div className="flex items-center w-full gap-3 animate-in fade-in">
               <Search size={20} className="text-sub-500" />
@@ -176,12 +180,50 @@ const ChatWindow = ({ activeChat, onBack }) => {
                 >
                   <Search size={20} />
                 </button>
-                <button className="p-2.5 text-sub-500 hover:bg-status-bg rounded-xl transition-all">
-                  <Phone size={20} />
-                </button>
-                <button className="p-2.5 text-sub-500 hover:bg-status-bg rounded-xl transition-all">
-                  <Video size={20} />
-                </button>
+                {canCall && (
+                  <button
+                    onClick={() => {
+                      if (callState !== "idle") return;
+                      const target = activeChat.participants_ids?.find(p => p._id !== currentUserId);
+                      const targetName = target?.name || activeChat.title || t("User");
+                      const targetId = target?._id || target;
+                      initiateCall(activeChat._id, targetId, targetName, false);
+                    }}
+                    disabled={callState !== "idle"}
+                    className={`p-2.5 rounded-xl transition-all ${
+                      callState === "connected"
+                        ? "bg-green-500 text-white animate-pulse"
+                        : callState !== "idle"
+                        ? "text-sub-300 cursor-not-allowed"
+                        : "text-sub-500 hover:bg-status-bg"
+                    }`}
+                    title={callState !== "idle" ? t("In a call") : t("Call")}
+                  >
+                    {callState === "connected" ? <PhoneCall size={20} /> : <Phone size={20} />}
+                  </button>
+                )}
+                {canCall && (
+                  <button
+                    onClick={() => {
+                      if (callState !== "idle") return;
+                      const target = activeChat.participants_ids?.find(p => p._id !== currentUserId);
+                      const targetName = target?.name || activeChat.title || t("User");
+                      const targetId = target?._id || target;
+                      initiateCall(activeChat._id, targetId, targetName, true);
+                    }}
+                    disabled={callState !== "idle"}
+                    className={`p-2.5 rounded-xl transition-all ${
+                      callState === "connected"
+                        ? "bg-green-500 text-white animate-pulse"
+                        : callState !== "idle"
+                        ? "text-sub-300 cursor-not-allowed"
+                        : "text-sub-500 hover:bg-status-bg"
+                    }`}
+                    title={callState !== "idle" ? t("In a video call") : t("Video call")}
+                  >
+                    <Video size={20} />
+                  </button>
+                )}
                 <button
                   onClick={() => setShowDetailsModal(true)}
                   className="p-2.5 text-sub-500 hover:bg-status-bg rounded-xl transition-all"

@@ -4,7 +4,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { setActiveChat } from "@/redux/conversations/conversationsSlice";
 import ChatList from "./ChatList";
 import ChatWindow from "./ChatWindow";
-
 const ChatContainer = () => {
   const dispatch = useDispatch();
   const reduxActiveChat = useSelector((state) => state.conversations.activeChat);

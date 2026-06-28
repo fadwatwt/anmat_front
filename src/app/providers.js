@@ -9,6 +9,7 @@ import { selectIsMutating } from "@/redux/ui/processingSlice";
 import NotificationListener from '@/components/NotificationListener';
 import ProcessingOverlay from '@/components/Feedback/ProcessingOverlay';
 import NavigationProgress from '@/components/Feedback/NavigationProgress';
+import CallProvider from '@/components/Call/CallProvider';
 import { setLanguage } from "@/functions/Days";
 
 const updateHtmlAttributes = (lang) => {
@@ -135,7 +136,9 @@ const Providers = ({ children }) => {
             <ThemeProvider>
                 <ProcessingProvider>
                     <I18nextProvider i18n={i18n}>
-                        {children}
+                        <CallProvider>
+                            {children}
+                        </CallProvider>
                     </I18nextProvider>
                 </ProcessingProvider>
             </ThemeProvider>

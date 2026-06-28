@@ -58,11 +58,11 @@ const PollBubble = ({ message, isMe }) => {
 
   return (
     <div className={`mt-2 w-64 rounded-xl border overflow-hidden ${isMe ? 'bg-primary-500/10 dark:bg-primary-200/10 border-primary/20 dark:border-primary-200/20 text-cell-primary' : 'bg-surface border-status-border text-cell-primary'}`}>
-      <div className="p-3 border-b border-status-border flex items-start gap-2 bg-weak-50">
-        <BarChart2 size={16} className={isMe ? "text-primary" : "text-sub-500"} />
-        <div className="flex-1">
+      <div className="p-3 border-b border-status-border flex items-start gap-2 bg-primary-500 dark:bg-primary-200 text-white dark:text-black">
+        <BarChart2 size={16} className="text-white dark:text-black" />
+        <div className="flex-1 text-white dark:text-black">
           <h4 className="font-bold text-sm leading-tight">{poll.question}</h4>
-          <span className="text-[10px] text-sub-500">
+          <span className="text-[10px] text-white/70 dark:text-black/70">
             {poll.is_closed ? t("Poll closed") : poll.allow_multiple_choice ? t("Multiple choice") : t("Single choice")} • {totalVotes} {t("votes")}
           </span>
         </div>
@@ -107,7 +107,7 @@ const PollBubble = ({ message, isMe }) => {
         <div className="px-2 pb-2">
           <button 
             onClick={handleClose}
-            className="w-full py-1.5 text-xs text-sub-500 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors font-medium"
+            className="w-full py-1.5 text-xs text-white dark:text-black bg-primary-500 dark:bg-primary-200 hover:bg-primary-600 dark:hover:bg-primary-300 rounded-lg transition-colors font-medium"
           >
             {t("Close Poll")}
           </button>

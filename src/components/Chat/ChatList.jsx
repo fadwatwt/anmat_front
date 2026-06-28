@@ -90,8 +90,8 @@ const ChatList = ({ activeChatId, onSelectChat }) => {
                 <div
                   className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg overflow-hidden border"
                   style={{
-                    backgroundColor: 'var(--color-blue-ebf1ff)',
-                    color: 'var(--color-primary)',
+                    backgroundColor: activeChatId === chat._id ? 'var(--bg-surface)' : 'var(--color-blue-ebf1ff)',
+                    color: activeChatId === chat._id ? 'var(--menu-active-text)' : 'var(--color-primary)',
                     borderColor: 'var(--status-border)'
                   }}
                 >

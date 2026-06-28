@@ -5,7 +5,7 @@ import { io } from "socket.io-client";
 let socket;
 
 export const initSocket = (token) => {
-  if (socket?.connected) return socket;
+  if (socket) return socket;
   
   const baseUrl = RootRoute || "http://localhost:3000";
   // The report specifies /chat namespace

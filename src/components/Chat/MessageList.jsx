@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import React, { useEffect, useRef } from "react";
 import { RootRoute } from "@/Root.Route";
 import { format } from "date-fns";
-import { Check, CheckCheck, Paperclip } from "lucide-react";
+import { Check, CheckCheck, Paperclip, Phone } from "lucide-react";
 import { useSelector } from "react-redux";
 import { selectUserId } from "@/redux/auth/authSlice";
 import MessageActions from "./MessageActions";
@@ -58,6 +58,19 @@ const MessageList = ({ messages, isLoading, onEdit, onDelete, onReact, onReply }
           const isMe = message.sent_by?._id === currentUserId || message.sent_by === currentUserId;
           const showAvatar = index === 0 || messages[index - 1]?.sent_by?._id !== message.sent_by?._id;
 
+          if (message.message_type === "call_log") {
+            const fmt = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+            return (
+              <div key={message._id || index} className="flex justify-center">
+                <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-weak-50 text-sub-500 text-xs border border-status-border">
+                  <Phone size={14} />
+                  <span>{message.content}</span>
+                  {message.duration > 0 && <span>· {fmt(message.duration)}</span>}
+                </div>
+              </div>
+            );
+          }
+
           return (
             <div
               key={message._id || index}
@@ -97,11 +110,10 @@ const MessageList = ({ messages, isLoading, onEdit, onDelete, onReact, onReply }
                     style={{
                       borderColor: isMe ? 'transparent' : 'var(--status-border)',
                       backgroundColor: isMe ? undefined : 'var(--color-blue-ebf1ff)',
-                      color: isMe ? '#ffffff !important' : 'inherit'
                     }}
                   >
-                    {message.content && (
-                      <div style={{ color: isMe ? '#ffffff' : 'inherit' }}>
+                    {message.content && !message.poll && (
+                      <div className={isMe ? "text-white dark:text-black" : ""}>
                         {message.content}
                         {message.is_edited && (
                           <span className="text-[10px] opacity-70 ml-2 italic">{t("(edited)")}</span>
@@ -129,7 +141,7 @@ const MessageList = ({ messages, isLoading, onEdit, onDelete, onReact, onReply }
                               <Paperclip size={20} />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className={`text-sm font-medium truncate ${isMe ? 'text-white' : 'text-cell-primary'}`}>
+                              <p className={`text-sm font-medium truncate ${isMe ? 'text-white dark:text-black' : 'text-cell-primary'}`}>
                                 {message.attachment.split('/').pop()}
                               </p>
                               <p className="text-[10px] text-sub-500">{t("Click to download")}</p>
