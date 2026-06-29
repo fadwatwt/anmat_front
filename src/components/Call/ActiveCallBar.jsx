@@ -14,7 +14,7 @@ const ActiveCallBar = () => {
   const { callerInfo, callDuration, isMuted, isVideoCall, isCameraOn, toggleMute, toggleCamera, hangupCall } = useCall();
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-surface border-t border-status-border shadow-[0_-4px_20px_rgba(0,0,0,0.15)] animate-slide-up">
+    <div className="fixed bottom-0 left-0 right-0 z-[70] bg-surface border-t border-status-border shadow-[0_-4px_20px_rgba(0,0,0,0.15)] animate-slide-up">
       <div className="max-w-4xl mx-auto px-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center animate-pulse">

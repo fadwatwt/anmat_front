@@ -391,8 +391,8 @@ export const CallProvider = ({ children }) => {
       <audio ref={remoteAudioRef} autoPlay />
       {isVideoCall && (
         <>
-          <video ref={remoteVideoRef} autoPlay playsInline className="fixed inset-0 z-40 w-full h-full object-cover bg-black" />
-          <video ref={localVideoRef} autoPlay playsInline muted className="fixed bottom-24 right-4 z-50 w-48 h-36 object-cover rounded-xl shadow-2xl border-2 border-white/30 bg-gray-900" style={{ transform: 'scaleX(-1)' }} />
+          <video ref={remoteVideoRef} autoPlay playsInline className="fixed inset-0 z-[70] w-full h-full object-cover bg-black" />
+          <video ref={localVideoRef} autoPlay playsInline muted className="fixed bottom-24 right-4 z-[70] w-48 h-36 object-cover rounded-xl shadow-2xl border-2 border-white/30 bg-gray-900" style={{ transform: 'scaleX(-1)' }} />
         </>
       )}
       {(callState === "calling" || callState === "connecting") && <OutgoingCall />}

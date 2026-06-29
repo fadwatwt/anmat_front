@@ -17,9 +17,10 @@ import MessageInput from "./MessageInput";
 import ThreadSidebar from "./ThreadSidebar";
 import CreatePollModal from "./CreatePollModal";
 import ChatDetailsModal from "./ChatDetailsModal";
-import { Phone, Video, Info, ArrowLeft, Search, X, PhoneCall } from "lucide-react";
+import { Phone, Video, Info, ArrowLeft, Search, X, PhoneCall, Users } from "lucide-react";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import { useCall } from "@/components/Call/CallProvider";
+import { useGroupCall } from "@/components/Call/GroupCallProvider";
 import { usePermission } from "@/Hooks/usePermission";
 
 const ChatWindow = ({ activeChat, onBack }) => {
@@ -74,6 +75,7 @@ const ChatWindow = ({ activeChat, onBack }) => {
 
   const { sendMessage, setTyping } = useChat(activeChat?._id);
   const { initiateCall, callState, isVideoCall } = useCall();
+  const { initiateGroupCall, groupCallState, isVideo: isGroupVideo, endGroupCall } = useGroupCall();
   const canCall = usePermission("chats.call");
 
   const handleEditMessage = async (messageId, content) => {
@@ -117,8 +119,9 @@ const ChatWindow = ({ activeChat, onBack }) => {
   return (
     <div className="flex-1 flex h-full bg-surface overflow-hidden relative">
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Header */}
-        <div className={`p-4 border-b border-status-border flex items-center justify-between shadow-sm z-10 bg-surface ${callState === "connected" && isVideoCall ? "hidden" : ""}`}>
+        {/* Header - hidden during video/group calls */}
+        {(callState !== "connected" || !isVideoCall) && groupCallState !== "connected" && (
+        <div className="p-4 border-b border-status-border flex items-center justify-between shadow-sm bg-surface">
           {showSearch ? (
             <div className="flex items-center w-full gap-3 animate-in fade-in">
               <Search size={20} className="text-sub-500" />
@@ -180,20 +183,20 @@ const ChatWindow = ({ activeChat, onBack }) => {
                 >
                   <Search size={20} />
                 </button>
-                {canCall && (
+                {canCall && !activeChat?.is_group && (
                   <button
                     onClick={() => {
-                      if (callState !== "idle") return;
+                      if (callState !== "idle" || groupCallState !== "idle") return;
                       const target = activeChat.participants_ids?.find(p => p._id !== currentUserId);
                       const targetName = target?.name || activeChat.title || t("User");
                       const targetId = target?._id || target;
                       initiateCall(activeChat._id, targetId, targetName, false);
                     }}
-                    disabled={callState !== "idle"}
+                    disabled={callState !== "idle" || groupCallState !== "idle"}
                     className={`p-2.5 rounded-xl transition-all ${
                       callState === "connected"
                         ? "bg-green-500 text-white animate-pulse"
-                        : callState !== "idle"
+                        : callState !== "idle" || groupCallState !== "idle"
                         ? "text-sub-300 cursor-not-allowed"
                         : "text-sub-500 hover:bg-status-bg"
                     }`}
@@ -202,24 +205,64 @@ const ChatWindow = ({ activeChat, onBack }) => {
                     {callState === "connected" ? <PhoneCall size={20} /> : <Phone size={20} />}
                   </button>
                 )}
-                {canCall && (
+                {canCall && !activeChat?.is_group && (
                   <button
                     onClick={() => {
-                      if (callState !== "idle") return;
+                      if (callState !== "idle" || groupCallState !== "idle") return;
                       const target = activeChat.participants_ids?.find(p => p._id !== currentUserId);
                       const targetName = target?.name || activeChat.title || t("User");
                       const targetId = target?._id || target;
                       initiateCall(activeChat._id, targetId, targetName, true);
                     }}
-                    disabled={callState !== "idle"}
+                    disabled={callState !== "idle" || groupCallState !== "idle"}
                     className={`p-2.5 rounded-xl transition-all ${
                       callState === "connected"
                         ? "bg-green-500 text-white animate-pulse"
-                        : callState !== "idle"
+                        : callState !== "idle" || groupCallState !== "idle"
                         ? "text-sub-300 cursor-not-allowed"
                         : "text-sub-500 hover:bg-status-bg"
                     }`}
                     title={callState !== "idle" ? t("In a video call") : t("Video call")}
+                  >
+                    <Video size={20} />
+                  </button>
+                )}
+                {canCall && activeChat?.is_group && (
+                  <button
+                    onClick={() => {
+                      if (groupCallState !== "idle") { endGroupCall(); return; }
+                      if (callState !== "idle") return;
+                      initiateGroupCall(activeChat._id, false);
+                    }}
+                    disabled={callState !== "idle"}
+                    className={`p-2.5 rounded-xl transition-all ${
+                      groupCallState === "connected"
+                        ? "bg-green-500 text-white animate-pulse"
+                        : groupCallState !== "idle"
+                        ? "bg-red-500 text-white hover:bg-red-600"
+                        : "text-sub-500 hover:bg-status-bg"
+                    }`}
+                    title={groupCallState === "connected" ? t("In a group call") : groupCallState !== "idle" ? t("Cancel group call") : t("Group call")}
+                  >
+                    <Phone size={20} />
+                  </button>
+                )}
+                {canCall && activeChat?.is_group && (
+                  <button
+                    onClick={() => {
+                      if (groupCallState !== "idle") { endGroupCall(); return; }
+                      if (callState !== "idle") return;
+                      initiateGroupCall(activeChat._id, true);
+                    }}
+                    disabled={callState !== "idle"}
+                    className={`p-2.5 rounded-xl transition-all ${
+                      groupCallState === "connected"
+                        ? "bg-green-500 text-white animate-pulse"
+                        : groupCallState !== "idle"
+                        ? "bg-red-500 text-white hover:bg-red-600"
+                        : "text-sub-500 hover:bg-status-bg"
+                    }`}
+                    title={groupCallState === "connected" ? t("In a group call") : groupCallState !== "idle" ? t("Cancel group call") : t("Group video call")}
                   >
                     <Video size={20} />
                   </button>
@@ -234,6 +277,7 @@ const ChatWindow = ({ activeChat, onBack }) => {
             </>
           )}
         </div>
+        )}
 
         {/* Messages or Search Results */}
         {showSearch && searchQuery.trim() ? (

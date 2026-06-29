@@ -8,7 +8,7 @@ const OutgoingCall = () => {
   const { callerInfo, hangupCall, callState, isVideoCall } = useCall();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/50 backdrop-blur-sm">
       <div className="bg-surface rounded-2xl shadow-2xl p-8 w-full max-w-sm mx-4 text-center animate-scale-in border border-status-border">
         <div className="w-20 h-20 rounded-full bg-primary-500 dark:bg-primary-200 flex items-center justify-center mx-auto mb-4 animate-pulse">
           {isVideoCall ? (

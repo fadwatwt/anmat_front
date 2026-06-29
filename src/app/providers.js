@@ -10,6 +10,7 @@ import NotificationListener from '@/components/NotificationListener';
 import ProcessingOverlay from '@/components/Feedback/ProcessingOverlay';
 import NavigationProgress from '@/components/Feedback/NavigationProgress';
 import CallProvider from '@/components/Call/CallProvider';
+import GroupCallProvider from '@/components/Call/GroupCallProvider';
 import { setLanguage } from "@/functions/Days";
 
 const updateHtmlAttributes = (lang) => {
@@ -137,7 +138,9 @@ const Providers = ({ children }) => {
                 <ProcessingProvider>
                     <I18nextProvider i18n={i18n}>
                         <CallProvider>
-                            {children}
+                            <GroupCallProvider>
+                                {children}
+                            </GroupCallProvider>
                         </CallProvider>
                     </I18nextProvider>
                 </ProcessingProvider>
