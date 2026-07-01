@@ -19,40 +19,6 @@ export const dashboardSideMenuItems = [
         icon: <Category />
     },
     {
-        allowed_to: ['Admin'],
-        title: 'System Admins',
-        path: '/system-admins',
-        icon: <Profile2User />,
-        permission: 'admin.system_admins.list'
-    },
-    {
-        allowed_to: ['Admin'],
-        title: 'Roles',
-        path: '/roles/admins',
-        icon: <Setting4 />,
-        permission: 'admin.admin_roles.list'
-    },
-    {
-        allowed_to: ['Admin'],
-        title: 'Permissions',
-        path: '/permissions/admins',
-        icon: <Setting5 />,
-        permission: 'admin.admin_permissions.list'
-    },
-    {
-        allowed_to: ['Admin'],
-        title: 'Industries',
-        path: '/industries',
-        icon: <Category2 />,
-        permission: 'admin.industries.list'
-    },
-    {
-        allowed_to: ['Subscriber'],
-        title: 'Subscriptions',
-        path: '/subscriptions',
-        icon: <ReceiptText />
-    },
-    {
         // HR Management is shown to Subscriber (always) and to Employees who
         // have at least one HR-management permission (track_all/track_department).
         allowed_to: ['Subscriber', 'Employee'],
@@ -130,17 +96,86 @@ export const dashboardSideMenuItems = [
         ]
     },
     {
+        allowed_to: ['Subscriber'],
+        title: 'Subscriptions',
+        path: '/subscriptions',
+        icon: <ReceiptText />
+    },
+    {
         allowed_to: ['Subscriber', 'Employee'],
-        title: 'Roles',
-        path: '/roles/employees',
-        icon: <Setting4 />,
-        permission_any_of: ['roles.list'],
+        title: 'Tasks',
+        path: '/tasks',
+        icon: <TaskSquare />,
+        permission_any_of: ['tasks.track_all', 'tasks.track_department'],
+    },
+    {
+        allowed_to: ['Employee'],
+        title: 'My Tasks',
+        path: '/employee/tasks',
+        icon: <TaskSquare />,
+    },
+    {
+        allowed_to: ['Subscriber', 'Employee'],
+        title: 'Projects',
+        path: '/projects',
+        icon: <NoteText />,
+        permission_any_of: ['projects.track_all', 'projects.track_department'],
+    },
+    {
+        allowed_to: ['Employee'],
+        title: 'My Projects',
+        path: '/employee/projects',
+        icon: <NoteText />
     },
     {
         allowed_to: ['Subscriber'],
-        title: 'Permissions',
-        path: '/permissions',
-        icon: <Setting5 />
+        title: 'Agenda',
+        path: '/appointments',
+        icon: <CalendarTick />,
+        permission_any_of: ['appointments.track_all', 'appointments.track_department'],
+    },
+    {
+        allowed_to: ['Employee'],
+        title: 'My Agenda',
+        path: '/appointments',
+        icon: <CalendarTick />,
+    },
+    {
+        allowed_to: ['Employee'],
+        title: 'Attendance',
+        path: '/attendance',
+        icon: <Calendar />
+    },
+    {
+        allowed_to: ['Employee'],
+        title: 'Salary',
+        path: '/salary',
+        icon: <EmptyWallet />
+    },
+    {
+        allowed_to: ['Employee'],
+        title: 'Short Leaves',
+        path: '/leaves',
+        icon: <Stickynote size={20} />
+    },
+    {
+        allowed_to: ['Employee'],
+        title: 'Requests',
+        path: '/requests',
+        icon: <Stickynote />
+    },
+    {
+        allowed_to: ['Subscriber', 'Employee'],
+        title: 'Conversations',
+        path: '/conversations',
+        icon: <Messages1 />
+    },
+    {
+        allowed_to: ['Subscriber', 'Employee'],
+        title: 'Social Media',
+        path: '/social-media',
+        icon: <Share />,
+        permission_any_of: ['social_media_accounts.list'],
     },
     {
         allowed_to: ['Admin', 'Subscriber', 'Employee'],
@@ -148,6 +183,40 @@ export const dashboardSideMenuItems = [
         path: '/analytics',
         icon: <Chart2 />,
         permission_any_of: ['admin.analytics.view', 'analytics.view'],
+    },
+    {
+        allowed_to: ['Admin', 'Subscriber', 'Employee'],
+        title: 'AI Assistant',
+        path: '/ai',
+        icon: <Cpu />
+    },
+    {
+        allowed_to: ['Admin'],
+        title: 'System Admins',
+        path: '/system-admins',
+        icon: <Profile2User />,
+        permission: 'admin.system_admins.list'
+    },
+    {
+        allowed_to: ['Admin'],
+        title: 'Roles',
+        path: '/roles/admins',
+        icon: <Setting4 />,
+        permission: 'admin.admin_roles.list'
+    },
+    {
+        allowed_to: ['Admin'],
+        title: 'Permissions',
+        path: '/permissions/admins',
+        icon: <Setting5 />,
+        permission: 'admin.admin_permissions.list'
+    },
+    {
+        allowed_to: ['Admin'],
+        title: 'Industries',
+        path: '/industries',
+        icon: <Category2 />,
+        permission: 'admin.industries.list'
     },
     {
         allowed_to: ['Admin'],
@@ -183,96 +252,16 @@ export const dashboardSideMenuItems = [
     },
     {
         allowed_to: ['Subscriber', 'Employee'],
-        title: 'Tasks',
-        path: '/tasks',
-        icon: <TaskSquare />,
-        permission_any_of: ['tasks.track_all', 'tasks.track_department'],
+        title: 'Roles',
+        path: '/roles/employees',
+        icon: <Setting4 />,
+        permission_any_of: ['roles.list'],
     },
     {
         allowed_to: ['Subscriber'],
-        title: 'Agenda',
-        path: '/appointments',
-        icon: <CalendarTick />,
-        permission_any_of: ['appointments.track_all', 'appointments.track_department'],
-    },
-    {
-        allowed_to: ['Employee'],
-        title: 'My Tasks',
-        path: '/employee/tasks',
-        icon: <TaskSquare />,
-    },
-    // ── Personal employee routes (always visible to Employees) ──────
-    {
-        allowed_to: ['Employee'],
-        title: 'Salary',
-        path: '/salary',
-        icon: <EmptyWallet />
-    },
-    {
-        allowed_to: ['Employee'],
-        title: 'Attendance',
-        path: '/attendance',
-        icon: <Calendar />
-    },
-    {
-        allowed_to: ['Employee'],
-        title: 'Short Leaves',
-        path: '/leaves',
-        icon: <Stickynote size={20} />
-    },
-    {
-        allowed_to: ['Employee'],
-        title: 'My Agenda',
-        path: '/appointments',
-        icon: <CalendarTick />,
-    },
-    {
-        allowed_to: ['Employee'],
-        title: 'Requests',
-        path: '/requests',
-        icon: <Stickynote />
-    },
-    // ── Projects: Subscriber sees admin route; Employee sees personal,
-    //    OR admin route if they have track_all/track_department.
-    {
-        allowed_to: ['Subscriber', 'Employee'],
-        title: 'Projects',
-        path: '/projects',
-        icon: <NoteText />,
-        // For Subscriber: shown unconditionally (covered by wildcard).
-        // For Employee: shown only if they have admin-scope permission.
-        permission_any_of: ['projects.track_all', 'projects.track_department'],
-    },
-    {
-        allowed_to: ['Employee'],
-        title: 'My Projects',
-        path: '/employee/projects',
-        icon: <NoteText />
-    },
-    {
-        allowed_to: ['Subscriber', 'Employee'],
-        title: 'Conversations',
-        path: '/conversations',
-        icon: <Messages1 />
-    },
-    {
-        allowed_to: ['Subscriber', 'Employee'],
-        title: 'Social Media',
-        path: '/social-media',
-        icon: <Share />,
-        permission_any_of: ['social_media_accounts.list'],
-    },
-    {
-        allowed_to: ['Admin', 'Subscriber', 'Employee'],
-        title: 'AI Assistant',
-        path: '/ai',
-        icon: <Cpu />
-    },
-    {
-        allowed_to: ['Admin', 'Subscriber', 'Employee'],
-        title: 'Settings',
-        path: '/setting',
-        icon: <Setting />
+        title: 'Permissions',
+        path: '/permissions',
+        icon: <Setting5 />
     },
     {
         allowed_to: ['Admin', 'Subscriber'],
@@ -280,5 +269,11 @@ export const dashboardSideMenuItems = [
         path: '/support-tickets',
         icon: <Messages1 />,
         permission: 'admin.support_tickets.list'
+    },
+    {
+        allowed_to: ['Admin', 'Subscriber', 'Employee'],
+        title: 'Settings',
+        path: '/setting',
+        icon: <Setting />
     },
 ];
