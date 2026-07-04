@@ -17,14 +17,13 @@ const translateDate = (englishDate) => {
 };
 
 const getTimeDifference = (date1, date2) => {
-    const diffInMilliseconds = dayjs(date1).diff(dayjs(date2)); // حساب الفرق بالملي ثانية
-    const diffDuration = dayjs.duration(diffInMilliseconds); // تحويل الفرق إلى مدة (Duration)
+    const diffInMilliseconds = dayjs(date1).diff(dayjs(date2));
+    const diffDuration = dayjs.duration(diffInMilliseconds);
 
-    const days = Math.abs(diffDuration.days()); // الفرق بالأيام
-    const hours = Math.abs(diffDuration.hours()); // الفرق بالساعات
-    const minutes = Math.abs(diffDuration.minutes()); // الفرق بالدقائق
+    const days = Math.abs(diffDuration.days());
+    const hours = Math.abs(diffDuration.hours());
+    const minutes = Math.abs(diffDuration.minutes());
 
-    // تحديد النصوص بناءً على اللغة الحالية
     const currentLocale = dayjs.locale();
     const translations = {
         en: {
@@ -39,9 +38,13 @@ const getTimeDifference = (date1, date2) => {
         },
     };
 
-    const localeTexts = translations[currentLocale] || translations.en; // اختيار النصوص المناسبة للغة الحالية
+    const localeTexts = translations[currentLocale] || translations.en;
+    const parts = [];
+    if (days > 0) parts.push(`${days} ${localeTexts.days}`);
+    if (hours > 0) parts.push(`${hours} ${localeTexts.hours}`);
+    parts.push(`${minutes} ${localeTexts.minutes}`);
 
-    return `${days} ${localeTexts.days}, ${hours}:${minutes < 10 ? "0" : ""}${minutes} ${localeTexts.minutes}`;
+    return parts.join(", ");
 };
 
 

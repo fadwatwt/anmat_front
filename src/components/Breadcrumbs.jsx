@@ -19,7 +19,7 @@ const Breadcrumbs = ({ breadcrumbs }) => {
                                 <span className={"text-nowrap dark:text-gray-200"}>{t(breadcrumb.title)}</span>
                             )}
                         </li>
-                        {index < breadcrumbs.length - 1 && <li><span className="mx-2 dark:text-gray-200">/</span></li>}
+                        {index < breadcrumbs.length - 1 && <span className="mx-2 dark:text-gray-200">/</span>}
                     </React.Fragment>
                 ))}
             </ol>

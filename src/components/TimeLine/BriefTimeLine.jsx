@@ -3,7 +3,7 @@ import { FaRegComment } from "react-icons/fa";
 import { BiLike } from "react-icons/bi";
 import { RiSendPlane2Fill } from "react-icons/ri";
 import PropTypes from "prop-types";
-import ReadMore from "../../functions/ReadMore.jsx";
+import ReadMore from "../ReadMore.jsx";
 
 function BriefTimeLine({ myAccount, tweet }) {
     const { t, i18n } = useTranslation();

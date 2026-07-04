@@ -19,7 +19,7 @@ const normalizeStatus = (status) => {
         return "in-active";
     }
     if (["not-paid", "not paid"].includes(lowerStatus)) {
-        return "Not-paid";
+        return "not-paid";
     }
     if (["completed"].includes(lowerStatus)) {
         return "completed";
@@ -55,6 +55,11 @@ const statusConfig = {
         textColor: "text-red-700",
     },
     "Not-paid": {
+        bgColor: "bg-red-50",
+        icon: <RiCloseCircleFill size={15} className="text-red-700" />,
+        textColor: "text-red-700",
+    },
+    "not-paid": {
         bgColor: "bg-red-50",
         icon: <RiCloseCircleFill size={15} className="text-red-700" />,
         textColor: "text-red-700",
