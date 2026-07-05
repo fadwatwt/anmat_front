@@ -6,14 +6,15 @@ import ViewRequestModal from "../modals/ViewRequestModal.jsx";
 import { statusCell as StatusCell } from "@/components/StatusCell";
 import {
     useGetEmployeeRequestsQuery,
-    useDeleteEmployeeRequestMutation
+    useDeleteEmployeeRequestMutation,
+    useUpdateEmployeeRequestStatusMutation
 } from "@/redux/employees/employeeRequestsApi";
 import { useGetDepartmentsQuery } from "@/redux/departments/departmentsApi";
 import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import ElementsSelect from "@/components/Form/ElementsSelect.jsx";
 import { format } from "date-fns";
-import { RiFilter2Line, RiCalendarEventLine } from "@remixicon/react";
+import { RiFilter2Line, RiCalendarEventLine, RiCheckboxCircleFill, RiCloseCircleFill } from "@remixicon/react";
 
 function RequestsTab() {
     const { t } = useTranslation();
@@ -32,6 +33,7 @@ function RequestsTab() {
         department_id: departmentFilter?.id
     });
     const [deleteRequest] = useDeleteEmployeeRequestMutation();
+    const [updateRequestStatus, { isLoading: isUpdating }] = useUpdateEmployeeRequestStatusMutation();
 
     // Alert states
     const [alertConfig, setAlertConfig] = useState({
@@ -47,6 +49,64 @@ function RequestsTab() {
 
     const handleTabChange = (tabId) => {
         setActiveTab(tabId);
+    };
+
+    const handleApprove = (index) => {
+        const request = currentData[index];
+        if (!request) return;
+        setAlertConfig({
+            isOpen: true,
+            type: "approval",
+            title: t("Approve Request"),
+            message: t("Are you sure you want to approve this request?"),
+            onConfirm: async () => {
+                try {
+                    await updateRequestStatus({ id: request.id, status: "accepted", comment: "" }).unwrap();
+                    setAlertConfig({
+                        isOpen: true,
+                        type: "response",
+                        status: "success",
+                        message: t("Request approved successfully")
+                    });
+                } catch (error) {
+                    setAlertConfig({
+                        isOpen: true,
+                        type: "response",
+                        status: "error",
+                        message: error?.data?.message || t("Failed to approve request")
+                    });
+                }
+            }
+        });
+    };
+
+    const handleReject = (index) => {
+        const request = currentData[index];
+        if (!request) return;
+        setAlertConfig({
+            isOpen: true,
+            type: "approval",
+            title: t("Reject Request"),
+            message: t("Are you sure you want to reject this request?"),
+            onConfirm: async () => {
+                try {
+                    await updateRequestStatus({ id: request.id, status: "rejected", comment: "" }).unwrap();
+                    setAlertConfig({
+                        isOpen: true,
+                        type: "response",
+                        status: "success",
+                        message: t("Request rejected successfully")
+                    });
+                } catch (error) {
+                    setAlertConfig({
+                        isOpen: true,
+                        type: "response",
+                        status: "error",
+                        message: error?.data?.message || t("Failed to reject request")
+                    });
+                }
+            }
+        });
     };
 
     const handleDelete = (index) => {
@@ -102,15 +162,15 @@ function RequestsTab() {
         ];
 
         if (activeTab === "DAY_OFF") {
-            return [...commonHeaders, { label: t("Vacation Period"), width: "20%" }, { label: t("Reason"), width: "25%" }, { label: t("Status"), width: "15%" }, { label: "", width: "5%" }];
+            return [...commonHeaders, { label: t("Vacation Period"), width: "17%" }, { label: t("Reason"), width: "22%" }, { label: t("Status"), width: "12%" }, { label: "", width: "14%" }, { label: "", width: "5%" }];
         } else if (activeTab === "SALARY_ADVANCE") {
-            return [...commonHeaders, { label: t("Advance By"), width: "10%" }, { label: t("Old Salary"), width: "10%" }, { label: t("Reason"), width: "25%" }, { label: t("Status"), width: "15%" }, { label: "", width: "5%" }];
+            return [...commonHeaders, { label: t("Advance By"), width: "10%" }, { label: t("Old Salary"), width: "10%" }, { label: t("Reason"), width: "22%" }, { label: t("Status"), width: "12%" }, { label: "", width: "14%" }, { label: "", width: "5%" }];
         } else { // WORK_DELAY
-            return [...commonHeaders, { label: t("Work Due At"), width: "15%" }, { label: t("Reason"), width: "30%" }, { label: t("Status"), width: "15%" }, { label: "", width: "5%" }];
+            return [...commonHeaders, { label: t("Work Due At"), width: "15%" }, { label: t("Reason"), width: "27%" }, { label: t("Status"), width: "12%" }, { label: "", width: "14%" }, { label: "", width: "5%" }];
         }
     };
 
-    const rows = currentData.map((req) => {
+    const rows = currentData.map((req, rowIndex) => {
         const commonCells = [
             <div key={req.id + "_name"} className="flex items-center gap-3">
                 <img src={`https://ui-avatars.com/api/?name=${req.employee?.name || "User"}`} className="w-8 h-8 rounded-full border border-status-border" alt="" />
@@ -157,10 +217,38 @@ function RequestsTab() {
             ];
         }
 
+        const showActions = canUpdate && ["open", "in-progress"].includes(req.status);
+
+        const actionButtons = (
+            <div key={req.id + "_actions"} className="flex items-center gap-1">
+                {showActions && (
+                    <>
+                        <button
+                            onClick={(e) => { e.stopPropagation(); handleReject(rowIndex); }}
+                            disabled={isUpdating}
+                            className="flex items-center gap-1 px-2 py-1 rounded-md text-xs font-bold border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 disabled:opacity-50 transition-colors"
+                        >
+                            <RiCloseCircleFill size={13} />
+                            {t("Reject")}
+                        </button>
+                        <button
+                            onClick={(e) => { e.stopPropagation(); handleApprove(rowIndex); }}
+                            disabled={isUpdating}
+                            className="flex items-center gap-1 px-2 py-1 rounded-md text-xs font-bold border border-green-200 bg-green-50 text-green-700 hover:bg-green-100 disabled:opacity-50 transition-colors"
+                        >
+                            <RiCheckboxCircleFill size={13} />
+                            {t("Approve")}
+                        </button>
+                    </>
+                )}
+            </div>
+        );
+
         return [
             ...commonCells,
             ...specificCells,
             StatusCell(req.status),
+            actionButtons,
         ];
     });
 
