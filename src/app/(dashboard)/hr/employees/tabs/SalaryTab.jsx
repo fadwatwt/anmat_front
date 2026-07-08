@@ -5,11 +5,13 @@ import Table from "@/components/Tables/Table";
 import {
   useGetSalaryTransactionsQuery,
   useCreateSalaryTransactionMutation,
+  useUpdateSalaryTransactionMutation,
   useDeleteSalaryTransactionMutation,
 } from "@/redux/financial/salariesApi";
 import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import AddSalaryModal from "../modals/AddSalaryModal";
+import EditSalaryModal from "../modals/EditSalaryModal";
 import { GoPlus } from "react-icons/go";
 import { useProcessing } from "@/app/providers";
 
@@ -17,14 +19,17 @@ export default function SalaryTab() {
   const { t } = useTranslation();
   const { showProcessing, hideProcessing } = useProcessing();
   const canCreate = usePermission("salary_transactions.create");
+  const canEdit = usePermission("salary_transactions.update");
   const canDelete = usePermission("salary_transactions.delete");
   const { data: transactions = [], isLoading: isTransactionsLoading, error } = useGetSalaryTransactionsQuery();
 
   const [createTransaction] = useCreateSalaryTransactionMutation();
+  const [updateTransaction] = useUpdateSalaryTransactionMutation();
   const [deleteTransaction] = useDeleteSalaryTransactionMutation();
 
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
@@ -49,6 +54,7 @@ export default function SalaryTab() {
 
       return {
         id: transaction._id,
+        employee_id: employeeData._id || transaction.employee_id || "",
         employee: {
           imageProfile: "https://ui-avatars.com/api/?name=" + (employeeData.name || "User"),
           name: employeeData.name || t("Unknown"),
@@ -57,7 +63,7 @@ export default function SalaryTab() {
         salary: transaction.amount || 0,
         bonus: transaction.bonus || 0,
         deduction: transaction.discount || 0,
-        comment: transaction.comment || t("N/A"),
+        comment: transaction.comment || "",
       };
     });
   }, [transactions, t]);
@@ -87,6 +93,40 @@ export default function SalaryTab() {
       {row.comment}
     </span>,
   ]);
+
+  const handleEdit = (index) => {
+    const transaction = formattedData[index];
+    setSelectedTransaction(transaction);
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateSalary = async (values) => {
+    showProcessing(t("Updating Salary Transaction..."));
+    try {
+      await updateTransaction({
+        id: selectedTransaction.id,
+        amount: values.salary,
+        bonus: values.bonuses,
+        discount: values.deductions,
+        comment: values.comment,
+      }).unwrap();
+      setApiResponse({
+        isOpen: true,
+        status: "success",
+        message: t("Salary transaction updated successfully")
+      });
+      setIsEditModalOpen(false);
+    } catch (err) {
+      setApiResponse({
+        isOpen: true,
+        status: "error",
+        message: err?.data?.message || t("Failed to update salary transaction")
+      });
+      throw err;
+    } finally {
+      hideProcessing();
+    }
+  };
 
   const handleDelete = (index) => {
     const transaction = formattedData[index];
@@ -154,9 +194,9 @@ export default function SalaryTab() {
           isCheckInput={true}
           isTitle={true}
           classContainer="w-full"
-          isActions={canDelete}
+          isActions={canEdit || canDelete}
+          handelEdit={canEdit ? handleEdit : undefined}
           handelDelete={canDelete ? handleDelete : undefined}
-          isEdit={false}
 
           // Filters
           showDatePicker={true}
@@ -187,6 +227,13 @@ export default function SalaryTab() {
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onSubmit={handleAddSalary}
+      />
+
+      <EditSalaryModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        data={selectedTransaction}
+        onSubmit={handleUpdateSalary}
       />
 
       <ApprovalAlert

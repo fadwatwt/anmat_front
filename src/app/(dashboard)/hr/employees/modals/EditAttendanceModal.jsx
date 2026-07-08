@@ -1,129 +1,51 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import PropTypes from "prop-types";
 import Modal from "@/components/Modal/Modal.jsx";
-import { updateAttendance } from "@/redux/attendance/attendanceAPI";
-import { fetchAllAttendance } from "@/redux/attendance/attendanceAPI";
+import { useUpdateAttendanceMutation } from "@/redux/attendance/attendancesApi";
 import DateInput from "@/components/Form/DateInput";
-import ElementsSelect from "@/components/Form/ElementsSelect";
 import TimeInput from "@/components/Form/TimeInput";
 import InputWithIcon from "@/components/Form/InputWithIcon";
-import TextAreaWithLabel from "@/components/Form/TextAreaWithLabel";
-import {
-  format,
-  parseISO,
-  isToday,
-  parse,
-  setHours,
-  setMinutes,
-  formatISO,
-} from "date-fns";
 import { useProcessing } from "@/app/providers";
 import { useTranslation } from "react-i18next";
 
 function EditAttendanceModal({ isOpen, onClose, attendance }) {
-  const dispatch = useDispatch();
   const { t } = useTranslation();
   const { showProcessing, hideProcessing } = useProcessing();
-  const { loading } = useSelector((state) => state.attendance);
+  const [updateAttendance] = useUpdateAttendanceMutation();
   const [submissionError, setSubmissionError] = useState(null);
-  const { employees } = useSelector((state) => state.employees);
-
-  // Improved timezone handling
-  const adjustForTimezone = (dateString, timeString) => {
-    if (!dateString || !timeString) return null;
-
-    try {
-      // Parse the date and time
-      const parsedDate = parse(dateString, "yyyy-MM-dd", new Date());
-      const [hours, minutes] = timeString.split(":").map(Number);
-
-      // Set the specific hours and minutes to the parsed date
-      const adjustedDate = setMinutes(setHours(parsedDate, hours), minutes);
-
-      // Convert to ISO string
-      return formatISO(adjustedDate);
-    } catch (error) {
-      console.error("Error adjusting timezone:", error);
-      return null;
-    }
-  };
-
-  const employeeOptions = [
-    { id: "1", element: "Palestine" },
-    { id: "2", element: "َQater" },
-    { id: "3", element: "Oman" },
-    { id: "4", element: "Egpt" },
-  ];
 
   const validationSchema = Yup.object().shape({
-    checkinDate: Yup.string().required(t("Check-in date is required")),
-    checkinTime: Yup.string().required(t("Check-in time is required")),
-    checkoutDate: Yup.string()
-      .nullable()
-      .test(
-        "checkout-date-validation",
-        t("Check-out date cannot be before check-in date"),
-        function (checkoutDate) {
-          const { checkinDate } = this.parent;
-          if (!checkoutDate || !checkinDate) return true;
-
-          const checkinParsed = parse(checkinDate, "yyyy-MM-dd", new Date());
-          const checkoutParsed = parse(checkoutDate, "yyyy-MM-dd", new Date());
-
-          return checkoutParsed >= checkinParsed;
-        }
-      ),
-    checkoutTime: Yup.string().test(
-      "checkout-time-required",
-      t("Check-out time is required when date is provided"),
-      function (value) {
-        return !this.parent.checkoutDate || (value && value.length > 0);
-      }
-    ),
+    date: Yup.string().required(t("Date is required")),
+    start_time: Yup.string().required(t("Start time is required")),
+    end_time: Yup.string().nullable(),
+    late_in_minutes: Yup.number().min(0, t("Late minutes cannot be negative")),
   });
 
   const formik = useFormik({
     initialValues: {
-      checkinDate: "",
-      checkinTime: "08:00",
-      checkoutDate: "",
-      checkoutTime: "17:00",
+      date: "",
+      start_time: "",
+      end_time: "",
+      late_in_minutes: 0,
     },
     validationSchema,
     onSubmit: async (values) => {
       showProcessing(t("Updating Attendance..."));
       try {
         setSubmissionError(null);
-
-        const checkin = adjustForTimezone(
-          values.checkinDate,
-          values.checkinTime
-        );
-        const checkout = values.checkoutDate
-          ? adjustForTimezone(values.checkoutDate, values.checkoutTime)
-          : null;
-
-        const result = await dispatch(
-          updateAttendance({
-            id: attendance._id,
-            data: { checkin, checkout },
-          })
-        );
-
-        if (updateAttendance.fulfilled.match(result)) {
-          await dispatch(fetchAllAttendance());
-          onClose();
-        } else {
-          setSubmissionError(
-            result.error?.message || t("Failed to update attendance")
-          );
+        const payload = { ...values };
+        if (!payload.end_time) {
+          delete payload.end_time;
         }
+        await updateAttendance({ id: attendance._id, ...payload }).unwrap();
+        onClose();
       } catch (error) {
-        setSubmissionError(error.message || t("An unexpected error occurred"));
+        setSubmissionError(
+          error?.data?.message || error.message || t("Failed to update attendance")
+        );
       } finally {
         hideProcessing();
       }
@@ -132,52 +54,16 @@ function EditAttendanceModal({ isOpen, onClose, attendance }) {
 
   useEffect(() => {
     if (attendance && isOpen) {
-      const parseAndFormat = (dateString, dateFormat, timeFormat) => {
-        if (!dateString) return "";
-        try {
-          const date = parseISO(dateString);
-          return {
-            date: format(date, dateFormat),
-            time: format(date, timeFormat),
-          };
-        } catch (error) {
-          console.error("Error parsing date:", error);
-          return { date: "", time: "" };
-        }
-      };
-
-      const checkin = parseAndFormat(attendance.checkin, "yyyy-MM-dd", "HH:mm");
-      const checkout = parseAndFormat(
-        attendance.checkout,
-        "yyyy-MM-dd",
-        "HH:mm"
-      );
-
       formik.resetForm({
         values: {
-          checkinDate: checkin.date || "",
-          checkinTime: checkin.time || "08:00",
-          checkoutDate: checkout.date || "",
-          checkoutTime: checkout.time || "17:00",
+          date: attendance.date || "",
+          start_time: attendance.start_time || "",
+          end_time: attendance.end_time || "",
+          late_in_minutes: attendance.late_in_minutes || 0,
         },
       });
     }
   }, [attendance, isOpen]);
-
-  // Disable checkout for the check-in date
-  const getMaxCheckoutDate = () => {
-    const checkinDate = formik.values.checkinDate;
-    if (!checkinDate) return undefined;
-
-    const parsedCheckinDate = parse(checkinDate, "yyyy-MM-dd", new Date());
-
-    // If check-in is today, disable checkout on the same day
-    if (isToday(parsedCheckinDate)) {
-      return format(new Date(), "yyyy-MM-dd");
-    }
-
-    return undefined;
-  };
 
   return (
     <Modal
@@ -188,24 +74,12 @@ function EditAttendanceModal({ isOpen, onClose, attendance }) {
       btnCancelTitle={t("Cancel")}
       onClick={() => formik.handleSubmit()}
       className="lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12 px-3"
-      title={t("Add an employee attendance")}
+      title={t("Edit Attendance")}
     >
       <div className="px-1 overflow-visible">
         <div className="flex flex-col gap-4">
           {submissionError && (
             <div className="text-red-500 text-sm mb-2">{submissionError}</div>
-          )}
-
-          <ElementsSelect
-            title={t("Employee")}
-            options={employeeOptions}
-            onChange={(selected) => formik.setFieldValue("employeeId", selected[0]?.id || "")}
-            placeholder={t("Select Employee")}
-            defaultValue={employeeOptions.filter(opt => opt.id === formik.values.employeeId)}
-            isMultiple={false}
-          />
-          {formik.touched.employeeId && formik.errors.employeeId && (
-            <p className="text-red-500 text-xs mt-[-10px]">{formik.errors.employeeId}</p>
           )}
 
           <DateInput
@@ -221,33 +95,29 @@ function EditAttendanceModal({ isOpen, onClose, attendance }) {
           )}
 
           <TimeInput
-            title={t("Attendance Time")}
-            name="attendanceTime"
-            value={formik.values.attendanceTime}
+            title={t("Start Time")}
+            name="start_time"
+            value={formik.values.start_time}
             onChange={formik.handleChange}
             isRequired={true}
-            error={formik.touched.attendanceTime && formik.errors.attendanceTime}
+            error={formik.touched.start_time && formik.errors.start_time}
+          />
+
+          <TimeInput
+            title={t("End Time")}
+            name="end_time"
+            value={formik.values.end_time}
+            onChange={formik.handleChange}
+            error={formik.touched.end_time && formik.errors.end_time}
           />
 
           <InputWithIcon
             title={t("Late Minutes")}
-            name="lateMinutes"
+            name="late_in_minutes"
             type="number"
-            value={formik.values.lateMinutes}
+            value={formik.values.late_in_minutes}
             onChange={formik.handleChange}
-            error={formik.touched.lateMinutes && formik.errors.lateMinutes}
-          />
-
-          <TextAreaWithLabel
-            title={t("Comment")}
-            name="comment"
-            value={formik.values.comment}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            placeholder={t("Comment")}
-            rows={4}
-            isOptional={true}
-            error={formik.touched.comment && formik.errors.comment}
+            error={formik.touched.late_in_minutes && formik.errors.late_in_minutes}
           />
         </div>
       </div>

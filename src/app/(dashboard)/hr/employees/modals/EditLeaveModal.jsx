@@ -1,46 +1,34 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux"; // Keeping this if needed
 import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import PropTypes from "prop-types";
 import Modal from "@/components/Modal/Modal.jsx";
 import DateInput from "@/components/Form/DateInput";
-import ElementsSelect from "@/components/Form/ElementsSelect";
 import TimeInput from "@/components/Form/TimeInput";
-import InputWithIcon from "@/components/Form/InputWithIcon";
-import TextAreaWithLabel from "@/components/Form/TextAreaWithLabel";
-import { format } from "date-fns";
-
-
 
 function EditLeaveModal({ isOpen, onClose, leave, onSubmit }) {
     const { t } = useTranslation();
-    const { employees } = useSelector((state) => state.employees) || { employees: [] };
     const [submissionError, setSubmissionError] = useState(null);
 
     const validationSchema = Yup.object().shape({
-        employeeId: Yup.string().required(t("Employee is required")),
-        date: Yup.date().required(t("Date is required")),
-        leaveTime: Yup.string().required(t("Leave time is required")),
-        lateMinutes: Yup.number(),
-        comment: Yup.string(),
+        date: Yup.string().required(t("Date is required")),
+        start_time: Yup.string().required(t("Start time is required")),
+        end_time: Yup.string().required(t("End time is required")),
     });
 
     const formik = useFormik({
         initialValues: {
-            employeeId: "",
             date: "",
-            leaveTime: "",
-            lateMinutes: 0,
-            comment: "",
+            start_time: "",
+            end_time: "",
         },
         validationSchema,
         onSubmit: async (values) => {
             try {
                 setSubmissionError(null);
-                await onSubmit({ ...leave, ...values });
+                await onSubmit(values);
                 onClose();
             } catch (error) {
                 setSubmissionError(error.message || "An error occurred");
@@ -50,21 +38,15 @@ function EditLeaveModal({ isOpen, onClose, leave, onSubmit }) {
 
     useEffect(() => {
         if (leave && isOpen) {
-            formik.setValues({
-                employeeId: leave.employee?._id || leave.employeeId || "",
-                date: leave.date ? format(new Date(leave.date), "yyyy-MM-dd") : "",
-                leaveTime: leave.checkIn ? format(new Date(leave.checkIn), "HH:mm") : "", // Assuming checkIn holds the time or we use a specific field
-                lateMinutes: leave.lateMinutes || 0,
-                comment: leave.comment || "",
+            formik.resetForm({
+                values: {
+                    date: leave.date || "",
+                    start_time: leave.start_time || "",
+                    end_time: leave.end_time || "",
+                },
             });
         }
     }, [leave, isOpen]);
-
-    // Mock options if employees are empty
-    const employeeOptions = employees.length > 0 ? employees.map(e => ({ id: e._id, element: e.name })) : [
-        { id: "1", element: "Fatima Ahmed" },
-        { id: "2", element: "Sophia Williams" },
-    ];
 
     return (
         <Modal
@@ -75,23 +57,13 @@ function EditLeaveModal({ isOpen, onClose, leave, onSubmit }) {
             btnCancelTitle={t("Cancel")}
             onClick={() => formik.handleSubmit()}
             className="lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12 px-3"
-            title={t("Edit an employee Leave")}
+            title={t("Edit Short Leave")}
         >
             <div className="px-1 overflow-visible">
                 <div className="flex flex-col gap-4">
                     {submissionError && (
                         <div className="text-red-error text-[11px] font-medium mb-1 p-2 bg-red-error/10 rounded-lg">{submissionError}</div>
                     )}
-
-                    <ElementsSelect
-                        title={t("Employee")}
-                        options={employeeOptions}
-                        onChange={(selected) => formik.setFieldValue("employeeId", selected[0]?.id || "")}
-                        placeholder={t("Select Employee")}
-                        defaultValue={employeeOptions.filter(opt => opt.id === formik.values.employeeId)}
-                        isMultiple={false}
-                        disabled={true}
-                    />
 
                     <DateInput
                         title={t("Date")}
@@ -106,33 +78,21 @@ function EditLeaveModal({ isOpen, onClose, leave, onSubmit }) {
                     )}
 
                     <TimeInput
-                        title={t("Leave Time")}
-                        name="leaveTime"
-                        value={formik.values.leaveTime}
+                        title={t("Start Time")}
+                        name="start_time"
+                        value={formik.values.start_time}
                         onChange={formik.handleChange}
                         isRequired={true}
-                        error={formik.touched.leaveTime && formik.errors.leaveTime}
+                        error={formik.touched.start_time && formik.errors.start_time}
                     />
 
-                    <InputWithIcon
-                        title={t("Late Minutes")}
-                        name="lateMinutes"
-                        type="number"
-                        value={formik.values.lateMinutes}
+                    <TimeInput
+                        title={t("End Time")}
+                        name="end_time"
+                        value={formik.values.end_time}
                         onChange={formik.handleChange}
-                        error={formik.touched.lateMinutes && formik.errors.lateMinutes}
-                    />
-
-                    <TextAreaWithLabel
-                        title={t("Comment")}
-                        name="comment"
-                        value={formik.values.comment}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        placeholder={t("Comment")}
-                        rows={4}
-                        isOptional={true}
-                        error={formik.touched.comment && formik.errors.comment}
+                        isRequired={true}
+                        error={formik.touched.end_time && formik.errors.end_time}
                     />
                 </div>
             </div>

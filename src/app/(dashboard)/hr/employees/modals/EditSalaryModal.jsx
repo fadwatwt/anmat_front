@@ -4,22 +4,15 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import PropTypes from "prop-types";
 import Modal from "@/components/Modal/Modal.jsx";
-import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
-import ElementsSelect from "@/components/Form/ElementsSelect";
 import InputWithIcon from "@/components/Form/InputWithIcon";
 import TextAreaWithLabel from "@/components/Form/TextAreaWithLabel";
 
-
-
 function EditSalaryModal({ isOpen, onClose, onSubmit, data }) {
     const { t } = useTranslation();
-    const { employees } = useSelector((state) => state.employees);
     const [submissionError, setSubmissionError] = useState(null);
 
     const validationSchema = Yup.object().shape({
-        employeeId: Yup.string().required(t("Employee is required")),
-        workType: Yup.string().required(t("Work type is required")),
         salary: Yup.number()
             .required(t("Salary is required"))
             .min(0, t("Salary must be at least 0")),
@@ -30,11 +23,9 @@ function EditSalaryModal({ isOpen, onClose, onSubmit, data }) {
 
     const formik = useFormik({
         initialValues: {
-            employeeId: data?.employeeId || "",
-            workType: data?.workType || "Full-time",
             salary: data?.salary || 0,
-            bonuses: data?.bonuses || data?.bonus || 0,
-            deductions: data?.deductions || data?.deduction || 0,
+            bonuses: data?.bonus || 0,
+            deductions: data?.deduction || 0,
             comment: data?.comment || "",
         },
         validationSchema,
@@ -51,18 +42,6 @@ function EditSalaryModal({ isOpen, onClose, onSubmit, data }) {
         },
     });
 
-    const employeeOptions = [
-        { id: "1", element: "Palestine" },
-        { id: "2", element: "َQater" },
-        { id: "3", element: "Oman" },
-        { id: "4", element: "Egpt" },
-    ];
-
-    const workTypeOptions = [
-        { id: "Full-time", element: t("Full-time") },
-        { id: "Part-time", element: t("Part-time") },
-    ];
-
     return (
         <Modal
             isOpen={isOpen}
@@ -72,36 +51,12 @@ function EditSalaryModal({ isOpen, onClose, onSubmit, data }) {
             btnCancelTitle={t("Cancel")}
             onClick={() => formik.handleSubmit()}
             className="lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12 px-3"
-            title={t("Edit an employee salary")}
+            title={t("Edit Salary Transaction")}
         >
             <div className="px-1 overflow-visible">
                 <div className="flex flex-col gap-4">
                     {submissionError && (
                         <div className="text-red-500 text-sm mb-2">{submissionError}</div>
-                    )}
-
-                    <ElementsSelect
-                        title={t("Employee")}
-                        options={employeeOptions}
-                        onChange={(selected) => formik.setFieldValue("employeeId", selected[0]?.id || "")}
-                        placeholder={t("Select Employee")}
-                        defaultValue={employeeOptions.filter(opt => opt.id === formik.values.employeeId)}
-                        isMultiple={false}
-                    />
-                    {formik.touched.employeeId && formik.errors.employeeId && (
-                        <p className="text-red-500 text-xs mt-[-10px]">{formik.errors.employeeId}</p>
-                    )}
-
-                    <ElementsSelect
-                        title={t("Work Type")}
-                        options={workTypeOptions}
-                        onChange={(selected) => formik.setFieldValue("workType", selected[0]?.id || "")}
-                        placeholder={t("Select Work Type")}
-                        defaultValue={workTypeOptions.filter(opt => opt.id === formik.values.workType)}
-                        isMultiple={false}
-                    />
-                    {formik.touched.workType && formik.errors.workType && (
-                        <p className="text-red-500 text-xs mt-[-10px]">{formik.errors.workType}</p>
                     )}
 
                     <InputWithIcon
@@ -110,30 +65,30 @@ function EditSalaryModal({ isOpen, onClose, onSubmit, data }) {
                         type="number"
                         value={formik.values.salary}
                         onChange={formik.handleChange}
-icon={<span className="text-gray-500 dark:text-gray-400">$</span>}
-                            placeholder="0"
-                            isRequired={true}
-                            error={formik.touched.salary && formik.errors.salary}
-                        />
+                        icon={<span className="text-gray-500 dark:text-gray-400">$</span>}
+                        placeholder="0"
+                        isRequired={true}
+                        error={formik.touched.salary && formik.errors.salary}
+                    />
 
-                        <InputWithIcon
-                            title={t("Bonus Amount")}
-                            name="bonuses"
-                            type="number"
-                            value={formik.values.bonuses}
-                            onChange={formik.handleChange}
-                            icon={<span className="text-gray-500 dark:text-gray-400 w-3">$</span>}
-                            placeholder="0"
-                            error={formik.touched.bonuses && formik.errors.bonuses}
-                        />
+                    <InputWithIcon
+                        title={t("Bonus Amount")}
+                        name="bonuses"
+                        type="number"
+                        value={formik.values.bonuses}
+                        onChange={formik.handleChange}
+                        icon={<span className="text-gray-500 dark:text-gray-400 w-3">$</span>}
+                        placeholder="0"
+                        error={formik.touched.bonuses && formik.errors.bonuses}
+                    />
 
-                        <InputWithIcon
-                            title={t("Discount Amount")}
-                            name="deductions"
-                            type="number"
-                            value={formik.values.deductions}
-                            onChange={formik.handleChange}
-                            icon={<span className="text-gray-500 dark:text-gray-400">$</span>}
+                    <InputWithIcon
+                        title={t("Discount Amount")}
+                        name="deductions"
+                        type="number"
+                        value={formik.values.deductions}
+                        onChange={formik.handleChange}
+                        icon={<span className="text-gray-500 dark:text-gray-400">$</span>}
                         placeholder="0"
                         error={formik.touched.deductions && formik.errors.deductions}
                     />

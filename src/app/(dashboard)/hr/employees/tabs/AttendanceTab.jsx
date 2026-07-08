@@ -56,6 +56,7 @@ function AttendanceTab() {
   const { t } = useTranslation();
   const { showProcessing, hideProcessing } = useProcessing();
   const canCreate = usePermission("attendances.create");
+  const canEdit = usePermission("attendances.update");
   const canDelete = usePermission("attendances.delete");
   const { data: attendancesData, isLoading } = useGetAttendancesQuery();
   const [deleteAttendance] = useDeleteAttendanceMutation();
@@ -171,7 +172,8 @@ function AttendanceTab() {
           showListOfDepartments={true}
           showStatusFilter={true}
           showDatePicker={true}
-          isActions={canDelete}
+          isActions={canEdit || canDelete}
+          handelEdit={canEdit ? handleEdit : undefined}
           handelDelete={canDelete ? handleDelete : undefined}
           headerActions={headerActions}
         />

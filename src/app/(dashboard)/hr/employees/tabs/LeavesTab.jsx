@@ -7,11 +7,13 @@ import Table from "@/components/Tables/Table";
 import { GoPlus } from "react-icons/go";
 import {
     useGetLeavesQuery,
+    useUpdateLeaveMutation,
     useDeleteLeaveMutation,
 } from "@/redux/leaves/leavesApi";
 import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import AddLeaveModal from "../modals/AddLeaveModal";
+import EditLeaveModal from "../modals/EditLeaveModal";
 import PropTypes from "prop-types";
 import { useProcessing } from "@/app/providers";
 
@@ -19,16 +21,20 @@ function LeavesTab() {
     const { t } = useTranslation();
     const { showProcessing, hideProcessing } = useProcessing();
     const canCreate = usePermission("leaves.create");
+    const canEdit = usePermission("leaves.update");
     const canDelete = usePermission("leaves.delete");
     const { data: leavesData, isLoading } = useGetLeavesQuery();
+    const [updateLeave] = useUpdateLeaveMutation();
     const [deleteLeave] = useDeleteLeaveMutation();
 
     const leaves = leavesData || [];
 
     // State for modals and alerts
     const [selectedLeave, setSelectedLeave] = useState(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isDeleteApprovalOpen, setIsDeleteApprovalOpen] = useState(false);
     const [deleteApiResponse, setDeleteApiResponse] = useState({ isOpen: false, status: "", message: "" });
+    const [updateApiResponse, setUpdateApiResponse] = useState({ isOpen: false, status: "", message: "" });
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
     const headers = [
@@ -73,6 +79,28 @@ function LeavesTab() {
         </span>,
     ]);
 
+    const handleEdit = (index) => {
+        setSelectedLeave(leaves[index]);
+        setIsEditModalOpen(true);
+    };
+
+    const handleUpdateLeave = async (values) => {
+        showProcessing(t("Updating Short Leave..."));
+        try {
+            await updateLeave({ id: selectedLeave._id, ...values }).unwrap();
+            setUpdateApiResponse({
+                isOpen: true,
+                status: "success",
+                message: t("Short Leave updated successfully")
+            });
+            setIsEditModalOpen(false);
+        } catch (error) {
+            throw error;
+        } finally {
+            hideProcessing();
+        }
+    };
+
     const handleDelete = (index) => {
         setSelectedLeave(leaves[index]);
         setIsDeleteApprovalOpen(true);
@@ -103,6 +131,10 @@ function LeavesTab() {
         setDeleteApiResponse(prev => ({ ...prev, isOpen: false }));
     };
 
+    const handleCloseUpdateApiResponse = () => {
+        setUpdateApiResponse(prev => ({ ...prev, isOpen: false }));
+    };
+
     const headerActions = canCreate ? (
         <button onClick={handleAddLeave} className="flex items-center gap-2 bg-primary-base hover:opacity-90 text-white px-5 py-2.5 rounded-xl transition-all text-sm font-bold shadow-lg shadow-primary-500/20 active:scale-[0.98]">
             <GoPlus size={20} />
@@ -123,7 +155,8 @@ function LeavesTab() {
                     showListOfDepartments={true}
                     showStatusFilter={true}
                     showDatePicker={true}
-                    isActions={canDelete}
+                    isActions={canEdit || canDelete}
+                    handelEdit={canEdit ? handleEdit : undefined}
                     handelDelete={canDelete ? handleDelete : undefined}
                     headerActions={headerActions}
                 />
@@ -132,6 +165,13 @@ function LeavesTab() {
             <AddLeaveModal
                 isOpen={isAddModalOpen}
                 onClose={() => setIsAddModalOpen(false)}
+            />
+
+            <EditLeaveModal
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                leave={selectedLeave}
+                onSubmit={handleUpdateLeave}
             />
 
             <ApprovalAlert
@@ -150,6 +190,15 @@ function LeavesTab() {
                 status={deleteApiResponse.status}
                 message={deleteApiResponse.message}
                 onClose={handleCloseDeleteApiResponse}
+                successTitle={t("Success")}
+                errorTitle={t("Error")}
+            />
+
+            <ApiResponseAlert
+                isOpen={updateApiResponse.isOpen}
+                status={updateApiResponse.status}
+                message={updateApiResponse.message}
+                onClose={handleCloseUpdateApiResponse}
                 successTitle={t("Success")}
                 errorTitle={t("Error")}
             />
