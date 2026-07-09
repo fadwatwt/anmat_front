@@ -246,12 +246,12 @@ function Desktop2Page() {
         </div>
         <div
           className={
-            "bg-primary-700 w-full rounded-xl flex flex-col md:flex-row items-center md:items-start justify-between gap-6 md:gap-3 px-6 md:px-0"
+            "bg-primary-700 w-full rounded-xl flex flex-col md:flex-row items-center md:items-start justify-between gap-6 md:gap-3 px-6"
           }
         >
           <div
             className={
-              "flex flex-col items-center md:items-start justify-start gap-6 py-8 md:py-10 px-0 md:pl-10 text-center md:text-start"
+              "flex flex-col items-center md:items-start justify-start gap-6 py-8 md:py-10 px-4 md:px-10 text-center md:text-start"
             }
           >
             <p className={"text-white text-2xl md:text-3xl font-bold"}>
