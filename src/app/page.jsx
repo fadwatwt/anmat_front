@@ -1,6 +1,5 @@
 "use client";
-import { ImSpinner2 } from "react-icons/im";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {
   RiBuilding4Line,
   RiCheckboxCircleFill,
@@ -20,6 +19,11 @@ function Desktop2Page() {
   const { i18n, t } = useTranslation();
   const [isOnSwitch, setIsOnSwitch] = useState(false);
   const { data: plans, isLoading } = useGetPublicSubscriptionPlansQuery();
+
+  const scrollToSection = useCallback((id) => {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, []);
   return (
     <div
       className={
@@ -27,6 +31,7 @@ function Desktop2Page() {
       }
     >
       <div
+        id="home"
         className={
           "w-full flex justify-center bg-gradient-to-t to-primary-500 from-primary-900 via-primary-600 pt-5 px-4"
         }
@@ -43,10 +48,10 @@ function Desktop2Page() {
                 <p className={"text-white"}>{t("Anmat")}</p>
               </div>
               <nav className={"hidden md:flex gap-6 text-white"}>
-                <li className={"list-none "}>{t("Home")}</li>
-                <li className={"list-none "}>{t("Features")}</li>
-                <li className={"list-none "}>{t("Pricing")}</li>
-                <li className={"list-none "}>{t("FAQ")}</li>
+                <button onClick={() => scrollToSection("home")} className={"list-none cursor-pointer hover:text-primary-200 transition-colors"}>{t("Home")}</button>
+                <button onClick={() => scrollToSection("features")} className={"list-none cursor-pointer hover:text-primary-200 transition-colors"}>{t("Features")}</button>
+                <button onClick={() => scrollToSection("pricing")} className={"list-none cursor-pointer hover:text-primary-200 transition-colors"}>{t("Pricing")}</button>
+                <button onClick={() => scrollToSection("faq")} className={"list-none cursor-pointer hover:text-primary-200 transition-colors"}>{t("FAQ")}</button>
               </nav>
             </div>
             <div className={"flex items-center gap-3"}>
@@ -89,6 +94,7 @@ function Desktop2Page() {
         </div>
       </div>
       <div
+        id="features"
         className={
           "w-full max-w-[87rem] flex flex-col justify-center items-center gap-10 px-4 py-8"
         }
@@ -294,7 +300,7 @@ function Desktop2Page() {
             />
           </div>
         </div>
-        <div className={"flex flex-col w-full "}>
+        <div id="pricing" className={"flex flex-col w-full "}>
           <div className={"flex flex-col py-10 gap-12"}>
             <div className={"flex flex-col items-center w-full"}>
               <p className={"text-blue-500 dark:text-blue-400 text-sm"}>{t("Main Features")}</p>
@@ -329,8 +335,27 @@ function Desktop2Page() {
             </div>
             <div className={"w-full flex justify-center items-center gap-6 flex-wrap px-4"}>
               {isLoading ? (
-                <div className="flex justify-center items-center py-20 w-full text-primary-600 dark:text-primary-300 font-bold text-xl">
-                  <ImSpinner2 className="animate-spin text-primary-base dark:text-primary-300" size={36} />
+                <div className="w-full flex justify-center items-center gap-6 flex-wrap px-4">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="w-full md:w-[45%] lg:w-[30%] xl:w-[28%] rounded-2xl border border-gray-200 dark:border-gray-700 shadow-lg flex flex-col gap-6 py-10 px-8 bg-white dark:bg-surface">
+                      <div className="flex flex-col gap-3 justify-center items-center text-center">
+                        <div className="rounded-full w-14 h-14 bg-gray-200 dark:bg-gray-700 animate-pulse" />
+                        <div className="h-6 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                        <div className="h-10 w-28 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                        <div className="h-4 w-40 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mt-2" />
+                        <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                      </div>
+                      <div className="flex-1 w-full mt-4 flex flex-col gap-4">
+                        {[1, 2, 3, 4, 5].map((j) => (
+                          <div key={j} className="flex items-center gap-3">
+                            <div className="w-6 h-6 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse shrink-0" />
+                            <div className="h-4 w-full bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                          </div>
+                        ))}
+                      </div>
+                      <div className="h-12 w-full bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse" />
+                    </div>
+                  ))}
                 </div>
               ) : plans?.filter(p => p.is_active)?.length > 0 ? (
                 plans?.filter(plan => plan.is_active).map((plan) => {
@@ -438,7 +463,7 @@ function Desktop2Page() {
             />
           </div>
         </div>
-        <div className={"flex flex-col gap-5 w-full md:w-3/4 lg:w-1/2 px-4"}>
+        <div id="faq" className={"flex flex-col gap-5 w-full md:w-3/4 lg:w-1/2 px-4"}>
           <div className={"flex flex-col gap-5 text-center md:text-start items-center"}>
             <p className={"text-black text-xl sm:text-2xl font-bold dark:text-white"}>
               {t("Frequently asked questions")}
@@ -511,27 +536,59 @@ function Desktop2Page() {
           </div>
         </div>
       </div>
-      <div
-        className={
-          "footer w-full flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-0 bg-gray-700 dark:bg-gray-800 px-4 sm:px-7 py-8 sm:py-12 text-center sm:text-start"
-        }
-      >
-        <div className={"icons flex items-center gap-3"}>
-          <RiFacebookCircleFill size={"22"} className={"text-gray-200"} />
-          <RiLinkedinBoxFill size={"22"} className={"text-gray-200"} />
-          <RiTwitterXLine size={"22"} className={"text-gray-200"} />
+      <div className={"w-full bg-gray-700 dark:bg-gray-800"}>
+        <div className={"max-w-[87rem] mx-auto px-4 sm:px-7 py-12 sm:py-16"}>
+          <div className={"grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8"}>
+            <div className={"flex flex-col gap-4"}>
+              <div className={"flex gap-2 items-center"}>
+                <img src="/images/LandingPage/logoBlue.png" alt={""} className={"w-8"} />
+                <p className={"text-white font-bold text-lg"}>{t("Anmat")}</p>
+              </div>
+              <p className={"text-gray-300 text-sm leading-relaxed"}>
+                {t("All the tools you need for collaboration, analytics, and decision-making in one place.")}
+              </p>
+              <div className={"flex items-center gap-3 mt-2"}>
+                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className={"text-gray-300 hover:text-white transition-colors"}>
+                  <RiFacebookCircleFill size={"22"} />
+                </a>
+                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className={"text-gray-300 hover:text-white transition-colors"}>
+                  <RiLinkedinBoxFill size={"22"} />
+                </a>
+                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className={"text-gray-300 hover:text-white transition-colors"}>
+                  <RiTwitterXLine size={"22"} />
+                </a>
+              </div>
+            </div>
+            <div className={"flex flex-col gap-3"}>
+              <p className={"text-gray-100 font-semibold mb-2"}>{t("Product")}</p>
+              <button onClick={() => scrollToSection("features")} className={"text-gray-300 hover:text-white text-sm text-start transition-colors"}>{t("Features")}</button>
+              <button onClick={() => scrollToSection("pricing")} className={"text-gray-300 hover:text-white text-sm text-start transition-colors"}>{t("Pricing")}</button>
+              <Link href="/sign-in" className={"text-gray-300 hover:text-white text-sm transition-colors"}>{t("Login")}</Link>
+              <Link href="/register/subscriber/email" className={"text-gray-300 hover:text-white text-sm transition-colors"}>{t("Sign up")}</Link>
+            </div>
+            <div className={"flex flex-col gap-3"}>
+              <p className={"text-gray-100 font-semibold mb-2"}>{t("Company")}</p>
+              <button onClick={() => scrollToSection("home")} className={"text-gray-300 hover:text-white text-sm text-start transition-colors"}>{t("About")}</button>
+              <button onClick={() => scrollToSection("faq")} className={"text-gray-300 hover:text-white text-sm text-start transition-colors"}>{t("FAQ")}</button>
+            </div>
+            <div className={"flex flex-col gap-3"}>
+              <p className={"text-gray-100 font-semibold mb-2"}>{t("Support")}</p>
+              <a href="mailto:support@anmat.com" className={"text-gray-300 hover:text-white text-sm transition-colors"}>{t("Contact Us")}</a>
+              <a href="mailto:help@anmat.com" className={"text-gray-300 hover:text-white text-sm transition-colors"}>{t("Help Center")}</a>
+            </div>
+          </div>
         </div>
-        <div className={"flex gap-2 items-center"}>
-          <img
-            src="/images/LandingPage/logoBlue.png"
-            alt={""}
-            className={"w-8"}
-          />
-          <p className={"text-gray-200"}>{t("Management")}</p>
+        <div className={"border-t border-gray-600 dark:border-gray-700"}>
+          <div className={"max-w-[87rem] mx-auto px-4 sm:px-7 py-6 flex flex-col sm:flex-row justify-between items-center gap-3"}>
+            <p className={"text-gray-400 text-sm"}>
+              {t("© 2025 Anmat. All rights reserved.")}
+            </p>
+            <div className={"flex gap-6 text-sm"}>
+              <a href="/privacy" className={"text-gray-400 hover:text-gray-200 transition-colors"}>{t("Privacy Policy")}</a>
+              <a href="/terms" className={"text-gray-400 hover:text-gray-200 transition-colors"}>{t("Terms of Service")}</a>
+            </div>
+          </div>
         </div>
-        <p className={"text-gray-200 text-sm"}>
-          {t("© 2025 Management. All rights reserved.")}
-        </p>
       </div>
     </div>
   );
