@@ -2507,5 +2507,14 @@
   "List":"قائمة",
   "Reminder":"تذكير",
   "Create Reminder":"انشاء تذكير",
-  "Edit Appointment":"تعديل الموعد"
+  "Edit Appointment":"تعديل الموعد",
+  "Overview":"نظرة عامة",
+  "Subscribers & Plans":"المشتركين والخطط",
+  "Finance":"المالية",
+  "HR":"الموارد البشرية",
+  "Operations":"العمليات",
+  "My Work":"عملي",
+  "Billing":"الفواتير",
+  "Support":"الدعم",
+  "Administration":"الإدارة"
 }

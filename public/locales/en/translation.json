@@ -2496,5 +2496,14 @@
   "Search agenda...": "Search agenda...",
   "No results found": "No results found",
   "Select a day to view details": "Select a day to view details",
-  "My Agenda": "My Agenda"
+  "My Agenda": "My Agenda",
+  "Overview": "Overview",
+  "Subscribers & Plans": "Subscribers & Plans",
+  "Finance": "Finance",
+  "HR": "HR",
+  "Operations": "Operations",
+  "My Work": "My Work",
+  "Billing": "Billing",
+  "Support": "Support",
+  "Administration": "Administration"
 }

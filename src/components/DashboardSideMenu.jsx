@@ -10,6 +10,22 @@ import { dashboardSideMenuItems } from '@/config/menuItems.js';
 import { useSelector } from 'react-redux';
 import { selectUserType, selectPermissions, selectPermissionsLoaded } from '@/redux/auth/authSlice';
 
+const SectionHeader = ({ title }) => {
+    const { t } = useTranslation();
+    if (!title) return null;
+    return (
+        <div className="px-4 pt-5 pb-1">
+            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest dark:text-gray-500">
+                {t(title)}
+            </p>
+        </div>
+    );
+};
+
+SectionHeader.propTypes = {
+    title: PropTypes.string,
+};
+
 const Menu = React.memo(({ isSlidebarOpen, toggleSlidebarOpen }) => {
 
     const authUserType = useSelector(selectUserType);
@@ -50,10 +66,7 @@ const Menu = React.memo(({ isSlidebarOpen, toggleSlidebarOpen }) => {
         return { ...item, children: visibleChildren };
     };
 
-    // const [authUserType, setAuthUserType] = useState('admin');
     const { t, i18n } = useTranslation()
-    // Try to change user type to see the effect of dynamic reload elements
-    // allowed user types: ['Admin', 'Subscriber', 'Employee']
 
     return (
         <div
@@ -88,19 +101,29 @@ const Menu = React.memo(({ isSlidebarOpen, toggleSlidebarOpen }) => {
                 </div>
                 <div className={"flex  flex-col gap-2"}>
                     <div className={"py-5 menu-list sm:py-0 flex flex-col gap-2 text-gray-500"}>
-                        {permissionsLoaded && dashboardSideMenuItems
-                            .map(filterItem)
-                            .filter(Boolean)
-                            .map((item, index) => (
-                                <MenuItem
-                                    key={index}
-                                    path={item.path}
-                                    icon={item.icon}
-                                    title={item.title}
-                                    children={item.children}
-                                />
-                            ))
-                        }
+                        {permissionsLoaded && (() => {
+                            const filteredItems = dashboardSideMenuItems
+                                .map(filterItem)
+                                .filter(Boolean);
+
+                            let lastSection = null;
+                            return filteredItems.map((item, index) => {
+                                const currentSection = item.section || '';
+                                const showHeader = currentSection && currentSection !== lastSection;
+                                lastSection = currentSection;
+                                return (
+                                    <React.Fragment key={index}>
+                                        {showHeader && <SectionHeader title={currentSection} />}
+                                        <MenuItem
+                                            path={item.path}
+                                            icon={item.icon}
+                                            title={item.title}
+                                            children={item.children}
+                                        />
+                                    </React.Fragment>
+                                );
+                            });
+                        })()}
                     </div>
                 </div>
             </div>
