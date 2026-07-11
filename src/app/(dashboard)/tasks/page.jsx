@@ -15,7 +15,8 @@ import { RiEyeLine, RiDeleteBinLine, RiEditLine, RiCalendarCheckLine } from "rea
 import StatusActions from "@/components/Dropdowns/StatusActions";
 import {
   useGetSubscriberTasksQuery,
-  useDeleteSubscriberTaskMutation
+  useDeleteSubscriberTaskMutation,
+  useUpdateSubscriberTaskMutation
 } from "@/redux/tasks/subscriberTasksApi";
 import { useGetEmployeeTasksQuery, useUpdateTaskStatusMutation } from "@/redux/tasks/employeeTasksApi";
 import Modal from "@/components/Modal/Modal.jsx";
@@ -23,6 +24,8 @@ import EvaluationModal from "@/components/Modal/EvaluationModal";
 import StarRating from "@/components/StarRating";
 import { useProcessing } from "@/app/providers";
 import CreateAppointmentFromTaskModal from "@/components/Appointments/CreateAppointmentFromTaskModal";
+import ViewToggle from "./_components/ViewToggle";
+import KanbanBoard from "./_components/KanbanBoard";
 
 // ✅ Lazy-loaded components
 const NameAndDescription = dynamic(() => import("@/app/(dashboard)/projects/_components/TableInfo/NameAndDescription"), { ssr: false });
@@ -51,7 +54,37 @@ function TasksPage() {
 
   const [deleteSubscriberTask] = useDeleteSubscriberTaskMutation();
   const [updateTaskStatus] = useUpdateTaskStatusMutation();
+  const [updateSubscriberTask] = useUpdateSubscriberTaskMutation();
   const { showProcessing, hideProcessing } = useProcessing();
+
+  const [activeView, setActiveView] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("tasks-view-mode") || "table";
+    }
+    return "table";
+  });
+
+  const handleViewChange = (view) => {
+    setActiveView(view);
+    localStorage.setItem("tasks-view-mode", view);
+  };
+
+  const handleKanbanStatusChange = async (taskId, newStatus) => {
+    try {
+      if (isEmployee) {
+        await updateTaskStatus({ id: taskId, status: newStatus }).unwrap();
+      } else {
+        await updateSubscriberTask({ id: taskId, status: newStatus }).unwrap();
+      }
+    } catch (err) {
+      setApiResponse({
+        isOpen: true,
+        status: "error",
+        message: err?.data?.message || t("Failed to update status"),
+      });
+      throw err;
+    }
+  };
 
   const [isOpenDeleteAlert, setIsOpenDeleteAlert] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState(null);
@@ -298,11 +331,17 @@ function TasksPage() {
       <Page
         title={t("Tasks")}
         {...(canCreateTask ? { isBtn: true, btnOnClick: handleCreateTask, btnTitle: t("Create a Task") } : {})}
+        otherHeaderActions={<ViewToggle activeView={activeView} onChange={handleViewChange} />}
       >
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-2 h-full">
             {isLoading ? (
               <div className="text-center py-6">{t("Loading tasks...")}</div>
+            ) : activeView === "kanban" ? (
+              <KanbanBoard
+                tasks={tasks}
+                onStatusChange={handleKanbanStatusChange}
+              />
             ) : (
               <Table
                 className="custom-class"

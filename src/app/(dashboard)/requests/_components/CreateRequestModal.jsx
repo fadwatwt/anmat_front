@@ -33,6 +33,7 @@ function CreateRequestModal({ isOpen, onClose }) {
         { id: "DAY_OFF", element: t("Day Off") },
         { id: "SALARY_ADVANCE", element: t("Salary Advance") },
         { id: "WORK_DELAY", element: t("Work Delay") },
+        { id: "SHORT_LEAVE", element: t("Short Leave") },
     ];
 
     const formik = useFormik({
@@ -45,6 +46,9 @@ function CreateRequestModal({ isOpen, onClose }) {
             old_salary_amount: "",
             vacation_date: "",
             vacation_end_date: "",
+            leave_date: "",
+            leave_start_time: "",
+            leave_end_time: "",
         },
         validationSchema: Yup.object({
             type: Yup.string().required(t("Request type is required")),
@@ -84,6 +88,26 @@ function CreateRequestModal({ isOpen, onClose }) {
                 ).nullable(),
                 otherwise: (schema) => schema.nullable().strip(),
             }),
+            leave_date: Yup.string().when("type", {
+                is: "SHORT_LEAVE",
+                then: (schema) => schema.required(t("Leave date is required")),
+                otherwise: (schema) => schema.nullable().strip(),
+            }),
+            leave_start_time: Yup.string().when("type", {
+                is: "SHORT_LEAVE",
+                then: (schema) => schema.required(t("Start time is required")),
+                otherwise: (schema) => schema.nullable().strip(),
+            }),
+            leave_end_time: Yup.string().when("type", {
+                is: "SHORT_LEAVE",
+                then: (schema) => schema.required(t("End time is required"))
+                    .test("after-start", t("End time must be after start time"), function (value) {
+                        const { leave_start_time } = this.parent;
+                        if (!leave_start_time || !value) return true;
+                        return value > leave_start_time;
+                    }),
+                otherwise: (schema) => schema.nullable().strip(),
+            }),
         }),
         onSubmit: async (values) => {
             setAlertConfig({
@@ -92,7 +116,6 @@ function CreateRequestModal({ isOpen, onClose }) {
                 message: t("Are you sure you want to submit this request?"),
                 onConfirm: async () => {
                     try {
-                        // Filter out irrelevant fields based on type
                         const payload = {
                             employee_id: userId,
                             type: values.type,
@@ -108,6 +131,10 @@ function CreateRequestModal({ isOpen, onClose }) {
                         } else if (values.type === "DAY_OFF") {
                             payload.vacation_date = values.vacation_date;
                             payload.vacation_end_date = values.vacation_end_date;
+                        } else if (values.type === "SHORT_LEAVE") {
+                            payload.leave_date = values.leave_date;
+                            payload.leave_start_time = values.leave_start_time;
+                            payload.leave_end_time = values.leave_end_time;
                         }
 
                         showProcessing(t("Submitting request..."));
@@ -234,6 +261,41 @@ function CreateRequestModal({ isOpen, onClose }) {
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 error={formik.touched.vacation_end_date && formik.errors.vacation_end_date}
+                            />
+                        </div>
+                    )}
+
+                    {formik.values.type === "SHORT_LEAVE" && (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <InputAndLabel
+                                title={t("Leave Date")}
+                                name="leave_date"
+                                type="date"
+                                value={formik.values.leave_date}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.leave_date && formik.errors.leave_date}
+                                isRequired
+                            />
+                            <InputAndLabel
+                                title={t("Start Time")}
+                                name="leave_start_time"
+                                type="time"
+                                value={formik.values.leave_start_time}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.leave_start_time && formik.errors.leave_start_time}
+                                isRequired
+                            />
+                            <InputAndLabel
+                                title={t("End Time")}
+                                name="leave_end_time"
+                                type="time"
+                                value={formik.values.leave_end_time}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.leave_end_time && formik.errors.leave_end_time}
+                                isRequired
                             />
                         </div>
                     )}

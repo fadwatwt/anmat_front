@@ -22,183 +22,9 @@ export const dashboardSideMenuItems = [
         path: '/dashboard',
         icon: <Category />
     },
-    {
-        section: 'Overview',
-        allowed_to: ['Admin', 'Subscriber', 'Employee'],
-        title: 'AI Assistant',
-        path: '/ai',
-        icon: <Cpu />
-    },
-    {
-        section: 'Overview',
-        allowed_to: ['Admin', 'Subscriber', 'Employee'],
-        title: 'Analytics',
-        path: '/analytics',
-        icon: <Chart2 />,
-        permission_any_of: ['admin.analytics.view', 'analytics.view'],
-    },
 
     // ═══════════════════════════════════════════
-    // Section: System (Admin only)
-    // ═══════════════════════════════════════════
-    {
-        section: 'System',
-        allowed_to: ['Admin'],
-        title: 'System Admins',
-        path: '/system-admins',
-        icon: <Profile2User />,
-        permission: 'admin.system_admins.list'
-    },
-    {
-        section: 'System',
-        allowed_to: ['Admin'],
-        title: 'Roles',
-        path: '/roles/admins',
-        icon: <Setting4 />,
-        permission: 'admin.admin_roles.list'
-    },
-    {
-        section: 'System',
-        allowed_to: ['Admin'],
-        title: 'Permissions',
-        path: '/permissions/admins',
-        icon: <Setting5 />,
-        permission: 'admin.admin_permissions.list'
-    },
-    {
-        section: 'System',
-        allowed_to: ['Admin'],
-        title: 'Industries',
-        path: '/industries',
-        icon: <Category2 />,
-        permission: 'admin.industries.list'
-    },
-
-    // ═══════════════════════════════════════════
-    // Section: Subscribers & Plans (Admin only)
-    // ═══════════════════════════════════════════
-    {
-        section: 'Subscribers & Plans',
-        allowed_to: ['Admin'],
-        title: 'Subscribers',
-        path: '/subscribers',
-        icon: <Tag />,
-        permission: 'admin.subscribers.list'
-    },
-    {
-        section: 'Subscribers & Plans',
-        allowed_to: ['Admin'],
-        title: 'Plans',
-        path: '/plans',
-        icon: <PercentageCircle />,
-        permission: 'admin.subscription_plans.list',
-        children: [
-            {
-                title: 'Subscription Plans',
-                path: '/plans',
-                permission: 'admin.subscription_plans.list',
-            },
-            {
-                title: 'AI Token Plans',
-                path: '/plans/ai-plans',
-                permission: 'admin.subscription_plans.list',
-            },
-        ]
-    },
-
-    // ═══════════════════════════════════════════
-    // Section: Finance (Admin only)
-    // ═══════════════════════════════════════════
-    {
-        section: 'Finance',
-        allowed_to: ['Admin'],
-        title: 'Money Receiving Methods',
-        path: '/money-receiving',
-        icon: <EmptyWallet />
-    },
-
-    // ═══════════════════════════════════════════
-    // Section: HR (Subscriber & Employee)
-    // ═══════════════════════════════════════════
-    {
-        section: 'HR',
-        allowed_to: ['Subscriber', 'Employee'],
-        title: 'HR Management',
-        path: '/hr',
-        icon: <Profile2User />,
-        permission_any_of: [
-            'employee_details.list',
-            'departments.list',
-            'positions.list',
-            'attendances.track_all',
-            'attendances.track_department',
-            'leaves.track_all',
-            'leaves.track_department',
-            'salary_transactions.track_all',
-            'salary_transactions.track_department',
-            'employee_requests.track_all',
-            'employee_requests.track_department',
-        ],
-        children: [
-            {
-                title: 'Employees',
-                path: '/hr/employees',
-                permission_any_of: ['employee_details.list'],
-            },
-            {
-                title: 'Departments',
-                path: '/hr/departments',
-                permission_any_of: ['departments.list'],
-            },
-            {
-                title: 'Teams',
-                path: '/hr/teams',
-                permission_any_of: ['teams.list'],
-            },
-            {
-                title: 'Positions',
-                path: '/hr/positions',
-                permission_any_of: ['positions.list'],
-            },
-            {
-                title: 'Meetings',
-                path: '/hr/meetings',
-                permission_any_of: ['meetings.list'],
-            },
-            {
-                title: 'Holidays',
-                path: '/hr/holidays',
-                permission_any_of: ['holidays.list'],
-            },
-            {
-                allowed_to: ['Employee'],
-                title: 'Attendances',
-                path: '/hr/attendances',
-                permission_any_of: ['attendances.track_all', 'attendances.track_department'],
-            },
-            {
-                allowed_to: ['Employee'],
-                title: 'Leaves',
-                path: '/hr/leaves',
-                permission_any_of: ['leaves.track_all', 'leaves.track_department'],
-            },
-            {
-                allowed_to: ['Employee'],
-                title: 'Salary',
-                path: '/hr/salary',
-                permission_any_of: ['salary_transactions.track_all', 'salary_transactions.track_department'],
-            },
-            {
-                allowed_to: ['Employee'],
-                title: 'Requests',
-                path: '/hr/requests',
-                permission_any_of: ['employee_requests.track_all', 'employee_requests.track_department'],
-            },
-        ]
-    },
-
-    // ═══════════════════════════════════════════
-    // Section: Operations (Subscriber & Employee)
+    // Section: Operations — Work Management
     // ═══════════════════════════════════════════
     {
         section: 'Operations',
@@ -279,14 +105,83 @@ export const dashboardSideMenuItems = [
     },
 
     // ═══════════════════════════════════════════
-    // Section: Billing (Subscriber only)
+    // Section: HR — Team Management
     // ═══════════════════════════════════════════
     {
-        section: 'Billing',
-        allowed_to: ['Subscriber'],
-        title: 'Subscriptions',
-        path: '/subscriptions',
-        icon: <ReceiptText />
+        section: 'HR',
+        allowed_to: ['Subscriber', 'Employee'],
+        title: 'HR Management',
+        path: '/hr',
+        icon: <Profile2User />,
+        permission_any_of: [
+            'employee_details.list',
+            'departments.list',
+            'positions.list',
+            'attendances.track_all',
+            'attendances.track_department',
+            'leaves.track_all',
+            'leaves.track_department',
+            'salary_transactions.track_all',
+            'salary_transactions.track_department',
+            'employee_requests.track_all',
+            'employee_requests.track_department',
+        ],
+        children: [
+            {
+                title: 'Employees',
+                path: '/hr/employees',
+                permission_any_of: ['employee_details.list'],
+            },
+            {
+                title: 'Departments',
+                path: '/hr/departments',
+                permission_any_of: ['departments.list'],
+            },
+            {
+                title: 'Teams',
+                path: '/hr/teams',
+                permission_any_of: ['teams.list'],
+            },
+            {
+                title: 'Positions',
+                path: '/hr/positions',
+                permission_any_of: ['positions.list'],
+            },
+            {
+                title: 'Meetings',
+                path: '/hr/meetings',
+                permission_any_of: ['meetings.list'],
+            },
+            {
+                title: 'Holidays',
+                path: '/hr/holidays',
+                permission_any_of: ['holidays.list'],
+            },
+            {
+                allowed_to: ['Employee'],
+                title: 'Attendances',
+                path: '/hr/attendances',
+                permission_any_of: ['attendances.track_all', 'attendances.track_department'],
+            },
+            {
+                allowed_to: ['Employee'],
+                title: 'Leaves',
+                path: '/hr/leaves',
+                permission_any_of: ['leaves.track_all', 'leaves.track_department'],
+            },
+            {
+                allowed_to: ['Employee'],
+                title: 'Salary',
+                path: '/hr/salary',
+                permission_any_of: ['salary_transactions.track_all', 'salary_transactions.track_department'],
+            },
+            {
+                allowed_to: ['Employee'],
+                title: 'Requests',
+                path: '/hr/requests',
+                permission_any_of: ['employee_requests.track_all', 'employee_requests.track_department'],
+            },
+        ]
     },
 
     // ═══════════════════════════════════════════
@@ -309,15 +204,97 @@ export const dashboardSideMenuItems = [
     },
 
     // ═══════════════════════════════════════════
-    // Section: Support
+    // Section: AI & Analytics
     // ═══════════════════════════════════════════
     {
-        section: 'Support',
-        allowed_to: ['Admin', 'Subscriber'],
-        title: 'Support Tickets',
-        path: '/support-tickets',
-        icon: <Messages1 />,
-        permission: 'admin.support_tickets.list'
+        section: 'AI & Analytics',
+        allowed_to: ['Admin', 'Subscriber', 'Employee'],
+        title: 'AI Assistant',
+        path: '/ai',
+        icon: <Cpu />
+    },
+    {
+        section: 'AI & Analytics',
+        allowed_to: ['Admin', 'Subscriber', 'Employee'],
+        title: 'Analytics',
+        path: '/analytics',
+        icon: <Chart2 />,
+        permission_any_of: ['admin.analytics.view', 'analytics.view'],
+    },
+
+    // ═══════════════════════════════════════════
+    // Section: System (Admin only)
+    // ═══════════════════════════════════════════
+    {
+        section: 'System',
+        allowed_to: ['Admin'],
+        title: 'System Admins',
+        path: '/system-admins',
+        icon: <Profile2User />,
+        permission: 'admin.system_admins.list'
+    },
+    {
+        section: 'System',
+        allowed_to: ['Admin'],
+        title: 'Roles',
+        path: '/roles/admins',
+        icon: <Setting4 />,
+        permission: 'admin.admin_roles.list'
+    },
+    {
+        section: 'System',
+        allowed_to: ['Admin'],
+        title: 'Permissions',
+        path: '/permissions/admins',
+        icon: <Setting5 />,
+        permission: 'admin.admin_permissions.list'
+    },
+    {
+        section: 'System',
+        allowed_to: ['Admin'],
+        title: 'Industries',
+        path: '/industries',
+        icon: <Category2 />,
+        permission: 'admin.industries.list'
+    },
+    {
+        section: 'System',
+        allowed_to: ['Admin'],
+        title: 'Money Receiving Methods',
+        path: '/money-receiving',
+        icon: <EmptyWallet />
+    },
+
+    // ═══════════════════════════════════════════
+    // Section: Subscribers & Plans (Admin only)
+    // ═══════════════════════════════════════════
+    {
+        section: 'Subscribers & Plans',
+        allowed_to: ['Admin'],
+        title: 'Subscribers',
+        path: '/subscribers',
+        icon: <Tag />,
+        permission: 'admin.subscribers.list'
+    },
+    {
+        section: 'Subscribers & Plans',
+        allowed_to: ['Admin'],
+        title: 'Plans',
+        path: '/plans',
+        icon: <PercentageCircle />,
+        permission: 'admin.subscription_plans.list',
+        children: [
+            {
+                title: 'Subscription Plans',
+                path: '/plans',
+                permission: 'admin.subscription_plans.list',
+            },
+            {
+                title: 'AI Token Plans',
+                path: '/plans/ai-plans',
+                permission: 'admin.subscription_plans.list',
+            },
+        ]
     },
 
     // ═══════════════════════════════════════════
@@ -340,8 +317,23 @@ export const dashboardSideMenuItems = [
     },
 
     // ═══════════════════════════════════════════
-    // Section: Settings
+    // Section: Settings (bottom of sidebar)
     // ═══════════════════════════════════════════
+    {
+        section: 'Settings',
+        allowed_to: ['Admin', 'Subscriber', 'Employee'],
+        title: 'Support Tickets',
+        path: '/support-tickets',
+        icon: <Messages1 />,
+        permission: 'admin.support_tickets.list'
+    },
+    {
+        section: 'Settings',
+        allowed_to: ['Subscriber'],
+        title: 'Subscriptions',
+        path: '/subscriptions',
+        icon: <ReceiptText />
+    },
     {
         section: 'Settings',
         allowed_to: ['Admin', 'Subscriber', 'Employee'],

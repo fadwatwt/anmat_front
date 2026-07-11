@@ -163,7 +163,7 @@ function AttendanceTab() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2 h-full">
         <Table
-          title={"Attendance"}
+          title={t("Attendance")}
           headers={headers}
           rows={rows}
           isCheckInput={true}

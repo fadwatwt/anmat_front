@@ -10,14 +10,24 @@ function MenuItem({ path, icon, title, children }) {
     const pathname = usePathname();
 
     const isChildActive = children?.some(child => pathname === child.path);
-    const [isOpen, setIsOpen] = useState(isChildActive);
+    const [isOpen, setIsOpen] = useState(() => {
+        if (typeof window !== 'undefined' && children) {
+            const saved = localStorage.getItem(`sidebar-menu-${title}`);
+            if (saved !== null) return JSON.parse(saved);
+        }
+        return isChildActive;
+    });
 
     const isActive = pathname === path || isChildActive;
 
     const handleToggle = (e) => {
         if (children) {
             e.preventDefault();
-            setIsOpen(!isOpen);
+            const newState = !isOpen;
+            setIsOpen(newState);
+            try {
+                localStorage.setItem(`sidebar-menu-${title}`, JSON.stringify(newState));
+            } catch (e) { /* empty */ } // eslint-disable-line no-unused-vars
         }
     };
 
@@ -58,9 +68,9 @@ function MenuItem({ path, icon, title, children }) {
             </div>
 
             {children && (
-                <div className={`ml-3 mt-1 flex flex-col gap-1 overflow-hidden transition-all duration-300 
+                <div className={`ms-3 mt-1 flex flex-col gap-1 overflow-hidden transition-all duration-300 
                     ${isOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
-                    <div className="bg-primary-100 rounded-lg p-2 mr-4">
+                    <div className="bg-primary-100 rounded-lg p-2 me-4">
                         {children.map((child, index) => {
                             const isSubActive = pathname === child.path;
                             return (

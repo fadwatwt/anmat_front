@@ -165,6 +165,8 @@ function RequestsTab() {
             return [...commonHeaders, { label: t("Vacation Period"), width: "17%" }, { label: t("Reason"), width: "22%" }, { label: t("Status"), width: "12%" }, { label: "", width: "14%" }, { label: "", width: "5%" }];
         } else if (activeTab === "SALARY_ADVANCE") {
             return [...commonHeaders, { label: t("Advance By"), width: "10%" }, { label: t("Old Salary"), width: "10%" }, { label: t("Reason"), width: "22%" }, { label: t("Status"), width: "12%" }, { label: "", width: "14%" }, { label: "", width: "5%" }];
+        } else if (activeTab === "SHORT_LEAVE") {
+            return [...commonHeaders, { label: t("Leave Date"), width: "12%" }, { label: t("Leave Time"), width: "15%" }, { label: t("Reason"), width: "22%" }, { label: t("Status"), width: "12%" }, { label: "", width: "14%" }, { label: "", width: "5%" }];
         } else { // WORK_DELAY
             return [...commonHeaders, { label: t("Work Due At"), width: "15%" }, { label: t("Reason"), width: "27%" }, { label: t("Status"), width: "12%" }, { label: "", width: "14%" }, { label: "", width: "5%" }];
         }
@@ -206,6 +208,16 @@ function RequestsTab() {
             specificCells = [
                 <div key={req.id + "_advance"} className="text-cell-primary font-bold text-sm">${req.advance_salary_by || "N/A"}</div>,
                 <div key={req.id + "_old_salary"} className="text-cell-secondary font-medium text-xs">${req.old_salary_amount || "N/A"}</div>,
+                <div key={req.id + "_reason"} className="text-cell-secondary font-medium truncate max-w-[200px]" title={req.reason}>{req.reason || "N/A"}</div>
+            ];
+        } else if (activeTab === "SHORT_LEAVE") {
+            specificCells = [
+                <div key={req.id + "_leave_date"} className="text-cell-primary font-bold text-xs">
+                    {req.leave_date || "N/A"}
+                </div>,
+                <div key={req.id + "_leave_time"} className="text-cell-secondary font-medium text-xs">
+                    {req.leave_start_time || ""} - {req.leave_end_time || ""}
+                </div>,
                 <div key={req.id + "_reason"} className="text-cell-secondary font-medium truncate max-w-[200px]" title={req.reason}>{req.reason || "N/A"}</div>
             ];
         } else { // WORK_DELAY
@@ -255,7 +267,8 @@ function RequestsTab() {
     const labels = {
         "DAY_OFF": "Day Off",
         "WORK_DELAY": "Delay",
-        "SALARY_ADVANCE": "Financial"
+        "SALARY_ADVANCE": "Financial",
+        "SHORT_LEAVE": "Short Leave"
     };
 
     const customActions = (rowIndex) => {

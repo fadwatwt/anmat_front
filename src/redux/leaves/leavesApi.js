@@ -17,7 +17,7 @@ export const leavesApi = apiSlice.injectEndpoints({
                 method: "POST",
                 body: newLeave,
             }),
-            invalidatesTags: ["Leaves"],
+            invalidatesTags: ["Leaves", "EmployeeRequests"],
         }),
         updateLeave: builder.mutation({
             query: ({ id, ...updatedLeave }) => ({
@@ -25,14 +25,14 @@ export const leavesApi = apiSlice.injectEndpoints({
                 method: "PATCH",
                 body: updatedLeave,
             }),
-            invalidatesTags: ["Leaves"],
+            invalidatesTags: ["Leaves", "EmployeeRequests"],
         }),
         deleteLeave: builder.mutation({
             query: (id) => ({
                 url: `api/subscriber/organization/leaves/${id}`,
                 method: "DELETE",
             }),
-            invalidatesTags: ["Leaves"],
+            invalidatesTags: ["Leaves", "EmployeeRequests"],
         }),
     }),
 });

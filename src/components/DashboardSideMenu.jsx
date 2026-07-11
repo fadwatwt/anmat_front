@@ -4,26 +4,51 @@ import PropTypes from 'prop-types';
 import SearchInput from "./Form/SearchInput.jsx";
 import MenuItem from "./Menu/MenuItem.jsx";
 import { useTranslation } from "react-i18next";
-import React from "react"
-import { HambergerMenu } from 'iconsax-react';
+import React, { useState, useMemo } from "react"
+import { HambergerMenu, ArrowDown2 } from 'iconsax-react';
 import { dashboardSideMenuItems } from '@/config/menuItems.js';
 import { useSelector } from 'react-redux';
 import { selectUserType, selectPermissions, selectPermissionsLoaded } from '@/redux/auth/authSlice';
 
-const SectionHeader = ({ title }) => {
+const STORAGE_KEY = 'sidebar-collapsed-sections';
+
+const loadCollapsedSections = () => {
+    if (typeof window === 'undefined') return {};
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        return saved ? JSON.parse(saved) : {};
+    } catch (e) { return {}; } // eslint-disable-line no-unused-vars
+};
+
+const saveCollapsedSections = (state) => {
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) { /* empty */ } // eslint-disable-line no-unused-vars
+};
+
+const SectionHeader = ({ title, isCollapsed, onToggle }) => {
     const { t } = useTranslation();
     if (!title) return null;
     return (
-        <div className="px-4 pt-5 pb-1">
+        <div
+            onClick={onToggle}
+            className="px-4 pt-5 pb-1 flex items-center justify-between cursor-pointer select-none group/section hover:bg-gray-50 dark:hover:bg-gray-700/30 rounded-lg mx-2 transition-colors"
+        >
             <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest dark:text-gray-500">
                 {t(title)}
             </p>
+            <ArrowDown2
+                size={14}
+                className={`text-gray-400 transition-transform duration-200 ${isCollapsed ? '' : 'rotate-180'}`}
+            />
         </div>
     );
 };
 
 SectionHeader.propTypes = {
     title: PropTypes.string,
+    isCollapsed: PropTypes.bool,
+    onToggle: PropTypes.func,
 };
 
 const Menu = React.memo(({ isSlidebarOpen, toggleSlidebarOpen }) => {
@@ -32,6 +57,8 @@ const Menu = React.memo(({ isSlidebarOpen, toggleSlidebarOpen }) => {
     const userPermissions = useSelector(selectPermissions);
     const permissionsLoaded = useSelector(selectPermissionsLoaded);
     const hasWildcard = Array.isArray(userPermissions) && userPermissions.includes('*');
+
+    const [collapsedSections, setCollapsedSections] = useState(loadCollapsedSections);
 
     const userHasPermission = (perm) =>
         Array.isArray(userPermissions) && userPermissions.includes(perm);
@@ -65,6 +92,37 @@ const Menu = React.memo(({ isSlidebarOpen, toggleSlidebarOpen }) => {
         if (item.children.length > 0 && visibleChildren.length === 0) return null;
         return { ...item, children: visibleChildren };
     };
+
+    const toggleSection = (sectionName) => {
+        setCollapsedSections((prev) => {
+            const next = { ...prev, [sectionName]: !prev[sectionName] };
+            saveCollapsedSections(next);
+            return next;
+        });
+    };
+
+    const sections = useMemo(() => {
+        if (!permissionsLoaded) return [];
+
+        const filteredItems = dashboardSideMenuItems
+            .map(filterItem)
+            .filter(Boolean);
+
+        // Group items by section
+        const grouped = [];
+        let currentSection = null;
+
+        for (const item of filteredItems) {
+            const sectionName = item.section || '';
+            if (sectionName !== currentSection) {
+                currentSection = sectionName;
+                grouped.push({ name: sectionName, items: [] });
+            }
+            grouped[grouped.length - 1].items.push(item);
+        }
+
+        return grouped;
+    }, [permissionsLoaded, authUserType, userPermissions]);
 
     const { t, i18n } = useTranslation()
 
@@ -101,29 +159,29 @@ const Menu = React.memo(({ isSlidebarOpen, toggleSlidebarOpen }) => {
                 </div>
                 <div className={"flex  flex-col gap-2"}>
                     <div className={"py-5 menu-list sm:py-0 flex flex-col gap-2 text-gray-500"}>
-                        {permissionsLoaded && (() => {
-                            const filteredItems = dashboardSideMenuItems
-                                .map(filterItem)
-                                .filter(Boolean);
-
-                            let lastSection = null;
-                            return filteredItems.map((item, index) => {
-                                const currentSection = item.section || '';
-                                const showHeader = currentSection && currentSection !== lastSection;
-                                lastSection = currentSection;
-                                return (
-                                    <React.Fragment key={index}>
-                                        {showHeader && <SectionHeader title={currentSection} />}
+                        {sections.map((section) => {
+                            const isCollapsed = !!collapsedSections[section.name];
+                            return (
+                                <div key={section.name}>
+                                    {section.name && (
+                                        <SectionHeader
+                                            title={section.name}
+                                            isCollapsed={isCollapsed}
+                                            onToggle={() => toggleSection(section.name)}
+                                        />
+                                    )}
+                                    {!isCollapsed && section.items.map((item, index) => (
                                         <MenuItem
+                                            key={index}
                                             path={item.path}
                                             icon={item.icon}
                                             title={item.title}
                                             children={item.children}
                                         />
-                                    </React.Fragment>
-                                );
-                            });
-                        })()}
+                                    ))}
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
             </div>

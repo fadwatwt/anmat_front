@@ -199,7 +199,7 @@ export default function EmployeeAttendancePage() {
             setApiResponse({
                 isOpen: true,
                 status: "error",
-                message: err?.data?.message || err?.message || t("Failed to check in. Please try again."),
+                message: t(err?.data?.message || err?.message || "Failed to check in. Please try again."),
             });
         } finally {
             hideProcessing();
@@ -231,7 +231,7 @@ export default function EmployeeAttendancePage() {
             setApiResponse({
                 isOpen: true,
                 status: "error",
-                message: err?.data?.message || err?.message || t("Failed to check out. Please try again."),
+                message: t(err?.data?.message || err?.message || "Failed to check out. Please try again."),
             });
         } finally {
             hideProcessing();

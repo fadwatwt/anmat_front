@@ -39,7 +39,7 @@ export const StatusBadge = ({ status }) => {
   return (
     <div className="flex items-center gap-2 border border-status-border bg-status-bg rounded-md px-2 py-1 w-fit">
       {Icon}
-      <span className="text-xs text-cell-primary">{status}</span>
+      <span className="text-xs text-cell-primary">{t(status)}</span>
     </div>
   );
 };
@@ -179,7 +179,7 @@ function AttendanceTable() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2 h-full">
         <Table
-          title={"Attendance"}
+          title={t("Attendance")}
           headers={headers}
           rows={rows}
           isCheckInput={true}

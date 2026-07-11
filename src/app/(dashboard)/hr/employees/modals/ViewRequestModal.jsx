@@ -47,12 +47,20 @@ function ViewRequestModal({ isOpen, onClose, request }) {
     if (!request) return null;
 
     const getAvailableStatusOptions = () => {
-        return [
+        const baseOptions = [
             { id: "open", element: t("Open") },
             { id: "in-progress", element: t("In Progress") },
             { id: "accepted", element: t("Accepted") },
             { id: "rejected", element: t("Rejected") },
         ];
+        if (request?.type === "SHORT_LEAVE") {
+            return [
+                { id: "pending", element: t("Pending") },
+                { id: "accepted", element: t("Approved") },
+                { id: "rejected", element: t("Rejected") },
+            ];
+        }
+        return baseOptions;
     };
 
     const options = getAvailableStatusOptions();
@@ -73,6 +81,23 @@ function ViewRequestModal({ isOpen, onClose, request }) {
                         <span className="font-medium text-table-title">{request.employee?.name}</span>
                         <span className="text-xs text-cell-secondary capitalize">{request.type.replace(/_/g, ' ')} Request</span>
                     </div>
+
+                    {request.type === "SHORT_LEAVE" && (request.leave_date || request.leave_start_time || request.leave_end_time) && (
+                        <div className="flex flex-col gap-2 p-3 bg-status-bg rounded-lg border border-status-border">
+                            <span className="text-sm font-semibold text-cell-primary">{t("Leave Details")}</span>
+                            <div className="flex flex-wrap gap-4 text-sm text-cell-secondary">
+                                {request.leave_date && (
+                                    <span><span className="font-medium">{t("Date")}:</span> {request.leave_date}</span>
+                                )}
+                                {request.leave_start_time && (
+                                    <span><span className="font-medium">{t("Start Time")}:</span> {request.leave_start_time}</span>
+                                )}
+                                {request.leave_end_time && (
+                                    <span><span className="font-medium">{t("End Time")}:</span> {request.leave_end_time}</span>
+                                )}
+                            </div>
+                        </div>
+                    )}
 
                     <ElementsSelect
                         title={t("Select New Status")}

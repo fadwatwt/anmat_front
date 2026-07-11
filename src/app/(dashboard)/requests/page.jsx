@@ -128,7 +128,8 @@ function EmployeeRequestsPage() {
     const labels = {
         "DAY_OFF": t("Day Off"),
         "WORK_DELAY": t("Delay"),
-        "SALARY_ADVANCE": t("Financial")
+        "SALARY_ADVANCE": t("Financial"),
+        "SHORT_LEAVE": t("Short Leave")
     };
 
     const customActions = (rowIndex) => {

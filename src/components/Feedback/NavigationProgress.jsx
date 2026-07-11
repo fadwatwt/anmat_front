@@ -33,9 +33,11 @@ function NavigationProgressInner() {
         clearTimers();
         activeRef.current = true;
         startedAtRef.current = Date.now();
-        startTransition(() => {
-            setVisible(true);
-            setProgress(8);
+        queueMicrotask(() => {
+            startTransition(() => {
+                setVisible(true);
+                setProgress(8);
+            });
         });
         const steps = [
             [80, 30],
