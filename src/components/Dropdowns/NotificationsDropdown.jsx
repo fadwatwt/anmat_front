@@ -56,6 +56,12 @@ const NotificationsDropdown = ({ notifications, unreadCount }) => {
     }, 200); // 200ms delay to allow smooth transition
   };
 
+  useEffect(() => {
+    if (isMenuOpen && unreadCount > 0) {
+      handleMarkAllAsRead();
+    }
+  }, [isMenuOpen]);
+
   const handleMarkAllAsRead = async () => {
     try {
       await markAllAsReadApi().unwrap();
@@ -139,14 +145,18 @@ const NotificationsDropdown = ({ notifications, unreadCount }) => {
                     <div className="flex-1 text-left">
                       <div className="flex justify-between items-start mb-1">
                         <span className="font-bold text-sm dark:text-white truncate pr-2">
-                          {t(notification.title)}
+                          {notification.title_key
+                            ? t(notification.title_key, notification.meta || {})
+                            : t(notification.title)}
                         </span>
                         <span className="text-[10px] text-gray-500 dark:text-gray-400 whitespace-nowrap">
                           {notification.time}
                         </span>
                       </div>
                       <div className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
-                        {t(notification.content)}
+                        {notification.message_key
+                          ? t(notification.message_key, notification.meta || {})
+                          : t(notification.content)}
                       </div>
                       {!notification.isRead && (
                         <div className="mt-2 flex items-center justify-between">

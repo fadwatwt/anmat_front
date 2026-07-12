@@ -37,7 +37,7 @@ const Modal = ({ isOpen, onClose, children, title, className, isHideCancel, isBt
                             <div className={"flex gap-2 py-3 w-full p-4 " + classNameBtns}>
                                 {
                                     !isHideCancel &&
-                                    <DefaultButton type={'button'} title={("Cancel")}
+                                    <DefaultButton type={'button'} title={("Cancel")} onClick={onClose}
                                         className={"font-medium text-cell-secondary"} />
                                 }
 

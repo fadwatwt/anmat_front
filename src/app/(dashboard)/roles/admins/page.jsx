@@ -19,6 +19,7 @@ import { statusCell } from "@/components/StatusCell";
 import CheckAlert from "@/components/Alerts/CheckِِAlert";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import { useGetAdminRolesQuery, useDeleteAdminRoleMutation } from "@/redux/roles/adminRolesAPI";
+import { getPermissionLabel } from "@/config/permissionTranslations";
 
 
 function PermissionsPage() {
@@ -57,10 +58,10 @@ function PermissionsPage() {
                 {role.permissions.slice(0, 6).map((permission, index) => (
                     <span
                         key={index}
-                        title={permission?.name}
+                        title={getPermissionLabel(permission?.name, permission)}
                         className="bg-badge-bg text-badge-text text-[10px] xl:text-[11px] text-center px-2 py-1 rounded-2xl truncate border border-status-border hover:bg-primary-base/10 hover:border-primary-base/30 transition-all cursor-help block max-w-[120px]"
                     >
-                        {permission?.name}
+                        {getPermissionLabel(permission?.name, permission)}
                     </span>
                 ))}
                 {role.permissions.length > 6 && (
@@ -89,7 +90,7 @@ function PermissionsPage() {
                         <div key={i} className="flex items-start gap-2.5 group/item py-0.5">
                             <div className="w-1.5 h-1.5 rounded-full bg-primary-base dark:bg-primary-200 dark:text-black mt-1.5 flex-shrink-0 group-hover/item:scale-125 transition-transform shadow-[0_0_8px_rgba(55,93,251,0.4)]"></div>
                             <span className="text-xs text-cell-secondary group-hover/item:text-cell-primary transition-colors leading-relaxed">
-                                {p.name}
+                                {getPermissionLabel(p.name, p)}
                             </span>
                         </div>
                     ))}

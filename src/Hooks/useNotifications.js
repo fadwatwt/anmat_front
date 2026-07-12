@@ -4,11 +4,22 @@ import { useDispatch } from 'react-redux';
 import { addNotification } from '@/redux/notifications/notificationsSlice';
 import { RootRoute } from '@/Root.Route';
 import { conversationsAPI } from '@/redux/conversations/conversationsAPI';
+import i18n from "i18next";
 
 export const useNotifications = (userId) => {
     const dispatch = useDispatch();
     // Keep a reference to the AbortController so we can close the connection on unmount
     const abortControllerRef = useRef(null);
+
+    const resolveTranslation = (key, fallback, meta) => {
+        if (key) {
+            return i18n.t(key, meta || {});
+        }
+        if (fallback && meta) {
+            return i18n.t(fallback, meta);
+        }
+        return fallback || '';
+    };
 
     useEffect(() => {
         console.log('📡 [SSE] Hook triggered for userId:', userId);
@@ -91,8 +102,11 @@ export const useNotifications = (userId) => {
                                         // Dispatch to Redux store for all other notification types
                                         dispatch(addNotification({
                                             id: data.id || data._id || `temp-${Date.now()}-${Math.random()}`,
-                                            title: data.title,
-                                            content: data.message,
+                                            title: resolveTranslation(data.title_key, data.title, data.meta),
+                                            content: resolveTranslation(data.message_key, data.message, data.meta),
+                                            title_key: data.title_key,
+                                            message_key: data.message_key,
+                                            meta: data.meta,
                                             time: new Date(data.created_at).toLocaleTimeString(),
                                             priority: data.priority,
                                             isRead: false,
@@ -124,8 +138,11 @@ export const useNotifications = (userId) => {
                                 } else {
                                     dispatch(addNotification({
                                         id: data.id || data._id || `temp-${Date.now()}-${Math.random()}`,
-                                        title: data.title,
-                                        content: data.message,
+                                        title: resolveTranslation(data.title_key, data.title, data.meta),
+                                        content: resolveTranslation(data.message_key, data.message, data.meta),
+                                        title_key: data.title_key,
+                                        message_key: data.message_key,
+                                        meta: data.meta,
                                         time: new Date(data.created_at).toLocaleTimeString(),
                                         priority: data.priority,
                                         isRead: false,

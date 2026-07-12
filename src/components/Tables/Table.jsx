@@ -595,42 +595,44 @@ function Table({
                                                 {cell}
                                             </td>
                                         ))}
-                                        {(isActions || customActions) && (
-                                            <td className={"dropdown-container px-2 py-4 md:py-6"}>
-                                                <PiDotsThreeVerticalBold
-                                                    className="cursor-pointer"
-                                                    onClick={(e) => handleDropdownToggle(actualRowIndex, e)}
-                                                />
-                                                {dropdownOpen === actualRowIndex && createPortal(
-                                                    <div
-                                                        onClick={() => setDropdownOpen(null)}
-                                                        className="dropdown-container w-fit text-nowrap"
-                                                        style={{
-                                                            position: "absolute",
-                                                            top: dropdownPosition.top,
-                                                            // LTR: Align right edge of menu with right edge of button
-                                                            // RTL: Align left edge of menu with left edge of button
-                                                            left: i18n?.language === "ar" ? dropdownPosition.left : dropdownPosition.right,
-                                                            transform: `${i18n?.language === "ar" ? "" : "translateX(-100%)"} ${dropdownPosition.isUpwards ? "translateY(-100%)" : ""}`.trim(),
-                                                            zIndex: 9999,
-                                                        }}
-                                                    >
-                                                        {isActions ? (
-                                                            <ActionsBtns
-                                                                handleEdit={() => handelEdit(actualRowIndex)}
-                                                                handleDelete={() => handelDelete(actualRowIndex)}
-                                                                className="!static !mt-0"
-                                                            />
-                                                        ) : (
-                                                            <div className="!static !mt-0 w-fit [&>div]:!static [&>div]:!mt-0">
-                                                                {typeof customActions === "function" ? customActions(actualRowIndex) : customActions}
-                                                            </div>
-                                                        )}
-                                                    </div>,
-                                                    document.body
-                                                )}
-                                            </td>
-                                        )}
+                                        {(isActions || customActions) && (() => {
+                                            const rowActions = typeof customActions === "function" ? customActions(actualRowIndex) : customActions;
+                                            if (!isActions && !rowActions) return null;
+                                            return (
+                                                <td className={"dropdown-container px-2 py-4 md:py-6"}>
+                                                    <PiDotsThreeVerticalBold
+                                                        className="cursor-pointer"
+                                                        onClick={(e) => handleDropdownToggle(actualRowIndex, e)}
+                                                    />
+                                                    {dropdownOpen === actualRowIndex && createPortal(
+                                                        <div
+                                                            onClick={() => setDropdownOpen(null)}
+                                                            className="dropdown-container w-fit text-nowrap"
+                                                            style={{
+                                                                position: "absolute",
+                                                                top: dropdownPosition.top,
+                                                                left: i18n?.language === "ar" ? dropdownPosition.left : dropdownPosition.right,
+                                                                transform: `${i18n?.language === "ar" ? "" : "translateX(-100%)"} ${dropdownPosition.isUpwards ? "translateY(-100%)" : ""}`.trim(),
+                                                                zIndex: 9999,
+                                                            }}
+                                                        >
+                                                            {isActions ? (
+                                                                <ActionsBtns
+                                                                    handleEdit={() => handelEdit(actualRowIndex)}
+                                                                    handleDelete={() => handelDelete(actualRowIndex)}
+                                                                    className="!static !mt-0"
+                                                                />
+                                                            ) : (
+                                                                <div className="!static !mt-0 w-fit [&>div]:!static [&>div]:!mt-0">
+                                                                    {rowActions}
+                                                                </div>
+                                                            )}
+                                                        </div>,
+                                                        document.body
+                                                    )}
+                                                </td>
+                                            );
+                                        })()}
                                     </tr>
                                 );
                             })}

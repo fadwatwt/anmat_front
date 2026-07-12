@@ -11,6 +11,7 @@ import {
   RiTwitterXLine,
 } from "@remixicon/react";
 import Collapse from "@/components/LandingPage/Collapse.jsx";
+import FloatingAiButton from "@/components/FloatingAiButton";
 import Link from "next/link";
 import { useGetPublicSubscriptionPlansQuery } from "@/redux/plans/subscriptionPlansApi";
 import { useTranslation } from "react-i18next";
@@ -281,14 +282,14 @@ function Desktop2Page() {
                 </p>
               </div>
               <div className={"w-full md:w-1/2"}>
-                <button
+                <Link
+                  href="/register/subscriber/email"
                   className={
-                    "py-2 rounded-xl w-full bg-primary-100 dark:bg-primary-800 text-primary-900 dark:text-primary-50"
+                    "py-2 rounded-xl w-full bg-primary-100 dark:bg-primary-800 text-primary-900 dark:text-primary-50 block text-center"
                   }
                 >
-                  {" "}
                   {t("Get started")}
-                </button>
+                </Link>
               </div>
             </div>
           </div>
@@ -527,11 +528,12 @@ function Desktop2Page() {
                   {t("Quickly get started by exploring our product today!")}
                 </p>
               </div>
-              <button
-                className={"bg-primary-base dark:bg-primary-600 text-white rounded-xl py-2 px-3"}
+              <Link
+                href="/register/subscriber/email"
+                className={"bg-primary-base dark:bg-primary-600 text-white rounded-xl py-2 px-3 inline-block"}
               >
                 {t("Get started")}
-              </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -590,6 +592,7 @@ function Desktop2Page() {
           </div>
         </div>
       </div>
+      <FloatingAiButton />
     </div>
   );
 }

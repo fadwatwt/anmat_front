@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import Page from "@/components/Page.jsx";
 import Table from "@/components/Tables/Table.jsx";
+import ActionsBtns from "@/components/ActionsBtns";
 import { useGetMyLeavesQuery, useDeleteMyLeaveMutation } from "@/redux/leaves/employeeLeavesApi";
 import { format, parse } from "date-fns";
 import { HiPlus } from "react-icons/hi";
@@ -31,10 +32,11 @@ function MyLeavesPage() {
     const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
     const headers = [
-        { label: t("Date"), width: "27%" },
-        { label: t("Start Time"), width: "21%" },
-        { label: t("End Time"), width: "21%" },
-        { label: t("Status"), width: "25%" },
+        { label: t("Date"), width: "20%" },
+        { label: t("Start Time"), width: "15%" },
+        { label: t("End Time"), width: "15%" },
+        { label: t("Reason"), width: "25%" },
+        { label: t("Status"), width: "15%" },
         { label: "", width: "40px" },
     ];
 
@@ -57,6 +59,9 @@ function MyLeavesPage() {
         </div>,
         <div key={`end-${record._id}`} className="text-cell-secondary">
             {formatTime(record.end_time)}
+        </div>,
+        <div key={`reason-${record._id}`} className="text-cell-secondary truncate max-w-[150px]" title={record.reason || ""}>
+            {record.reason || "-"}
         </div>,
         <div key={`status-${record._id}`}>
             <span className={`px-2 py-1 rounded-full text-xs font-medium ${STATUS_STYLES[record.status] || STATUS_STYLES.pending}`}>
@@ -119,13 +124,21 @@ function MyLeavesPage() {
                     title={t("Short Leaves History")}
                     headers={headers}
                     rows={rows}
-                    isActions={true}
                     isCheckInput={false}
                     isLoading={isLoading}
                     hideSearchInput={false}
                     headerActions={HeaderButtons}
-                    handelEdit={handleEdit}
-                    handelDelete={handleDeleteClick}
+                    customActions={(rowIndex) => {
+                        const leave = sortedLeaves[rowIndex];
+                        if (leave?.status !== "pending") return null;
+                        return (
+                            <ActionsBtns
+                                handleEdit={() => handleEdit(rowIndex)}
+                                handleDelete={() => handleDeleteClick(rowIndex)}
+                                className="!static !mt-0"
+                            />
+                        );
+                    }}
                 />
             </Page>
 

@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import DateInput from "@/components/Form/DateInput";
 import TimeInput from "@/components/Form/TimeInput";
+import TextAreaWithLabel from "@/components/Form/TextAreaWithLabel";
 import Modal from "@/components/Modal/Modal.jsx";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -33,6 +34,8 @@ function AddMyLeaveModal({ isOpen, onClose }) {
                 if (!start_time || !value) return true;
                 return value > start_time;
             }),
+        reason: Yup.string()
+            .required(t("Reason is required")),
     });
 
     const getDefaultStartTime = () => {
@@ -51,6 +54,7 @@ function AddMyLeaveModal({ isOpen, onClose }) {
             date: format(new Date(), "yyyy-MM-dd"),
             start_time: getDefaultStartTime(),
             end_time: getDefaultEndTime(),
+            reason: "",
         },
         enableReinitialize: true,
         validationSchema,
@@ -134,6 +138,17 @@ function AddMyLeaveModal({ isOpen, onClose }) {
                                 error={formik.touched.end_time && formik.errors.end_time}
                             />
                         </div>
+
+                        <TextAreaWithLabel
+                            title={t("Reason")}
+                            name="reason"
+                            placeholder={t("Explain the reason for your request")}
+                            value={formik.values.reason}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.reason && formik.errors.reason}
+                            isRequired
+                        />
                     </div>
                 </div>
             </Modal>

@@ -12,6 +12,7 @@ import {
   useUpdateAdminRolePermissionsMutation,
 } from "@/redux/roles/adminRolesAPI";
 import { useProcessing } from "@/app/providers";
+import { getPermissionLabel } from "@/config/permissionTranslations";
 
 function SyncPermissionsModal({ isOpen, onClose, roleId, roleName, currentPermissions = [] }) {
   const [updatePermissions, { isLoading }] = useUpdateAdminRolePermissionsMutation();
@@ -194,7 +195,7 @@ function SyncPermissionsModal({ isOpen, onClose, roleId, roleName, currentPermis
                           className="w-4 h-4 text-primary-base bg-gray-100 border-gray-300 rounded focus:ring-primary-base dark:focus:ring-primary-base focus:ring-2 dark:bg-gray-700 dark:border-gray-600 checkbox-custom"
                         />
                         <span className="text-sm text-gray-700 dark:text-gray-300">
-                          {permission.name}
+                          {getPermissionLabel(permission.name, permission)}
                         </span>
                       </label>
                     );

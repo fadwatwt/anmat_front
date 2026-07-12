@@ -139,8 +139,8 @@ const Menu = React.memo(({ isSlidebarOpen, toggleSlidebarOpen }) => {
                         className={" w-10 h-10 rounded-full m-0 p-0"} />
                 </div>
                 <div className={"flex flex-col  gap-2 justify-center  "}>
-                    <p className={"text-sm dark:text-white text-start truncate w-28 md:w-full"}>{t("Employees Management")}</p>
-                    <p className={"text-xs dark:text-white text-gray-500 truncate w-28 md:w-full"}>{t("Employees & HR Management")}</p>
+                    <p className={"text-sm dark:text-white text-start truncate w-28 md:w-full"}>{t("Anmat")}</p>
+                    <p className={"text-xs dark:text-white text-gray-500 truncate w-28 md:w-full"}>{t("Enterprise Management System")}</p>
                 </div>
                 {
                     isSlidebarOpen && (

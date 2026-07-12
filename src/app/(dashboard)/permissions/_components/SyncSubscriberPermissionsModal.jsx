@@ -13,6 +13,7 @@ import {
 import { useSyncSubscriberRolePermissionsMutation } from "@/redux/roles/subscriberRolesApi";
 import { useProcessing } from "@/app/providers";
 import { useTranslation } from "react-i18next";
+import { getPermissionLabel } from "@/config/permissionTranslations";
 
 function SyncSubscriberPermissionsModal({ isOpen, onClose, roleId, roleName, currentPermissions = [] }) {
     const { t } = useTranslation();
@@ -188,7 +189,7 @@ function SyncSubscriberPermissionsModal({ isOpen, onClose, roleId, roleName, cur
                                                     className="w-4 h-4 text-primary-base bg-gray-100 border-gray-300 rounded focus:ring-primary-base dark:focus:ring-primary-base focus:ring-2 dark:bg-gray-700 dark:border-gray-600 checkbox-custom"
                                                 />
                                                 <span className="text-sm text-gray-700 dark:text-gray-300">
-                                                    {permission.title || permission.name}
+                                                    {getPermissionLabel(permission.name, permission)}
                                                 </span>
                                             </label>
                                         );

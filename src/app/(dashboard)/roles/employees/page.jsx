@@ -20,6 +20,7 @@ import { useTranslation } from "react-i18next";
 import { RiDeleteBin7Line } from "react-icons/ri";
 import { useProcessing } from "@/app/providers";
 import { usePermission } from "@/Hooks/usePermission";
+import { getPermissionLabel } from "@/config/permissionTranslations";
 
 function PermissionsPage() {
     const { data: rolesData, isLoading, isError, error } = useGetSubscriberRolesQuery();
@@ -59,9 +60,9 @@ function PermissionsPage() {
                         <span
                             key={index}
                             className="bg-badge-bg text-badge-text text-xs text-center px-3 py-1 rounded-2xl truncate border border-status-border"
-                            title={permission.title || permission.name}
+                            title={getPermissionLabel(permission.name, permission)}
                         >
-                            {permission.title || permission.name}
+                            {getPermissionLabel(permission.name, permission)}
                         </span>
                     ))
                 }
