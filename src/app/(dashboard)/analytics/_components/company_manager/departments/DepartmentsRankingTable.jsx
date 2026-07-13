@@ -1,9 +1,11 @@
 import Table from "@/components/Tables/Table";
 import { useTranslation } from "react-i18next";
-import React from "react";
+import React, { useState } from "react";
+import { RiInformationLine } from "@remixicon/react";
 
 const DepartmentsRankingTable = ({ rows: rowsProp = [] }) => {
     const { t } = useTranslation();
+    const [showInfo, setShowInfo] = useState(false);
 
     const headersDeparmentsRanking = [
         { label: t("Department"), width: "400px" },
@@ -39,9 +41,30 @@ const DepartmentsRankingTable = ({ rows: rowsProp = [] }) => {
 
     return (
         <div className={"w-full"}>
-            <Table isTitle={true} title={t("Departments Ranking")}
-                headers={headersDeparmentsRanking} rows={rows}
-                isActions={false} />
+            <div className="flex items-center gap-2 mb-2">
+                <Table isTitle={true} title={t("Departments Ranking")}
+                    headers={headersDeparmentsRanking} rows={rows}
+                    isActions={false} />
+                <button
+                    onClick={() => setShowInfo(!showInfo)}
+                    className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
+                    title={t("How scoring works")}
+                >
+                    <RiInformationLine size={20} className="text-gray-400" />
+                </button>
+            </div>
+            {showInfo && (
+                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4 text-sm">
+                    <p className="font-semibold mb-2">{t("How scoring works")}</p>
+                    <ul className="space-y-1 list-disc list-inside text-gray-600 dark:text-gray-300">
+                        <li>{t("scoring.rank_explanation")}</li>
+                        <li>{t("scoring.rating_explanation")}</li>
+                        <li>{t("scoring.head_points_explanation")}</li>
+                        <li>{t("scoring.performance_explanation")}</li>
+                        <li>{t("scoring.attendance_explanation")}</li>
+                    </ul>
+                </div>
+            )}
         </div>
     );
 }

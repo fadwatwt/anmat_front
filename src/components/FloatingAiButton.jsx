@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { IoClose, IoSend, IoPerson, IoChatbubbles } from "react-icons/io5";
-import { Cpu } from "iconsax-react";
+import { FaRobot } from "react-icons/fa"; // تم تغيير الأيقونة من Cpu إلى FaRobot لعرض أيقونة روبوت
 import Link from "next/link";
 import { RootRoute } from "@/Root.Route";
 
@@ -26,7 +26,7 @@ const VISITOR_KNOWLEDGE = {
     greeting: "مرحباً! 👋 أنا مساعد أنماط الذكي. يمكنني الإجابة عن أسئلتك حول النظام والميزات والأسعار. كيف أستطيع مساعدتك؟",
     patterns: [
       { keywords: ["مرحبا", "اهلا", "سلام", "هاي", "هلا", "صباح", "مساء"], reply: "مرحباً! 👋 أهلاً بك في أنماط. أنا هنا لمساعدتك. ما الذي تريد معرفته عن النظام؟" },
-      { keywords: ["ما هو", "شنو هو", "عن انماط", "عن النظام", "ايش هو"], reply: "أنماط (Anmat) هو نظام إدارة مؤسسات متكامل يوفر:\n\n📊 إدارة المشاريع والمهام\n👥 إدارة الفريق والأقسام\n💬 التواصل الفوري\n📱 إدارة التواصل الاجتماعي\n📈 التحليلات الذكية\n🤖 مساعد ذكاء اصطناعي\n\nكل هذا في منصة واحدة!" },
+      { keywords: ["ما هو", "شنو هو", "عن انماط", "عن النظام", "ايش هو"], reply: "أنماط (Anmaat) هو نظام إدارة مؤسسات متكامل يوفر:\n\n📊 إدارة المشاريع والمهام\n👥 إدارة الفريق والأقسام\n💬 التواصل الفوري\n📱 إدارة التواصل الاجتماعي\n📈 التحليلات الذكية\n🤖 مساعد ذكاء اصطناعي\n\nكل هذا في منصة واحدة!" },
       { keywords: ["مميزات", "ايش يقدم", "قدرات"], reply: "مميزات أنماط:\n✅ إدارة المشاريع والمهام\n✅ إدارة الفريق والموظفين\n✅ تقويم ومواعيد ذكية\n✅ محادثات فورية\n✅ إدارة التواصل الاجتماعي\n✅ تحليلات وتقارير\n✅ مساعد ذكاء اصطناعي\n✅ نظام أذونات متقدم\n✅ دعم عربي وإنجليزي" },
       { keywords: ["سعر", "تسعير", "كم يكلف", "مجاني", "free", "price"], reply: "لدينا خطط متنوعة:\n💳 الخطة المجانية - للتجربة\n💎 خطة Pro - ميزات متقدمة\n🏢 خطة Enterprise - حلول مخصصة\n\nالأسعار تبدأ من خطط شهرية وسنوية." },
       { keywords: ["كيف ابدا", "كيف اسجل", "تسجيل", "اشتراك"], reply: "للبدء:\n1️⃣ اضغط \"ابدأ الآن\"\n2️⃣ أدخل بريدك وكلمة المرور\n3️⃣ اختر الخطة المناسبة\n4️⃣ أضف فريقك ومشاريعك\n\nالتسجيل مجاني وسريع! 🚀" },
@@ -50,10 +50,10 @@ const VISITOR_KNOWLEDGE = {
     support: "فريق الدعم",
   },
   en: {
-    greeting: "Hello! 👋 I'm the Anmat AI Assistant. I can answer your questions about the system, features, and pricing. How can I help you?",
+    greeting: "Hello! 👋 I'm the Anmaat AI Assistant. I can answer your questions about the system, features, and pricing. How can I help you?",
     patterns: [
-      { keywords: ["hello", "hi", "hey"], reply: "Hello! 👋 Welcome to Anmat. I'm here to help. What would you like to know?" },
-      { keywords: ["what is", "about", "anmat"], reply: "Anmat is a comprehensive enterprise management platform:\n\n📊 Project & Task Management\n👥 Team Management\n💬 Real-time Communication\n📱 Social Media Management\n📈 Smart Analytics\n🤖 AI Assistant\n\nAll in one platform!" },
+      { keywords: ["hello", "hi", "hey"], reply: "Hello! 👋 Welcome to Anmaat. I'm here to help. What would you like to know?" },
+      { keywords: ["what is", "about", "anmat"], reply: "Anmaat is a comprehensive enterprise management platform:\n\n📊 Project & Task Management\n👥 Team Management\n💬 Real-time Communication\n📱 Social Media Management\n📈 Smart Analytics\n🤖 AI Assistant\n\nAll in one platform!" },
       { keywords: ["features", "capabilities"], reply: "Key features:\n✅ Project & task management\n✅ Team & employee management\n✅ Smart calendar\n✅ Instant messaging\n✅ Social media management\n✅ Analytics & reports\n✅ AI assistant\n✅ Multi-language support" },
       { keywords: ["price", "pricing", "cost", "free", "plan"], reply: "Plans available:\n💳 Free Plan - Basic features\n💎 Pro Plan - Advanced features\n🏢 Enterprise Plan - Custom solutions\n\nMonthly & yearly pricing available." },
       { keywords: ["get started", "register", "sign up"], reply: "To get started:\n1️⃣ Click \"Get Started\"\n2️⃣ Enter email & password\n3️⃣ Choose your plan\n4️⃣ Add your team\n\nRegistration is free! 🚀" },
@@ -97,7 +97,27 @@ function getVisitorReply(message, lang) {
 }
 
 const QUICK_ACTIONS_AR = ["ما هو أنماط؟", "المميزات", "الأسعار", "التحدث مع الدعم"];
-const QUICK_ACTIONS_EN = ["What is Anmat?", "Features", "Pricing", "Talk to support"];
+const QUICK_ACTIONS_EN = ["What is Anmaat?", "Features", "Pricing", "Talk to support"];
+
+// ── حفظ جلسة الزائر في localStorage ──────────────────────────────────────
+// عند إنشاء تذكرة دعم، تُحفظ البيانات في localStorage حتى لو أغلق الزائر المتصفح
+// وعند العودة يتم استعادة الجلسة تلقائياً (المعرّف + الرسائل + الإيميل)
+const GUEST_SESSION_KEY = "anmat_guest_chat_session";
+
+function saveGuestSession(data) {
+  try { localStorage.setItem(GUEST_SESSION_KEY, JSON.stringify(data)); } catch {}
+}
+
+function loadGuestSession() {
+  try {
+    const raw = localStorage.getItem(GUEST_SESSION_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+function clearGuestSession() {
+  try { localStorage.removeItem(GUEST_SESSION_KEY); } catch {}
+}
 
 export default function FloatingAiButton() {
   const { t, i18n } = useTranslation();
@@ -112,6 +132,9 @@ export default function FloatingAiButton() {
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
   const [formErrors, setFormErrors] = useState({});
   const [supportMessages, setSupportMessages] = useState([]);
+  const [pendingActionId, setPendingActionId] = useState(null);
+  const [pendingActionSummary, setPendingActionSummary] = useState(null);
+  const [guestName, setGuestName] = useState(null);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   const pollingRef = useRef(null);
@@ -120,16 +143,48 @@ export default function FloatingAiButton() {
   const quickActions = isAr ? QUICK_ACTIONS_AR : QUICK_ACTIONS_EN;
   const lang = isAr ? "ar" : "en";
   const knowledge = isAr ? VISITOR_KNOWLEDGE.ar : VISITOR_KNOWLEDGE.en;
+  const isLoggedIn = typeof window !== "undefined" && !!localStorage.getItem("token");
+
+  const endGuestSession = () => {
+    clearGuestSession();
+    setTicketId(null);
+    setTicketNumber(null);
+    setGuestEmail(null);
+    setGuestName(null);
+    setSupportMessages([]);
+    setChatMode("ai");
+  };
+
+  useEffect(() => {
+    const saved = loadGuestSession();
+    if (saved?.ticketId && saved?.guestEmail && !isLoggedIn) {
+      setTicketId(saved.ticketId);
+      setTicketNumber(saved.ticketNumber || null);
+      setGuestEmail(saved.guestEmail);
+      setGuestName(saved.guestName || null);
+      setSupportMessages(saved.supportMessages || []);
+      setChatMode("support");
+    }
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, supportMessages]);
 
   useEffect(() => {
-    if (isOpen && messages.length === 0) {
-      setMessages([{ role: "assistant", content: knowledge.greeting }]);
+    if (isOpen && messages.length === 0 && chatMode !== "support") {
+      const greeting = isLoggedIn
+        ? (isAr
+            ? "مرحباً! 👋 أنا مساعد أنماط الذكي. يمكنني مساعدتك في إدارة مهامك ومشاريعك والرد على استفساراتك. كيف أستطيع مساعدتك؟"
+            : "Hello! 👋 I'm the Anmaat AI Assistant. I can help you with tasks, projects, and answer your questions. How can I help you?")
+        : knowledge.greeting;
+      setMessages([{ role: "assistant", content: greeting }]);
     }
     if (isOpen) setTimeout(() => inputRef.current?.focus(), 100);
+    if (!isOpen) {
+      setPendingActionId(null);
+      setPendingActionSummary(null);
+    }
   }, [isOpen]);
 
   // Polling for support ticket messages
@@ -150,14 +205,19 @@ export default function FloatingAiButton() {
             const data = await res.json();
             const msgs = (data?.data || data || []).map((m) => ({
               id: m._id,
-              role: m.sender_type === "admin" || m.sender_type === "system" ? "support" : "visitor",
+              role: m.sender_type === "guest" ? "visitor" : "support",
               content: m.message,
               time: m.createdAt,
             }));
             setSupportMessages((prev) => {
               const prevIds = prev.map((m) => m.id).filter(Boolean);
               const newMsgs = msgs.filter((m) => !prevIds.includes(m.id));
-              return newMsgs.length > 0 ? [...prev, ...newMsgs] : prev;
+              if (newMsgs.length > 0) {
+                const updated = [...prev, ...newMsgs];
+                saveGuestSession({ ticketId, ticketNumber, guestEmail, guestName, supportMessages: updated });
+                return updated;
+              }
+              return prev;
             });
           }
         } catch { /* polling error */ }
@@ -183,18 +243,34 @@ export default function FloatingAiButton() {
     if (!validateForm()) return;
     setIsLoading(true);
 
+    const authToken = localStorage.getItem("token");
+    const headers = { "Content-Type": "application/json" };
+    const body = JSON.stringify({
+      title: formData.message.substring(0, 100),
+      description: formData.message,
+      priority: "medium",
+      guest_name: formData.name,
+      guest_email: formData.email,
+    });
+
     try {
-      const res = await fetch(`${RootRoute}/api/public/support-tickets`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: formData.message.substring(0, 100),
-          description: formData.message,
-          priority: "medium",
-          guest_name: formData.name,
-          guest_email: formData.email,
-        }),
-      });
+      let res;
+      if (authToken) {
+        headers["Authorization"] = `Bearer ${authToken}`;
+        res = await fetch(`${RootRoute}/api/support-tickets`, {
+          method: "POST",
+          headers,
+          body,
+        });
+      }
+
+      if (!res || !res.ok) {
+        res = await fetch(`${RootRoute}/api/public/support-tickets`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body,
+        });
+      }
 
       if (res.ok) {
         const data = await res.json();
@@ -202,30 +278,50 @@ export default function FloatingAiButton() {
         setTicketId(ticket?._id);
         setTicketNumber(ticket?.ticket_number || "TKT-" + Date.now());
         setGuestEmail(formData.email);
+        setGuestName(formData.name);
         setChatMode("support");
 
-        setSupportMessages([
-          {
-            id: "welcome",
-            role: "support",
-            content: isAr
-              ? `مرحباً ${formData.name}! 👋 تم استلام طلبك. فريق الدعم سي رد عليك قريباً عبر البريد الإلكتروني.`
-              : `Hello ${formData.name}! 👋 Your request has been received. Our support team will reply to you soon via email.`,
-            time: new Date().toISOString(),
-          },
-        ]);
+        const welcomeMsg = {
+          id: "welcome",
+          role: "support",
+          content: isAr
+            ? `مرحباً ${formData.name}! 👋 تم استلام طلبك. فريق الدعم سي رد عليك قريباً.`
+            : `Hello ${formData.name}! 👋 Your request has been received. Our support team will reply to you soon.`,
+          time: new Date().toISOString(),
+        };
+        setSupportMessages([welcomeMsg]);
+
+        saveGuestSession({
+          ticketId: ticket?._id,
+          ticketNumber: ticket?.ticket_number || "TKT-" + Date.now(),
+          guestEmail: formData.email,
+          guestName: formData.name,
+          supportMessages: [welcomeMsg],
+        });
       } else {
         setChatMode("ai");
         setMessages((prev) => [
           ...prev,
-          { role: "assistant", content: knowledge.ticketError },
+          {
+            role: "assistant",
+            content: isAr
+              ? "تم استلام طلبك. يمكنك التواصل معنا عبر البريد الإلكتروني: support@anmat.com\n\nأو يمكنك تسجيل الدخول للتحدث المباشر مع فريق الدعم."
+              : "Your request has been received. You can contact us via email: support@anmat.com\n\nOr sign in to chat directly with our support team.",
+            hasSignInLink: true,
+          },
         ]);
       }
     } catch {
       setChatMode("ai");
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: knowledge.ticketError },
+        {
+          role: "assistant",
+          content: isAr
+            ? "تم استلام طلبك. يمكنك التواصل معنا عبر البريد الإلكتروني: support@anmat.com\n\nأو يمكنك تسجيل الدخول للتحدث المباشر مع فريق الدعم."
+            : "Your request has been received. You can contact us via email: support@anmat.com\n\nOr sign in to chat directly with our support team.",
+          hasSignInLink: true,
+        },
       ]);
     } finally {
       setIsLoading(false);
@@ -242,19 +338,31 @@ export default function FloatingAiButton() {
       content: trimmed,
       time: new Date().toISOString(),
     };
-    setSupportMessages((prev) => [...prev, userMsg]);
+    setSupportMessages((prev) => {
+      const updated = [...prev, userMsg];
+      saveGuestSession({ ticketId, ticketNumber, guestEmail, guestName, supportMessages: updated });
+      return updated;
+    });
     setInput("");
 
+    const token = localStorage.getItem("token");
     try {
-      const token = localStorage.getItem("token");
-      await fetch(`${RootRoute}/api/support-tickets/${ticketId}/messages`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({ message: trimmed }),
-      });
+      if (token) {
+        await fetch(`${RootRoute}/api/support-tickets/${ticketId}/messages`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ message: trimmed }),
+        });
+      } else if (guestEmail) {
+        await fetch(`${RootRoute}/api/public/support-tickets/${ticketId}/messages`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: trimmed, email: guestEmail }),
+        });
+      }
     } catch { /* send error */ }
   };
 
@@ -265,6 +373,60 @@ export default function FloatingAiButton() {
     const userLang = detectLanguage(trimmed);
     setMessages((prev) => [...prev, { role: "user", content: trimmed }]);
     setInput("");
+
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+    if (token) {
+      setIsLoading(true);
+      try {
+        const res = await fetch(`${RootRoute}/api/ai/chat`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ message: trimmed }),
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          const result = data?.data || data;
+          const assistantMsg = result?.assistant_message;
+
+          if (assistantMsg?.pending_action) {
+            const pa = assistantMsg.pending_action;
+            setPendingActionId(pa._id);
+            setPendingActionSummary(pa.summary);
+            setMessages((prev) => [
+              ...prev,
+              {
+                role: "assistant",
+                content: assistantMsg.content || pa.summary,
+                hasPendingAction: true,
+              },
+            ]);
+          } else {
+            setMessages((prev) => [
+              ...prev,
+              { role: "assistant", content: assistantMsg?.content || "" },
+            ]);
+          }
+        } else {
+          setMessages((prev) => [
+            ...prev,
+            { role: "assistant", content: knowledge.fallback },
+          ]);
+        }
+      } catch {
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: knowledge.fallback },
+        ]);
+      } finally {
+        setIsLoading(false);
+      }
+      return;
+    }
 
     if (wantsHuman(trimmed, userLang)) {
       setChatMode("form");
@@ -281,6 +443,57 @@ export default function FloatingAiButton() {
     const reply = getVisitorReply(trimmed, userLang);
     setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
     setIsLoading(false);
+  };
+
+  const confirmPendingAction = async () => {
+    if (!pendingActionId) return;
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    setIsLoading(true);
+    try {
+      const res = await fetch(`${RootRoute}/api/ai/pending-actions/confirm`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ pending_action_id: pendingActionId }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        const result = data?.data || data;
+        const assistantMsg = result?.assistant_message;
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: assistantMsg?.content || (isAr ? "تم تنفيذ الطلب بنجاح." : "Action executed successfully.") },
+        ]);
+      } else {
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: isAr ? "حدث خطأ أثناء تنفيذ الطلب." : "An error occurred while executing the action." },
+        ]);
+      }
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: isAr ? "حدث خطأ أثناء تنفيذ الطلب." : "An error occurred while executing the action." },
+      ]);
+    } finally {
+      setPendingActionId(null);
+      setPendingActionSummary(null);
+      setIsLoading(false);
+    }
+  };
+
+  const cancelPendingAction = () => {
+    setPendingActionId(null);
+    setPendingActionSummary(null);
+    setMessages((prev) => [
+      ...prev,
+      { role: "assistant", content: isAr ? "تم إلغاء الطلب." : "Action cancelled." },
+    ]);
   };
 
   const handleSendSupport = () => {
@@ -306,7 +519,7 @@ export default function FloatingAiButton() {
         style={{ position: "fixed", bottom: "24px", [isAr ? "left" : "right"]: "24px", zIndex: 9999 }}
         className="w-14 h-14 rounded-full bg-primary-500 hover:bg-primary-600 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group"
       >
-        {isOpen ? <IoClose size={24} color="#fff" /> : <Cpu size={24} color="#fff" className="group-hover:scale-110 transition-transform" />}
+        {isOpen ? <IoClose size={24} color="#fff" /> : <FaRobot size={24} color="#fff" className="group-hover:scale-110 transition-transform" />}
         {!isOpen && (
           <span style={{ position: "absolute", top: "-4px", [isAr ? "left" : "right"]: "-4px", width: "14px", height: "14px", backgroundColor: "#4ade80", borderRadius: "50%", border: "2px solid white" }} className="animate-pulse" />
         )}
@@ -326,7 +539,7 @@ export default function FloatingAiButton() {
           {/* Header */}
           <div style={{ backgroundColor: chatMode === "support" ? "#10b981" : "#3b82f6", color: "#fff", padding: "12px 16px", display: "flex", alignItems: "center", gap: "12px" }}>
             <div style={{ width: "32px", height: "32px", borderRadius: "50%", backgroundColor: "rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              {chatMode === "support" ? <IoChatbubbles size={18} color="#fff" /> : <Cpu size={18} color="#fff" />}
+              {chatMode === "support" ? <IoChatbubbles size={18} color="#fff" /> : <FaRobot size={18} color="#fff" />}
             </div>
             <div style={{ flex: 1 }}>
               <p style={{ fontWeight: 600, fontSize: "14px", margin: 0, color: "#fff" }}>
@@ -340,6 +553,15 @@ export default function FloatingAiButton() {
                   : (isAr ? "اسألني أي شيء عن النظام" : "Ask me anything about the system")}
               </p>
             </div>
+            {chatMode === "support" && (
+              <button
+                onClick={endGuestSession}
+                title={isAr ? "محادثة جديدة" : "New conversation"}
+                style={{ color: "rgba(255,255,255,0.8)", background: "none", border: "none", cursor: "pointer", fontSize: "11px" }}
+              >
+                {isAr ? "محادثة جديدة" : "New"}
+              </button>
+            )}
             <button onClick={() => setIsOpen(false)} style={{ color: "rgba(255,255,255,0.8)", background: "none", border: "none", cursor: "pointer" }}>
               <IoClose size={20} />
             </button>
@@ -349,7 +571,7 @@ export default function FloatingAiButton() {
           <div style={{ flex: 1, overflowY: "auto", padding: "16px", display: "flex", flexDirection: "column", gap: "12px" }}>
             {/* AI Mode Messages */}
             {chatMode !== "support" && messages.map((msg, i) => (
-              <div key={i} style={{ display: "flex", justifyContent: msg.role === "user" ? "flex-end" : "flex-start" }}>
+              <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: msg.role === "user" ? "flex-end" : "flex-start", gap: "6px" }}>
                 <div style={{
                   maxWidth: "85%", padding: "10px 14px",
                   borderRadius: msg.role === "user" ? "14px 14px 4px 14px" : "14px 14px 14px 4px",
@@ -359,8 +581,36 @@ export default function FloatingAiButton() {
                 }}>
                   {msg.content}
                 </div>
+                {msg.hasSignInLink && (
+                  <Link href="/sign-in"
+                    style={{ display: "inline-block", padding: "8px 16px", borderRadius: "10px", backgroundColor: "#3b82f6", color: "#fff", fontSize: "13px", fontWeight: 600, textDecoration: "none", textAlign: "center" }}>
+                    {isAr ? "تسجيل الدخول" : "Sign In"}
+                  </Link>
+                )}
               </div>
             ))}
+
+            {/* Pending Action Confirmation */}
+            {pendingActionId && pendingActionSummary && (
+              <div style={{ display: "flex", justifyContent: "flex-start" }}>
+                <div style={{ maxWidth: "85%", padding: "10px 14px", borderRadius: "14px 14px 14px 4px", backgroundColor: "#fef3c7", border: "1px solid #f59e0b", fontSize: "13px", lineHeight: "1.6" }}>
+                  <p style={{ margin: "0 0 8px 0", fontWeight: 600, color: "#92400e" }}>
+                    {isAr ? "⏳ موافقة مطلوبة" : "⏳ Confirmation Required"}
+                  </p>
+                  <p style={{ margin: "0 0 10px 0", color: "#78350f", whiteSpace: "pre-wrap" }}>{pendingActionSummary}</p>
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <button onClick={confirmPendingAction} disabled={isLoading}
+                      style={{ flex: 1, padding: "8px", borderRadius: "8px", border: "none", backgroundColor: "#10b981", color: "#fff", fontSize: "12px", cursor: isLoading ? "not-allowed" : "pointer", fontWeight: 600 }}>
+                      {isAr ? "✓ تأكيد" : "✓ Confirm"}
+                    </button>
+                    <button onClick={cancelPendingAction} disabled={isLoading}
+                      style={{ flex: 1, padding: "8px", borderRadius: "8px", border: "none", backgroundColor: "#ef4444", color: "#fff", fontSize: "12px", cursor: isLoading ? "not-allowed" : "pointer", fontWeight: 600 }}>
+                      {isAr ? "✗ إلغاء" : "✗ Cancel"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Support Mode Messages */}
             {chatMode === "support" && supportMessages.map((msg) => (
@@ -392,7 +642,12 @@ export default function FloatingAiButton() {
             {/* Quick Actions (AI mode only) */}
             {chatMode === "ai" && messages.length <= 1 && !isLoading && (
               <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "4px" }}>
-                {quickActions.map((action, i) => (
+                {(isLoggedIn
+                  ? (isAr
+                      ? ["ما هي مهامي؟", "مشاريعي", "التحدث مع موظف"]
+                      : ["What are my tasks?", "My projects", "Talk to support"])
+                  : quickActions
+                ).map((action, i) => (
                   <button key={i} onClick={() => handleSend(action)}
                     style={{ padding: "6px 12px", borderRadius: "20px", border: "1px solid #d1d5db", backgroundColor: "#fff", color: "#3b82f6", fontSize: "12px", cursor: "pointer" }}
                     onMouseEnter={(e) => { e.target.style.backgroundColor = "#eff6ff"; e.target.style.borderColor = "#3b82f6"; }}
@@ -446,24 +701,16 @@ export default function FloatingAiButton() {
           {/* Support Mode Input */}
           {chatMode === "support" && (
             <div style={{ borderTop: "1px solid #e5e7eb", padding: "12px" }}>
-              {localStorage.getItem("token") ? (
-                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <input ref={inputRef} type="text" value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown}
-                    placeholder={isAr ? "اكتب رسالتك..." : "Type your message..."}
-                    style={{ flex: 1, fontSize: "13px", borderRadius: "12px", padding: "10px 14px", outline: "none", border: "1px solid #e5e7eb", backgroundColor: "#f9fafb", color: "#1f2937" }}
-                  />
-                  <button onClick={sendSupportMessage} disabled={!input.trim()}
-                    style={{ width: "40px", height: "40px", borderRadius: "12px", border: "none", backgroundColor: input.trim() ? "#10b981" : "#d1d5db", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: input.trim() ? "pointer" : "not-allowed", flexShrink: 0 }}>
-                    <IoSend size={16} style={{ transform: isAr ? "scaleX(-1)" : "none" }} />
-                  </button>
-                </div>
-              ) : (
-                <p style={{ fontSize: "12px", color: "#6b7280", textAlign: "center", margin: 0, lineHeight: "1.6" }}>
-                  {isAr
-                    ? "فريق الدعم سيتواصل معك عبر البريد الإلكتروني"
-                    : "Our support team will contact you via email"}
-                </p>
-              )}
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <input ref={inputRef} type="text" value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown}
+                  placeholder={isAr ? "اكتب رسالتك..." : "Type your message..."}
+                  style={{ flex: 1, fontSize: "13px", borderRadius: "12px", padding: "10px 14px", outline: "none", border: "1px solid #e5e7eb", backgroundColor: "#f9fafb", color: "#1f2937" }}
+                />
+                <button onClick={sendSupportMessage} disabled={!input.trim()}
+                  style={{ width: "40px", height: "40px", borderRadius: "12px", border: "none", backgroundColor: input.trim() ? "#10b981" : "#d1d5db", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: input.trim() ? "pointer" : "not-allowed", flexShrink: 0 }}>
+                  <IoSend size={16} style={{ transform: isAr ? "scaleX(-1)" : "none" }} />
+                </button>
+              </div>
             </div>
           )}
 
@@ -482,9 +729,11 @@ export default function FloatingAiButton() {
                 </button>
               </div>
               <div style={{ textAlign: "center", marginTop: "8px" }}>
-                <Link href="/sign-in" style={{ fontSize: "11px", color: "#6b7280", textDecoration: "underline" }}>
-                  {isAr ? "تسجيل الدخول للدردشة المتقدمة" : "Sign in for advanced chat"}
-                </Link>
+                {!isLoggedIn && (
+                  <Link href="/sign-in" style={{ fontSize: "11px", color: "#6b7280", textDecoration: "underline" }}>
+                    {isAr ? "تسجيل الدخول للدردشة المتقدمة" : "Sign in for advanced chat"}
+                  </Link>
+                )}
               </div>
             </div>
           )}

@@ -150,6 +150,30 @@ export const aiApi = apiSlice.injectEndpoints({
             invalidatesTags: ["AITokensLimit"],
             transformResponse: (response) => response.data || response,
         }),
+        getPendingEscalations: builder.query({
+            query: () => ({
+                url: "api/escalation/pending",
+                method: "GET",
+            }),
+            providesTags: ["Escalation"],
+            transformResponse: (response) => response.data || response,
+        }),
+        approveEscalation: builder.mutation({
+            query: ({ id }) => ({
+                url: `api/escalation/${id}/approve`,
+                method: "POST",
+            }),
+            invalidatesTags: ["Escalation"],
+            transformResponse: (response) => response.data || response,
+        }),
+        rejectEscalation: builder.mutation({
+            query: ({ id }) => ({
+                url: `api/escalation/${id}/reject`,
+                method: "POST",
+            }),
+            invalidatesTags: ["Escalation"],
+            transformResponse: (response) => response.data || response,
+        }),
     }),
 });
 
@@ -170,4 +194,7 @@ export const {
     useGetAdminTokenAnalyticsQuery,
     useGetFreeTokensLimitQuery,
     useUpdateFreeTokensLimitMutation,
+    useGetPendingEscalationsQuery,
+    useApproveEscalationMutation,
+    useRejectEscalationMutation,
 } = aiApi;

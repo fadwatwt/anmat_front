@@ -4,6 +4,17 @@ import { useDroppable } from "@dnd-kit/core";
 import { useTranslation } from "react-i18next";
 import PropTypes from "prop-types";
 import KanbanTaskCard from "./KanbanTaskCard";
+import { RiCheckLine, RiTimerLine, RiPlayCircleLine, RiCloseCircleLine, RiQuestionLine, RiStopCircleLine, RiCheckboxCircleLine } from "react-icons/ri";
+
+const COLUMN_ICONS = {
+  "open": RiPlayCircleLine,
+  "pending": RiTimerLine,
+  "in-progress": RiTimerLine,
+  "completed": RiCheckboxCircleLine,
+  "done": RiCheckLine,
+  "rejected": RiCloseCircleLine,
+  "cancelled": RiStopCircleLine,
+};
 
 function KanbanColumn({ column, tasks }) {
   const { t } = useTranslation();
@@ -11,6 +22,8 @@ function KanbanColumn({ column, tasks }) {
   const { setNodeRef, isOver } = useDroppable({
     id: column.id,
   });
+
+  const Icon = COLUMN_ICONS[column.id] || RiQuestionLine;
 
   return (
     <div
@@ -27,10 +40,7 @@ function KanbanColumn({ column, tasks }) {
         }}
       >
         <div className="flex items-center gap-2">
-          <div
-            className="w-2.5 h-2.5 rounded-full"
-            style={{ backgroundColor: column.color }}
-          />
+          <Icon size={16} style={{ color: column.color }} />
           <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">
             {t(column.label)}
           </span>

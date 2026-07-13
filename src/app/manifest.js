@@ -1,6 +1,6 @@
 export default function manifest() {
   return {
-    name: "أنماط | Anmat - نظام إدارة المؤسسات",
+    name: "أنماط | Anmaat - نظام إدارة المؤسسات",
     short_name: "أنماط",
     description: "منصة متكاملة لإدارة المؤسسات والفرق",
     start_url: "/",

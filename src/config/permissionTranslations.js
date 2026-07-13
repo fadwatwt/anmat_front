@@ -128,6 +128,8 @@ const permissionTranslations = {
   "support_tickets.list": { en: "List Support Tickets", ar: "عرض تذاكر الدعم" },
   "support_tickets.view": { en: "View Support Ticket", ar: "عرض تذكرة دعم" },
   "support_tickets.update": { en: "Update Support Ticket", ar: "تعديل تذكرة دعم" },
+  "support_tickets.delete": { en: "Delete Support Ticket", ar: "حذف تذكرة دعم" },
+  "support_tickets.respond": { en: "Respond to Escalation Requests", ar: "الرد على طلبات التحويل لبشري" },
 
   // ── Subscriptions ──
   "subscriptions.create": { en: "Create Subscription", ar: "إنشاء اشتراك" },
@@ -237,6 +239,8 @@ const permissionTranslations = {
   "admin.support_tickets.create": { en: "Create Support Ticket", ar: "إنشاء تذكرة دعم" },
   "admin.support_tickets.view": { en: "View Support Ticket", ar: "عرض تذكرة دعم" },
   "admin.support_tickets.update": { en: "Update Support Ticket", ar: "تعديل تذكرة دعم" },
+  "admin.support_tickets.delete": { en: "Delete Support Ticket", ar: "حذف تذكرة دعم" },
+  "admin.support_tickets.respond": { en: "Respond to Escalation Requests", ar: "الرد على طلبات التحويل لبشري" },
 };
 
 /**
@@ -256,6 +260,73 @@ export const getPermissionLabel = (permissionName, permission) => {
   if (permission?.title) return permission.title;
   if (permission?.name) return permission.name;
   return permissionName;
+};
+
+const permissionDetailsTranslations = {
+  "admin.profile.password.update": { en: "Allows the admin to update his own password.", ar: "يسمح للمسؤول بتعديل كلمة مروره الخاصة." },
+  "admin.profile.update": { en: "Permits the admin to modify their personal profile information.", ar: "يسمح للمسؤول بتعديل معلومات ملفه الشخصي." },
+  "admin.permissions.list": { en: "Enables the admin to view and retrieve a list of all available admin system permissions.", ar: "يسمح للمسؤول بعرض واسترجاع قائمة بجميع صلاحيات نظام المسؤولين المتاحة." },
+  "admin.roles.list": { en: "Allows the admin to fetch and display a list of all defined admin system roles.", ar: "يسمح للمسؤول باسترجاع وعرض قائمة بجميع أدوار نظام المسؤولين المعرفة." },
+  "admin.roles.create": { en: "Allows the admin to create new roles.", ar: "يسمح للمسؤول بإنشاء أدوار جديدة." },
+  "admin.roles.delete": { en: "Allows the admin to delete role from the system.", ar: "يسمح للمسؤول بحذف دور من النظام." },
+  "admin.roles.update": { en: "Allows the admin to update an existing role.", ar: "يسمح للمسؤول بتعديل دور موجود." },
+  "admin.roles.permissions.sync": { en: "Enables synchronization of permissions to a specific role.", ar: "يسمح بمزامنة الصلاحيات مع دور محدد." },
+  "admin.roles.assign": { en: "Allows assigning roles to users.", ar: "يسمح بتعيين الأدوار للمستخدمين." },
+  "admin.roles.unassign": { en: "Allows unassigning roles from users.", ar: "يسمح بإلغاء تعيين الأدوار من المستخدمين." },
+  "admin.subscribers.list": { en: "Allows to view and retrieve a list of all subscriber accounts in the system.", ar: "يسمح بعرض واسترجاع قائمة بجميع حسابات المشتركين في النظام." },
+  "admin.subscribers.view": { en: "Allows viewing a specific subscriber account.", ar: "يسمح بعرض حساب مشترك محدد." },
+  "admin.subscribers.update": { en: "Allows updating a subscriber account.", ar: "يسمح بتعديل حساب مشترك." },
+  "admin.subscribers.toggle_status": { en: "Enables toggling the active/inactive status of subscriber accounts.", ar: "يسمح بتفعيل/تعطيل حالة حسابات المشتركين." },
+  "admin.industries.create": { en: "Allows the admin to create new industry organizations classification.", ar: "يسمح للمسؤول بإنشاء تصنيفات صناعات مؤسسات جديدة." },
+  "admin.industries.list": { en: "Allows listing and viewing all available industries in the system.", ar: "يسمح بعرض جميع الصناعات المتاحة في النظام." },
+  "admin.industries.delete": { en: "Allows to delete existing industry from the system.", ar: "يسمح بحذف صناعة موجودة من النظام." },
+  "admin.industries.update": { en: "Allows updating an existing industry.", ar: "يسمح بتعديل صناعة موجودة." },
+  "admin.subscriptions.list": { en: "Enables retrieval and display of all subscriptions.", ar: "يسمح باسترجاع وعرض جميع الاشتراكات." },
+  "admin.subscriptions.update": { en: "Allows updating a subscription.", ar: "يسمح بتعديل اشتراك." },
+  "admin.subscriptions.update_status": { en: "Allows updating the status of individual subscription.", ar: "يسمح بتعديل حالة اشتراك محدد." },
+  "admin.subscription_feature_types.create": { en: "Allows creation of new subscription feature types that can be included in subscription plans.", ar: "يسمح بإنشاء أنواع ميزات اشتراك جديدة يمكن تضمينها في خطط الاشتراك." },
+  "admin.subscription_feature_types.toggle_activation": { en: "Allows activating or deactivating specific subscription feature type.", ar: "يسمح بتفعيل/تعطيل نوع ميزة اشتراك محدد." },
+  "admin.subscription_feature_types.list": { en: "Allows access to list and view all subscription feature types.", ar: "يسمح بالوصول لعرض جميع أنواع ميزات الاشتراك." },
+  "admin.subscription_plans.list": { en: "Allows the admin to view and retrieve all subscription plans.", ar: "يسمح للمسؤول بعرض واسترجاع جميع خطط الاشتراك." },
+  "admin.subscription_plans.create": { en: "Grants permission to create new subscription plan.", ar: "يمنح صلاحية إنشاء خطة اشتراك جديدة." },
+  "admin.subscription_plans.delete": { en: "Permits deletion of existing subscription plan from the system.", ar: "يسمح بحذف خطة اشتراك موجودة من النظام." },
+  "admin.subscription_plans.update": { en: "Allows updating an existing subscription plan.", ar: "يسمح بتعديل خطة اشتراك موجودة." },
+  "admin.subscription_plans.view": { en: "Allows viewing a specific subscription plan.", ar: "يسمح بعرض خطة اشتراك محددة." },
+  "admin.subscription_plans.toggle_activity": { en: "Allows activating or deactivating a subscription plan.", ar: "يسمح بتفعيل/تعطيل خطة اشتراك." },
+  "admin.subscription_plans.manage_trial": { en: "Allows managing trial periods for subscription plans.", ar: "يسمح بإدارة الفترات التجريبية لخطط الاشتراك." },
+  "admin.subscription_plans.add_trial": { en: "Enables adding trial periods to subscription plans.", ar: "يسمح بإضافة فترات تجريبية لخطط الاشتراك." },
+  "admin.subscription_plans.update_availability": { en: "Allows updating the availability status of subscription plans.", ar: "يسمح بتعديل حالة توفر خطط الاشتراك." },
+  "admin.subscription_plans.trials.toggle_activity": { en: "Allows to toggle the activity of subscription plan trial.", ar: "يسمح بتفعيل/تعطيل تجربة خطة الاشتراك." },
+  "admin.analytics.view": { en: "Allows the admin to view system-wide analytics and reports.", ar: "يسمح للمسؤول بعرض التحليلات والتقارير على مستوى النظام." },
+  "admin.settings.view": { en: "Allows the admin to view global system settings.", ar: "يسمح للمسؤول بعرض إعدادات النظام العامة." },
+  "admin.settings.update": { en: "Allows the admin to update global system settings.", ar: "يسمح للمسؤول بتعديل إعدادات النظام العامة." },
+  "admin.social_media_quota.view": { en: "Allows the admin to view a subscriber's social media account quota.", ar: "يسمح للمسؤول بعرض حصص حسابات التواصل الاجتماعي للمشترك." },
+  "admin.social_media_quota.update": { en: "Allows the admin to override a subscriber's social media account quota.", ar: "يسمح للمسؤول بتجاوز حصص حسابات التواصل الاجتماعي للمشترك." },
+  "admin.support_tickets.create": { en: "Allows the admin to create new support tickets.", ar: "يسمح للمسؤول بإنشاء تذاكر دعم جديدة." },
+  "admin.support_tickets.list": { en: "Allows the admin to view and list all support tickets.", ar: "يسمح للمسؤول بعرض وسرد جميع تذاكر الدعم." },
+  "admin.support_tickets.view": { en: "Allows the admin to view a specific support ticket.", ar: "يسمح للمسؤول بعرض تذكرة دعم محددة." },
+  "admin.support_tickets.update": { en: "Allows the admin to update support tickets.", ar: "يسمح للمسؤول بتعديل تذاكر الدعم." },
+  "admin.support_tickets.delete": { en: "Allows the admin to delete support tickets.", ar: "يسمح للمسؤول بحذف تذاكر الدعم." },
+  "admin.support_tickets.respond": { en: "Allows responding to human escalation requests from the AI chat.", ar: "يسمح بالرد على طلبات التحويل لموظف بشري من شات الذكاء الاصطناعي." },
+  "admin.system_admins.create": { en: "Allows creating a new system admin.", ar: "يسمح بإنشاء مدير نظام جديد." },
+  "admin.system_admins.list": { en: "Allows viewing all system admins.", ar: "يسمح بعرض جميع مدراء النظام." },
+  "admin.system_admins.view": { en: "Allows viewing a specific system admin.", ar: "يسمح بعرض مدير نظام محدد." },
+  "admin.admin_roles.list": { en: "Allows viewing all admin roles.", ar: "يسمح بعرض جميع أدوار المسؤولين." },
+  "admin.admin_roles.create": { en: "Allows creating a new admin role.", ar: "يسمح بإنشاء دور مسؤول جديد." },
+  "admin.admin_roles.update": { en: "Allows updating an existing admin role.", ar: "يسمح بتعديل دور مسؤول موجود." },
+  "admin.admin_roles.delete": { en: "Allows deleting an admin role.", ar: "يسمح بحذف دور مسؤول." },
+  "admin.admin_permissions.list": { en: "Allows viewing all admin permissions.", ar: "يسمح بعرض جميع صلاحيات المسؤولين." },
+};
+
+export const getPermissionDetails = (permissionName, permission) => {
+  const lang = i18n?.language || "en";
+  const translation = permissionDetailsTranslations[permissionName];
+
+  if (translation) {
+    return translation[lang] || translation.en || permission?.details || "";
+  }
+
+  return permission?.details || "";
 };
 
 export default permissionTranslations;

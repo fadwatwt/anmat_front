@@ -46,7 +46,7 @@ function Desktop2Page() {
                   alt={t("logo")}
                   className={"w-8 h-8"}
                 />
-                <p className={"text-white"}>{t("Anmat")}</p>
+                <p className={"text-white"}>{t("Anmaat")}</p>
               </div>
               <nav className={"hidden md:flex gap-6 text-white"}>
                 <button onClick={() => scrollToSection("home")} className={"list-none cursor-pointer hover:text-primary-200 transition-colors"}>{t("Home")}</button>
@@ -56,6 +56,13 @@ function Desktop2Page() {
               </nav>
             </div>
             <div className={"flex items-center gap-3"}>
+              <button
+                onClick={() => i18n.changeLanguage(i18n.language === "ar" ? "en" : "ar")}
+                className="text-white text-sm md:text-base px-2 py-1 rounded-md border border-white/30 hover:bg-white/10 transition-colors"
+                title={i18n.language === "ar" ? "English" : "العربية"}
+              >
+                {i18n.language === "ar" ? "EN" : "AR"}
+              </button>
               <p className={"text-white text-sm md:text-base"}>
                 {" "}
                 <Link href="sign-in"> {t("Login")}</Link>
@@ -544,7 +551,7 @@ function Desktop2Page() {
             <div className={"flex flex-col gap-4"}>
               <div className={"flex gap-2 items-center"}>
                 <img src="/images/LandingPage/logoBlue.png" alt={""} className={"w-8"} />
-                <p className={"text-white font-bold text-lg"}>{t("Anmat")}</p>
+                <p className={"text-white font-bold text-lg"}>{t("Anmaat")}</p>
               </div>
               <p className={"text-gray-300 text-sm leading-relaxed"}>
                 {t("All the tools you need for collaboration, analytics, and decision-making in one place.")}
@@ -583,7 +590,7 @@ function Desktop2Page() {
         <div className={"border-t border-gray-600 dark:border-gray-700"}>
           <div className={"max-w-[87rem] mx-auto px-4 sm:px-7 py-6 flex flex-col sm:flex-row justify-between items-center gap-3"}>
             <p className={"text-gray-400 text-sm"}>
-              {t("© 2025 Anmat. All rights reserved.")}
+              {t("© 2025 Anmaat. All rights reserved.")}
             </p>
             <div className={"flex gap-6 text-sm"}>
               <a href="/privacy" className={"text-gray-400 hover:text-gray-200 transition-colors"}>{t("Privacy Policy")}</a>
