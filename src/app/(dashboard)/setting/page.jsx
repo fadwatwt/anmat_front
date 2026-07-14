@@ -18,27 +18,27 @@ function SettingPage() {
 
   const tabsData = [
     {
-      title: "General Settings",
+      title: t("General Settings"),
       content: <GeneralSettingsTab />,
     },
     {
-      title: "Notifications",
+      title: t("Notifications"),
       content: <NotificationsTab />,
     },
     {
-      title: "Attendance",
+      title: t("Attendance"),
       content: <AttendanceTab />,
     },
     {
-      title: "Conversations",
+      title: t("Conversations"),
       content: <ConversationsTab />,
     },
     {
-      title: "Tasks",
+      title: t("Tasks"),
       content: <TasksTab />,
     },
     {
-      title: "Privacy & Security",
+      title: t("Privacy & Security"),
       content: <ProfileSecurityTab />,
     },
 
@@ -46,7 +46,7 @@ function SettingPage() {
 
   if (user?.type === "Admin") {
     tabsData.push({
-      title: "AI Assistant",
+      title: t("AI Assistant"),
       content: <AiSettingsTab />,
     });
   }

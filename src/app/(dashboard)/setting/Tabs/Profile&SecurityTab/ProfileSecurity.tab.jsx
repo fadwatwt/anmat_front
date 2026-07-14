@@ -9,8 +9,8 @@ import ChangePassword from "./SidebarItems/ChangePassword.jsx";
 function ProfileSecurityTab() {
     const {t} = useTranslation()
     const listSideBar = [
-        {id: "personalInformation", title: "Personal information", icon: <RiUserLine  />},
-        {id: "changePassword", title:"Change Password",icon:<RiLock2Line />}
+        {id: "personalInformation", title: t("Personal information"), icon: <RiUserLine  />},
+        {id: "changePassword", title:t("Change Password"),icon:<RiLock2Line />}
     ]
     const [activeTab, setActiveTab] = useState('personalInformation');
 
@@ -19,12 +19,12 @@ function ProfileSecurityTab() {
     }
     const tabsData = [
         {
-            title: "Personal information",
+            title: t("Personal information"),
             content: <PersonalInformation />,
             icon:""
         },
         {
-            title: "Change Password",
+            title: t("Change Password"),
             content:<ChangePassword />,
             icon:"",
         },

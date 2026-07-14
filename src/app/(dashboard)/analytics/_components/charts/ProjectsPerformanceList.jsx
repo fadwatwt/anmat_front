@@ -1,5 +1,8 @@
 
+import { useTranslation } from "react-i18next";
+
 const ProjectRow = ({ name, completedTasks, totalTasks, daysLeft }) => {
+    const { t } = useTranslation();
     const percentage = (completedTasks / totalTasks) * 100;
 
     return (
@@ -16,8 +19,8 @@ const ProjectRow = ({ name, completedTasks, totalTasks, daysLeft }) => {
                     />
                 </div>
                 <div className="flex justify-between items-center text-[11px] text-cell-secondary font-medium">
-                    <span>{completedTasks} / {totalTasks} tasks completed</span>
-                    <span>{daysLeft} days left</span>
+                    <span>{t("{{completed}}/{{total}} tasks completed", { completed: completedTasks ?? 0, total: totalTasks ?? 0 })}</span>
+                    <span>{t("{{daysLeft}} days left", { daysLeft: daysLeft ?? 0 })}</span>
                 </div>
             </div>
         </div>

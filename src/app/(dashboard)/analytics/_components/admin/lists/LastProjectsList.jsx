@@ -34,7 +34,7 @@ const LastProjectsList = ({ projects = [] }) => {
                                         {project.name}
                                     </span>
                                     <span className="text-sm text-cell-secondary">
-                                        {project.desc}
+                                        {t(project.desc)}
                                     </span>
                                 </div>
                             </div>

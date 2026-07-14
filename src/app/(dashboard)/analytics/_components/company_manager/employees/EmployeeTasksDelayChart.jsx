@@ -10,17 +10,17 @@ import HalfDonutChart from "@/components/drawers/HalfDonutChartDrawer";
 const EmployeeTasksDelayChart = ({ completed = 0, total = 0 }) => {
     const remaining = Math.max(0, total - completed);
     const data = [
-        { value: completed, color: '#F17B2C', label: "Completed Tasks" },
-        { value: remaining, color: '#E2E4E9', label: "Not-Completed Tasks" }
+        { value: completed, color: '#F17B2C', label: t("Completed Tasks") },
+        { value: remaining, color: '#E2E4E9', label: t("Not-Completed Tasks") }
     ];
 
     return (
         <ContentCard
-            title={"Employee Performance"}
+            title={t("Employee Performance")}
             toolbar={
                 <div className="w-72 flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end">
-                    <DefaultSelect options={[{ id: 1, value: "Employee" }]} />
-                    <DefaultSelect options={[{ id: 1, value: "Last Month" }]} />
+                    <DefaultSelect options={[{ id: 1, value: t("Employee") }]} />
+                    <DefaultSelect options={[{ id: 1, value: t("Last Month") }]} />
                 </div>
             }
             main={

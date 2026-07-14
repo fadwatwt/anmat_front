@@ -176,7 +176,7 @@ function TemplatesTab() {
             icon={RiLayoutGridFill}
         />,
         <span key={`cat-${template._id}`} className="text-sm text-gray-700 dark:text-gray-300">
-            {template.category || "General"}
+            {template.category || t("General")}
         </span>,
         <Assignees 
             key={`assign-${template._id}`} 

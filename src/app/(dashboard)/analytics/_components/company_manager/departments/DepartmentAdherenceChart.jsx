@@ -2,28 +2,28 @@
 
 import DonutChartComponent from "@/components/containers/chart/DonutChartComponent";
 import DefaultSelect from "@/components/Form/DefaultSelect";
-
-const FALLBACK = {
-    total: 0,
-    records: [
-        { title: "Attended", value: 0, color: "#375DFB" },
-        { title: "Absent", value: 0, color: "#F2AE40" },
-    ],
-};
+import { useTranslation } from "react-i18next";
 
 const DepartmentAdherenceChart = ({ data }) => {
-    const chartData = data && data.records ? data : FALLBACK;
+    const { t } = useTranslation();
+    const chartData = data && data.records ? data : {
+        total: 0,
+        records: [
+            { title: t("Attended"), value: 0, color: "#375DFB" },
+            { title: t("Absent"), value: 0, color: "#F2AE40" },
+        ],
+    };
 
     return (
         <DonutChartComponent
-            title={"Department Adherence"}
+            title={t("Department Adherence")}
             toolbar={
                 <div className="w-72 flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end">
-                    <DefaultSelect options={[{ id: 1, value: "Department" }]} />
-                    <DefaultSelect options={[{ id: 1, value: "Last Month" }]} />
+                    <DefaultSelect options={[{ id: 1, value: t("Department") }]} />
+                    <DefaultSelect options={[{ id: 1, value: t("Last Month") }]} />
                 </div>
             }
-            subtitle={"DAYS"}
+            subtitle={t("DAYS")}
             data={chartData}
         />
     );

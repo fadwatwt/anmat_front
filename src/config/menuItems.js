@@ -24,10 +24,10 @@ export const dashboardSideMenuItems = [
     },
 
     // ═══════════════════════════════════════════
-    // Section: Operations — Work Management
+    // Section: Work Management (إدارة العمل)
     // ═══════════════════════════════════════════
     {
-        section: 'Operations',
+        section: 'Work Management',
         allowed_to: ['Subscriber', 'Employee'],
         title: 'Projects',
         path: '/projects',
@@ -35,7 +35,7 @@ export const dashboardSideMenuItems = [
         permission_any_of: ['projects.track_all', 'projects.track_department'],
     },
     {
-        section: 'Operations',
+        section: 'Work Management',
         allowed_to: ['Subscriber', 'Employee'],
         title: 'Tasks',
         path: '/tasks',
@@ -43,7 +43,7 @@ export const dashboardSideMenuItems = [
         permission_any_of: ['tasks.track_all', 'tasks.track_department'],
     },
     {
-        section: 'Operations',
+        section: 'Work Management',
         allowed_to: ['Subscriber'],
         title: 'Agenda',
         path: '/appointments',
@@ -92,7 +92,7 @@ export const dashboardSideMenuItems = [
     {
         section: 'My Work',
         allowed_to: ['Employee'],
-        title: 'Short Leaves',
+        title: 'Short Leave Requests',
         path: '/leaves',
         icon: <Stickynote size={20} />
     },
@@ -105,12 +105,12 @@ export const dashboardSideMenuItems = [
     },
 
     // ═══════════════════════════════════════════
-    // Section: HR — Team Management
+    // Section: Team Management (إدارة الفريق)
     // ═══════════════════════════════════════════
     {
-        section: 'HR',
+        section: 'Team Management',
         allowed_to: ['Subscriber', 'Employee'],
-        title: 'HR Management',
+        title: 'Human Resources',
         path: '/hr',
         icon: <Profile2User />,
         permission_any_of: [
@@ -159,7 +159,7 @@ export const dashboardSideMenuItems = [
             },
             {
                 allowed_to: ['Employee'],
-                title: 'Attendances',
+                title: 'Attendance',
                 path: '/hr/attendances',
                 permission_any_of: ['attendances.track_all', 'attendances.track_department'],
             },
@@ -171,13 +171,13 @@ export const dashboardSideMenuItems = [
             },
             {
                 allowed_to: ['Employee'],
-                title: 'Salary',
+                title: 'Payroll',
                 path: '/hr/salary',
                 permission_any_of: ['salary_transactions.track_all', 'salary_transactions.track_department'],
             },
             {
                 allowed_to: ['Employee'],
-                title: 'Requests',
+                title: 'Employee Requests',
                 path: '/hr/requests',
                 permission_any_of: ['employee_requests.track_all', 'employee_requests.track_department'],
             },
@@ -185,41 +185,49 @@ export const dashboardSideMenuItems = [
     },
 
     // ═══════════════════════════════════════════
-    // Section: Communication
+    // Section: Internal Communication (التواصل الداخلي)
     // ═══════════════════════════════════════════
     {
-        section: 'Communication',
+        section: 'Internal Communication',
         allowed_to: ['Subscriber', 'Employee'],
         title: 'Conversations',
         path: '/conversations',
         icon: <Messages1 />
     },
+
+    // ═══════════════════════════════════════════
+    // Section: Content Management (إدارة المحتوى)
+    // ═══════════════════════════════════════════
     {
-        section: 'Communication',
+        section: 'Content Management',
         allowed_to: ['Subscriber', 'Employee'],
-        title: 'Social Media',
+        title: 'Social Media Management',
         path: '/social-media',
         icon: <Share />,
         permission_any_of: ['social_media_accounts.list'],
     },
 
     // ═══════════════════════════════════════════
-    // Section: AI & Analytics
+    // Section: Reports & Analytics (التقارير والتحليلات)
     // ═══════════════════════════════════════════
     {
-        section: 'AI & Analytics',
-        allowed_to: ['Admin', 'Subscriber', 'Employee'],
-        title: 'AI Assistant',
-        path: '/ai',
-        icon: <Cpu />
-    },
-    {
-        section: 'AI & Analytics',
+        section: 'Reports & Analytics',
         allowed_to: ['Admin', 'Subscriber', 'Employee'],
         title: 'Analytics',
         path: '/analytics',
         icon: <Chart2 />,
         permission_any_of: ['admin.analytics.view', 'analytics.view'],
+    },
+
+    // ═══════════════════════════════════════════
+    // Section: Smart Tools (الأدوات الذكية)
+    // ═══════════════════════════════════════════
+    {
+        section: 'Smart Tools',
+        allowed_to: ['Admin', 'Subscriber', 'Employee'],
+        title: 'AI Assistant',
+        path: '/ai',
+        icon: <Cpu />
     },
 
     // ═══════════════════════════════════════════

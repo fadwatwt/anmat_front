@@ -78,17 +78,19 @@ const AdminDashboard = () => {
     const key = status.toLowerCase().replace(/\s+/g, '_');
     const labelMap = {
       open: t("Active"),
-      in_progress: t("Active"),
+      in_progress: t("In Progress"),
       active: t("Active"),
-      completed: t("Completed before due date"),
+      completed: t("Completed"),
       completed_before_due_date: t("Completed before due date"),
       late_completed: t("Late Completed"),
       cancelled: t("Cancelled"),
       overdue: t("Overdue"),
       on_hold: t("On Hold"),
       pending: t("Pending"),
+      done: t("Done"),
+      rejected: t("Rejected"),
     };
-    return labelMap[key] || status.charAt(0).toUpperCase() + status.slice(1).replace(/_/g, " ");
+    return labelMap[key] || t(status.replace(/[-_]+/g, ' ').replace(/\b\w/g, c => c.toUpperCase()));
   };
 
   const chartData = statsData?.data ? {
@@ -171,12 +173,12 @@ const AdminDashboard = () => {
         {/* Tasks Summary Card */}
         <div className="w-full md:w-1/2">
           <AnalyticsCard title={t("Tasks Summary")}>
-            <DynamicDoughnut data={chartData.records} centerTitle="TASKS" centerValue={chartData.total} />
+            <DynamicDoughnut data={chartData.records} centerTitle={t("TASKS")} centerValue={chartData.total} />
           </AnalyticsCard>
         </div>
 
         <div className="w-full md:w-1/2">
-          <AnalyticsCard title={t("Departments")} showDropdowns={true} dropdown1Label="Last 6 months">
+          <AnalyticsCard title={t("Departments")} showDropdowns={true} dropdown1Label={t("Last 6 Months")}>
             <div className="w-full h-[300px]">
               <DepartmentsPerformanceChat data={departmentsData} />
             </div>

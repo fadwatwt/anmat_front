@@ -3,6 +3,13 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Label, Tooltip } from 'rechar
 import PropTypes from 'prop-types';
 import { useTranslation } from "react-i18next";
 
+const translateStatus = (t, name) => {
+    if (!name) return name;
+    const normalized = name.replace(/[-_]+/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    const result = t(normalized);
+    return result !== normalized ? result : t(name);
+};
+
 const DynamicDoughnut = ({ data, centerTitle, centerValue }) => {
     const { t } = useTranslation();
     // حساب الإجمالي في حال لم يتم تمريره
@@ -51,7 +58,7 @@ const DynamicDoughnut = ({ data, centerTitle, centerValue }) => {
                     <div key={`legend-${index}`} className="flex flex-col items-center">
                         <div className="flex items-center gap-2 mb-1">
                             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
-                            <span className="text-sm text-cell-secondary">{t(item.name)}</span>
+                            <span className="text-sm text-cell-secondary">{translateStatus(t, item.name)}</span>
                         </div>
                         <span className="text-lg font-bold text-cell-primary">{item.value}</span>
                     </div>

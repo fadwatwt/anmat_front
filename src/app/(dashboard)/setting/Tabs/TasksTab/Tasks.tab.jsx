@@ -11,8 +11,8 @@ import {RiStarLine, RiTaskFill} from "@remixicon/react";
 function TasksTab() {
     const {t} = useTranslation()
     const listSideBar = [
-        {id:"tasks",title:"Tasks",icon:<RiTaskFill/>},
-        {id:"rating",title:"Rating",icon:<RiStarLine />}
+        {id:"tasks",title:t("Tasks"),icon:<RiTaskFill/>},
+        {id:"rating",title:t("Rating"),icon:<RiStarLine />}
     ]
     const [activeTab, setActiveTab] = useState('tasks');
 
@@ -21,12 +21,12 @@ function TasksTab() {
     }
     const tabsData = [
         {
-            title: "Tasks Preferences",
+            title: t("Tasks Preferences"),
             content: <Tasks />,
             icon:<RiTaskFill/>
         },
         {
-            title: "Adding Rating Categories",
+            title: t("Adding Rating Categories"),
             content:<Rating />,
             icon:<RiStarLine />,
         },

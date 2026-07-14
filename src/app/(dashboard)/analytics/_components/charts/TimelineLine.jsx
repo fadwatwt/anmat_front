@@ -50,7 +50,7 @@ const TimelineLine = ({ data = [] }) => {
                     <Line
                         type="monotone"
                         dataKey="Expected Time"
-                        name="Expected Time"
+                        name={t("Expected Time")}
                         stroke="#10B981"
                         strokeWidth={2}
                         strokeDasharray="5 5"
@@ -61,7 +61,7 @@ const TimelineLine = ({ data = [] }) => {
                     <Line
                         type="monotone"
                         dataKey="Actual Time"
-                        name="Actual Time"
+                        name={t("Actual Time")}
                         stroke="#3B82F6"
                         strokeWidth={2}
                         dot={false}

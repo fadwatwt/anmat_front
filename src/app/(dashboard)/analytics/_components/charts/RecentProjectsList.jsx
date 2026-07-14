@@ -1,16 +1,21 @@
 
-const RecentProjectItem = ({ rank, name, department }) => (
-    <div className="flex items-center gap-4 py-2">
-        <div className="w-10 h-10 rounded-full border border-status-border bg-status-bg flex items-center justify-center shrink-0">
-            <span className="text-cell-secondary text-lg font-light">{rank}</span>
-        </div>
+import { useTranslation } from "react-i18next";
 
-        <div className="flex flex-col">
-            <h4 className="text-sm font-semibold text-table-title leading-none mb-1">{name}</h4>
-            <span className="text-xs text-cell-secondary font-medium">{department}</span>
+const RecentProjectItem = ({ rank, name, department }) => {
+    const { t } = useTranslation();
+    return (
+        <div className="flex items-center gap-4 py-2">
+            <div className="w-10 h-10 rounded-full border border-status-border bg-status-bg flex items-center justify-center shrink-0">
+                <span className="text-cell-secondary text-lg font-light">{rank}</span>
+            </div>
+
+            <div className="flex flex-col">
+                <h4 className="text-sm font-semibold text-table-title leading-none mb-1">{name}</h4>
+                <span className="text-xs text-cell-secondary font-medium">{t(department)}</span>
+            </div>
         </div>
-    </div>
-);
+    );
+};
 
 const RecentProjectsList = ({ projects }) => {
     return (

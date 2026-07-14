@@ -12,8 +12,8 @@ import TabModal from "@/components/Modal/TabsContener/TabModal.jsx";
 function GeneralSettingsTab() {
     const {t} = useTranslation()
     const listSideBar = [
-        {id:"regional-preferences",title:"Regional Preferences",icon:<SlGlobe/>},
-        {id:"theme-options",title:"Theme Options",icon:<IoSunnyOutline />}
+        {id:"regional-preferences",title:t("Regional Preferences"),icon:<SlGlobe/>},
+        {id:"theme-options",title:t("Theme Options"),icon:<IoSunnyOutline />}
     ]
     const [activeTab, setActiveTab] = useState('regional-preferences');
 
@@ -22,12 +22,12 @@ function GeneralSettingsTab() {
     }
     const tabsData = [
         {
-            title: "Regional Preferences",
+            title: t("Regional Preferences"),
             content: <RegionalPreferences />,
             icon:<SlGlobe/>
         },
         {
-            title: "Theme Options",
+            title: t("Theme Options"),
             content:<ThemeOptions />,
             icon:<IoSunnyOutline />,
         },

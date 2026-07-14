@@ -6,16 +6,16 @@ const TopEmployeesList = ({ employees = [] }) => {
     const { t } = useTranslation();
     return (
         <ContentCard
-            title={"Top 3 Employees"}
+            title={t("Top 3 Employees")}
             toolbar={
                 <div className="w-32 flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end">
-                    <DefaultSelect placeholder="Performance" options={[{ id: 1, value: "Higher" }]} />
+                    <DefaultSelect placeholder={t("Performance")} options={[{ id: 1, value: t("Higher") }]} />
                 </div>
             }
             main={
                 <div className="flex flex-col items-start justify-start gap-4 w-full">
                     {employees.length === 0 && (
-                        <span className="text-sm text-gray-500">No data yet.</span>
+                        <span className="text-sm text-gray-500">{t("No data yet.")}</span>
                     )}
                     {employees.map((employee, index) => {
                         return (
@@ -30,7 +30,7 @@ const TopEmployeesList = ({ employees = [] }) => {
                                         {employee.name}
                                     </span>
                                     <span className="text-sm text-gray-500">
-                                        {employee.department || employee.desc}
+                                        {t(employee.department || employee.desc)}
                                     </span>
                                 </div>
                             </div>

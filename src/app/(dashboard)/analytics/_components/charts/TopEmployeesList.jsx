@@ -1,20 +1,22 @@
 
 import { RiUserLine } from '@remixicon/react';
+import { useTranslation } from 'react-i18next';
 
-const EmployeeItem = ({ name, department }) => (
-    <div className="flex items-center gap-4 py-3">
-        {/* أيقونة المستخدم (Avatar) */}
-        <div className="w-11 h-11 rounded-full border border-status-border flex items-center justify-center bg-status-bg shrink-0">
-            <RiUserLine className="text-cell-secondary size-5" />
-        </div>
+const EmployeeItem = ({ name, department }) => {
+    const { t } = useTranslation();
+    return (
+        <div className="flex items-center gap-4 py-3">
+            <div className="w-11 h-11 rounded-full border border-status-border flex items-center justify-center bg-status-bg shrink-0">
+                <RiUserLine className="text-cell-secondary size-5" />
+            </div>
 
-        {/* تفاصيل الموظف */}
-        <div className="flex flex-col">
-            <h4 className="text-sm font-semibold text-table-title leading-tight">{name}</h4>
-            <span className="text-xs text-cell-secondary mt-1">{department}</span>
+            <div className="flex flex-col">
+                <h4 className="text-sm font-semibold text-table-title leading-tight">{name}</h4>
+                <span className="text-xs text-cell-secondary mt-1">{t(department)}</span>
+            </div>
         </div>
-    </div>
-);
+    );
+};
 
 const TopEmployeesList = ({ employees }) => {
     return (

@@ -30,7 +30,7 @@ const LastProjectsList = ({ projects = [] }) => {
                                         {project.name}
                                     </span>
                                     <span className="text-sm text-gray-500 dark:text-gray-400">
-                                        {project.department || project.desc}
+                                        {t(project.department || project.desc)}
                                     </span>
                                 </div>
                             </div>

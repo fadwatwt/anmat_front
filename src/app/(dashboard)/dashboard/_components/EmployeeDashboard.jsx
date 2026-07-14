@@ -37,7 +37,7 @@ const EmployeeDashboard = () => {
     const chartData = statsData?.data ? {
         total: statsData.data.total,
         records: Object.entries(statsData.data.status_counts).map(([status, count], index) => ({
-            title: t(status.charAt(0).toUpperCase() + status.slice(1).replace(/_/g, " ")),
+            title: t(status.replace(/[-_]+/g, ' ').replace(/\b\w/g, c => c.toUpperCase())),
             value: count,
             color: getStatusColor(status, index),
         })),
