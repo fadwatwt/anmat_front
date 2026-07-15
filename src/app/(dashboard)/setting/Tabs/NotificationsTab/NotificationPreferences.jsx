@@ -46,22 +46,22 @@ function NotificationPreferences() {
     {
       key: "newsUpdates",
       label: "News and Updates",
-      description: "Stay informed about the latest news, updates.",
+      description: t("Stay informed about the latest news, updates."),
     },
     {
       key: "remindersEvents",
       label: "Reminders and Events",
-      description: "Get reminders for upcoming events, deadlines.",
+      description: t("Get reminders for upcoming events, deadlines."),
     },
     {
       key: "leaveAttendance",
       label: "Leave and Attendance",
-      description: "Updates on approved leaves, attendance records",
+      description: t("Updates on approved leaves, attendance records"),
     },
     {
       key: "deadlineNotification",
       label: "Deadline Notification",
-      description: "Receive timely reminders before ",
+      description: t("Receive timely reminders before "),
     },
   ];
 

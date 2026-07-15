@@ -225,7 +225,7 @@ function EmployeeDocumentsCard({ employeeId }) {
                 onClose={() => setDeleteTarget(null)}
                 onConfirm={handleConfirmDelete}
                 type="danger"
-                title="Delete Document"
+          title={t("Delete Document")}
                 message="Are you sure you want to delete this document? This action cannot be undone."
                 confirmBtnText="Delete"
                 cancelBtnText="Cancel"

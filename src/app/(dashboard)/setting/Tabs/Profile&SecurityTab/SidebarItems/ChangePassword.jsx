@@ -89,7 +89,7 @@ function ChangePassword() {
                                 <PasswordInput
                                     isRequired={true}
                                     icon={<RiLock2Line />}
-                                    title="Current Password"
+                                    title={t("Current Password")}
                                     name="currentPassword"
                                     onChange={handleChange}
                                     onBlur={handleBlur}
@@ -104,7 +104,7 @@ function ChangePassword() {
                                         validatePassword(e.target.value);
                                     }}
                                     onBlur={handleBlur}
-                                    title="New Password"
+                                    title={t("New Password")}
                                     name="newPassword"
                                     value={values.newPassword}
                                     error={touched.newPassword && errors.newPassword}
@@ -112,7 +112,7 @@ function ChangePassword() {
                                 <PasswordInput
                                     isRequired={true}
                                     icon={<RiLock2Line />}
-                                    title="Confirm New Password"
+                                    title={t("Confirm New Password")}
                                     name="confirmPassword"
                                     onChange={handleChange}
                                     onBlur={handleBlur}
@@ -169,10 +169,10 @@ function ChangePassword() {
 
                             <div className="w-full flex flex-col items-start gap-4">
                                 <div className="w-full justify-start flex gap-2">
-                                    <DefaultButton type="button" title="Cancel"
+                                <DefaultButton type="button" title={t("Cancel")}
                                         className="font-medium dark:text-gray-200" />
                                     <DefaultButton type="submit" disabled={isLoading}
-                                        title="Apply Changes"
+                                        title={t("Apply Changes")}
                                         className="bg-primary-500 font-medium dark:bg-primary-200 dark:text-black text-white"
                                     />
                                 </div>

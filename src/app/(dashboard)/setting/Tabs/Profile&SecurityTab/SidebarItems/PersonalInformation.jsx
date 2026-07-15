@@ -193,24 +193,24 @@ function PersonalInformation() {
         <div className={"w-full form"}>
             <form className={"w-full flex flex-col gap-3"} onSubmit={formik.handleSubmit}>
                 <div className={"w-full flex flex-col gap-2 "}>
-                    <InputAndLabel title="Name" name="name" isRequired={true}
+                    <InputAndLabel title={t("Name")} name="name" isRequired={true}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                         value={formik.values.name}
                         error={formik.touched.name && formik.errors.name} />
-                    <InputAndLabel title="Phone" name="phone" isRequired={true}
+                    <InputAndLabel title={t("Phone")} name="phone" isRequired={true}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                         value={formik.values.phone}
                         error={formik.touched.phone && formik.errors.phone} />
-                    <InputAndLabel title="Email Address" name="email" disabled={true}
+                    <InputAndLabel title={t("Email Address")} name="email" disabled={true}
                         value={formik.values.email} />
                     {isEmployee && (
                         <>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 <SelectAndLabel
-                                    title="Country"
-                                    placeholder="Select Country"
+                                    title={t("Country")}
+                                    placeholder={t("Select Country")}
                                     isRequired={true}
                                     name="country"
                                     options={countryOptions}
@@ -223,8 +223,8 @@ function PersonalInformation() {
                                     error={formik.touched.country && formik.errors.country}
                                 />
                                 <SelectAndLabel
-                                    title="City"
-                                    placeholder="Select City"
+                                    title={t("City")}
+                                    placeholder={t("Select City")}
                                     isRequired={true}
                                     name="city"
                                     options={cityOptions}
@@ -235,7 +235,7 @@ function PersonalInformation() {
                                 />
                             </div>
                             <DateInput
-                                title="Date of Birth"
+                                title={t("Date of Birth")}
                                 isRequired={true}
                                 name="date_of_birth"
                                 onChange={formik.handleChange}
@@ -247,10 +247,10 @@ function PersonalInformation() {
                 <div className={"w-full flex flex-col items-start gap-4"}>
                     <InlineAlert type={"info"} text={"This information will appear in your profile."} />
                     <div className={"w-full justify-start flex gap-2"}>
-                        <DefaultButton type="button" title="Cancel"
+                        <DefaultButton type="button" title={t("Cancel")}
                             className={"font-medium dark:text-gray-200"} />
                         <DefaultButton type="submit" disabled={isLoading}
-                            title="Apply Changes"
+                            title={t("Apply Changes")}
                             className={"bg-primary-500 font-medium dark:bg-primary-200 dark:text-black text-white"} />
                     </div>
                 </div>

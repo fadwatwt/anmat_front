@@ -40,12 +40,12 @@ function NotificationMethods() {
     {
       key: "email",
       label: "Email Notifications",
-      description: "Receive notifications via email",
+      description: t("Receive notifications via email"),
     },
     {
       key: "push",
       label: "Push Notifications",
-      description: "Get real-time updates and alerts directly on your device",
+      description: t("Get real-time updates and alerts directly on your device"),
     },
   ];
 

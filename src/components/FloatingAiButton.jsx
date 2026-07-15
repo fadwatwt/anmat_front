@@ -29,7 +29,8 @@ const VISITOR_KNOWLEDGE = {
       { keywords: ["ما هو", "شنو هو", "عن انماط", "عن النظام", "ايش هو"], reply: "أنماط (Anmaat) هو نظام إدارة مؤسسات متكامل يوفر:\n\n📊 إدارة المشاريع والمهام\n👥 إدارة الفريق والأقسام\n💬 التواصل الفوري\n📱 إدارة التواصل الاجتماعي\n📈 التحليلات الذكية\n🤖 مساعد ذكاء اصطناعي\n\nكل هذا في منصة واحدة!" },
       { keywords: ["مميزات", "ايش يقدم", "قدرات"], reply: "مميزات أنماط:\n✅ إدارة المشاريع والمهام\n✅ إدارة الفريق والموظفين\n✅ تقويم ومواعيد ذكية\n✅ محادثات فورية\n✅ إدارة التواصل الاجتماعي\n✅ تحليلات وتقارير\n✅ مساعد ذكاء اصطناعي\n✅ نظام أذونات متقدم\n✅ دعم عربي وإنجليزي" },
       { keywords: ["سعر", "تسعير", "كم يكلف", "مجاني", "free", "price"], reply: "لدينا خطط متنوعة:\n💳 الخطة المجانية - للتجربة\n💎 خطة Pro - ميزات متقدمة\n🏢 خطة Enterprise - حلول مخصصة\n\nالأسعار تبدأ من خطط شهرية وسنوية." },
-      { keywords: ["كيف ابدا", "كيف اسجل", "تسجيل", "اشتراك"], reply: "للبدء:\n1️⃣ اضغط \"ابدأ الآن\"\n2️⃣ أدخل بريدك وكلمة المرور\n3️⃣ اختر الخطة المناسبة\n4️⃣ أضف فريقك ومشاريعك\n\nالتسجيل مجاني وسريع! 🚀" },
+      { keywords: ["كيف ابدا", "كيف اسجل", "تسجيل", "اشتراك"], reply: "للبدء:\n1️⃣ اضغط \"ابدأ الآن\"\n2️⃣ أدخل بريدك وكلمة المرور\n3️⃣ اختر الخطة المناسبة\n4️⃣ أضف فريقك ومشاريعك\n\nالتسجيل مجاني وسريع! 🚀", hasRegisterLink: true },
+      { keywords: ["دخول", "تسجيل دخول", "لوق ان", "الدخول للنظام"], reply: "يمكنك تسجيل الدخول من هنا:", hasSignInLink: true },
       { keywords: ["فريق", "موظفين", "قسم"], reply: "إدارة الفريق:\n👥 إضافة وتعديل الموظفين\n🏢 إنشاء أقسام\n🏷️ مواقع وظيفية\n📋 أدوار وصلاحيات\n📊 حضور وانصراف\n💰 رواتب" },
       { keywords: ["مشاريع", "مهام", "تتبع"], reply: "إدارة المشاريع:\n📁 إنشاء مشاريع\n✅ مهام فرعية\n🏷️ حالات متعددة\n⏰ مواعيد نهائية\n📎 إرفاق ملفات\n💬 تعليقات" },
       { keywords: ["تواصل اجتماعي", "سوشيال", "فيسبوك", "تويتر"], reply: "التواصل الاجتماعي:\n📱 ربط حسابات متعددة\n📝 جدولة ونشر\n💬 رد على التعليقات\n📊 تحليل الأداء" },
@@ -56,7 +57,8 @@ const VISITOR_KNOWLEDGE = {
       { keywords: ["what is", "about", "anmat"], reply: "Anmaat is a comprehensive enterprise management platform:\n\n📊 Project & Task Management\n👥 Team Management\n💬 Real-time Communication\n📱 Social Media Management\n📈 Smart Analytics\n🤖 AI Assistant\n\nAll in one platform!" },
       { keywords: ["features", "capabilities"], reply: "Key features:\n✅ Project & task management\n✅ Team & employee management\n✅ Smart calendar\n✅ Instant messaging\n✅ Social media management\n✅ Analytics & reports\n✅ AI assistant\n✅ Multi-language support" },
       { keywords: ["price", "pricing", "cost", "free", "plan"], reply: "Plans available:\n💳 Free Plan - Basic features\n💎 Pro Plan - Advanced features\n🏢 Enterprise Plan - Custom solutions\n\nMonthly & yearly pricing available." },
-      { keywords: ["get started", "register", "sign up"], reply: "To get started:\n1️⃣ Click \"Get Started\"\n2️⃣ Enter email & password\n3️⃣ Choose your plan\n4️⃣ Add your team\n\nRegistration is free! 🚀" },
+      { keywords: ["get started", "register", "sign up"], reply: "To get started:\n1️⃣ Click \"Get Started\"\n2️⃣ Enter email & password\n3️⃣ Choose your plan\n4️⃣ Add your team\n\nRegistration is free! 🚀", hasRegisterLink: true },
+      { keywords: ["login", "sign in", "log in"], reply: "You can sign in here:", hasSignInLink: true },
       { keywords: ["team", "employees"], reply: "Team management:\n👥 Add & manage employees\n🏢 Create departments\n🏷️ Job positions\n📋 Roles & permissions\n📊 Attendance tracking\n💰 Salary management" },
       { keywords: ["project", "task"], reply: "Project management:\n📁 Create projects\n✅ Subtasks\n🏷️ Multiple statuses\n⏰ Deadlines\n📎 File attachments\n💬 Comments" },
       { keywords: ["social media"], reply: "Social media:\n📱 Connect multiple accounts\n📅 Schedule & publish\n💬 Reply to comments\n📊 Performance analytics" },
@@ -84,20 +86,20 @@ function getVisitorReply(message, lang) {
 
   for (const pattern of knowledge.patterns) {
     for (const kw of pattern.keywords) {
-      if (lowerMsg.includes(kw.toLowerCase())) return pattern.reply;
+      if (lowerMsg.includes(kw.toLowerCase())) return { content: pattern.reply, hasRegisterLink: !!pattern.hasRegisterLink, hasSignInLink: !!pattern.hasSignInLink };
     }
   }
 
   const thankWords = lang === "ar" ? ["شكرا", "Thank"] : ["Thank"];
   if (thankWords.some((w) => lowerMsg.includes(w.toLowerCase()))) {
-    return lang === "ar" ? "على الرحب والسعة! 😊" : "You're welcome! 😊";
+    return { content: lang === "ar" ? "على الرحب والسعة! 😊" : "You're welcome! 😊", hasRegisterLink: false, hasSignInLink: false };
   }
 
-  return knowledge.fallback;
+  return { content: knowledge.fallback, hasRegisterLink: false, hasSignInLink: false };
 }
 
-const QUICK_ACTIONS_AR = ["ما هو أنماط؟", "المميزات", "الأسعار", "التحدث مع الدعم"];
-const QUICK_ACTIONS_EN = ["What is Anmaat?", "Features", "Pricing", "Talk to support"];
+const QUICK_ACTIONS_AR = ["ما هو أنماط؟", "المميزات", "الأسعار", "التسجيل", "تسجيل الدخول"];
+const QUICK_ACTIONS_EN = ["What is Anmaat?", "Features", "Pricing", "Register", "Sign In"];
 
 // ── حفظ جلسة الزائر في localStorage ──────────────────────────────────────
 // عند إنشاء تذكرة دعم، تُحفظ البيانات في localStorage حتى لو أغلق الزائر المتصفح
@@ -441,7 +443,7 @@ export default function FloatingAiButton() {
     setIsLoading(true);
     await new Promise((r) => setTimeout(r, 300 + Math.random() * 400));
     const reply = getVisitorReply(trimmed, userLang);
-    setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
+    setMessages((prev) => [...prev, { role: "assistant", content: reply.content, hasRegisterLink: reply.hasRegisterLink, hasSignInLink: reply.hasSignInLink }]);
     setIsLoading(false);
   };
 
@@ -581,6 +583,12 @@ export default function FloatingAiButton() {
                 }}>
                   {msg.content}
                 </div>
+                {msg.hasRegisterLink && (
+                  <Link href="/register/subscriber/email"
+                    style={{ display: "inline-block", padding: "8px 16px", borderRadius: "10px", backgroundColor: "#10b981", color: "#fff", fontSize: "13px", fontWeight: 600, textDecoration: "none", textAlign: "center" }}>
+                    {isAr ? "ابدأ الآن" : "Get Started"}
+                  </Link>
+                )}
                 {msg.hasSignInLink && (
                   <Link href="/sign-in"
                     style={{ display: "inline-block", padding: "8px 16px", borderRadius: "10px", backgroundColor: "#3b82f6", color: "#fff", fontSize: "13px", fontWeight: 600, textDecoration: "none", textAlign: "center" }}>

@@ -210,7 +210,7 @@ const NotificationsPage = () => {
       <div className="w-full">
         <Table
           isTitle={true}
-          title="All Notifications"
+      title={t("All Notifications")}
           headers={headers}
           rows={rows}
           isActions={false}

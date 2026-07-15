@@ -40,22 +40,22 @@ function AssignRoleModal({ isOpen, onClose, admin, onShowResult }) {
         <Modal
             isOpen={isOpen}
             onClose={onClose}
-            title="Assign Role"
+      title={t("Assign Role")}
             isBtns={true}
-            btnApplyTitle="Assign"
+      btnApplyTitle={t("Assign")}
             onClick={handleAssign}
             disabled={isAssigning || !selectedRoleId}
         >
             <div className="p-4">
                 <SelectAndLabel
-                    title="Select Role"
+            title={t("Select Role")}
                     name="role"
                     value={selectedRoleId}
                     options={availableRoles}
                     onChange={setSelectedRoleId}
                     onBlur={() => { }}
                     isRequired={true}
-                    placeholder="Choose a role"
+            placeholder={t("Choose a role")}
                 />
             </div>
         </Modal>
