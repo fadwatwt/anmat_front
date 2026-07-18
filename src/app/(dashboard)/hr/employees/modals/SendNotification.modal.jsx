@@ -75,10 +75,10 @@ function SendNotificationModal({ isOpen, onClose, employeeData, departmentData }
     // Build notification type options for ElementsSelect
     const typeOptions = types.map((type) => ({
         id: type._id,
-        element: type.name,
+        element: t(type.name),
         icon: ICON_MAP[type.icon],
         colorClass: COLOR_MAP[type.color] || "text-gray-500",
-        description: type.description,
+        description: t(type.description),
     }));
 
     const handleSend = async () => {
@@ -180,7 +180,7 @@ function SendNotificationModal({ isOpen, onClose, employeeData, departmentData }
                     </div>
                     {selectedTypeId && (
                         <p className="text-xs text-gray-500 dark:text-gray-400 italic">
-                            {typeOptions.find((t) => t.id === selectedTypeId)?.description}
+                            {typeOptions.find((opt) => opt.id === selectedTypeId)?.description}
                         </p>
                     )}
                 </div>

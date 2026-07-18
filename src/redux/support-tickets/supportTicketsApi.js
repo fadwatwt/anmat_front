@@ -48,6 +48,13 @@ export const supportTicketsApi = apiSlice.injectEndpoints({
             }),
             providesTags: (result, error, id) => [{ type: "SupportTickets", id }],
         }),
+        deleteSupportTicket: builder.mutation({
+            query: (id) => ({
+                url: `api/support-tickets/${id}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: ["SupportTickets"],
+        }),
     }),
 });
 
@@ -58,4 +65,5 @@ export const {
     useUpdateSupportTicketStatusMutation,
     useAddSupportTicketMessageMutation,
     useGetSupportTicketMessagesQuery,
+    useDeleteSupportTicketMutation,
 } = supportTicketsApi;

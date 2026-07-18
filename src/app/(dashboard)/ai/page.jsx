@@ -260,11 +260,11 @@ const AssistantPage = () => {
       const message =
         err?.data?.message ||
         err?.message ||
-        "AI assistant is unavailable right now.";
+        t("AI assistant is unavailable right now. Please try again shortly.");
       setApiResponse({ isOpen: true, status: "error", message });
       setMessages((prev) => [
         ...prev,
-        { sender: "ai", text: `Sorry, I couldn't process that: ${message}` },
+        { sender: "ai", text: t("Sorry, I couldn't process that.") },
       ]);
     } finally {
       setThinking(false);
@@ -358,7 +358,7 @@ const AssistantPage = () => {
       await animateAssistantMessage(followUp);
     } catch (err) {
       const message =
-        err?.data?.message || err?.message || "Failed to execute the action.";
+        err?.data?.message || err?.message || t("Failed to execute the action.");
       setApiResponse({ isOpen: true, status: "error", message });
       updateMessageAt(idx, () => ({ pendingActionLoading: false }));
     } finally {
@@ -377,7 +377,7 @@ const AssistantPage = () => {
       }));
     } catch (err) {
       const message =
-        err?.data?.message || err?.message || "Failed to cancel the action.";
+        err?.data?.message || err?.message || t("Failed to cancel the action.");
       setApiResponse({ isOpen: true, status: "error", message });
       updateMessageAt(idx, () => ({ pendingActionLoading: false }));
     }
@@ -472,14 +472,14 @@ const AssistantPage = () => {
       setApiResponse({
         isOpen: true,
         status: "error",
-        message: err?.data?.message || "Failed to rename conversation",
+        message: err?.data?.message || t("Failed to rename conversation"),
       });
     }
   };
 
   const handleDeleteConv = async (e, id) => {
     e.stopPropagation();
-    if (!confirm("Are you sure you want to delete this conversation?")) return;
+    if (!confirm(t("Are you sure you want to delete this conversation?"))) return;
     try {
       await deleteConversation(id).unwrap();
       if (conversationId === id) {
@@ -489,7 +489,7 @@ const AssistantPage = () => {
       setApiResponse({
         isOpen: true,
         status: "error",
-        message: err?.data?.message || "Failed to delete conversation",
+        message: err?.data?.message || t("Failed to delete conversation"),
       });
     }
   };
@@ -554,13 +554,13 @@ const AssistantPage = () => {
       confirmTokenCheckout({ session_id: sessionId })
         .unwrap()
         .then((res) => {
-          setApiResponse({ isOpen: true, status: "success", message: res?.message || "Tokens added to your account!" });
+          setApiResponse({ isOpen: true, status: "success", message: res?.message || t("Tokens added to your account!") });
         })
         .catch((err) => {
-          setApiResponse({ isOpen: true, status: "error", message: err?.data?.message || "Failed to confirm payment. Tokens will be added shortly." });
+          setApiResponse({ isOpen: true, status: "error", message: err?.data?.message || t("Failed to confirm payment. Tokens will be added shortly.") });
         });
     } else if (checkout === "cancelled") {
-      setApiResponse({ isOpen: true, status: "info", message: "Payment was cancelled. You can try again anytime." });
+      setApiResponse({ isOpen: true, status: "info", message: t("Payment was cancelled. You can try again anytime.") });
     }
   }, [searchParams, confirmTokenCheckout]);
 

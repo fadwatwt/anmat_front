@@ -8,7 +8,8 @@ import {
     useGetSupportTicketDetailsQuery,
     useGetSupportTicketMessagesQuery,
     useAddSupportTicketMessageMutation,
-    useUpdateSupportTicketStatusMutation
+    useUpdateSupportTicketStatusMutation,
+    useDeleteSupportTicketMutation,
 } from "@/redux/support-tickets/supportTicketsApi";
 import Status from "@/app/(dashboard)/projects/_components/TableInfo/Status.jsx";
 import { translateDate } from "@/functions/Days";
@@ -18,6 +19,9 @@ import { format } from "date-fns";
 import EmojiPicker from "emoji-picker-react";
 import { Send, Paperclip, Smile, X, FileIcon, ImageIcon } from "lucide-react";
 import { RootRoute } from "@/Root.Route";
+import Alert from "@/components/Alerts/Alert";
+import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
+import { usePermission } from "@/Hooks/usePermission";
 
 function SupportTicketDetailsPage() {
     const { t } = useTranslation();
@@ -28,8 +32,10 @@ function SupportTicketDetailsPage() {
     const { data: messagesRes, isLoading: isLoadingMessages } = useGetSupportTicketMessagesQuery(id, { skip: !id, pollingInterval: 10000 });
     const [addMessage, { isLoading: isSending }] = useAddSupportTicketMessageMutation();
     const [updateStatus, { isLoading: isUpdatingStatus }] = useUpdateSupportTicketStatusMutation();
+    const [deleteTicket] = useDeleteSupportTicketMutation();
 
     const isAdmin = user?.type === 'Admin';
+    const canDeleteTicket = usePermission("support_tickets.delete");
 
     const [messageText, setMessageText] = useState("");
     const [selectedFiles, setSelectedFiles] = useState([]);
@@ -37,6 +43,9 @@ function SupportTicketDetailsPage() {
     const scrollRef = useRef(null);
     const fileInputRef = useRef(null);
     const emojiPickerRef = useRef(null);
+
+    const [isOpenDeleteAlert, setIsOpenDeleteAlert] = useState(false);
+    const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
     const ticket = ticketRes?.data;
     const messages = messagesRes?.data || [];
@@ -113,6 +122,19 @@ function SupportTicketDetailsPage() {
         }
     };
 
+    const handleDelete = async (confirmed) => {
+        setIsOpenDeleteAlert(false);
+        if (confirmed) {
+            try {
+                await deleteTicket(id).unwrap();
+                setApiResponse({ isOpen: true, status: "success", message: t("Ticket deleted successfully!") });
+                setTimeout(() => router.push("/support-tickets"), 1500);
+            } catch (err) {
+                setApiResponse({ isOpen: true, status: "error", message: err?.data?.message || t("Failed to delete ticket.") });
+            }
+        }
+    };
+
     if (isLoadingTicket) {
         return <Page title={t("Support Ticket")}><div className="p-8 text-center">{t("Loading...")}</div></Page>;
     }
@@ -122,6 +144,7 @@ function SupportTicketDetailsPage() {
     }
 
     return (
+        <>
         <Page
             title={t("Ticket Details")}
             isBreadcrumbs={true}
@@ -170,6 +193,15 @@ function SupportTicketDetailsPage() {
                             <h3 className="text-sm font-semibold text-cell-primary mb-2">{t("Description")}</h3>
                             <p className="text-sm text-cell-secondary whitespace-pre-wrap">{ticket.description}</p>
                         </div>
+
+                        {canDeleteTicket && (
+                            <button
+                                onClick={() => setIsOpenDeleteAlert(true)}
+                                className="mt-2 w-full px-4 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 dark:text-red-400 rounded-xl transition-colors"
+                            >
+                                {t("Delete Ticket")}
+                            </button>
+                        )}
                     </div>
                 </div>
 
@@ -403,6 +435,26 @@ function SupportTicketDetailsPage() {
                 </div>
             </div>
         </Page>
+
+            <Alert
+                type="delete"
+                isOpen={isOpenDeleteAlert}
+                onClose={() => setIsOpenDeleteAlert(false)}
+                title={t("Delete Ticket")}
+                message={t("Are you sure you want to delete this ticket? This action cannot be undone.")}
+                isBtns={true}
+                titleSubmitBtn={t("Yes, Delete")}
+                titleCancelBtn={t("Cancel")}
+                onSubmit={handleDelete}
+            />
+
+            <ApiResponseAlert
+                isOpen={apiResponse.isOpen}
+                status={apiResponse.status}
+                message={apiResponse.message}
+                onClose={() => setApiResponse({ ...apiResponse, isOpen: false })}
+            />
+        </>
     );
 }
 

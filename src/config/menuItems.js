@@ -1,5 +1,5 @@
 // dashboardSideMenuItems.js
-import { Setting, Share, Messages1, Category, Profile2User, TaskSquare, NoteText, Chart2, Cpu, PercentageCircle, Stickynote, Setting4, Setting5, ReceiptText, Category2, Tag, EmptyWallet, Calendar, CalendarTick } from 'iconsax-react';
+import { Setting, Share, Messages1, Category, Profile2User, TaskSquare, NoteText, Chart2, Cpu, PercentageCircle, Stickynote, Setting4, Setting5, ReceiptText, Category2, Tag, EmptyWallet, Calendar, CalendarTick, Notification as NotificationIcon } from 'iconsax-react';
 
 // ['Admin', 'Subscriber', 'Employee']
 //
@@ -327,6 +327,13 @@ export const dashboardSideMenuItems = [
     // ═══════════════════════════════════════════
     // Section: Settings (bottom of sidebar)
     // ═══════════════════════════════════════════
+    {
+        section: 'Settings',
+        allowed_to: ['Admin', 'Subscriber', 'Employee'],
+        title: 'Notifications',
+        path: '/notifications',
+        icon: <NotificationIcon />
+    },
     {
         section: 'Settings',
         allowed_to: ['Admin', 'Subscriber', 'Employee'],

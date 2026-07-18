@@ -10,8 +10,9 @@ import Header from "@/components/Header"
 import "../globals.css";
 import PropTypes from "prop-types";
 import DashboardSideMenu from "@/components/DashboardSideMenu";
+import DashboardFloatingButton from "@/components/DashboardFloatingButton";
 import { useSelector, useDispatch } from "react-redux";
-import { selectAuth, loadAuthState, logout, setUser, setPermissions } from "@/redux/auth/authSlice";
+import { selectAuth, loadAuthState, logout, setUser, setPermissions, selectUserType } from "@/redux/auth/authSlice";
 import { useLazyGetUserQuery } from "@/redux/auth/authAPI";
 import { useLazyGetMyPermissionsQuery } from "@/redux/permissions/subscriberPermissionsApi";
 import useDarkMode from "@/Hooks/useDarkMode";
@@ -228,6 +229,7 @@ const MainLayout = ({ children }) => {
                 <main className="flex-1 overflow-auto custom-scroll bg-main p-4 md:p-6">
                     {children}
                 </main>
+                {isAuthenticated && user?.type !== "Admin" && <DashboardFloatingButton />}
             </div>
         </div>
     );

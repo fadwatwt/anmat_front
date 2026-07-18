@@ -3,8 +3,15 @@ import { apiSlice } from "./apiSlice";
 export const notificationsApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getNotifications: builder.query({
-            query: ({ recipientId, recipientType }) => ({
-                url: `/api/notifications/${recipientId}/${recipientType}`,
+            query: ({ recipientId, recipientType, page = 1, limit = 50 }) => ({
+                url: `/api/notifications/${recipientId}/${recipientType}?page=${page}&limit=${limit}`,
+                method: "GET",
+            }),
+            providesTags: ["Notifications"],
+        }),
+        getMyNotifications: builder.query({
+            query: ({ page = 1, limit = 50 } = {}) => ({
+                url: `/api/notifications/my-notifications?page=${page}&limit=${limit}`,
                 method: "GET",
             }),
             providesTags: ["Notifications"],
@@ -35,6 +42,7 @@ export const notificationsApi = apiSlice.injectEndpoints({
 
 export const {
     useGetNotificationsQuery,
+    useGetMyNotificationsQuery,
     useMarkNotificationAsReadMutation,
     useMarkAllNotificationsAsReadMutation,
     useSendAdminNotificationMutation,
