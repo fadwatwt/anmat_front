@@ -3,11 +3,12 @@ import StateOfTask from "./StateOfTask.jsx";
 import PropTypes from "prop-types";
 import StarRating from "@/components/StarRating.jsx";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert.jsx";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { selectUser } from "@/redux/auth/authSlice";
 import { usePermission } from "@/Hooks/usePermission";
 import { useTranslation } from "react-i18next";
+import { useGetSubscriberOrganizationQuery } from "@/redux/organizations/organizationsApi";
 import CreateTeamModal from "@/app/(dashboard)/projects/_modal/CreateTeamModal";
 import { translateDate } from "@/functions/Days.js";
 import { RiArrowDownSLine, RiFlag2Line, RiStackLine, RiGroupFill } from "react-icons/ri";
@@ -24,15 +25,64 @@ import FileUpload from "@/components/Form/FileUpload";
 import TextAreaWithLabel from "@/components/Form/TextAreaWithLabel";
 
 // Simple inline stage rating modal
+const toKey = (str) => str.toLowerCase().replace(/\s+/g, '_').replace(/[^\p{L}\p{N}_]/gu, '');
+
+const DEFAULT_RATING_TYPES = ['Time Evaluation', 'Content Quality', 'Video Quality'];
+
 function StageRatingModal({ stage, task, onClose, onSubmit }) {
     const { t } = useTranslation();
-    const [ratings, setRatings] = useState({
-        time: stage.rate_time || 0,
-        content: stage.rate_content || 0,
-        video: stage.rate_video || 0
-    });
-    const [comment, setComment] = useState(stage.comment || "");
+    const { data: orgData } = useGetSubscriberOrganizationQuery();
+
+    const categories = useMemo(() => {
+        const types = orgData?.rating_types;
+        if (Array.isArray(types) && types.length > 0) {
+            return types.map((item) => {
+                if (typeof item === 'string') return { key: toKey(item), title: item };
+                return { key: item._id || toKey(item.title), title: item.title };
+            });
+        }
+        return DEFAULT_RATING_TYPES.map((title) => ({ key: toKey(title), title }));
+    }, [orgData]);
+
+    const backendKeyMap = useMemo(() => {
+        const fixedKeys = ['rate_time', 'rate_content', 'rate_video'];
+        const map = {};
+        categories.forEach((cat, idx) => {
+            map[cat.key] = fixedKeys[idx] || null;
+        });
+        return map;
+    }, [categories]);
+
+    const [ratings, setRatings] = useState({});
+    const [comment, setComment] = useState("");
     const [attachment, setAttachment] = useState(null);
+
+    useEffect(() => {
+        if (!stage || categories.length === 0) return;
+
+        const init = {};
+        categories.forEach((cat) => { init[cat.key] = 0; });
+
+        const fixedKeys = ['rate_time', 'rate_content', 'rate_video'];
+        categories.forEach((cat, idx) => {
+            const fixedKey = fixedKeys[idx];
+            if (fixedKey && stage[fixedKey]) {
+                init[cat.key] = stage[fixedKey];
+            }
+        });
+
+        if (stage.evaluation_criteria && typeof stage.evaluation_criteria === 'object') {
+            Object.entries(stage.evaluation_criteria).forEach(([key, value]) => {
+                if (key in init) {
+                    init[key] = value;
+                }
+            });
+        }
+
+        setRatings(init);
+        setComment(stage.comment || "");
+        setAttachment(null);
+    }, [stage, categories]);
 
     const handleRatingChange = (key, value) => {
         setRatings(prev => ({ ...prev, [key]: value }));
@@ -45,15 +95,29 @@ function StageRatingModal({ stage, task, onClose, onSubmit }) {
     }, [ratings]);
 
     const handleSubmit = () => {
+        const values = Object.values(ratings);
+        const avgScore = values.length > 0 ? values.reduce((acc, curr) => acc + curr, 0) / values.length : 0;
+
+        const backendRatings = {};
+        Object.entries(ratings).forEach(([key, value]) => {
+            const backendKey = backendKeyMap[key];
+            if (backendKey) {
+                backendRatings[backendKey] = value;
+            }
+        });
+
         onSubmit({
             score: avgScore,
-            ratings,
+            ratings: backendRatings,
+            evaluation_criteria: ratings,
             comment,
             attachment
         });
     };
 
     if (!stage) return null;
+
+    const allZero = Object.values(ratings).every(v => v === 0);
 
     return (
         <Modal
@@ -63,26 +127,19 @@ function StageRatingModal({ stage, task, onClose, onSubmit }) {
             isBtns={true}
             btnApplyTitle={t("Submit Evaluation")}
             onClick={handleSubmit}
-            disabled={ratings.time === 0 || ratings.content === 0 || ratings.video === 0}
+            disabled={allZero}
             className="lg:w-[500px] md:w-8/12 sm:w-10/12 w-11/12 p-6"
         >
             <div className="flex flex-col gap-6 py-2">
                 <div className="space-y-6 bg-gray-50/50 dark:bg-gray-900 p-4 rounded-xl border border-status-border">
-                    <StarRatingInput
-                        title={t("Time & Deadlines")}
-                        value={ratings.time}
-                        onChange={(val) => handleRatingChange('time', val)}
-                    />
-                    <StarRatingInput
-                        title={t("Quality of Content")}
-                        value={ratings.content}
-                        onChange={(val) => handleRatingChange('content', val)}
-                    />
-                    <StarRatingInput
-                        title={t("Video & Audio Quality")}
-                        value={ratings.video}
-                        onChange={(val) => handleRatingChange('video', val)}
-                    />
+                    {categories.map((cat) => (
+                        <StarRatingInput
+                            key={cat.key}
+                            title={t(cat.title)}
+                            value={ratings[cat.key] || 0}
+                            onChange={(val) => handleRatingChange(cat.key, val)}
+                        />
+                    ))}
                 </div>
 
                 <div className="flex flex-col gap-4">
@@ -182,16 +239,17 @@ function TasksList({ tasks = [], isAssignedDate = false, isEmployeeView = false,
         }
     };
 
-    const handleStageRatingSubmit = async ({ score, ratings, comment, attachment }) => {
+    const handleStageRatingSubmit = async ({ score, ratings, evaluation_criteria, comment, attachment }) => {
         if (!selectedTask?.activeStage) return;
         const stageId = selectedTask.activeStage._id;
         const taskId = selectedTask.taskId || selectedTask._id;
 
         const evaluationData = {
             score,
-            rate_time: ratings.time,
-            rate_content: ratings.content,
-            rate_video: ratings.video,
+            rate_time: ratings.rate_time || 0,
+            rate_content: ratings.rate_content || 0,
+            rate_video: ratings.rate_video || 0,
+            evaluation_criteria: evaluation_criteria || {},
             comment: comment || "",
             attachment: attachment?.name || null,
         };

@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
 import dynamic from "next/dynamic";
 import Page from "@/components/Page.jsx";
 import Table from "@/components/Tables/Table.jsx";
@@ -10,11 +11,15 @@ import { convertToSlug } from "@/functions/AnotherFunctions";
 import { translateDate } from "@/functions/Days";
 import { RiEyeLine, RiEditLine } from "react-icons/ri";
 import StatusActions from "@/components/Dropdowns/StatusActions";
-import { useGetEmployeeTasksQuery, useUpdateTaskStatusMutation } from "@/redux/tasks/employeeTasksApi";
+import { useGetEmployeeTasksQuery, useUpdateTaskStatusMutation, useUploadEmployeeTaskAttachmentMutation } from "@/redux/tasks/employeeTasksApi";
 import Modal from "@/components/Modal/Modal.jsx";
 import EvaluationModal from "@/components/Modal/EvaluationModal";
 import StarRating from "@/components/StarRating";
 import { useProcessing } from "@/app/providers";
+import { usePermission } from "@/Hooks/usePermission";
+import { selectUserId } from "@/redux/auth/authSlice";
+import ViewToggle from "@/app/(dashboard)/tasks/_components/ViewToggle";
+import KanbanBoard from "@/app/(dashboard)/tasks/_components/KanbanBoard";
 
 const NameAndDescription = dynamic(() => import("@/app/(dashboard)/projects/_components/TableInfo/NameAndDescription"), { ssr: false });
 const Priority = dynamic(() => import("@/app/(dashboard)/projects/_components/TableInfo/Priority"), { ssr: false });
@@ -25,16 +30,54 @@ function MyTasksPage() {
   const { t } = useTranslation();
   const router = useRouter();
   const { showProcessing, hideProcessing } = useProcessing();
+  const canEditTask = usePermission("tasks.update");
+  const userId = useSelector(selectUserId);
 
-  const { data: tasks = [], isLoading, isError } = useGetEmployeeTasksQuery();
+  const { data: allTasks = [], isLoading, isError } = useGetEmployeeTasksQuery();
   const [updateTaskStatus] = useUpdateTaskStatusMutation();
+  const [uploadEmployeeAttachment] = useUploadEmployeeTaskAttachmentMutation();
+
+  const tasks = useMemo(() => {
+    return allTasks.filter((task) => {
+      const assigneeId = task.assignee_id || task.assignee?._id;
+      return assigneeId?.toString() === userId?.toString();
+    });
+  }, [allTasks, userId]);
+
+  const [activeView, setActiveView] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("employee-tasks-view-mode") || "table";
+    }
+    return "table";
+  });
+
+  const handleViewChange = (view) => {
+    setActiveView(view);
+    localStorage.setItem("employee-tasks-view-mode", view);
+  };
+
+  const handleKanbanStatusChange = async (taskId, newStatus) => {
+    try {
+      await updateTaskStatus({ id: taskId, status: newStatus }).unwrap();
+    } catch (err) {
+      setApiResponse({
+        isOpen: true,
+        status: "error",
+        message: err?.data?.message || t("Failed to update status"),
+      });
+      throw err;
+    }
+  };
 
   const [isOpenStatusModal, setIsOpenStatusModal] = useState(false);
   const [taskToUpdateStatus, setTaskToUpdateStatus] = useState(null);
   const [isOpenEvaluationModal, setIsOpenEvaluationModal] = useState(false);
   const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
-  const allowedStatuses = ['open', 'pending', 'in-progress', 'completed', 'done', 'rejected', 'cancelled'];
+  const allStatuses = ['open', 'pending', 'in-progress', 'completed', 'done', 'rejected', 'cancelled'];
+  const restrictedStatuses = ['done', 'rejected', 'cancelled'];
+  const allowedStatuses = canEditTask ? allStatuses : allStatuses.filter((s) => !restrictedStatuses.includes(s));
+  const kanbanColumns = canEditTask ? undefined : allowedStatuses;
 
   const headers = [
     { label: t("Tasks"), width: "250px" },
@@ -74,6 +117,14 @@ function MyTasksPage() {
         hideProcessing();
       }
     }
+  };
+
+  const handleUploadFile = async (file) => {
+    if (!taskToUpdateStatus?._id) return null;
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await uploadEmployeeAttachment({ taskId: taskToUpdateStatus._id, formData }).unwrap();
+    return res?.attachment || res?.data || null;
   };
 
   const customActions = (index) => {
@@ -139,11 +190,17 @@ function MyTasksPage() {
 
   return (
     <>
-      <Page title={t("My Tasks")}>
+      <Page title={t("My Tasks")} otherHeaderActions={<ViewToggle activeView={activeView} onChange={handleViewChange} />}>
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-2 h-full">
             {isLoading ? (
               <div className="text-center py-6">{t("Loading tasks...")}</div>
+            ) : activeView === "kanban" ? (
+              <KanbanBoard
+                tasks={tasks}
+                onStatusChange={handleKanbanStatusChange}
+                allowedColumns={kanbanColumns}
+              />
             ) : (
               <Table
                 title={t("My Tasks")}
@@ -195,6 +252,7 @@ function MyTasksPage() {
         type="task"
         hasStages={taskToUpdateStatus?.stages && taskToUpdateStatus.stages.length > 0}
         isSubmitting={false}
+        uploadFile={handleUploadFile}
       />
     </>
   );

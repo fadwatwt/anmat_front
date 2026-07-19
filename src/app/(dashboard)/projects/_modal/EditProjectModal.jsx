@@ -5,7 +5,7 @@ import ProjectInfoForm from "@/app/(dashboard)/projects/_components/CreateProjec
 import CreateTaskForm from "@/app/(dashboard)/projects/_components/CreateProjectForm/CreateTaskForm.jsx";
 import { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { useUpdateSubscriberProjectMutation } from "@/redux/projects/subscriberProjectsApi";
+import { useUpdateSubscriberProjectMutation, useUploadSubscriberProjectAttachmentMutation } from "@/redux/projects/subscriberProjectsApi";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
 import EvaluationModal from "@/components/Modal/EvaluationModal";
@@ -15,6 +15,7 @@ function EditProjectModal({ isOpen, onClose, project }) {
   const { t } = useTranslation();
   const { showProcessing, hideProcessing } = useProcessing();
   const [updateProject, { isLoading }] = useUpdateSubscriberProjectMutation();
+  const [uploadProjectAttachment] = useUploadSubscriberProjectAttachmentMutation();
   const [currentStep, setCurrentStep] = useState(1);
   const formikRef = useRef(null);
   const [apiResponse, setApiResponse] = useState({ isOpen: false, status: null, message: "" });
@@ -106,6 +107,15 @@ function EditProjectModal({ isOpen, onClose, project }) {
     }
   };
 
+  const handleUploadFile = async (file) => {
+    const projectId = project?._id || project?.id;
+    if (!projectId) return null;
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await uploadProjectAttachment({ projectId, formData }).unwrap();
+    return res?.attachment || res?.data || null;
+  };
+
   const steps = [
     {
       title: t("Project Info"),
@@ -175,6 +185,7 @@ function EditProjectModal({ isOpen, onClose, project }) {
         onSubmit={(payload) => handleConfirmUpdate(payload)}
         type="project"
         isSubmitting={isLoading}
+        uploadFile={handleUploadFile}
       />
     </>
   );

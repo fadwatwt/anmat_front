@@ -7,7 +7,7 @@ import dynamic from "next/dynamic";
 import Page from "@/components/Page.jsx";
 import Table from "@/components/Tables/Table.jsx";
 import { useSelector } from "react-redux";
-import { selectUserType } from "@/redux/auth/authSlice";
+import { selectUserType, selectUserId } from "@/redux/auth/authSlice";
 import { usePermission } from "@/Hooks/usePermission";
 import { convertToSlug } from "@/functions/AnotherFunctions";
 import { translateDate } from "@/functions/Days";
@@ -16,9 +16,10 @@ import StatusActions from "@/components/Dropdowns/StatusActions";
 import {
   useGetSubscriberTasksQuery,
   useDeleteSubscriberTaskMutation,
-  useUpdateSubscriberTaskMutation
+  useUpdateSubscriberTaskMutation,
+  useUploadSubscriberTaskAttachmentMutation
 } from "@/redux/tasks/subscriberTasksApi";
-import { useGetEmployeeTasksQuery, useUpdateTaskStatusMutation } from "@/redux/tasks/employeeTasksApi";
+import { useGetEmployeeTasksQuery, useUpdateTaskStatusMutation, useUploadEmployeeTaskAttachmentMutation } from "@/redux/tasks/employeeTasksApi";
 import Modal from "@/components/Modal/Modal.jsx";
 import EvaluationModal from "@/components/Modal/EvaluationModal";
 import StarRating from "@/components/StarRating";
@@ -39,6 +40,7 @@ function TasksPage() {
   const router = useRouter();
 
   const authUserType = useSelector(selectUserType);
+  const userId = useSelector(selectUserId);
   const isEmployee = authUserType === "Employee";
   const isSubscriber = authUserType === "Subscriber";
   const canCreateTask = usePermission("tasks.create");
@@ -46,7 +48,14 @@ function TasksPage() {
   const canDeleteTask = usePermission("tasks.delete");
 
   const { data: subscriberTasks = [], isLoading: isSubscriberLoading, isError: isSubscriberError } = useGetSubscriberTasksQuery(undefined, { skip: !isSubscriber });
-  const { data: employeeTasks = [], isLoading: isEmployeeLoading, isError: isEmployeeError } = useGetEmployeeTasksQuery(undefined, { skip: !isEmployee });
+  const { data: rawEmployeeTasks = [], isLoading: isEmployeeLoading, isError: isEmployeeError } = useGetEmployeeTasksQuery(undefined, { skip: !isEmployee });
+
+  const employeeTasks = useMemo(() => {
+    return rawEmployeeTasks.filter((task) => {
+      const assigneeId = task.assignee_id || task.assignee?._id;
+      return assigneeId?.toString() === userId?.toString();
+    });
+  }, [rawEmployeeTasks, userId]);
 
   const tasks = isEmployee ? employeeTasks : subscriberTasks;
   const isLoading = authUserType ? (isEmployee ? isEmployeeLoading : isSubscriberLoading) : true;
@@ -55,6 +64,8 @@ function TasksPage() {
   const [deleteSubscriberTask] = useDeleteSubscriberTaskMutation();
   const [updateTaskStatus] = useUpdateTaskStatusMutation();
   const [updateSubscriberTask] = useUpdateSubscriberTaskMutation();
+  const [uploadSubscriberAttachment] = useUploadSubscriberTaskAttachmentMutation();
+  const [uploadEmployeeAttachment] = useUploadEmployeeTaskAttachmentMutation();
   const { showProcessing, hideProcessing } = useProcessing();
 
   const [activeView, setActiveView] = useState(() => {
@@ -95,7 +106,10 @@ function TasksPage() {
   const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
   const [taskForAppointment, setTaskForAppointment] = useState(null);
 
-  const allowedStatuses = ['open', 'pending', 'in-progress', 'completed', 'done', 'rejected', 'cancelled'];
+  const allStatuses = ['open', 'pending', 'in-progress', 'completed', 'done', 'rejected', 'cancelled'];
+  const restrictedStatuses = ['done', 'rejected', 'cancelled'];
+  const allowedStatuses = canEditTask ? allStatuses : allStatuses.filter((s) => !restrictedStatuses.includes(s));
+  const kanbanColumns = canEditTask ? undefined : allowedStatuses;
 
   // Options for the table's status filter (value matches the raw task status).
   const taskStatusOptions = useMemo(
@@ -201,6 +215,16 @@ function TasksPage() {
         });
       }
     }
+  };
+
+  const handleUploadFile = async (file) => {
+    if (!taskToUpdateStatus?._id) return null;
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = isEmployee
+      ? await uploadEmployeeAttachment({ taskId: taskToUpdateStatus._id, formData }).unwrap()
+      : await uploadSubscriberAttachment({ taskId: taskToUpdateStatus._id, formData }).unwrap();
+    return res?.attachment || res?.data || null;
   };
 
   const customActions = (index) => {
@@ -341,6 +365,7 @@ function TasksPage() {
               <KanbanBoard
                 tasks={tasks}
                 onStatusChange={handleKanbanStatusChange}
+                allowedColumns={kanbanColumns}
               />
             ) : (
               <Table
@@ -408,6 +433,7 @@ function TasksPage() {
         type="task"
         hasStages={taskToUpdateStatus?.stages && taskToUpdateStatus.stages.length > 0}
         isSubmitting={false}
+        uploadFile={handleUploadFile}
       />
 
       <CreateAppointmentFromTaskModal

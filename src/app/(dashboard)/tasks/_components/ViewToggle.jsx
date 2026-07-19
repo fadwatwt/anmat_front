@@ -11,7 +11,7 @@ function ViewToggle({ activeView, onChange }) {
     <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-1 gap-1">
       <button
         onClick={() => onChange("table")}
-        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+        className={`flex items-center gap-1.5 px-4 py-1.5 rounded-md text-xs font-medium transition-all whitespace-nowrap ${
           activeView === "table"
             ? "bg-white dark:bg-gray-700 text-primary-500 shadow-sm"
             : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
@@ -23,7 +23,7 @@ function ViewToggle({ activeView, onChange }) {
       </button>
       <button
         onClick={() => onChange("kanban")}
-        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+        className={`flex items-center gap-1.5 px-4 py-1.5 rounded-md text-xs font-medium transition-all whitespace-nowrap ${
           activeView === "kanban"
             ? "bg-white dark:bg-gray-700 text-primary-500 shadow-sm"
             : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"

@@ -32,7 +32,10 @@ const StarRating = ({ rating, onClickRate }) => {
     };
 
     return (
-        <div className="flex items-center gap-1.5">
+        <div
+            className={`flex items-center gap-1.5 ${onClickRate ? "cursor-pointer hover:opacity-80 transition-opacity" : ""}`}
+            onClick={onClickRate || undefined}
+        >
             {renderStars()}
             <span className="ml-2 text-gray-600 dark:text-gray-300 text-sm">{rating?.toFixed(1)}</span>
         </div>

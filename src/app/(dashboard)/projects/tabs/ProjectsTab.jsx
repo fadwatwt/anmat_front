@@ -17,7 +17,8 @@ import SaveAsTemplateModal from "@/app/(dashboard)/projects/_modal/SaveAsTemplat
 import StarRating from "@/components/StarRating";
 import { 
     useGetSubscriberProjectsQuery, 
-    useUpdateSubscriberProjectMutation 
+    useUpdateSubscriberProjectMutation,
+    useUploadSubscriberProjectAttachmentMutation
 } from "@/redux/projects/subscriberProjectsApi";
 import { useSelector } from "react-redux";
 import { defaultPhoto } from "@/Root.Route.js";
@@ -42,6 +43,7 @@ function ProjectsTab() {
     const projects = projectsData || [];
 
     const [updateProject, { isLoading: isUpdating }] = useUpdateSubscriberProjectMutation();
+    const [uploadProjectAttachment] = useUploadSubscriberProjectAttachmentMutation();
 
     const [pagination, setPagination] = useState({ currentPage: 1, rowsPerPage: 7, totalPages: 1 });
     const [isOpenEditModal, setIsOpenEditModal] = useState(false);
@@ -113,6 +115,14 @@ function ProjectsTab() {
                 console.error("Failed to update status:", err);
             }
         }
+    };
+
+    const handleUploadFile = async (file) => {
+        if (!selectedProject?._id) return null;
+        const formData = new FormData();
+        formData.append('file', file);
+        const res = await uploadProjectAttachment({ projectId: selectedProject._id, formData }).unwrap();
+        return res?.attachment || res?.data || null;
     };
 
     const confirmDelete = () => {
@@ -332,6 +342,7 @@ function ProjectsTab() {
                 onSubmit={(payload) => handleStatusUpdate('done', payload)}
                 type="project"
                 isSubmitting={isUpdating}
+                uploadFile={handleUploadFile}
             />
         </div>
     );

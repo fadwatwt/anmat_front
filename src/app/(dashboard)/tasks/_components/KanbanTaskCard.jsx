@@ -45,7 +45,7 @@ function KanbanTaskCard({ task }) {
       }`}
     >
       {/* Title */}
-      <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 line-clamp-2 mb-2 leading-snug">
+      <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 line-clamp-2 mb-2 leading-snug">
         {task.title}
       </p>
 

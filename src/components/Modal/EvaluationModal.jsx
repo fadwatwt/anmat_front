@@ -14,16 +14,19 @@ const DEFAULT_CATEGORIES = [
     { key: 'communication', title: 'Team Collaboration' },
 ];
 
-const toKey = (str) => str.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+const toKey = (str) => str.toLowerCase().replace(/\s+/g, '_').replace(/[^\p{L}\p{N}_]/gu, '');
 
-const EvaluationModal = ({ isOpen, onClose, onSubmit, type = 'task', hasStages = false, isSubmitting = false }) => {
+const EvaluationModal = ({ isOpen, onClose, onSubmit, type = 'task', hasStages = false, isSubmitting = false, uploadFile }) => {
     const { t } = useTranslation();
     const { data: orgData } = useGetSubscriberOrganizationQuery(undefined, { skip: !isOpen });
 
     const categories = useMemo(() => {
         const types = orgData?.rating_types;
         if (Array.isArray(types) && types.length > 0) {
-            return types.map((title) => ({ key: toKey(title), title }));
+            return types.map((item) => {
+                if (typeof item === 'string') return { key: toKey(item), title: item };
+                return { key: item._id || toKey(item.title), title: item.title };
+            });
         }
         return DEFAULT_CATEGORIES;
     }, [orgData]);
@@ -32,6 +35,7 @@ const EvaluationModal = ({ isOpen, onClose, onSubmit, type = 'task', hasStages =
     const [ratings, setRatings] = useState({});
     const [comment, setComment] = useState("");
     const [attachment, setAttachment] = useState(null);
+    const [isUploading, setIsUploading] = useState(false);
 
     useEffect(() => {
         const initial = {};
@@ -43,7 +47,7 @@ const EvaluationModal = ({ isOpen, onClose, onSubmit, type = 'task', hasStages =
         setRatings(prev => ({ ...prev, [key]: value }));
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (type === 'project' && evaluationMethod === 'AUTO_FROM_TASKS') {
             onSubmit({ evaluation_method: 'AUTO_FROM_TASKS' });
             return;
@@ -61,14 +65,27 @@ const EvaluationModal = ({ isOpen, onClose, onSubmit, type = 'task', hasStages =
 
         const values = Object.values(ratings);
         const avgRating = values.length > 0 ? values.reduce((a, b) => a + b, 0) / values.length : 0;
-        
+
+        let uploadedAttachment = null;
+        if (attachment && uploadFile) {
+            setIsUploading(true);
+            try {
+                uploadedAttachment = await uploadFile(attachment);
+            } catch (err) {
+                console.error("Failed to upload attachment:", err);
+                setIsUploading(false);
+                return;
+            }
+            setIsUploading(false);
+        }
+
         if (type === 'task') {
             onSubmit({ 
                 evaluation_method: 'MANUAL',
                 evaluation_rating: avgRating,
                 evaluation_criteria: ratings,
                 comment: comment,
-                attachment: attachment
+                attachment: uploadedAttachment
             });
         } else {
             onSubmit({
@@ -76,7 +93,7 @@ const EvaluationModal = ({ isOpen, onClose, onSubmit, type = 'task', hasStages =
                 overall_rating: avgRating,
                 evaluation_criteria: ratings,
                 comment: comment,
-                attachment: attachment
+                attachment: uploadedAttachment
             });
         }
     };
@@ -118,7 +135,7 @@ const EvaluationModal = ({ isOpen, onClose, onSubmit, type = 'task', hasStages =
             isBtns={true}
             btnApplyTitle={t("Submit Evaluation")}
             onClick={handleSubmit}
-            disabled={isSubmitting || (evaluationMethod === 'MANUAL' && !isManualValid)}
+            disabled={isSubmitting || isUploading || (evaluationMethod === 'MANUAL' && !isManualValid)}
             className="lg:w-[500px] md:w-8/12 sm:w-10/12 w-11/12 p-6"
         >
             <div className="flex flex-col gap-6 py-2">
@@ -165,7 +182,7 @@ const EvaluationModal = ({ isOpen, onClose, onSubmit, type = 'task', hasStages =
                     </div>
                 </div>
 
-                {isSubmitting && (
+                {(isSubmitting || isUploading) && (
                     <div className="flex items-center justify-center py-2">
                         <span className="w-6 h-6 border-2 border-primary-500 border-t-transparent rounded-full animate-spin"></span>
                     </div>

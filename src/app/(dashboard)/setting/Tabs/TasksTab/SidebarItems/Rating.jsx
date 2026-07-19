@@ -21,25 +21,34 @@ function Rating() {
 
     const [isPointsActive, setIsPointsActive] = useState(true);
     const [evalMethod, setEvalMethod] = useState('AUTO');
-    const [ratingTypes, setRatingTypes] = useState(["Time Evaluation"]);
+    const [ratingTypes, setRatingTypes] = useState([{ _id: undefined, title: "Time Evaluation" }]);
     const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
     useEffect(() => {
         if (orgData) {
             setIsPointsActive(orgData.is_points_system_active ?? true);
             setEvalMethod(orgData.default_evaluation_method || 'AUTO');
-            setRatingTypes(orgData.rating_types?.length ? orgData.rating_types : ["Time Evaluation"]);
+            const raw = orgData.rating_types;
+            if (Array.isArray(raw) && raw.length > 0) {
+                if (typeof raw[0] === 'string') {
+                    setRatingTypes(raw.map((title) => ({ _id: undefined, title })));
+                } else {
+                    setRatingTypes(raw);
+                }
+            } else {
+                setRatingTypes([{ _id: undefined, title: "Time Evaluation" }]);
+            }
         }
     }, [orgData]);
 
     const updateRatingType = (index, value) => {
         const updated = [...ratingTypes];
-        updated[index] = value;
+        updated[index] = { ...updated[index], title: value };
         setRatingTypes(updated);
     };
 
     const addRatingTypeInput = () => {
-        setRatingTypes([...ratingTypes, ""]);
+        setRatingTypes([...ratingTypes, { _id: undefined, title: "" }]);
     };
 
     const removeRatingType = (index) => {
@@ -49,11 +58,11 @@ function Rating() {
 
     const handleApplyChanges = async () => {
         try {
-            const filtered = ratingTypes.filter(t => t.trim() !== "");
+            const filtered = ratingTypes.filter((item) => item.title.trim() !== "");
             await updateOrg({
                 is_points_system_active: isPointsActive,
                 default_evaluation_method: evalMethod,
-                rating_types: filtered.length ? filtered : ["Time Evaluation"],
+                rating_types: filtered.length ? filtered : [{ title: "Time Evaluation" }],
             }).unwrap();
             setApiResponse({ isOpen: true, status: "success", message: t("Rating settings updated successfully") });
         } catch (error) {
@@ -106,9 +115,9 @@ function Rating() {
                 </div>
 
                 <div className="flex flex-col gap-2">
-                    {ratingTypes.map((type, i) => (
-                        <div key={i} className="flex items-center gap-2">
-                            <InputAndLabel className="rounded-md flex-1" value={type} onChange={(e) => updateRatingType(i, e.target.value)} title={`${t("Rating type")} ${i + 1}`} />
+                    {ratingTypes.map((item, i) => (
+                        <div key={item._id || `new-${i}`} className="flex items-center gap-2">
+                            <InputAndLabel className="rounded-md flex-1" value={item.title} onChange={(e) => updateRatingType(i, e.target.value)} title={`${t("Rating type")} ${i + 1}`} />
                             {ratingTypes.length > 1 && (
                                 <button type="button" onClick={() => removeRatingType(i)}
                                     className="text-red-500 hover:text-red-700 text-sm mt-6">

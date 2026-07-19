@@ -7,7 +7,7 @@ import KanbanColumn from "./KanbanColumn";
 import KanbanTaskCard from "./KanbanTaskCard";
 import { KANBAN_COLUMNS } from "./kanbanConstants";
 
-function KanbanBoard({ tasks = [], onStatusChange }) {
+function KanbanBoard({ tasks = [], onStatusChange, allowedColumns }) {
   const [activeTask, setActiveTask] = useState(null);
   const [optimisticTasks, setOptimisticTasks] = useState({});
 
@@ -20,9 +20,14 @@ function KanbanBoard({ tasks = [], onStatusChange }) {
     useSensor(KeyboardSensor)
   );
 
+  const visibleColumns = useMemo(() => {
+    if (!allowedColumns || allowedColumns.length === 0) return KANBAN_COLUMNS;
+    return KANBAN_COLUMNS.filter((col) => allowedColumns.includes(col.id));
+  }, [allowedColumns]);
+
   const tasksByStatus = useMemo(() => {
     const grouped = {};
-    KANBAN_COLUMNS.forEach((col) => {
+    visibleColumns.forEach((col) => {
       grouped[col.id] = [];
     });
     tasks.forEach((task) => {
@@ -35,7 +40,7 @@ function KanbanBoard({ tasks = [], onStatusChange }) {
       }
     });
     return grouped;
-  }, [tasks, optimisticTasks]);
+  }, [tasks, optimisticTasks, visibleColumns]);
 
   const handleDragStart = useCallback((event) => {
     const { active } = event;
@@ -88,7 +93,7 @@ function KanbanBoard({ tasks = [], onStatusChange }) {
         onDragCancel={handleDragCancel}
       >
         <div className="flex gap-4 overflow-x-auto pb-4 custom-scroll">
-          {KANBAN_COLUMNS.map((column) => (
+          {visibleColumns.map((column) => (
             <KanbanColumn
               key={column.id}
               column={column}
@@ -112,6 +117,7 @@ function KanbanBoard({ tasks = [], onStatusChange }) {
 KanbanBoard.propTypes = {
   tasks: PropTypes.array,
   onStatusChange: PropTypes.func,
+  allowedColumns: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default KanbanBoard;

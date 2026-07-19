@@ -9,7 +9,7 @@ import { useGetSubscriberOrganizationQuery } from "@/redux/organizations/organiz
 
 const DEFAULT_CATEGORIES = ["Time Evaluation", "Content Quality", "Video Quality"];
 
-const toKey = (str) => str.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+const toKey = (str) => str.toLowerCase().replace(/\s+/g, '_').replace(/[^\p{L}\p{N}_]/gu, '');
 
 function ProjectRatingModal({ isOpen, onClose, project, onSubmit }) {
   const { data: orgData } = useGetSubscriberOrganizationQuery(undefined, { skip: !isOpen });
@@ -17,8 +17,13 @@ function ProjectRatingModal({ isOpen, onClose, project, onSubmit }) {
 
   const categories = useMemo(() => {
     const types = orgData?.rating_types;
-    if (Array.isArray(types) && types.length > 0) return types;
-    return DEFAULT_CATEGORIES;
+    if (Array.isArray(types) && types.length > 0) {
+      return types.map((item) => {
+        if (typeof item === 'string') return { key: toKey(item), title: item };
+        return { key: item._id || toKey(item.title), title: item.title };
+      });
+    }
+    return DEFAULT_CATEGORIES.map((title) => ({ key: toKey(title), title }));
   }, [orgData]);
 
   const [ratings, setRatings] = useState({});
@@ -27,7 +32,7 @@ function ProjectRatingModal({ isOpen, onClose, project, onSubmit }) {
 
   useEffect(() => {
     const initial = {};
-    categories.forEach((cat) => { initial[toKey(cat)] = 0; });
+    categories.forEach((cat) => { initial[cat.key] = 0; });
     setRatings(initial);
   }, [categories]);
 
@@ -71,24 +76,23 @@ function ProjectRatingModal({ isOpen, onClose, project, onSubmit }) {
         {/* Ratings Section */}
         <div className="flex flex-col w-full items-start gap-4">
           {categories.map((category, index) => {
-            const key = toKey(category);
             return (
               <div
                 key={index}
                 className="w-full flex flex-col items-start gap-2"
               >
-                <p className="text-sm dark:text-gray-200">{t(category)}:</p>
+                <p className="text-sm dark:text-gray-200">{t(category.title)}:</p>
                 <div className="flex justify-around w-full">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <FaStar
                       key={star}
                       size={25}
                       className={`cursor-pointer ${
-                        ratings[key] >= star
+                        ratings[category.key] >= star
                           ? "text-yellow-500"
                           : "text-gray-300"
                       }`}
-                      onClick={() => handleRating(key, star)}
+                      onClick={() => handleRating(category.key, star)}
                     />
                   ))}
                 </div>

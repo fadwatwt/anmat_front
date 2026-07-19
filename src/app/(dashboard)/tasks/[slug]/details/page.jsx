@@ -23,6 +23,8 @@ import { selectUser } from '@/redux/auth/authSlice.js';
 import { usePermission } from '@/Hooks/usePermission';
 import CreateTeamModal from "@/app/(dashboard)/projects/_modal/CreateTeamModal";
 import { RiGroupFill } from "react-icons/ri";
+import StarRating from "@/components/StarRating";
+import EvaluationDetailsModal from "@/components/Modal/EvaluationDetailsModal";
 
 function TaskDetailsPage({ params }) {
     const { t } = useTranslation();
@@ -142,9 +144,10 @@ function TaskDetailsPage({ params }) {
             if (authUserType === "Subscriber") {
                 const evaluationPayload = {
                     score: data.score || 0,
-                    rate_time: data.rate_time || 0,
-                    rate_content: data.rate_content || 0,
-                    rate_video: data.rate_video || 0,
+                    rate_time: data.ratings?.rate_time || data.rate_time || 0,
+                    rate_content: data.ratings?.rate_content || data.rate_content || 0,
+                    rate_video: data.ratings?.rate_video || data.rate_video || 0,
+                    evaluation_criteria: data.evaluation_criteria || {},
                     comment: data.comment || "",
                     attachment: data.attachment || null 
                 };
@@ -224,7 +227,15 @@ function TaskDetailsPage({ params }) {
 
     const canDeleteAttachments = usePermission("attachments.delete");
     const canManageTeam = usePermission("tasks.manage_participants");
+    const canComment = usePermission("tasks.comment");
     const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
+    const [isEvalDetailsOpen, setIsEvalDetailsOpen] = useState(false);
+
+    const taskAvgRating = useMemo(() => {
+        if (!task?.ratings || task.ratings.length === 0) return 0;
+        const sum = task.ratings.reduce((acc, r) => acc + (r.score || 0), 0);
+        return Math.round((sum / task.ratings.length) * 10) / 10;
+    }, [task?.ratings]);
 
     if (isLoading) {
         return (
@@ -271,7 +282,13 @@ function TaskDetailsPage({ params }) {
                             </div>
                             <TasksList isAssignedDate={true} tasks={mappedStages} onEvaluateStage={handleEvaluateStage} />
                         </div>
-                        {true && <div className={"bg-white dark:bg-white-0 rounded-2xl w-full flex flex-col gap-3"}>
+                        {taskAvgRating > 0 && (
+                            <div className="p-4 bg-white dark:bg-white-0 rounded-2xl w-full flex items-center justify-between">
+                                <p className="text-lg dark:text-gray-200">{t("Evaluation")}</p>
+                                <StarRating rating={taskAvgRating} onClickRate={() => setIsEvalDetailsOpen(true)} />
+                            </div>
+                        )}
+                        {canComment && <div className={"bg-white dark:bg-white-0 rounded-2xl w-full flex flex-col gap-3"}>
                             <div className={"p-4 flex flex-col gap-3"}>
                                 <div className={"title-header w-full flex items-center justify-between"}>
                                     <p className={"text-lg dark:text-gray-200 "}>{t("Comments")}</p>
@@ -318,6 +335,11 @@ function TaskDetailsPage({ params }) {
                     </div>
                 </div>
             </Page>
+            <EvaluationDetailsModal
+                isOpen={isEvalDetailsOpen}
+                onClose={() => setIsEvalDetailsOpen(false)}
+                ratings={task.ratings}
+            />
         </>
     );
 }

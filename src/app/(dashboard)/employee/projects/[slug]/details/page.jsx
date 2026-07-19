@@ -46,6 +46,7 @@ function EmployeeProjectDetailsPage() {
     const canDeleteAttachments = usePermission("attachments.delete");
     const canEvaluate = usePermission("projects.evaluate");
     const canManageTeam = usePermission("tasks.manage_participants");
+    const canComment = usePermission("tasks.comment");
 
     const mappedTasks = project?.tasks?.map(task => {
         // For employees, assignees might be formatted differently or we use the project's assignees
@@ -234,7 +235,7 @@ function EmployeeProjectDetailsPage() {
                             onStatusChange={handleStatusChange} 
                         />
                     </div>
-                    {true && <div className={"bg-surface rounded-2xl w-full flex flex-col gap-3"}>
+                    {canComment && <div className={"bg-surface rounded-2xl w-full flex flex-col gap-3"}>
                         <div className={"p-4 flex flex-col gap-3"}>
                             <div className={"title-header w-full flex items-center justify-between"}>
                                 <p className={"text-lg text-table-title"}>{t("Comments")}</p>
