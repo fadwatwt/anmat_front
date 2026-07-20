@@ -307,7 +307,7 @@ function TaskDetailsPage({ params }) {
                     </div>
                     <div className={"flex-1 flex flex-col gap-6"}>
                         <div className="flex flex-col gap-3">
-                            <ProjectMembers members={assigneeMember} title="Assignee Employee" />
+                            <ProjectMembers members={assigneeMember} title="Assignee Employee" canAddMember={canManageTeam} canDeleteMember={canManageTeam} />
                             {(canManageTeam && false) && (
                                 <button
                                     onClick={() => setIsTeamModalOpen(true)}

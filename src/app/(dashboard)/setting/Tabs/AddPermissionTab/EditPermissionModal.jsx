@@ -53,7 +53,7 @@ const EditPermissionModal = ({
                 {/* Permissions */}
                 <div className="flex flex-col items-start ">
                     <ElementsSelect options={optionsStatus} isMultiple={true} isRemoveBtn={false} classNameItemSelected={"p-1 px-2 bg-primary-100 text-black dark:text-gray-100 rounded-md"} defaultValue={[optionsStatus[1]]}
-                                    title={"Permissions"} classNameContainer={"w-full"} onChange={handleCategoryChange}/>
+                                    title={t("Permissions")} classNameContainer={"w-full"} onChange={handleCategoryChange}/>
                 </div>
             </div>
         </Modal>

@@ -10,7 +10,7 @@ import CreateTeamModal from "@/app/(dashboard)/projects/_modal/CreateTeamModal.j
 import InitialsAvatar from "@/components/InitialsAvatar.jsx";
 
 
-function ProjectMembers({ teams = [], members = [], title = "Project Members" }) {
+function ProjectMembers({ teams = [], members = [], title = "Project Members", canAddMember = true, canDeleteMember = true }) {
     const { t } = useTranslation()
     const [dropdownOpen, setDropdownOpen] = useDropdown();
     const [addMemberModal, setAddMemberModal] = useState({ isOpen: false, teamIndex: null });
@@ -63,8 +63,8 @@ function ProjectMembers({ teams = [], members = [], title = "Project Members" })
                     </div>
                 </div>
                 <div className="relative cursor-pointer flex-1 flex justify-end dropdown-container"
-                    onClick={() => handleDropdownToggle(key)}>
-                    <PiDotsThreeVerticalBold />
+                    onClick={() => canDeleteMember && handleDropdownToggle(key)}>
+                    {canDeleteMember && <PiDotsThreeVerticalBold />}
                     {dropdownOpen === key && <ActionsBtns className={"mt-5"} isEditBtn={false} handleDelete={() => { }} />}
                 </div>
             </div>
@@ -89,7 +89,7 @@ function ProjectMembers({ teams = [], members = [], title = "Project Members" })
                     {members.length > 0 ? (
                         <div className="flex flex-col gap-3 w-full pl-2">
                             {members.map((member, index) => renderMember(member, index, "member"))}
-                            <BtnAddOutline onClick={() => handleAddMember(null)} title={"Add a member"} />
+                            {canAddMember && <BtnAddOutline onClick={() => handleAddMember(null)} title={"Add a member"} />}
                         </div>
                     ) : (
                         teams.map((team, teamIndex) => (
@@ -97,7 +97,7 @@ function ProjectMembers({ teams = [], members = [], title = "Project Members" })
                                 <p className="text-md font-bold text-cell-primary">{team.name}</p>
                                 <div className="flex flex-col gap-3 w-full pl-2">
                                     {team.members.map((member, memberIndex) => renderMember(member, memberIndex, teamIndex))}
-                                    <BtnAddOutline onClick={() => handleAddMember(teamIndex)} title={"Add a member"} />
+                                    {canAddMember && <BtnAddOutline onClick={() => handleAddMember(teamIndex)} title={"Add a member"} />}
                                 </div>
                             </div>
                         ))
@@ -119,7 +119,9 @@ function ProjectMembers({ teams = [], members = [], title = "Project Members" })
 ProjectMembers.propTypes = {
     teams: PropTypes.array,
     members: PropTypes.array,
-    title: PropTypes.string
+    title: PropTypes.string,
+    canAddMember: PropTypes.bool,
+    canDeleteMember: PropTypes.bool
 }
 
 export default ProjectMembers;

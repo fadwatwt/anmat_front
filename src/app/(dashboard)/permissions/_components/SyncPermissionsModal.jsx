@@ -13,8 +13,10 @@ import {
 } from "@/redux/roles/adminRolesAPI";
 import { useProcessing } from "@/app/providers";
 import { getPermissionLabel } from "@/config/permissionTranslations";
+import { useTranslation } from "react-i18next";
 
 function SyncPermissionsModal({ isOpen, onClose, roleId, roleName, currentPermissions = [] }) {
+  const { t } = useTranslation();
   const [updatePermissions, { isLoading }] = useUpdateAdminRolePermissionsMutation();
   const { showProcessing, hideProcessing } = useProcessing();
   const [apiResponse, setApiResponse] = useState({
@@ -161,10 +163,10 @@ function SyncPermissionsModal({ isOpen, onClose, roleId, roleName, currentPermis
         isOpen={isOpen}
         onClose={onClose}
         isBtns={true}
-        btnApplyTitle={isLoading ? "Syncing..." : "Sync Permissions"}
+        btnApplyTitle={isLoading ? t("Syncing...") : t("Sync Permissions")}
         onClick={formik.handleSubmit}
         className={"lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12 px-3"}
-        title={`Sync Permissions - ${roleName || "Role"}`}
+        title={`${t("Sync Permissions")} - ${roleName || t("Role")}`}
       >
         <div className="px-1">
           <div className="flex flex-col gap-4">

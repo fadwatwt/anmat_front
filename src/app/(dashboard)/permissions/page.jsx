@@ -53,7 +53,7 @@ function PermissionsPage() {
 
     if (isLoading) {
         return (
-            <Page title={"Permissions"}>
+            <Page title={t("Permissions")}>
                 <div className="flex items-center justify-center h-64">
                     <div className="text-primary-500 dark:text-primary-400 animate-pulse font-medium">{t("Loading permissions...")}</div>
                 </div>
@@ -63,7 +63,7 @@ function PermissionsPage() {
 
     if (error) {
         return (
-            <Page title={"Permissions"}>
+            <Page title={t("Permissions")}>
                 <div className="flex items-center justify-center h-64 text-red-500 font-medium">
                     {t("Error loading permissions. Please try again later.")}
                 </div>
@@ -72,10 +72,10 @@ function PermissionsPage() {
     }
 
     return (
-        <Page title={"Permissions"} >
+        <Page title={t("Permissions")} >
             <div className={"flex flex-col gap-6"}>
                 <div className="flex flex-col gap-2 h-full">
-                    <Table className="custom-class" title={"All Permissions"}
+                    <Table className="custom-class" title={t("All Permissions")}
                         headers={headers} isActions={false} rows={rows}
                         isFilter={true} />
                 </div>

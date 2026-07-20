@@ -155,10 +155,10 @@ function SyncSubscriberPermissionsModal({ isOpen, onClose, roleId, roleName, cur
                 isOpen={isOpen}
                 onClose={onClose}
                 isBtns={true}
-                btnApplyTitle={isLoading ? "Syncing..." : "Sync Permissions"}
+                btnApplyTitle={isLoading ? t("Syncing...") : t("Sync Permissions")}
                 onClick={formik.handleSubmit}
                 className={"lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12 px-3"}
-                title={`Sync Permissions - ${roleName || "Role"}`}
+                title={`${t("Sync Permissions")} - ${roleName || t("Role")}`}
             >
                 <div className="px-1">
                     <div className="flex flex-col gap-4">

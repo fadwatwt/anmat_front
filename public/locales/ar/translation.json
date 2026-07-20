@@ -2854,5 +2854,7 @@
   "An attendance record for {{date}} ({{start}} - {{end}}) has been created by the administrator.": "تم إنشاء سجل حضور ليوم {{date}} ({{start}} - {{end}}) من قِبَل المسؤول.",
   "Your attendance record for {{date}} has been deleted by the administrator.": "تم حذف سجل حضورك ليوم {{date}} من قِبَل المسؤول.",
   "Subscriber Account CreatedTitle": "تم إنشاء حساب المشترك",
-  "New subscriber account created for {{name}} ({{email}}).Title": "تم إنشاء حساب مشترك جديد لـ {{name}} ({{email}})."
+  "New subscriber account created for {{name}} ({{email}}).Title": "تم إنشاء حساب مشترك جديد لـ {{name}} ({{email}}).",
+  "All Permissions": "جميع الأذونات",
+  "Confirm Sync Permissions": "تأكيد مزامنة الأذونات"
 }
