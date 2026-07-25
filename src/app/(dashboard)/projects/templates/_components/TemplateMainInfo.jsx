@@ -52,10 +52,9 @@ function TemplateMainInfo({
 
     // Status options
     const optionsStatus = [
-        { id: "1", element: <Status type={"Scheduled"} title={"Scheduled"} /> },
-        { id: "2", element: <Status type={"Delayed"} title={"Delayed"} /> },
-        { id: "3", element: <Status type={"Inactive"} title={"Inactive"} /> },
-        { id: "4", element: <Status type={"Active"} title={"Active"} /> },
+        { id: "draft", element: <Status type={"Inactive"} title={"Draft"} /> },
+        { id: "published", element: <Status type={"Active"} title={"Published"} /> },
+        { id: "archived", element: <Status type={"Delayed"} title={"Archived"} /> },
     ];
 
     // Rating options
@@ -243,7 +242,7 @@ function TemplateMainInfo({
                     <ElementsSelect
                         title={t("Status")}
                         options={optionsStatus}
-                        defaultValue={[optionsStatus[0]]}
+                        defaultValue={optionsStatus.filter(o => o.id === (valuesInputs.status || "draft"))}
                         onChange={(value) => handleSelectChange("status", value)}
                         name="status"
                         classNameContainer={"w-full"}

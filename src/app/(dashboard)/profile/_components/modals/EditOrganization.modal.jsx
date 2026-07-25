@@ -86,7 +86,7 @@ function EditOrganizationModal({ isOpen, onClose, organization }) {
             setApiResponse({
                 isOpen: true,
                 status: "success",
-                message: response?.message || t("Organization updated successfully!"),
+                message: t("Organization updated successfully!"),
             });
         } catch (error) {
             setApiResponse({

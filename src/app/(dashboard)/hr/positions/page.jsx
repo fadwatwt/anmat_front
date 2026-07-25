@@ -67,7 +67,7 @@ function PositionsPage() {
             setApiResponse({
                 isOpen: true,
                 status: "success",
-                message: response?.message || t("Position deleted successfully"),
+                message: t("Position deleted successfully"),
             });
         } catch (error) {
             setApiResponse({

@@ -74,7 +74,7 @@ function SetSocialMediaQuotaModal({ isOpen, onClose, subscriberId, currentQuota 
             setApiResponse({
                 isOpen: true,
                 status: "success",
-                message: response?.message || t("Social media quota updated."),
+                message: t("Social media quota updated."),
             });
         } catch (error) {
             const message =

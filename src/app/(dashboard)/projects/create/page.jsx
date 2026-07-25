@@ -129,7 +129,7 @@ function CreateProjectPage() {
             setApiResponse({
                 isOpen: true,
                 status: "success",
-                message: response?.message || t("Project created successfully!"),
+                message: t("Project created successfully!"),
             });
         } catch (error) {
             hideProcessing();
@@ -183,7 +183,7 @@ function CreateProjectPage() {
             setApiResponse({
                 isOpen: true,
                 status: "success",
-                message: response?.message || t("Task created successfully! You can add another task or finish."),
+                message: t("Task created successfully! You can add another task or finish."),
             });
         } catch (error) {
             hideProcessing();

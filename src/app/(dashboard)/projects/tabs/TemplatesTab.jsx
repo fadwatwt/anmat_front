@@ -94,6 +94,11 @@ function TemplatesTab() {
         router.push(`/projects/create?templateId=${template._id}`);
     };
 
+    const handleDownloadAttachments = (index) => {
+        const template = templates[index];
+        router.push(`/projects/templates/${template._id}-${convertToSlug(template.name || "template")}`);
+    };
+
     const headers = [
         { label: t("Projects"), width: "300px" },
         { label: t("Manager"), width: "220px" },
@@ -123,7 +128,10 @@ function TemplatesTab() {
                     <RiPencilLine size={16} className="text-blue-500" /> {t("Edit")}
                 </button>
             )}
-            <button className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left rounded-md">
+            <button
+                onClick={() => handleDownloadAttachments(index)}
+                className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left rounded-md"
+            >
                 <RiDownload2Line size={16} className="text-blue-500" /> {t("Download Attachs")}
             </button>
             {canDeleteTemplate && (

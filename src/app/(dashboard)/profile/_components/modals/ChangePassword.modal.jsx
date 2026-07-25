@@ -48,7 +48,7 @@ function ChangePasswordModal({ isOpen, onClose }) {
             setApiResponse({
                 isOpen: true,
                 status: "success",
-                message: response?.message || t("Password updated successfully")
+                message: t("Password updated successfully")
             });
             formik.resetForm();
             setShowApproval(false);

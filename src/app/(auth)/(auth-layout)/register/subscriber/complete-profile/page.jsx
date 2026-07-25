@@ -61,7 +61,7 @@ const SetupSubscriberProfile = () => {
                 setAlertConfig({
                     isOpen: true,
                     status: "success",
-                    message: response?.message || t("Account registered successfully!")
+                    message: t("Account registered successfully!")
                 });
             } catch (err) {
                 setError(err.data?.message || err.message || t("Registration failed"));

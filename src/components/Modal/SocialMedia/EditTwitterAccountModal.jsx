@@ -68,7 +68,7 @@ function EditTwitterAccountModal({ isOpen, onClose, account }) {
                 setApiResponse({
                     isOpen: true,
                     status: "success",
-                    message: response?.message || t("Account updated successfully"),
+                    message: t("Account updated successfully"),
                 });
             } catch (error) {
                 const message =

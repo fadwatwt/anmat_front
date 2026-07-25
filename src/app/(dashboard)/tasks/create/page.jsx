@@ -75,7 +75,7 @@ function CreateTask() {
             setApiResponse({
                 isOpen: true,
                 status: "success",
-                message: response?.message || t("Task created successfully"),
+                message: t("Task created successfully"),
             });
             setTimeout(() => {
                 router.push("/tasks");

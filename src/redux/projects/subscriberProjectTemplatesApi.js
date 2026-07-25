@@ -19,6 +19,35 @@ export const subscriberProjectTemplatesApi = apiSlice.injectEndpoints({
             providesTags: (result, error, id) => [{ type: "ProjectTemplates", id }],
             transformResponse: (response) => response.data || response,
         }),
+        getTemplateAttachments: builder.query({
+            query: (templateId) => ({
+                url: `api/subscriber/organization/project-templates/${templateId}/attachments`,
+                method: "GET",
+            }),
+            providesTags: (result, error, templateId) => [
+                { type: "TemplateAttachments", id: templateId },
+            ],
+            transformResponse: (response) => response.data || response,
+        }),
+        uploadTemplateAttachment: builder.mutation({
+            query: ({ templateId, formData }) => ({
+                url: `api/subscriber/organization/project-templates/${templateId}/upload`,
+                method: "POST",
+                body: formData,
+            }),
+            invalidatesTags: (result, error, { templateId }) => [
+                { type: "TemplateAttachments", id: templateId },
+            ],
+        }),
+        deleteTemplateAttachment: builder.mutation({
+            query: ({ templateId, attachmentId }) => ({
+                url: `api/subscriber/organization/project-templates/${templateId}/upload/${attachmentId}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: (result, error, { templateId }) => [
+                { type: "TemplateAttachments", id: templateId },
+            ],
+        }),
         createProjectTemplate: builder.mutation({
             query: (newTemplate) => ({
                 url: "api/subscriber/organization/project-templates",
@@ -64,6 +93,9 @@ export const subscriberProjectTemplatesApi = apiSlice.injectEndpoints({
 export const {
     useGetProjectTemplatesQuery,
     useGetProjectTemplateDetailsQuery,
+    useGetTemplateAttachmentsQuery,
+    useUploadTemplateAttachmentMutation,
+    useDeleteTemplateAttachmentMutation,
     useCreateProjectTemplateMutation,
     useCreateProjectTemplateFromProjectMutation,
     useCreateProjectFromTemplateMutation,

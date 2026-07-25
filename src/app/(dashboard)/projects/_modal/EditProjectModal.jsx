@@ -85,7 +85,7 @@ function EditProjectModal({ isOpen, onClose, project }) {
       setApiResponse({
         isOpen: true,
         status: "success",
-        message: response?.message || t("Project updated successfully"),
+        message: t("Project updated successfully"),
       });
       setTimeout(() => {
         onClose();

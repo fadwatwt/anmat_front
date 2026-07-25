@@ -77,7 +77,7 @@ const SetupCompanyProfile = () => {
                 setApiAlert({
                     isOpen: true,
                     status: "success",
-                    message: response?.message || t("Organization profile created successfully!")
+                    message: t("Organization profile created successfully!")
                 });
 
                 dispatch(clearSelectedIndustryId());

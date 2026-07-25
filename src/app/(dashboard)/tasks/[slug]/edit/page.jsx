@@ -101,7 +101,7 @@ function EditTask({ params }) {
             setApiResponse({
                 isOpen: true,
                 status: "success",
-                message: response?.message || t("Task updated successfully"),
+                message: t("Task updated successfully"),
             });
             setTimeout(() => {
                 router.push("/tasks");

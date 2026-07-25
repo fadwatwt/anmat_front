@@ -55,7 +55,9 @@ function CreateTemplatePage() {
                 description: values.description,
                 department_id: values.department,
                 manager_id: values.manager,
-                assignees_ids: values.assignees?.map(a => a.id) || [],
+                assignees_ids: Array.isArray(values.assignees)
+                    ? values.assignees.map((a) => (typeof a === "object" ? a.id : a)).filter(Boolean)
+                    : [],
                 status: values.status || "draft",
                 // Dates are optional for templates but can be included
                 start_date: values.assignedDate,

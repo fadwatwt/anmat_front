@@ -54,10 +54,7 @@ function EditTemplatePage() {
         description: template?.description || "",
         department: template?.department?._id || template?.department_id || "",
         manager: template?.manager?._id || template?.manager_id || "",
-        assignees: template?.assignees?.map((a) => ({
-            id: a.user_id || a._id,
-            name: a.name,
-        })) || [],
+        assignees: template?.assignees?.map((a) => a.user_id || a._id) || [],
         assignedDate: formatDate(template?.start_date),
         dueDate: formatDate(template?.due_date),
         rating: template?.rating || "",

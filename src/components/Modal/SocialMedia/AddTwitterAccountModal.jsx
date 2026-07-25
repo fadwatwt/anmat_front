@@ -82,7 +82,7 @@ function AddTwitterAccountModal({ isOpen, onClose }) {
                 setApiResponse({
                     isOpen: true,
                     status: "success",
-                    message: response?.message || t("Twitter account created successfully"),
+                    message: t("Twitter account created successfully"),
                 });
             } catch (error) {
                 const message =

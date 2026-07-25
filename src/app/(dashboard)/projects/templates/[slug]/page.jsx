@@ -7,11 +7,17 @@ import InfoCard from "@/app/(dashboard)/_components/InfoCard.jsx";
 import ProjectMembers from "@/app/(dashboard)/projects/[slug]/_components/ProjectMembers.jsx";
 import TasksList from "@/app/(dashboard)/projects/[slug]/_components/TasksList.jsx";
 import AttachmentsList from "@/app/(dashboard)/projects/[slug]/_components/AttachmentsList.jsx";
-import { useGetProjectTemplateDetailsQuery } from "@/redux/projects/subscriberProjectTemplatesApi";
+import {
+    useGetProjectTemplateDetailsQuery,
+    useGetTemplateAttachmentsQuery,
+    useUploadTemplateAttachmentMutation,
+    useDeleteTemplateAttachmentMutation,
+} from "@/redux/projects/subscriberProjectTemplatesApi";
 
 function TemplateDetailsPage() {
     const { slug } = useParams();
     const { t } = useTranslation();
+    const [isUploading, setIsUploading] = useState(false);
 
     // Slug format is "{24-char-id}-{name-slug}" — extract just the ID
     const templateId = slug?.substring(0, 24);
@@ -20,6 +26,13 @@ function TemplateDetailsPage() {
         templateId,
         { skip: !templateId }
     );
+
+    const { data: attachments = [] } = useGetTemplateAttachmentsQuery(templateId, {
+        skip: !templateId,
+    });
+
+    const [uploadAttachment] = useUploadTemplateAttachmentMutation();
+    const [deleteAttachment] = useDeleteTemplateAttachmentMutation();
 
     const breadcrumbItems = [
         { title: t("Projects"), path: "/projects" },
@@ -70,6 +83,28 @@ function TemplateDetailsPage() {
         window.location.href = `/projects/templates/${templateId}/edit`;
     };
 
+    const handleUpload = async (file, description) => {
+        setIsUploading(true);
+        try {
+            const formData = new FormData();
+            formData.append("file", file);
+            if (description) formData.append("description", description);
+            await uploadAttachment({ templateId, formData }).unwrap();
+        } catch (err) {
+            console.error("Upload failed:", err);
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    const handleDeleteAttachment = async (attachmentId) => {
+        try {
+            await deleteAttachment({ templateId, attachmentId }).unwrap();
+        } catch (err) {
+            console.error("Delete attachment failed:", err);
+        }
+    };
+
     return (
         <Page title={t("Template Details")} isBreadcrumbs={true} breadcrumbs={breadcrumbItems}>
             <div className="w-full flex items-start gap-8 flex-col md:flex-row">
@@ -102,9 +137,12 @@ function TemplateDetailsPage() {
                 {/* Right column */}
                 <div className="flex-1 flex flex-col gap-6">
                     {templateMembers.length > 0 && <ProjectMembers members={templateMembers} />}
-                    {template?.attachments?.length > 0 && (
-                        <AttachmentsList attachments={template.attachments} />
-                    )}
+                    <AttachmentsList
+                        attachments={attachments}
+                        onUpload={handleUpload}
+                        onDelete={handleDeleteAttachment}
+                        isUploading={isUploading}
+                    />
                 </div>
             </div>
         </Page>
