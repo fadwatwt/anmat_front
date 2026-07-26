@@ -196,7 +196,7 @@ function TaskDetailsPage({ params }) {
             rate_content: stage.rate_content,
             rate_video: stage.rate_video,
             comment: stage.comment,
-            delivery: stage.status === "completed" ? "Completed" : (stage.status || "Pending"), 
+            delivery: stage.status === "completed" ? t("Completed") : (stage.status || t("Pending")), 
         }));
 
         if (filterBy === "all") return stages;
@@ -280,7 +280,7 @@ function TaskDetailsPage({ params }) {
                                     className={"w-[120px] h-[36px]"}
                                 />
                             </div>
-                            <TasksList isAssignedDate={true} tasks={mappedStages} onEvaluateStage={handleEvaluateStage} />
+                            <TasksList isAssignedDate={true} tasks={mappedStages} onEvaluateStage={handleEvaluateStage} showStagesCount={false} />
                         </div>
                         {taskAvgRating > 0 && (
                             <div className="p-4 bg-white dark:bg-white-0 rounded-2xl w-full flex items-center justify-between">
@@ -307,7 +307,7 @@ function TaskDetailsPage({ params }) {
                     </div>
                     <div className={"flex-1 flex flex-col gap-6"}>
                         <div className="flex flex-col gap-3">
-                            <ProjectMembers members={assigneeMember} title="Assignee Employee" canAddMember={canManageTeam} canDeleteMember={canManageTeam} />
+                            <ProjectMembers members={assigneeMember} title={t("Assignee Employee")} canAddMember={canManageTeam} canDeleteMember={canManageTeam} />
                             {(canManageTeam && false) && (
                                 <button
                                     onClick={() => setIsTeamModalOpen(true)}

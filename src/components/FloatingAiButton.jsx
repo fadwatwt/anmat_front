@@ -186,6 +186,7 @@ export default function FloatingAiButton() {
   const [showHistory, setShowHistory] = useState(false);
   const [viewingHistory, setViewingHistory] = useState(null);
   const [ticketClosed, setTicketClosed] = useState(false);
+  const [lastAiFailed, setLastAiFailed] = useState(false);
   const [greetingLang, setGreetingLang] = useState(null);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
@@ -520,18 +521,21 @@ export default function FloatingAiButton() {
               ...prev,
               { role: "assistant", content: assistantMsg?.content || "" },
             ]);
+            setLastAiFailed(false);
           }
         } else {
           setMessages((prev) => [
             ...prev,
             { role: "assistant", content: knowledge.fallback },
           ]);
+          setLastAiFailed(true);
         }
       } catch {
         setMessages((prev) => [
           ...prev,
           { role: "assistant", content: knowledge.fallback },
         ]);
+        setLastAiFailed(true);
       } finally {
         setIsLoading(false);
       }
@@ -901,7 +905,7 @@ export default function FloatingAiButton() {
                     </div>
                   )}
 
-                  {viewMode === "ai" && messages.length > 6 && messages.length <= 10 && !ticketId && !ticketClosed && !isLoading && (
+                  {viewMode === "ai" && !ticketId && !ticketClosed && !isLoading && (lastAiFailed || (messages.length > 6 && messages.length <= 10)) && (
                     <div className="flex flex-wrap gap-1.5 mt-1">
                       <button onClick={() => handleSend(isAr ? SUPPORT_ACTION_AR : SUPPORT_ACTION_EN)} className="px-3 py-1.5 rounded-full border border-orange-300 dark:border-orange-600 bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 text-xs cursor-pointer hover:bg-orange-100 dark:hover:bg-orange-900/30 hover:border-orange-500 transition-colors">
                         {isAr ? "💬 " + SUPPORT_ACTION_AR : "💬 " + SUPPORT_ACTION_EN}

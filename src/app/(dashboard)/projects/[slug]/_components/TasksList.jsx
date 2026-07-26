@@ -171,7 +171,7 @@ StageRatingModal.propTypes = {
 };
 
 
-function TasksList({ tasks = [], isAssignedDate = false, isEmployeeView = false, onStatusChange, onEvaluateStage }) {
+function TasksList({ tasks = [], isAssignedDate = false, isEmployeeView = false, onStatusChange, onEvaluateStage, showStagesCount = true }) {
     const [selectedTask, setSelectedTask] = useState(null);
     const [activeStatusId, setActiveStatusId] = useState(null);
     const [expandedTaskId, setExpandedTaskId] = useState(null);
@@ -384,6 +384,7 @@ function TasksList({ tasks = [], isAssignedDate = false, isEmployeeView = false,
                                         <span>{t("Team")}</span>
                                     </button>
                                 )}
+                                {showStagesCount && (
                                 <button
                                     onClick={() => setExpandedTaskId(expandedTaskId === task._id ? null : task._id)}
                                     className="flex items-center gap-1.5 text-xs font-medium text-primary-base dark:text-primary-200 hover:opacity-80 transition-opacity"
@@ -392,6 +393,7 @@ function TasksList({ tasks = [], isAssignedDate = false, isEmployeeView = false,
                                     <span>{task.stages?.length || 0} {t("Stages")}</span>
                                     <RiArrowDownSLine className={`transition-transform ${expandedTaskId === task._id ? 'rotate-180' : ''}`} size={14} />
                                 </button>
+                                )}
 
                                 {
                                     isAssignedDate && (task.assignedDate || task.dueDate) &&
@@ -437,16 +439,6 @@ function TasksList({ tasks = [], isAssignedDate = false, isEmployeeView = false,
                                         ))}
                                     </div>
                                 )}
-
-                                <div className="mt-2">
-                                    <AttachmentsList
-                                        attachments={task.attachments || []}
-                                        onUpload={(file) => handleTaskUploadAttachment(task._id, file)}
-                                        onDelete={canDeleteAttachments ? (attachmentId) => handleTaskDeleteAttachment(task._id, attachmentId) : null}
-                                        isUploading={isUploading}
-                                    />
-                                </div>
-                                <TaskLogsViewer taskId={task._id} />
                             </div>
                         )}
                     </div>
@@ -487,7 +479,8 @@ TasksList.propTypes = {
     isAssignedDate: PropTypes.bool,
     isEmployeeView: PropTypes.bool,
     onStatusChange: PropTypes.func,
-    onEvaluateStage: PropTypes.func
+    onEvaluateStage: PropTypes.func,
+    showStagesCount: PropTypes.bool
 }
 
 export default TasksList;
