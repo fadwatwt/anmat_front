@@ -32,6 +32,21 @@ const suggestions = [
   "What tasks are created & closed by me ?"
 ];
 
+// Strip incomplete markdown at the end of streaming text to avoid flicker
+const cleanStreamingMarkdown = (text) => {
+  if (!text) return text;
+  let cleaned = text;
+  // Remove trailing incomplete bold: **word (without closing **)
+  cleaned = cleaned.replace(/\*{1,2}([^*\n]+)$/, '$1');
+  // Remove trailing incomplete header: ### (without text after)
+  cleaned = cleaned.replace(/^#{1,4}\s*$/m, '');
+  // Remove trailing incomplete bullet: - (without text after)
+  cleaned = cleaned.replace(/^-\s*$/m, '');
+  // Remove trailing incomplete numbered list: 1. (without text after)
+  cleaned = cleaned.replace(/^\d+\.\s*$/m, '');
+  return cleaned;
+};
+
 // Helper to check if a file is a document
 const isDocument = (type, name) => {
   const docTypes = [
@@ -1007,7 +1022,7 @@ const AssistantPage = () => {
                                   </span>
                                 ) : (
                                   <>
-                                    <AiMessageContent text={msg.text} />
+                                    <AiMessageContent text={msg.isStreaming ? cleanStreamingMarkdown(msg.text) : msg.text} />
                                     {msg.isStreaming && (
                                       <span className="inline-block w-0.5 h-5 ms-1 align-middle bg-primary-500 animate-pulse"></span>
                                     )}

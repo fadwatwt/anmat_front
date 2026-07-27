@@ -34,7 +34,7 @@ function AiMessageContent({ text, className = "" }) {
             </h4>
           ),
           p: ({ children, ...props }) => (
-            <p className="leading-relaxed mb-3 last:mb-0" {...props}>
+            <p className="leading-relaxed mb-3 last:mb-0 text-gray-900 dark:text-gray-100" {...props}>
               {children}
             </p>
           ),
