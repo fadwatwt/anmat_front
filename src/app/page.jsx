@@ -9,6 +9,12 @@ import {
   RiFlashlightLine,
   RiLinkedinBoxFill,
   RiTwitterXLine,
+  RiMenu3Line,
+  RiCloseLine,
+  RiRobot2Line,
+  RiShieldCheckLine,
+  RiLockLine,
+  RiServerLine,
 } from "@remixicon/react";
 import Collapse from "@/components/LandingPage/Collapse.jsx";
 import FloatingAiButton from "@/components/FloatingAiButton";
@@ -19,6 +25,7 @@ import { useTranslation } from "react-i18next";
 function Desktop2Page() {
   const { i18n, t } = useTranslation();
   const [isOnSwitch, setIsOnSwitch] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { data: plans, isLoading } = useGetPublicSubscriptionPlansQuery();
 
   const scrollToSection = useCallback((id) => {
@@ -46,7 +53,7 @@ function Desktop2Page() {
                   alt={t("logo")}
                   className={"w-8 h-8"}
                 />
-                <p className={"text-white"}>{t("Anmaat")}</p>
+                <p className={"text-white font-bold"}>{t("Anmaat")}</p>
               </div>
               <nav className={"hidden md:flex gap-6 text-white"}>
                 <button onClick={() => scrollToSection("home")} className={"list-none cursor-pointer hover:text-primary-200 transition-colors"}>{t("Home")}</button>
@@ -58,20 +65,47 @@ function Desktop2Page() {
             <div className={"flex items-center gap-3"}>
               <button
                 onClick={() => i18n.changeLanguage(i18n.language === "ar" ? "en" : "ar")}
-                className="text-white text-sm md:text-base px-2 py-1 rounded-md border border-white/30 hover:bg-white/10 transition-colors"
+                className="hidden sm:inline-flex text-white text-sm md:text-base px-2 py-1 rounded-md border border-white/30 hover:bg-white/10 transition-colors"
                 title={i18n.language === "ar" ? "English" : "العربية"}
               >
                 {i18n.language === "ar" ? "EN" : "AR"}
               </button>
-              <p className={"text-white text-sm md:text-base"}>
+              <p className={"hidden sm:block text-white text-sm md:text-base"}>
                 {" "}
                 <Link href="sign-in"> {t("Login")}</Link>
               </p>
-              <Link href={"/register/subscriber/email"} className={"bg-white dark:bg-surface dark:text-gray-100 py-1.5 px-3 rounded-md text-sm md:text-base"}>
+              <Link href={"/register/subscriber/email"} className={"hidden sm:inline-flex bg-white dark:bg-surface dark:text-gray-100 py-1.5 px-3 rounded-md text-sm md:text-base"}>
                 {t("Sign up")}
               </Link>
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="md:hidden text-white p-1"
+                aria-label={t("Menu")}
+              >
+                {mobileMenuOpen ? <RiCloseLine size={24} /> : <RiMenu3Line size={24} />}
+              </button>
             </div>
           </div>
+          {mobileMenuOpen && (
+            <div className="md:hidden flex flex-col gap-3 pb-4 text-white">
+              <button onClick={() => { scrollToSection("home"); setMobileMenuOpen(false); }} className={"text-start cursor-pointer hover:text-primary-200 transition-colors py-1"}>{t("Home")}</button>
+              <button onClick={() => { scrollToSection("features"); setMobileMenuOpen(false); }} className={"text-start cursor-pointer hover:text-primary-200 transition-colors py-1"}>{t("Features")}</button>
+              <button onClick={() => { scrollToSection("pricing"); setMobileMenuOpen(false); }} className={"text-start cursor-pointer hover:text-primary-200 transition-colors py-1"}>{t("Pricing")}</button>
+              <button onClick={() => { scrollToSection("faq"); setMobileMenuOpen(false); }} className={"text-start cursor-pointer hover:text-primary-200 transition-colors py-1"}>{t("FAQ")}</button>
+              <div className="flex gap-3 pt-2 border-t border-white/20">
+                <button
+                  onClick={() => i18n.changeLanguage(i18n.language === "ar" ? "en" : "ar")}
+                  className="text-white text-sm px-2 py-1 rounded-md border border-white/30 hover:bg-white/10 transition-colors"
+                >
+                  {i18n.language === "ar" ? "EN" : "AR"}
+                </button>
+                <Link href="sign-in" className={"text-white py-1"}>{t("Login")}</Link>
+                <Link href={"/register/subscriber/email"} className={"bg-white dark:bg-surface dark:text-gray-100 py-1.5 px-3 rounded-md text-sm"}>
+                  {t("Sign up")}
+                </Link>
+              </div>
+            </div>
+          )}
           <div className={"w-full flex flex-col items-center gap-3 px-4 text-center"}>
             <p
               className={
@@ -85,12 +119,9 @@ function Desktop2Page() {
             </p>
           </div>
           <div className={"flex justify-center items-center gap-3"}>
-            <button className={"bg-white dark:bg-surface dark:text-gray-100 py-2 px-3 rounded-md text-sm"}>
-              <a href="/dashboard"> {t("Get started")}</a>
-            </button>
-            <p className={"text-primary-200"}>
-              <a href="/sign-in"> {t("Login")}</a>{" "}
-            </p>
+            <Link href={"/register/subscriber/email"} className={"bg-white dark:bg-surface dark:text-gray-100 py-2 px-4 rounded-md text-sm font-medium"}>
+              {t("Get started free")}
+            </Link>
           </div>
           <div className={"flex justify-center w-full px-4"}>
             <img
@@ -108,26 +139,26 @@ function Desktop2Page() {
         }
       >
         <div className={"flex flex-col py-10 text-center"}>
-          <p className={"text-blue-500 dark:text-blue-400 text-sm"}>{t("Main Features")}</p>
-          <p className={"text-3xl sm:text-4xl font-bold text-black dark:text-white "}>{t("Key Features")}</p>
+          <p className={"text-blue-500 dark:text-blue-400 text-sm"}>{t("Why Anmaat")}</p>
+          <p className={"text-3xl sm:text-4xl font-bold text-black dark:text-white "}>{t("Everything you need to manage your business")}</p>
         </div>
         <div className={"w-full grid grid-cols-1 md:grid-cols-2 gap-6"}>
           <div
             className={
-              "bg-gradient-to-tr from-[#FED2CC] to-[#FFDFDB80] dark:from-[#3a2020] dark:to-[#2a181880] py-0 w-full rounded-xl"
+              "bg-gradient-to-tr from-[#C7D5FF] to-[#E5EBFF80] dark:from-[#1e2240] dark:to-[#181e3080] w-full rounded-xl"
             }
           >
-            <div className={"flex flex-col gap-2 items-start "}>
+            <div className={"flex flex-col gap-2 items-start"}>
               <div
                 className={
-                  " pt-10 px-10 pb-4 flex-col items-start gap-2 text-start"
+                  "pt-10 px-6 sm:px-10 pb-4 flex-col items-start gap-2 text-start"
                 }
               >
                 <p className={"text-lg font-bold text-black dark:text-white"}>
-                  {t("Performance Analytics")}
+                  {t("Project & Task Management")}
                 </p>
                 <p className={"text-black dark:text-gray-300 text-wrap"}>
-                  {t("Track performance across tasks, employees, and departments.")}
+                  {t("Create projects, assign tasks, track progress with multiple statuses, deadlines, and file attachments.")}
                 </p>
               </div>
               <div
@@ -136,34 +167,34 @@ function Desktop2Page() {
                 }
               >
                 <img
-                  src="/images/LandingPage/pioChart.png"
-                  alt={t("chart1")}
-                  className={"w-48 sm:w-72 absolute sm:right-10 top-11"}
+                  src="/images/LandingPage/taskStagesImage.png"
+                  alt={t("task stages")}
+                  className={"w-64 sm:w-96 absolute sm:right-52 top-11"}
                 />
                 <img
-                  src="/images/LandingPage/chart1.png"
-                  alt={t("chart1")}
-                  className={"w-48 sm:w-72 absolute sm:right-64 -top-4 hidden sm:block"}
+                  src="/images/LandingPage/projectDetailsImage.png"
+                  alt={t("project details")}
+                  className={"w-48 sm:w-72 absolute sm:right-0 -top-4 hidden sm:block"}
                 />
               </div>
             </div>
           </div>
           <div
             className={
-              "bg-gradient-to-tr from-[#D2C3FE] to-[#E2D6FF80] dark:from-[#2a2040] dark:to-[#1e183080] w-full rounded-md"
+              "bg-gradient-to-tr from-[#D2C3FE] to-[#E2D6FF80] dark:from-[#2a2040] dark:to-[#1e183080] w-full rounded-xl"
             }
           >
-            <div className={"flex flex-col gap-2 items-start "}>
+            <div className={"flex flex-col gap-2 items-start"}>
               <div
                 className={
-                  " pt-10 px-6 sm:px-10 pb-4 flex-col items-start gap-2 text-start"
+                  "pt-10 px-6 sm:px-10 pb-4 flex-col items-start gap-2 text-start"
                 }
               >
                 <p className={"text-lg font-bold text-black dark:text-white"}>
-                  {t("Performance Analytics")}
+                  {t("Team Communication")}
                 </p>
                 <p className={"text-black dark:text-gray-300 text-wrap"}>
-                  {t("Track performance across tasks, employees, and departments.")}
+                  {t("Real-time messaging, group conversations, and seamless collaboration with your team.")}
                 </p>
               </div>
               <div
@@ -184,17 +215,17 @@ function Desktop2Page() {
               "bg-gradient-to-tr from-[#BFDDD1] to-[#D6EAE180] dark:from-[#1e2e28] dark:to-[#18282080] w-full rounded-xl"
             }
           >
-            <div className={"flex flex-col gap-2 items-start "}>
+            <div className={"flex flex-col gap-2 items-start"}>
               <div
                 className={
-                  " pt-10 px-6 sm:px-10 pb-4 flex-col items-start gap-2 text-start"
+                  "pt-10 px-6 sm:px-10 pb-4 flex-col items-start gap-2 text-start"
                 }
               >
                 <p className={"text-lg font-bold text-black dark:text-white"}>
-                  {t("Performance Analytics")}
+                  {t("HR & Employee Management")}
                 </p>
                 <p className={"text-black dark:text-gray-300 text-wrap"}>
-                  {t("Track performance across tasks, employees, and departments.")}
+                  {t("Manage employees, departments, attendance, salaries, and organizational structure in one place.")}
                 </p>
               </div>
               <div
@@ -204,12 +235,12 @@ function Desktop2Page() {
               >
                 <img
                   src="/images/LandingPage/fileInputImage.png"
-                  alt={t("chart1")}
+                  alt={t("hr management")}
                   className={"w-48 sm:w-72 absolute sm:right-64 -top-4 hidden sm:block"}
                 />
                 <img
                   src="/images/LandingPage/followAndUnfollowModalImage.png"
-                  alt={t("chart1")}
+                  alt={t("employee management")}
                   className={"w-48 sm:w-72 absolute sm:right-10 top-11"}
                 />
               </div>
@@ -217,20 +248,20 @@ function Desktop2Page() {
           </div>
           <div
             className={
-              "bg-gradient-to-tr from-[#C7D5FF] to-[#E5EBFF80] dark:from-[#1e2240] dark:to-[#181e3080] w-full rounded-xl"
+              "bg-gradient-to-tr from-[#FED2CC] to-[#FFDFDB80] dark:from-[#3a2020] dark:to-[#2a181880] py-0 w-full rounded-xl"
             }
           >
-            <div className={"flex flex-col gap-2 items-start "}>
+            <div className={"flex flex-col gap-2 items-start"}>
               <div
                 className={
-                  " pt-10 px-6 sm:px-10 pb-4 flex-col items-start gap-2 text-start"
+                  "pt-10 px-10 pb-4 flex-col items-start gap-2 text-start"
                 }
               >
                 <p className={"text-lg font-bold text-black dark:text-white"}>
-                  {t("Performance Analytics")}
+                  {t("Analytics & Reports")}
                 </p>
                 <p className={"text-black dark:text-gray-300 text-wrap"}>
-                  {t("Track performance across tasks, employees, and departments.")}
+                  {t("Track performance across tasks, employees, and departments with real-time dashboards and custom reports.")}
                 </p>
               </div>
               <div
@@ -239,14 +270,14 @@ function Desktop2Page() {
                 }
               >
                 <img
-                  src="/images/LandingPage/taskStagesImage.png"
-                  alt={t("chart1")}
-                  className={"w-64 sm:w-96 absolute sm:right-52 top-11"}
+                  src="/images/LandingPage/pioChart.png"
+                  alt={t("analytics chart")}
+                  className={"w-48 sm:w-72 absolute sm:right-10 top-11"}
                 />
                 <img
-                  src="/images/LandingPage/projectDetailsImage.png"
-                  alt={t("chart1")}
-                  className={"w-48 sm:w-72 absolute sm:right-0 -top-4 hidden sm:block"}
+                  src="/images/LandingPage/chart1.png"
+                  alt={t("analytics dashboard")}
+                  className={"w-48 sm:w-72 absolute sm:right-64 -top-4 hidden sm:block"}
                 />
               </div>
             </div>
@@ -308,10 +339,98 @@ function Desktop2Page() {
             />
           </div>
         </div>
+        <div
+          id="ai"
+          className={
+            "w-full max-w-[87rem] flex flex-col md:flex-row items-center gap-10 px-4 py-12"
+          }
+        >
+          <div className={"flex-1 flex flex-col gap-6 text-center md:text-start"}>
+            <p className={"text-blue-500 dark:text-blue-400 text-sm font-medium"}>{t("AI-Powered")}</p>
+            <p className={"text-3xl sm:text-4xl font-bold text-black dark:text-white"}>
+              {t("Your intelligent management assistant")}
+            </p>
+            <p className={"text-gray-600 dark:text-gray-300 text-base leading-relaxed"}>
+              {t("Let AI handle the routine — from creating tasks and scheduling meetings to generating reports. Our AI assistant understands your commands in Arabic and English, helping you manage your business faster and smarter.")}
+            </p>
+            <div className={"flex flex-col gap-4"}>
+              <div className={"flex gap-3 items-center"}>
+                <div className={"w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-800 flex items-center justify-center shrink-0"}>
+                  <RiRobot2Line size={18} className={"text-primary-600 dark:text-primary-300"} />
+                </div>
+                <p className={"text-gray-700 dark:text-gray-300 text-sm"}>{t("Natural language commands in Arabic & English")}</p>
+              </div>
+              <div className={"flex gap-3 items-center"}>
+                <div className={"w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-800 flex items-center justify-center shrink-0"}>
+                  <RiCheckboxCircleFill size={18} className={"text-primary-600 dark:text-primary-300"} />
+                </div>
+                <p className={"text-gray-700 dark:text-gray-300 text-sm"}>{t("Create tasks, events, and reminders instantly")}</p>
+              </div>
+              <div className={"flex gap-3 items-center"}>
+                <div className={"w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-800 flex items-center justify-center shrink-0"}>
+                  <RiFlashlightLine size={18} className={"text-primary-600 dark:text-primary-300"} />
+                </div>
+                <p className={"text-gray-700 dark:text-gray-300 text-sm"}>{t("Smart analytics and instant answers to your questions")}</p>
+              </div>
+            </div>
+            <div>
+              <Link
+                href="/register/subscriber/email"
+                className={
+                  "inline-block py-2.5 px-6 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-medium transition-colors"
+                }
+              >
+                {t("Try AI Assistant")}
+              </Link>
+            </div>
+          </div>
+          <div className={"flex-1 flex justify-center"}>
+            <div className={"w-full max-w-[400px] bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-6"}>
+              <div className={"flex items-center gap-3 mb-4 pb-3 border-b border-gray-100 dark:border-gray-700"}>
+                <div className={"w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center"}>
+                  <RiRobot2Line size={16} className={"text-white"} />
+                </div>
+                <p className={"text-sm font-semibold text-gray-800 dark:text-white"}>{t("AI Assistant")}</p>
+              </div>
+              <div className={"flex flex-col gap-3"}>
+                <div className={"bg-gray-100 dark:bg-gray-700 rounded-xl rounded-tl-sm px-4 py-2.5 max-w-[85%]"}>
+                  <p className={"text-sm text-gray-700 dark:text-gray-200"}>{t("Create a task for the marketing team to prepare the Q3 report")}</p>
+                </div>
+                <div className={"bg-primary-50 dark:bg-primary-900/30 rounded-xl rounded-tr-sm px-4 py-2.5 max-w-[85%] self-end"}>
+                  <p className={"text-sm text-primary-800 dark:text-primary-200"}>{t("Done! Task created: 'Prepare Q3 Report' assigned to Marketing. Deadline: Friday. Want me to schedule a reminder?")}</p>
+                </div>
+                <div className={"bg-gray-100 dark:bg-gray-700 rounded-xl rounded-tl-sm px-4 py-2.5 max-w-[85%]"}>
+                  <p className={"text-sm text-gray-700 dark:text-gray-200"}>{t("Yes, remind me on Thursday morning")}</p>
+                </div>
+                <div className={"bg-primary-50 dark:bg-primary-900/30 rounded-xl rounded-tr-sm px-4 py-2.5 max-w-[85%] self-end"}>
+                  <p className={"text-sm text-primary-800 dark:text-primary-200"}>{t("Reminder set for Thursday 9:00 AM. Anything else?")}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className={"w-full max-w-[87rem] flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-12 px-4 py-8 border-t border-gray-200 dark:border-gray-700"}>
+          <div className={"flex items-center gap-2"}>
+            <RiShieldCheckLine size={20} className={"text-primary-600 dark:text-primary-400"} />
+            <p className={"text-sm text-gray-600 dark:text-gray-400"}>{t("SOC 2 Compliant")}</p>
+          </div>
+          <div className={"flex items-center gap-2"}>
+            <RiLockLine size={20} className={"text-primary-600 dark:text-primary-400"} />
+            <p className={"text-sm text-gray-600 dark:text-gray-400"}>{t("256-bit Encryption")}</p>
+          </div>
+          <div className={"flex items-center gap-2"}>
+            <RiServerLine size={20} className={"text-primary-600 dark:text-primary-400"} />
+            <p className={"text-sm text-gray-600 dark:text-gray-400"}>{t("99.9% Uptime")}</p>
+          </div>
+          <div className={"flex items-center gap-2"}>
+            <RiCheckboxCircleFill size={20} className={"text-primary-600 dark:text-primary-400"} />
+            <p className={"text-sm text-gray-600 dark:text-gray-400"}>{t("GDPR Ready")}</p>
+          </div>
+        </div>
         <div id="pricing" className={"flex flex-col w-full "}>
           <div className={"flex flex-col py-10 gap-12"}>
             <div className={"flex flex-col items-center w-full"}>
-              <p className={"text-blue-500 dark:text-blue-400 text-sm"}>{t("Main Features")}</p>
+              <p className={"text-blue-500 dark:text-blue-400 text-sm"}>{t("Pricing")}</p>
               <p className={"text-4xl font-bold text-black dark:text-white "}>
                 {t("Plans tailored for your team")}
               </p>
@@ -442,7 +561,7 @@ function Desktop2Page() {
           </div>
         </div>
         <div className={"flex flex-col gap-5 justify-center items-center w-full px-4 py-8"}>
-          <p className={"text-base sm:text-lg text-gray-400 dark:text-gray-500"}>{t("Trusted by X companies")}</p>
+          <p className={"text-base sm:text-lg text-gray-400 dark:text-gray-500"}>{t("Trusted by teams worldwide")}</p>
           <div className={"flex flex-wrap items-center justify-center max-w-full px-4 sm:px-10 gap-6 sm:gap-8 opacity-60 dark:opacity-40"}>
             <img
               src="/images/LandingPage/Companys/company1.png"
@@ -483,27 +602,27 @@ function Desktop2Page() {
           <div className={"flex flex-col px-0 md:px-10 lg:px-20 gap-5 "}>
             <Collapse
               title={t("Can I customize permissions for my team?")}
-              text={t("Yes, the dashboard allows you to set and customize permissions based on roles, ensuring secure and efficient task delegation.")}
+              text={t("Yes, Anmaat provides a comprehensive role-based permission system. You can create custom roles, assign granular permissions, and control access to specific modules like projects, HR, and analytics for each team member.")}
             />
             <Collapse
               title={t("Can I switch to a different plan later?")}
-              text={t("Yes, the dashboard allows you to set and customize permissions based on roles, ensuring secure and efficient task delegation.")}
+              text={t("Absolutely! You can upgrade or downgrade your plan at any time from Settings. When upgrading, you will be charged the prorated difference. When downgrading, the change takes effect at the next billing cycle.")}
             />
             <Collapse
               title={t("What happens to data if I cancel my subscription?")}
-              text={t("Yes, the dashboard allows you to set and customize permissions based on roles, ensuring secure and efficient task delegation.")}
+              text={t("Your data remains accessible for 30 days after cancellation. You can export all your projects, tasks, and reports during this period. We recommend exporting before the grace period ends.")}
             />
             <Collapse
               title={t("Can I integrate third-party tools with the dashboard?")}
-              text={t("Yes, the dashboard allows you to set and customize permissions based on roles, ensuring secure and efficient task delegation.")}
+              text={t("Yes! Anmaat supports integrations with popular tools including Google Calendar, Slack, and social media platforms. We also offer an API for custom integrations.")}
             />
             <Collapse
               title={t("How does the analytics feature work?")}
-              text={t("Yes, the dashboard allows you to set and customize permissions based on roles, ensuring secure and efficient task delegation.")}
+              text={t("Our analytics module provides real-time dashboards tracking employee performance, project progress, task completion rates, and departmental KPIs. You can create custom reports and export them as PDF or Excel.")}
             />
             <Collapse
               title={t("How do I update my contact email?")}
-              text={t("Yes, the dashboard allows you to set and customize permissions based on roles, ensuring secure and efficient task delegation.")}
+              text={t("Go to Settings, then Profile, then Account Settings. You can update your email address and will need to verify the new email. For security, password confirmation is required for this change.")}
             />
             <div className={"flex flex-col items-center gap-5 pt-10 pb-16 text-center"}>
               <div className={"flex justify-center"}>
@@ -590,7 +709,7 @@ function Desktop2Page() {
         <div className={"border-t border-gray-600 dark:border-gray-700"}>
           <div className={"max-w-[87rem] mx-auto px-4 sm:px-7 py-6 flex flex-col sm:flex-row justify-between items-center gap-3"}>
             <p className={"text-gray-400 text-sm"}>
-              {t("© 2025 Anmaat. All rights reserved.")}
+              {t("© 2026 Anmaat. All rights reserved.")}
             </p>
             <div className={"flex gap-6 text-sm"}>
               <a href="/privacy" className={"text-gray-400 hover:text-gray-200 transition-colors"}>{t("Privacy Policy")}</a>

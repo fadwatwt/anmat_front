@@ -6,6 +6,7 @@ import { Copy, Edit2, Save, X, Check, AlertTriangle, Plus, Trash2, CreditCard, H
 import "./hide-scrollbar.css";
 import ChatInput from "./ChatInput";
 import AiMessageContent from "./AiMessageContent";
+import AiCharts from "./AiCharts";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import UserChatAvatar from "@/components/UserChatAvatar";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -293,6 +294,7 @@ const AssistantPage = () => {
     if (assistant.ui_payload?.table) base.table = assistant.ui_payload.table;
     if (assistant.ui_payload?.links) base.links = assistant.ui_payload.links;
     if (assistant.ui_payload?.assignees) base.assignees = assistant.ui_payload.assignees;
+    if (assistant.ui_payload?.charts) base.charts = assistant.ui_payload.charts;
     return base;
   };
 
@@ -1010,6 +1012,31 @@ const AssistantPage = () => {
                                       <span className="inline-block w-0.5 h-5 ms-1 align-middle bg-primary-500 animate-pulse"></span>
                                     )}
                                   </>
+                                )}
+                                {msg.charts && msg.charts.length > 0 && !msg.isStreaming && (
+                                  <AiCharts charts={msg.charts} />
+                                )}
+                                {msg.table && !msg.isStreaming && (
+                                  <div className="mt-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 overflow-x-auto">
+                                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
+                                      <thead className="bg-gray-100 dark:bg-gray-700/50">
+                                        <tr>
+                                          {msg.table.headers.map((header, i) => (
+                                            <th key={i} className="px-4 py-2.5 text-start font-semibold text-gray-700 dark:text-gray-300">{header}</th>
+                                          ))}
+                                        </tr>
+                                      </thead>
+                                      <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                                        {msg.table.rows.map((row, i) => (
+                                          <tr key={i}>
+                                            {row.map((cell, j) => (
+                                              <td key={j} className="px-4 py-2.5 text-gray-900 dark:text-gray-100">{cell}</td>
+                                            ))}
+                                          </tr>
+                                        ))}
+                                      </tbody>
+                                    </table>
+                                  </div>
                                 )}
                                 {msg.audio && (
                                   <audio controls src={msg.audio} className="mt-2" />
