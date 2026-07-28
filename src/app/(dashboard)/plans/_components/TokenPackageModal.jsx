@@ -4,7 +4,7 @@ import * as Yup from "yup";
 import PropTypes from "prop-types";
 import Modal from "@/components/Modal/Modal.jsx";
 import InputAndLabel from "@/components/Form/InputAndLabel.jsx";
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import BtnAddOutline from "@/components/Form/BtnAddOutline";
@@ -109,6 +109,7 @@ function TokenPackageModal({ isOpen, onClose, editPackage = null }) {
     const isSubmitting = isCreating || isUpdating;
 
     return (
+        <>
         <Modal
             isOpen={isOpen}
             onClose={onClose}
@@ -232,7 +233,8 @@ function TokenPackageModal({ isOpen, onClose, editPackage = null }) {
                 </div>
             </div>
 
-            {/* Alerts */}
+        </Modal>
+
             <ApprovalAlert
                 isOpen={showApproval}
                 onClose={() => setShowApproval(false)}
@@ -249,7 +251,7 @@ function TokenPackageModal({ isOpen, onClose, editPackage = null }) {
                 message={apiResponse.message}
                 onClose={handleCloseResponse}
             />
-        </Modal>
+        </>
     );
 }
 

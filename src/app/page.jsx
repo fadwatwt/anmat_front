@@ -26,7 +26,7 @@ function Desktop2Page() {
   const { i18n, t } = useTranslation();
   const [isOnSwitch, setIsOnSwitch] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { data: plans, isLoading } = useGetPublicSubscriptionPlansQuery();
+  const { data: plans, isLoading } = useGetPublicSubscriptionPlansQuery(i18n.language);
 
   const scrollToSection = useCallback((id) => {
     const el = document.getElementById(id);
@@ -528,10 +528,14 @@ function Desktop2Page() {
                               <div className={`w-6 h-6 flex justify-center items-center rounded-full shrink-0 ${isHighlighted ? 'bg-primary-500' : 'bg-primary-100 dark:bg-primary-800'}`}>
                                 <RiCheckLine size={"16"} className={isHighlighted ? "text-white" : "text-primary-700 dark:text-primary-200"} />
                               </div>
-                              <p className={"text-sm font-medium text-gray-700 dark:text-gray-300"}>
-                                {feature.plan_feature?.title || feature.feature_type?.title}
-                                {feature.properties?.[0] && <span className="text-gray-500 dark:text-gray-400"> ({feature.properties[0].value})</span>}
-                              </p>
+                              <div className="flex flex-col gap-1 flex-1">
+                                <p className={"text-sm font-medium text-gray-700 dark:text-gray-300"}>
+                                  {feature.plan_feature?.title || feature.feature_type?.title}
+                                  {feature.properties?.length > 0 && (
+                                    <span className="text-gray-500 dark:text-gray-400 font-normal">: {feature.properties.map(p => p.value).join(' · ')}</span>
+                                  )}
+                                </p>
+                              </div>
                             </div>
                           ))}
                         </div>

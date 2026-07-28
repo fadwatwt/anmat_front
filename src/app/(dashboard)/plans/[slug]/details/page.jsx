@@ -3,6 +3,7 @@ import { ImSpinner2 } from "react-icons/im";
 import { useParams, useRouter } from 'next/navigation';
 import Page from "@/components/Page.jsx";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
 import {
     RiCheckboxCircleFill,
     RiReceiptLine,
@@ -16,13 +17,15 @@ import {
     RiListCheck,
     RiTimerFlashLine,
     RiHistoryLine,
-    RiHashtag
+    RiHashtag,
+    RiTranslate2
 } from "@remixicon/react";
 import { useGetSubscriptionPlanQuery, useGetSubscriptionPlanHistoryQuery } from "@/redux/plans/subscriptionPlansApi";
 import { format } from "date-fns";
 import ContentCard from "@/components/containers/ContentCard";
 import Table from "@/components/Tables/Table.jsx";
 import Status from "@/app/(dashboard)/projects/_components/TableInfo/Status.jsx";
+import PlanTranslationsModal from "../../_components/PlanTranslations.modal";
 
 const InfoRow = ({ label, value, icon: Icon, colorClass = "text-cell-primary" }) => (
     <div className="flex items-center gap-2 py-1">
@@ -38,6 +41,7 @@ function PlanDetails() {
     const router = useRouter();
     const { data: plan, isLoading, error } = useGetSubscriptionPlanQuery(slug);
     const { data: history, isLoading: isLoadingHistory } = useGetSubscriptionPlanHistoryQuery(slug);
+    const [translationsModalOpen, setTranslationsModalOpen] = useState(false);
 
     if (isLoading) return <div className="flex justify-center items-center h-screen"> <div className="flex items-center justify-center w-full p-4"><ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} /></div> </div>;
     if (error) return <div className="flex justify-center items-center h-screen text-red-500">Error loading plan.</div>;
@@ -107,6 +111,14 @@ function PlanDetails() {
                     >
                         <RiArrowLeftLine size={16} />
                         <span>{t("Back")}</span>
+                    </button>
+
+                    <button
+                        onClick={() => setTranslationsModalOpen(true)}
+                        className="absolute top-4 right-4 z-20 flex items-center gap-2 bg-black/30 hover:bg-black/50 backdrop-blur-md text-white px-3 py-1.5 rounded-xl transition-all border border-white/20 text-xs font-medium"
+                    >
+                        <RiTranslate2 size={16} />
+                        <span>{t("Translations")}</span>
                     </button>
 
                     <div className={"absolute md:top-1/3 top-[50px] w-full md:px-10 px-2"}>
@@ -279,6 +291,11 @@ function PlanDetails() {
                     </div>
                 </div>
             </div>
+            <PlanTranslationsModal
+                isOpen={translationsModalOpen}
+                onClose={() => setTranslationsModalOpen(false)}
+                plan={plan}
+            />
         </Page>
     );
 }

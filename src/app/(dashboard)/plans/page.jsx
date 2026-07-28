@@ -6,12 +6,14 @@ import {
     RiCloseCircleLine, RiEditLine, RiEyeLine,
     RiFlashlightLine,
     RiSparklingLine,
+    RiTranslate2,
 } from "@remixicon/react";
 import Table from "@/components/Tables/Table";
 import Page from "@/components/Page";
 import { useState } from "react";
 import CreatePlanModal from "./_components/CreatePlan.modal";
 import EditPlanModal from "./_components/EditPlan.modal";
+import PlanTranslationsModal from "./_components/PlanTranslations.modal";
 import { useTranslation } from "react-i18next";
 import StatusActions from "@/components/Dropdowns/StatusActions";
 import { RiDeleteBin7Line } from "react-icons/ri";
@@ -57,6 +59,8 @@ function SubscriptionPlansTab({ canCreate, canUpdate, canDelete, canToggleActivi
     const [createPlanModalOpen, setCreatePlanModal] = useState(false);
     const [editPlanModalOpen, setEditPlanModal] = useState(false);
     const [selectedPlanForEdit, setSelectedPlanForEdit] = useState(null);
+    const [translationsModalOpen, setTranslationsModalOpen] = useState(false);
+    const [selectedPlanForTranslations, setSelectedPlanForTranslations] = useState(null);
 
     const toggleCreatePlanModalOpen = () => {
         setCreatePlanModal(!createPlanModalOpen);
@@ -144,6 +148,12 @@ function SubscriptionPlansTab({ canCreate, canUpdate, canDelete, canToggleActivi
             canUpdate && {
                 text: t("Edit"), icon: <RiEditLine className="text-primary-400" />, onClick: () => {
                     handleEdit(plan)
+                },
+            },
+            canUpdate && {
+                text: t("Translations"), icon: <RiTranslate2 className="text-blue-500" />, onClick: () => {
+                    setSelectedPlanForTranslations(plan);
+                    setTranslationsModalOpen(true);
                 },
             },
             canToggleActivity && {
@@ -295,6 +305,14 @@ function SubscriptionPlansTab({ canCreate, canUpdate, canDelete, canToggleActivi
                     setSelectedPlanForEdit(null);
                 }} 
                 plan={selectedPlanForEdit}
+            />
+            <PlanTranslationsModal
+                isOpen={translationsModalOpen}
+                onClose={() => {
+                    setTranslationsModalOpen(false);
+                    setSelectedPlanForTranslations(null);
+                }}
+                plan={selectedPlanForTranslations}
             />
         </div>
     );

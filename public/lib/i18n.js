@@ -12,6 +12,8 @@ i18n.use(HttpApi)
     backend:{
         loadPath: "/locales/{{lng}}/translation.json"
     },
+    supportedLngs: ['en', 'ar'],
+    nonExplicitSupportedLngs: true,
     detection:{
         order: [
             'localStorage',
@@ -23,7 +25,8 @@ i18n.use(HttpApi)
             'path',
             'subdomain'
         ],
-        cache:"cookie"
+        cache:"cookie",
+        load: 'languageOnly'
     },
     react:{
         useSuspense:false,

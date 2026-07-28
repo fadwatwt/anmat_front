@@ -11,9 +11,10 @@ export const subscriptionPlansApi = apiSlice.injectEndpoints({
             providesTags: ["SubscriptionPlans"],
         }),
         getSubscriberSubscriptionPlans: builder.query({
-            query: () => ({
+            query: (locale) => ({
                 url: "api/subscriber/subscription-plans",
                 method: "GET",
+                params: locale ? { locale: locale.split('-')[0] } : undefined,
             }),
             transformResponse: (response) => response.data,
             providesTags: ["SubscriptionPlans"],
@@ -76,9 +77,10 @@ export const subscriptionPlansApi = apiSlice.injectEndpoints({
             providesTags: (result, error, id) => [{ type: "SubscriptionPlansHistory", id }],
         }),
         getPublicSubscriptionPlans: builder.query({
-            query: () => ({
+            query: (locale) => ({
                 url: "api/subscription-plans/public",
                 method: "GET",
+                params: locale ? { locale: locale.split('-')[0] } : undefined,
             }),
             transformResponse: (response) => response.data,
             providesTags: ["SubscriptionPlans"],

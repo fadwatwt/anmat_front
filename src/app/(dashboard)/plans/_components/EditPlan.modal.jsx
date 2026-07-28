@@ -7,7 +7,7 @@ import InputAndLabel from "@/components/Form/InputAndLabel.jsx";
 import { useUpdateSubscriptionPlanMutation } from "@/redux/plans/subscriptionPlansApi.js";
 import { useGetSubscriptionFeatureTypesQuery } from "@/redux/plans/subscriptionsFeatureTypesApi.js";
 import SelectAndLabel from "@/components/Form/SelectAndLabel";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import Switch2 from "@/components/Form/Switch2";
 import SwitchWithLabel from "@/components/Form/SwitchWithLabel";
 import { RiDeleteBin7Line, RiInformationLine, RiHashtag } from "@remixicon/react";
@@ -184,6 +184,7 @@ function EditPlanModal({ isOpen, onClose, plan }) {
   };
 
   return (
+    <>
     <Modal
       isOpen={isOpen}
       onClose={onClose}
@@ -411,6 +412,8 @@ function EditPlanModal({ isOpen, onClose, plan }) {
         </div>
       </div>
 
+    </Modal>
+
       <ApprovalAlert
         isOpen={showApproval}
         onClose={() => setShowApproval(false)}
@@ -427,7 +430,7 @@ function EditPlanModal({ isOpen, onClose, plan }) {
         message={apiResponse.message}
         onClose={handleCloseResponse}
       />
-    </Modal>
+    </>
   );
 }
 

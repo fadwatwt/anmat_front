@@ -1,5 +1,5 @@
 // dashboardSideMenuItems.js
-import { Setting, Share, Messages1, Category, Profile2User, TaskSquare, NoteText, Chart2, Cpu, PercentageCircle, Stickynote, Setting4, Setting5, ReceiptText, Category2, Tag, EmptyWallet, Calendar, CalendarTick, Notification as NotificationIcon } from 'iconsax-react';
+import { Setting, Share, Messages1, Category, Profile2User, TaskSquare, NoteText, Chart2, Cpu, PercentageCircle, Stickynote, Setting4, Setting5, ReceiptText, Category2, Tag, EmptyWallet, Calendar, CalendarTick, Notification as NotificationIcon, LanguageSquare } from 'iconsax-react';
 
 // ['Admin', 'Subscriber', 'Employee']
 //
@@ -271,6 +271,13 @@ export const dashboardSideMenuItems = [
         title: 'Money Receiving Methods',
         path: '/money-receiving',
         icon: <EmptyWallet />
+    },
+    {
+        section: 'System',
+        allowed_to: ['Admin'],
+        title: 'Translations',
+        path: '/translations',
+        icon: <LanguageSquare />
     },
 
     // ═══════════════════════════════════════════

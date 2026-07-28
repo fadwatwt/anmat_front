@@ -23,10 +23,10 @@ import { useTranslation } from "react-i18next";
 
 
 function Pricing() {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const user = useSelector(selectUser);
     const { token } = useSelector(selectAuth);
-    const { data: plans = [], isLoading } = useGetSubscriberSubscriptionPlansQuery();
+    const { data: plans = [], isLoading } = useGetSubscriberSubscriptionPlansQuery(i18n.language);
     const { data: paymentMethods = [] } = useGetPaymentMethodsQuery();
     const { data: currentSubscription, refetch: refetchSubscription } = useGetMySubscriptionQuery();
     const [billingCycle, setBillingCycle] = useState("month"); // "month" or "year"

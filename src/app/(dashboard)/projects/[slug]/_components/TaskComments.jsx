@@ -6,12 +6,15 @@ import {translateTime} from "@/functions/Days.js";
 import { RiDeleteBinLine, RiEdit2Line } from "react-icons/ri";
 import CommentInput from "@/components/CommentInput";
 import { useTranslation } from "react-i18next";
+import Alert from "@/components/Alerts/Alert";
 
 function TaskComments({comments, currentUserId, authUserType, onDeleteComment, onEditComment, loadingComments = {}}) {
     const { t } = useTranslation();
     const [editingCommentId, setEditingCommentId] = useState(null);
+    const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+    const [commentToDelete, setCommentToDelete] = useState(null);
     return (
-
+        <>
         <div className={"max-h-64 h-auto flex flex-col w-full overflow-hidden overflow-y-auto custom-scroll"}>
             {
                 comments?.map(( comment ,index) => {
@@ -52,8 +55,11 @@ function TaskComments({comments, currentUserId, authUserType, onDeleteComment, o
                                         </button>
                                     )}
                                     {canDelete && (
-                                        <button 
-                                            onClick={() => onDeleteComment(comment._id)} 
+                                        <button
+                                            onClick={() => {
+                                                setCommentToDelete(comment._id);
+                                                setIsDeleteConfirmOpen(true);
+                                            }}
                                             className="text-red-500 hover:text-red-700 transition disabled:opacity-50"
                                             title={t("Delete Comment")}
                                             disabled={loadingComments[comment._id]}
@@ -97,6 +103,25 @@ function TaskComments({comments, currentUserId, authUserType, onDeleteComment, o
                 )})
             }
         </div>
+        <Alert
+            type="delete"
+            isOpen={isDeleteConfirmOpen}
+            onClose={() => {
+                setIsDeleteConfirmOpen(false);
+                setCommentToDelete(null);
+            }}
+            title={t("Delete Comment")}
+            message={t("Are you sure you want to delete this comment?")}
+            isBtns={true}
+            titleSubmitBtn={t("Yes, Delete")}
+            titleCancelBtn={t("Cancel")}
+            onSubmit={(confirmed) => {
+                if (confirmed && commentToDelete) {
+                    onDeleteComment(commentToDelete);
+                }
+            }}
+        />
+    </>
     );
 }
 

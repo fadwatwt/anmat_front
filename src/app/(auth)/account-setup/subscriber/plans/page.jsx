@@ -12,9 +12,9 @@ import { useGetSubscriberSubscriptionPlansQuery } from "@/redux/plans/subscripti
 import { RiLoader4Line } from "@remixicon/react";
 
 function Page() {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const user = useSelector(selectUser);
-    const { data: plansData, isLoading, error: plansError } = useGetSubscriberSubscriptionPlansQuery();
+    const { data: plansData, isLoading, error: plansError } = useGetSubscriberSubscriptionPlansQuery(i18n.language);
 
     const [selectedPlanInfo, setSelectedPlanInfo] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
