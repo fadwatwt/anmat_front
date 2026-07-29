@@ -27,9 +27,11 @@ import {
 } from "@/redux/api/aiApi";
 
 const suggestions = [
-  "What should I work on next ?",
-  "What are my urgent tasks?",
-  "What tasks are created & closed by me ?"
+  { label: "What should I work on next?", icon: "tasks" },
+  { label: "Create a new task", icon: "plus" },
+  { label: "List my projects", icon: "projects" },
+  { label: "Find an employee", icon: "users" },
+  { label: "Summarize my day", icon: "summary" },
 ];
 
 // Strip incomplete markdown at the end of streaming text to avoid flicker
@@ -62,6 +64,13 @@ const isDocument = (type, name) => {
   return docTypes.includes(type) || docExts.some(ext => name.toLowerCase().endsWith(ext));
 };
 
+const blobToBase64 = (blob) => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.onload = () => resolve(reader.result);
+  reader.onerror = reject;
+  reader.readAsDataURL(blob);
+});
+
 const AssistantPage = () => {
   const { t } = useTranslation();
   const router = useRouter();
@@ -85,6 +94,8 @@ const AssistantPage = () => {
   const [hasStarted, setHasStarted] = useState(false); // Track if user has sent a message
   const [editingIdx, setEditingIdx] = useState(null); // Index of message being edited
   const [editValue, setEditValue] = useState("");
+  const [copiedIdx, setCopiedIdx] = useState(null);
+  const [pendingAudio, setPendingAudio] = useState(null); // { blob, url } for voice recording
   const fileInputRef = useRef(null);
   const userBubbleRef = useRef(null);
   const aiBubbleRef = useRef(null);
@@ -98,7 +109,6 @@ const AssistantPage = () => {
   const inputRef = useRef(null); // Ref for input field
   const [isRecording, setIsRecording] = useState(false);
   const mediaRecorderRef = useRef(null);
-  const [audioChunks, setAudioChunks] = useState([]);
   const [openImageUrl, setOpenImageUrl] = useState(null);
   const [stagedFiles, setStagedFiles] = useState([]); // New state for staged files
   const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
@@ -225,7 +235,7 @@ const AssistantPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (loading) return;
-    if (!input.trim() && stagedFiles.length === 0) return;
+    if (!input.trim() && stagedFiles.length === 0 && !pendingAudio) return;
 
     setHasStarted(true);
 
@@ -241,6 +251,14 @@ const AssistantPage = () => {
     setMessages(prev => [...prev, userMessage]);
     setInput("");
     setStagedFiles([]);
+
+    // Handle pending audio: show it as a voice message in the UI
+    let hasAudio = false;
+    if (pendingAudio) {
+      setMessages(prev => [...prev, { sender: "user", audio: pendingAudio.url }]);
+      hasAudio = true;
+    }
+
     setLoading(true);
     setThinking(true);
 
@@ -251,19 +269,30 @@ const AssistantPage = () => {
     try {
       let attachments = [];
 
+      if (hasAudio) {
+        // Convert audio blob to base64 attachment
+        const audioBase64 = await blobToBase64(pendingAudio.blob);
+        attachments = [{
+          name: 'voice-message.webm',
+          type: 'audio/webm',
+          base64: audioBase64,
+        }];
+        setPendingAudio(null);
+      }
+
       if (userMessage.files && userMessage.files.length > 0) {
         const rawFiles = stagedFiles.map(f => f.file).filter(Boolean);
         if (rawFiles.length > 0) {
           const uploadResult = await uploadAiFiles(rawFiles).unwrap();
-          attachments = uploadResult?.data || uploadResult || [];
+          attachments = [...attachments, ...(uploadResult?.data || uploadResult || [])];
         }
       }
 
       const data = await sendMessageMutation({
-        message: userMessage.text,
+        message: userMessage.text || (hasAudio ? t("Voice message") : ""),
         conversation_id: conversationId || undefined,
         attachments: attachments.length > 0 ? attachments : undefined,
-        model: "auto",
+        model: hasAudio ? "gemini-2.0-flash" : "auto",
       }).unwrap();
 
       if (data?.conversation_id && !conversationId) {
@@ -400,8 +429,22 @@ const AssistantPage = () => {
     }
   };
 
-  const handleCopy = (text) => {
-    navigator.clipboard.writeText(text);
+  const handleCopy = async (idx, text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      // Fallback for older browsers or insecure contexts
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+    }
+    setCopiedIdx(idx);
+    setTimeout(() => setCopiedIdx(null), 1500);
   };
 
   const handleEdit = (idx, text) => {
@@ -428,16 +471,13 @@ const AssistantPage = () => {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         const mediaRecorder = new window.MediaRecorder(stream);
         mediaRecorderRef.current = mediaRecorder;
-        setAudioChunks([]);
+        const chunks = [];
         mediaRecorder.ondataavailable = (e) => {
-          if (e.data.size > 0) setAudioChunks((prev) => [...prev, e.data]);
+          if (e.data.size > 0) chunks.push(e.data);
         };
         mediaRecorder.onstop = () => {
-          const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-          setMessages((prev) => [
-            ...prev,
-            { sender: "user", audio: URL.createObjectURL(audioBlob), audioBlob }
-          ]);
+          const audioBlob = new Blob(chunks, { type: 'audio/webm' });
+          setPendingAudio({ blob: audioBlob, url: URL.createObjectURL(audioBlob) });
           setIsRecording(false);
         };
         mediaRecorder.start();
@@ -452,9 +492,10 @@ const AssistantPage = () => {
     }
   };
 
-  useEffect(() => {
-    if (!isRecording) setAudioChunks([]);
-  }, [isRecording]);
+  const handleCancelAudio = () => {
+    if (pendingAudio) URL.revokeObjectURL(pendingAudio.url);
+    setPendingAudio(null);
+  };
 
   useEffect(() => () => clearTypingAnimation(), []);
 
@@ -841,15 +882,24 @@ const AssistantPage = () => {
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2.5 justify-center w-full mt-2">
-                  {suggestions.map((s, i) => (
-                    <button
-                      key={i}
-                      className="bg-gray-50 dark:bg-gray-800 hover:bg-primary-50 dark:hover:bg-primary-950/20 border border-gray-200 dark:border-gray-700 rounded-xl px-5 py-2.5 text-sm text-gray-700 dark:text-gray-300 shadow-sm transition font-medium"
-                      onClick={() => handleSuggestionClick(s)}
-                    >
-                      {t(s)}
-                    </button>
-                  ))}
+                  {suggestions.map((s, i) => {
+                    const iconMap = {
+                      tasks: <svg key="tasks" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>,
+                      plus: <svg key="plus" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>,
+                      projects: <svg key="projects" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /></svg>,
+                      users: <svg key="users" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>,
+                      summary: <svg key="summary" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>,
+                    };
+                    return (
+                      <button
+                        key={i}
+                        className="inline-flex items-center gap-2 bg-gray-50 dark:bg-gray-800 hover:bg-primary-50 dark:hover:bg-primary-950/20 border border-gray-200 dark:border-gray-700 rounded-xl px-5 py-2.5 text-sm text-gray-700 dark:text-gray-300 shadow-sm transition font-medium"
+                        onClick={() => handleSuggestionClick(t(s.label))}
+                      >
+                        {t(s.label)}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             ) : (
@@ -927,7 +977,9 @@ const AssistantPage = () => {
                               {(!msg.audio && !msg.files) && (
                                 <div className="flex gap-2 mt-1">
                                   <button onClick={() => handleEdit(idx, msg.text)} title={t("Edit")} className="text-gray-400 dark:text-gray-500 hover:text-primary-500"><img src="/images/AiAssistant/edit.svg" alt={t("Edit")} className="w-5 h-5 dark:invert dark:brightness-200" /></button>
-                                  <button onClick={() => handleCopy(msg.text)} title={t("Copy")} className="text-gray-400 dark:text-gray-500 hover:text-primary-500"><img src="/images/AiAssistant/copy.svg" alt={t("Copy")} className="w-5 h-5 dark:invert dark:brightness-200" /></button>
+                                  <button onClick={() => handleCopy(idx, msg.text)} title={t("Copy")} className="text-gray-400 dark:text-gray-500 hover:text-primary-500">
+                                    {copiedIdx === idx ? <Check size={18} className="text-emerald-500" /> : <img src="/images/AiAssistant/copy.svg" alt={t("Copy")} className="w-5 h-5 dark:invert dark:brightness-200" />}
+                                  </button>
                                 </div>
                               )}
                             </>
@@ -1087,50 +1139,29 @@ const AssistantPage = () => {
                                   </div>
                                 )}
                               </div>
-                              {msg.pendingAction && (
-                                <div className="mt-4 w-full rounded-xl border border-amber-200 bg-amber-50 dark:bg-amber-900/20 dark:border-amber-700 p-4">
+                              {msg.pendingAction && msg.pendingAction.status !== "pending" && (
+                                <div className={"mt-4 w-full rounded-xl border p-3 " + (
+                                  msg.pendingAction.status === "confirmed"
+                                    ? "border-emerald-200 bg-emerald-50 dark:bg-emerald-900/20 dark:border-emerald-700"
+                                    : msg.pendingAction.status === "failed"
+                                    ? "border-red-200 bg-red-50 dark:bg-red-900/20 dark:border-red-700"
+                                    : "border-gray-200 bg-gray-50 dark:bg-gray-800 dark:border-gray-700"
+                                )}>
                                   <div className="flex items-start gap-3">
-                                    <AlertTriangle className="text-amber-600 mt-0.5 shrink-0" size={20} />
+                                    {msg.pendingAction.status === "confirmed" && <Check className="text-emerald-600 mt-0.5 shrink-0" size={18} />}
+                                    {msg.pendingAction.status === "failed" && <X className="text-red-600 mt-0.5 shrink-0" size={18} />}
                                     <div className="flex-1">
-                                      <div className="text-sm font-semibold text-amber-900 dark:text-amber-200 mb-1">
-                                        {t("Confirm action:")} {t("tool." + msg.pendingAction.tool_name, { defaultValue: msg.pendingAction.tool_name })}
+                                      <div className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                                        {t("tool." + msg.pendingAction.tool_name, { defaultValue: msg.pendingAction.tool_name })}
                                       </div>
-                                      <div className="text-sm text-amber-800 dark:text-amber-100 mb-3">
-                                        <AiMessageContent text={msg.pendingAction.summary} />
-                                      </div>
-                                      {msg.pendingAction.status === "pending" && (
-                                        <div className="flex gap-2">
-                                          <button
-                                            disabled={msg.pendingActionLoading}
-                                            onClick={() => handleConfirmPending(idx, msg.pendingAction._id)}
-                                            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white text-sm font-medium"
-                                          >
-                                            <Check size={16} />
-                                            {t("Confirm")}
-                                          </button>
-                                          <button
-                                            disabled={msg.pendingActionLoading}
-                                            onClick={() => handleCancelPending(idx, msg.pendingAction._id)}
-                                            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 text-gray-700 dark:text-gray-200 text-sm font-medium"
-                                          >
-                                            <X size={16} />
-                                            {t("Cancel")}
-                                          </button>
-                                        </div>
-                                      )}
                                       {msg.pendingAction.status === "confirmed" && (
                                         <div className="text-xs text-emerald-700 dark:text-emerald-300 font-medium">
-                                          {t("Action confirmed and executed.")}
-                                        </div>
-                                      )}
-                                      {msg.pendingAction.status === "cancelled" && (
-                                        <div className="text-xs text-gray-500 font-medium">
-                                          {t("Action cancelled.")}
+                                          {t("Executed successfully")}
                                         </div>
                                       )}
                                       {msg.pendingAction.status === "failed" && (
                                         <div className="text-xs text-red-600 font-medium">
-                                          {t("Action failed during execution.")}
+                                          {t("Execution failed")}
                                         </div>
                                       )}
                                     </div>
@@ -1140,7 +1171,9 @@ const AssistantPage = () => {
                               {!msg.isStreaming && (
                                 <div className="flex gap-2 mt-1">
                                   <button onClick={() => handleEdit(idx, msg.text)} title={t("Edit")} className="text-gray-400 dark:text-gray-500 hover:text-primary-500"><img src="/images/AiAssistant/edit.svg" alt={t("Edit")} className="w-5 h-5 dark:invert dark:brightness-200" /></button>
-                                  <button onClick={() => handleCopy(msg.text)} title={t("Copy")} className="text-gray-400 dark:text-gray-500 hover:text-primary-500"><img src="/images/AiAssistant/copy.svg" alt={t("Copy")} className="w-5 h-5 dark:invert dark:brightness-200" /></button>
+                                  <button onClick={() => handleCopy(idx, msg.text)} title={t("Copy")} className="text-gray-400 dark:text-gray-500 hover:text-primary-500">
+                                    {copiedIdx === idx ? <Check size={18} className="text-emerald-500" /> : <img src="/images/AiAssistant/copy.svg" alt={t("Copy")} className="w-5 h-5 dark:invert dark:brightness-200" />}
+                                  </button>
                                 </div>
                               )}
                             </>
@@ -1233,6 +1266,8 @@ const AssistantPage = () => {
             onRemoveStagedFile={onRemoveStagedFile}
             isGated={isGated}
             onUpgradeClick={() => router.push("/ai/pricing")}
+            pendingAudio={pendingAudio}
+            onCancelAudio={handleCancelAudio}
           />
         </div>
       </div>

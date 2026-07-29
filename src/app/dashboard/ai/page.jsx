@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 // Remove GeminiIcon if not used elsewhere
 
 const suggestions = [
-  "What should I work on next ?",
+  "What should I work on next?",
   "What are my urgent tasks?",
   "What tasks are created & closed by me ?"
 ];
@@ -321,7 +321,7 @@ const AssistantPage = () => {
                         <button
                           key={i}
                           className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-6 py-3 text-gray-900 dark:text-gray-200 shadow-sm hover:bg-primary-50 dark:hover:bg-primary-900 transition text-base font-medium"
-                          onClick={() => setInput(s)}
+                          onClick={() => setInput(t(s))}
                         >
                           {t(s)}
                         </button>
