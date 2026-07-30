@@ -3,9 +3,10 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { IoClose, IoSend, IoChatbubbles, IoTimeOutline } from "react-icons/io5";
-import { FaRobot } from "react-icons/fa"; // تم تغيير الأيقونة من Cpu إلى FaRobot لعرض أيقونة روبوت
+import { FaRobot } from "react-icons/fa";
 import Link from "next/link";
 import { RootRoute } from "@/Root.Route";
+import MarkdownRenderer from "@/components/MarkdownRenderer";
 
 function detectLanguage(text) {
   const arabicChars = text.match(/[\u0600-\u06FF]/g);
@@ -35,6 +36,8 @@ const VISITOR_KNOWLEDGE = {
       { keywords: ["مشاريع", "مهام", "تتبع", "مهامتي", "مهمتي", "أعمالي"], reply: "إدارة المشاريع:\n📁 إنشاء مشاريع\n✅ مهام فرعية\n🏷️ حالات متعددة\n⏰ مواعيد نهائية\n📎 إرفاق ملفات\n💬 تعليقات" },
       { keywords: ["تواصل اجتماعي", "سوشيال", "فيسبوك", "تويتر", "انستقرام", "تيك توك", "يوتيوب"], reply: "التواصل الاجتماعي:\n📱 ربط حسابات متعددة\n📝 جدولة ونشر\n💬 رد على التعليقات\n📊 تحليل الأداء" },
       { keywords: ["امان", "خصوصية", "حماية", "تشفير", "حماية البيانات", "أمان"], reply: "الأمان:\n🔒 تشفير البيانات\n🛡️ أذونات متقدمة\n📋 سجل نشاطات\n🔐 مصادقة آمنة\n☁️ نسخ احتياطي" },
+      // ── المساعدة والدعم داخل النظام ──
+      { keywords: ["مساعدة", "ساعدني", "اعطني مساعدة", "اريد مساعدة", "دليل", "مساعدة داخل النظام", "مساعدة في النظام", "مساعد", "هل يوجد مساعد", "فيه مساعد", "في مساعد", "كيف أستخدم", "كيف استخدم", "كيفية الاستخدام", "طريقة استخدام", "تعليمات", "ارشادات", "مساعدة", "help", "help inside", "in-system help", "user guide", "tutorial", "how to use", "walkthrough", "دعم", "بحاجة مساعدة", "تقدر تساعدني", "النطام", "النظام", "داخل النظام", "داخل النطام"], reply: "نعم! 😊 نظام أنماط يحتوي على مساعدة مدمجة في عدة أماكن:\n\n📖 **قاعدة المعرفة (Knowledge Base):** تحتوي على شروحات وتوثيق لكافة ميزات النظام - يمكنك الوصول إليها من القائمة الجانبية.\n\n❓ **أيقونة علامة الاستفهام (؟)** تظهر في معظم الصفحات - اضغط عليها للحصول على شرح مختصر للصفحة.\n\n🤖 **المساعد الذكي:** متاح للمستخدمين المسجلين للإجابة عن أسئلتك وإنجاز المهام.\n\n💬 **فريق الدعم الفني:** يمكنك إنشاء تذكرة دعم من زر \"التحدث مع الدعم\".\n\nكيف أقدر أساعدك؟ 😊" },
       // ── حل المشاكل الشائعة ──
       { keywords: ["مشكلة", "مشكله", "خطا", "خطأ", "لا يعمل", "غير شغال", "تعذر", "فشل", "معلق", "تجمد", "مرفوض", "منعدم", "خرب", "ضاع", "失踪"], reply: "أعتذر عن هذه المشكلة! دعني أساعدك:\n\n1️⃣ تأكد من اتصالك بالإنترنت\n2️⃣ امسح ذاكرة التخزين المؤقت للمتصفح\n3️⃣ جرب استخدام متصفح آخر\n4️⃣ تأكد من صحة البريد الإلكتروني وكلمة المرور\n\nإذا استمرت المشكلة، يمكنني إنشاء تذكرة دعم فني لك." },
       { keywords: ["تسجيل دخول", "كلمة المرور", "باسوورد", "البريد", "حسابي", "الحساب", "لا استطيع الدخول", "محظور"], reply: "لحل مشاكل تسجيل الدخول:\n\n🔑 **نسيت كلمة المرور؟**\n- اضغط \"نسيت كلمة المرور\" في صفحة تسجيل الدخول\n- ستصلك رسالة على بريدك لإعادة التعيين\n\n📧 **البريد الإلكتروني غير صحيح؟**\n- تأكد من كتابة البريد بشكل صحيح\n- تحقق من صندوق البريد غير المرغوب فيه (Spam)\n\n🔒 **الحساب محظور؟**\n- تواصل مع فريق الدعم الفني\n\nهل تريد إنشاء تذكرة دعم؟" },
@@ -72,8 +75,10 @@ const VISITOR_KNOWLEDGE = {
       { keywords: ["project", "task", "tasks", "projects", "tracking"], reply: "Project management:\n📁 Create projects\n✅ Subtasks\n🏷️ Multiple statuses\n⏰ Deadlines\n📎 File attachments\n💬 Comments" },
       { keywords: ["social media"], reply: "Social media:\n📱 Connect multiple accounts\n📅 Schedule & publish\n💬 Reply to comments\n📊 Performance analytics" },
       { keywords: ["security", "privacy"], reply: "Security:\n🔒 Data encryption\n🛡️ Advanced permissions\n📋 Activity logs\n🔐 Secure auth\n☁️ Regular backups" },
+      // ── In-system help ──
+      { keywords: ["help", "need help", "help inside", "in-system help", "user guide", "tutorial", "how to use", "walkthrough", "documentation", "guide", "support", "assist me", "can you help"], reply: "Yes! 😊 Anmaat provides built-in help in several ways:\n\n📖 **Knowledge Base:** Contains documentation for all features - accessible from the sidebar menu.\n\n❓ **Question mark icon (?)** Appears in most pages - click it for a quick page guide.\n\n🤖 **AI Assistant:** Available for logged-in users to answer questions and perform tasks.\n\n💬 **Support Team:** Create a support ticket via \"Talk to support\".\n\nHow can I help you? 😊" },
       // ── Troubleshooting ──
-      { keywords: ["issue", "problem", "error", "bug", "not working", "broken", "failed", "stuck", "crash", "help"], reply: "I'm sorry about that issue! Let me help you:\n\n1️⃣ Check your internet connection\n2️⃣ Clear your browser cache\n3️⃣ Try a different browser\n4️⃣ Verify your email and password\n\nIf the problem persists, I can create a support ticket for you." },
+      { keywords: ["issue", "problem", "error", "bug", "not working", "broken", "failed", "stuck", "crash"], reply: "I'm sorry about that issue! Let me help you:\n\n1️⃣ Check your internet connection\n2️⃣ Clear your browser cache\n3️⃣ Try a different browser\n4️⃣ Verify your email and password\n\nIf the problem persists, I can create a support ticket for you." },
       { keywords: ["password", "forgot", "reset", "email", "account", "can't login", "locked", "blocked"], reply: "To resolve login issues:\n\n🔑 **Forgot Password?**\n- Click \"Forgot Password\" on the login page\n- You'll receive a reset link via email\n\n📧 **Wrong Email?**\n- Double-check your email address\n- Check your spam/junk folder\n\n🔒 **Account Locked?**\n- Contact our support team\n\nWould you like me to create a support ticket?" },
       { keywords: ["slow", "lag", "freeze", "loading"], reply: "To improve performance:\n\n⚡ Close other tabs/apps\n🗑️ Clear browser cache\n🔄 Update your browser\n🌐 Check your internet connection\n\nLet me know if the issue continues!" },
       { keywords: ["android", "ios", "mobile", "phone", "app"], reply: "Anmaat mobile app:\n\n📱 **Android:** Available on Google Play\n🍎 **iOS:** Available on App Store\n\nSearch for \"Anmaat\" in your store.\n\n⚠️ Some features may only be available on web." },
@@ -154,18 +159,18 @@ function formatMsgTime(ts) {
 const GUEST_SESSION_KEY = "anmat_guest_chat_session";
 
 function saveGuestSession(data) {
-  try { localStorage.setItem(GUEST_SESSION_KEY, JSON.stringify(data)); } catch {}
+  try { localStorage.setItem(GUEST_SESSION_KEY, JSON.stringify(data)); } catch (e) { void e; }
 }
 
 function loadGuestSession() {
   try {
     const raw = localStorage.getItem(GUEST_SESSION_KEY);
     return raw ? JSON.parse(raw) : null;
-  } catch { return null; }
+  } catch (e) { void e; return null; }
 }
 
 function clearGuestSession() {
-  try { localStorage.removeItem(GUEST_SESSION_KEY); } catch {}
+  try { localStorage.removeItem(GUEST_SESSION_KEY); } catch (e) { void e; }
 }
 
 export default function FloatingAiButton() {
@@ -583,6 +588,22 @@ export default function FloatingAiButton() {
       } catch (e) { void e; }
     }
 
+    try {
+      const history = messages.map((m) => ({ role: m.role, content: m.content }));
+      const res = await fetch(`${RootRoute}/api/public/ai/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: trimmed, history, lang: userLang }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const result = data?.data || data;
+        setMessages((prev) => [...prev, { role: "assistant", content: result?.response || "", suggestSupport: !!result?.suggestSupport }]);
+        setIsLoading(false);
+        return;
+      }
+    } catch (e) { void e; }
+
     await new Promise((r) => setTimeout(r, 300 + Math.random() * 400));
     const reply = getVisitorReply(trimmed, userLang);
     setMessages((prev) => [...prev, { role: "assistant", content: reply.content, hasRegisterLink: reply.hasRegisterLink, hasSignInLink: reply.hasSignInLink }]);
@@ -796,9 +817,11 @@ export default function FloatingAiButton() {
                 <div className="flex-1 p-4 flex flex-col gap-3 overflow-y-auto">
                   {viewingHistory.messages?.map((msg, i) => (
                     <div key={`ai-${i}`} className={`flex flex-col gap-1.5 ${msg.role === "user" ? "items-end" : "items-start"}`}>
-                      <div className={`max-w-[85%] px-3.5 py-2.5 text-[13px] leading-relaxed whitespace-pre-wrap ${
-                        msg.role === "user" ? "bg-blue-500 text-white rounded-2xl rounded-br-sm" : "bg-gray-100 dark:bg-gray-800 text-cell-primary rounded-2xl rounded-bl-sm"
-                      }`}>{msg.content}</div>
+                      <div className={`max-w-[85%] px-3.5 py-2.5 text-[13px] leading-relaxed ${
+                        msg.role === "user" ? "bg-blue-500 text-white rounded-2xl rounded-br-sm whitespace-pre-wrap" : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-2xl rounded-bl-sm"
+                      }`}>
+                        {msg.role === "user" ? msg.content : <MarkdownRenderer content={msg.content} />}
+                      </div>
                       <span className={`text-[9px] text-sub-500 px-1 ${msg.role === "user" ? "text-right" : "text-left"}`}>{formatMsgTime(msg.time)}</span>
                     </div>
                   ))}
@@ -811,7 +834,7 @@ export default function FloatingAiButton() {
                       </div>
                       {viewingHistory.supportMessages.map((msg) => (
                         <div key={`sup-${msg.id}`} className={`flex flex-col ${msg.role === "user" ? "items-end" : "items-start"}`}>
-                          <div className={`max-w-[85%] px-3.5 py-2.5 text-[13px] leading-relaxed whitespace-pre-wrap rounded-2xl shadow-sm border ${msg.role === "user" ? "bg-primary-500 dark:bg-primary-200 dark:text-black text-white rounded-br-sm border-transparent" : "rounded-bl-sm text-cell-primary border-status-border"}`} style={msg.role === "user" ? {} : { backgroundColor: 'var(--color-blue-ebf1ff)' }}>{msg.content}</div>
+<div className={`max-w-[85%] px-3.5 py-2.5 text-[13px] leading-relaxed whitespace-pre-wrap rounded-2xl shadow-sm border ${msg.role === "user" ? "bg-primary-500 dark:bg-primary-200 dark:text-black text-white rounded-br-sm border-transparent" : "rounded-bl-sm text-cell-primary border-status-border"}`} style={msg.role === "user" ? {} : { backgroundColor: 'var(--color-blue-ebf1ff)' }}>{msg.content}</div>
                           <span className="text-[9px] text-sub-500 px-1">{formatMsgTime(msg.time)}</span>
                         </div>
                       ))}
@@ -837,9 +860,11 @@ export default function FloatingAiButton() {
                 <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
                   {viewMode === "ai" && messages.map((msg, i) => (
                     <div key={i} className={`flex flex-col gap-1.5 ${msg.role === "user" ? "items-end" : "items-start"}`}>
-                      <div className={`max-w-[85%] px-3.5 py-2.5 text-[13px] leading-relaxed whitespace-pre-wrap ${
-                        msg.role === "user" ? "bg-blue-500 text-white rounded-2xl rounded-br-sm" : "bg-gray-100 dark:bg-gray-800 text-cell-primary rounded-2xl rounded-bl-sm"
-                      }`}>{msg.content}</div>
+                      <div className={`max-w-[85%] px-3.5 py-2.5 text-[13px] leading-relaxed ${
+                        msg.role === "user" ? "bg-blue-500 text-white rounded-2xl rounded-br-sm whitespace-pre-wrap" : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-2xl rounded-bl-sm"
+                      }`}>
+                        {msg.role === "user" ? msg.content : <MarkdownRenderer content={msg.content} />}
+                      </div>
                       {msg.hasRegisterLink && (
                         <Link href="/register/subscriber/email"
                           className="inline-block px-4 py-2 rounded-xl bg-emerald-500 text-white text-[13px] font-semibold no-underline text-center">
@@ -851,6 +876,12 @@ export default function FloatingAiButton() {
                           className="inline-block px-4 py-2 rounded-xl bg-blue-500 text-white text-[13px] font-semibold no-underline text-center">
                           {isAr ? "تسجيل الدخول" : "Sign In"}
                         </Link>
+                      )}
+                      {msg.suggestSupport && (
+                        <button onClick={() => handleSend(isAr ? SUPPORT_ACTION_AR : SUPPORT_ACTION_EN)}
+                          className="inline-block px-4 py-2 rounded-xl bg-orange-500 text-white text-[13px] font-semibold border-none cursor-pointer text-center hover:bg-orange-600 transition-colors">
+                          {isAr ? "💬 التحدث مع الدعم الفني" : "💬 Talk to Support"}
+                        </button>
                       )}
                     </div>
                   ))}
@@ -882,11 +913,11 @@ export default function FloatingAiButton() {
 
                   {isLoading && (
                     <div className="flex justify-start">
-                      <div className="px-3.5 py-2.5 rounded-2xl rounded-bl-sm bg-gray-100 dark:bg-gray-800">
-                        <div className="flex gap-1">
-                          <span className="animate-bounce w-2 h-2 rounded-full bg-gray-400" style={{ animationDelay: "0ms" }} />
-                          <span className="animate-bounce w-2 h-2 rounded-full bg-gray-400" style={{ animationDelay: "150ms" }} />
-                          <span className="animate-bounce w-2 h-2 rounded-full bg-gray-400" style={{ animationDelay: "300ms" }} />
+                      <div className="px-4 py-3 rounded-2xl rounded-bl-sm bg-gray-100 dark:bg-gray-800">
+                        <div className="flex items-center gap-1">
+                          <span className="w-2 h-2 rounded-full bg-primary-400 dark:bg-primary-500 animate-bounce" style={{ animationDelay: "0ms", animationDuration: "0.8s" }} />
+                          <span className="w-2 h-2 rounded-full bg-primary-400 dark:bg-primary-500 animate-bounce" style={{ animationDelay: "160ms", animationDuration: "0.8s" }} />
+                          <span className="w-2 h-2 rounded-full bg-primary-400 dark:bg-primary-500 animate-bounce" style={{ animationDelay: "320ms", animationDuration: "0.8s" }} />
                         </div>
                       </div>
                     </div>
@@ -905,7 +936,7 @@ export default function FloatingAiButton() {
                     </div>
                   )}
 
-                  {viewMode === "ai" && !ticketId && !ticketClosed && !isLoading && (lastAiFailed || (messages.length > 6 && messages.length <= 10)) && (
+                  {viewMode === "ai" && !ticketId && !ticketClosed && !isLoading && lastAiFailed && (
                     <div className="flex flex-wrap gap-1.5 mt-1">
                       <button onClick={() => handleSend(isAr ? SUPPORT_ACTION_AR : SUPPORT_ACTION_EN)} className="px-3 py-1.5 rounded-full border border-orange-300 dark:border-orange-600 bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 text-xs cursor-pointer hover:bg-orange-100 dark:hover:bg-orange-900/30 hover:border-orange-500 transition-colors">
                         {isAr ? "💬 " + SUPPORT_ACTION_AR : "💬 " + SUPPORT_ACTION_EN}

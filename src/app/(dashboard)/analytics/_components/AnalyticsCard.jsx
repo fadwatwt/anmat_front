@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { RiMoreFill, RiArrowDownSLine } from '@remixicon/react';
+import { RiArrowDownSLine } from '@remixicon/react';
 import { ImSpinner2 } from "react-icons/im";
 
 const AnalyticsCard = ({
@@ -51,9 +51,6 @@ const AnalyticsCard = ({
                             <RiArrowDownSLine className="size-4 absolute right-2 text-cell-secondary pointer-events-none" />
                         </div>
                     )}
-                    <button className="text-cell-secondary hover:text-table-title p-1">
-                        <RiMoreFill className="size-5" />
-                    </button>
                 </div>
             </div>
             <div className="flex-1 w-full relative flex flex-col">

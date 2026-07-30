@@ -1,6 +1,7 @@
 "use client"
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { ImSpinner2 } from "react-icons/im";
+import { RiDownloadLine } from '@remixicon/react';
 
 import Page from "@/components/Page";
 import ProjectsPerformanceChart from "@/app/(dashboard)/analytics/_components/employee/ProjectsPerformanceChart";
@@ -20,6 +21,7 @@ import {
     SECTION_OPTIONS,
     CHART_TYPE_OPTIONS,
 } from './filterOptions';
+import { formatEmployeeAnalytics, exportAsPdf, exportCsv, exportXlsx } from './exportHelpers';
 
 const SUMMARY_COLORS = ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#0EA5E9', '#EC4899'];
 const RATING_COLORS = { 'High Rating': '#375DFB', 'Medium Rating': '#FBBF24', 'Low Rating': '#EF4444', 'No Ratings': '#9CA3AF' };
@@ -43,6 +45,38 @@ const EmployeeAnalytics = () => {
     const [timeRange, setTimeRange] = useState("6m");
     const [sectionFilter, setSectionFilter] = useState("");
     const [chartTypeFilter, setChartTypeFilter] = useState("");
+
+    // --- Export ---
+    const [showExportMenu, setShowExportMenu] = useState(false);
+    const exportRef = useRef(null);
+    const contentRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (exportRef.current && !exportRef.current.contains(e.target)) {
+                setShowExportMenu(false);
+            }
+        };
+        if (showExportMenu) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [showExportMenu]);
+
+    const handleExport = async (format) => {
+        setShowExportMenu(false);
+        const { headers, rows, fileName } = formatEmployeeAnalytics(data);
+        if (format === 'csv') {
+            exportCsv(headers, rows, fileName);
+        } else if (format === 'xlsx') {
+            await exportXlsx(headers, rows, fileName);
+        } else if (format === 'pdf') {
+            const children = contentRef.current ? Array.from(contentRef.current.children) : [];
+            if (children.length) {
+                await exportAsPdf(children, 'my_analytics_report');
+            }
+        }
+    };
 
     const dateRange = useMemo(() => resolveTimeRange(timeRange), [timeRange]);
 
@@ -84,7 +118,23 @@ const EmployeeAnalytics = () => {
             title={t("All Analytics Overview")}
             isBtn={false}
             otherHeaderActions={
-                <div className="w-72 flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end">
+                <div className="flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end">
+                    <div className="relative" ref={exportRef}>
+                        <button
+                            onClick={() => setShowExportMenu(!showExportMenu)}
+                            className="flex items-center gap-2 bg-primary-base text-white rounded-xl px-4 py-2 text-sm shadow-sm font-medium hover:opacity-90"
+                        >
+                            <RiDownloadLine className="size-4" />
+                            {t("Export")}
+                        </button>
+                        {showExportMenu && (
+                            <div className="absolute right-0 mt-1.5 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[140px]">
+                                <button onClick={() => handleExport('csv')} className="block w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 text-gray-700">{t("CSV")}</button>
+                                <button onClick={() => handleExport('xlsx')} className="block w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 text-gray-700">{t("Excel (XLSX)")}</button>
+                                <button onClick={() => handleExport('pdf')} className="block w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 text-gray-700">{t("PDF")}</button>
+                            </div>
+                        )}
+                    </div>
                     <div className="relative">
                         <DefaultSelect
                             placeholder="charts"
@@ -110,6 +160,7 @@ const EmployeeAnalytics = () => {
                 </div>
             }
         >
+            <div ref={contentRef}>
             {/* Tasks Analytics */}
             {showSection('tasks') && (
                 <div className="flex flex-col items-start justify-start gap-4">
@@ -171,6 +222,7 @@ const EmployeeAnalytics = () => {
                     </div>
                 </div>
             )}
+            </div>
 
         </Page>
     );

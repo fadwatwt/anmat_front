@@ -1,6 +1,7 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { ImSpinner2 } from "react-icons/im";
+import { RiDownloadLine } from '@remixicon/react';
 import Page from "@/components/Page.jsx";
 import AnalyticsCard from './AnalyticsCard';
 
@@ -23,6 +24,7 @@ import {
     SECTION_OPTIONS,
     CHART_TYPE_OPTIONS,
 } from './filterOptions';
+import { formatSubscriberAnalytics, exportAsPdf, exportCsv, exportXlsx } from './exportHelpers';
 
 const SUMMARY_COLORS = ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#0EA5E9', '#EC4899'];
 const RATING_COLORS = { 'High Rating': '#10B981', 'Medium Rating': '#FBBF24', 'Low Rating': '#EF4444', 'No Ratings': '#9CA3AF' };
@@ -69,6 +71,38 @@ function CompanyManagerAnalytics() {
     const [deptAdherenceDepartment, setDeptAdherenceDepartment] = useState("");
     const [deptPerformanceDepartment, setDeptPerformanceDepartment] = useState("");
     const [performanceSort, setPerformanceSort] = useState("");
+
+    // --- Export ---
+    const [showExportMenu, setShowExportMenu] = useState(false);
+    const exportRef = useRef(null);
+    const contentRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (exportRef.current && !exportRef.current.contains(e.target)) {
+                setShowExportMenu(false);
+            }
+        };
+        if (showExportMenu) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [showExportMenu]);
+
+    const handleExport = async (format) => {
+        setShowExportMenu(false);
+        const { headers, rows, fileName } = formatSubscriberAnalytics(data);
+        if (format === 'csv') {
+            exportCsv(headers, rows, fileName);
+        } else if (format === 'xlsx') {
+            await exportXlsx(headers, rows, fileName);
+        } else if (format === 'pdf') {
+            const sections = contentRef.current?.querySelectorAll(':scope > section');
+            if (sections?.length) {
+                await exportAsPdf(Array.from(sections), 'analytics_report');
+            }
+        }
+    };
 
     // --- Main API call (defaults) ---
     const mainFilters = useMemo(() => ({
@@ -204,12 +238,28 @@ function CompanyManagerAnalytics() {
 
     return (
         <Page className={"p-0"}>
-            <div className="p-8 bg-surface min-h-screen space-y-9">
+                <div className="p-8 bg-surface min-h-screen space-y-9" ref={contentRef}>
 
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
                     <h1 className="text-2xl font-bold text-page-title">{t("All Analytics Overview")}</h1>
                     <div className="flex gap-3">
+                        <div className="relative" ref={exportRef}>
+                            <button
+                                onClick={() => setShowExportMenu(!showExportMenu)}
+                                className="flex items-center gap-2 bg-primary-base text-white rounded-xl px-4 py-2 text-sm shadow-sm font-medium hover:opacity-90"
+                            >
+                                <RiDownloadLine className="size-4" />
+                                {t("Export")}
+                            </button>
+                            {showExportMenu && (
+                                <div className="absolute right-0 mt-1.5 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[140px]">
+                                    <button onClick={() => handleExport('csv')} className="block w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 text-gray-700">{t("CSV")}</button>
+                                    <button onClick={() => handleExport('xlsx')} className="block w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 text-gray-700">{t("Excel (XLSX)")}</button>
+                                    <button onClick={() => handleExport('pdf')} className="block w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 text-gray-700">{t("PDF")}</button>
+                                </div>
+                            )}
+                        </div>
                         <div className="relative flex items-center">
                             <select className="appearance-none bg-status-bg border border-status-border rounded-xl px-4 py-2 text-sm shadow-sm outline-none text-cell-secondary font-medium cursor-pointer pr-9" value={chartTypeFilter} onChange={(e) => setChartTypeFilter(e.target.value)}>
                                 {CHART_TYPE_OPTIONS.map((opt) => (<option key={opt.value} value={opt.value}>{t(opt.label)}</option>))}

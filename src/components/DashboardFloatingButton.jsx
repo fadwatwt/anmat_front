@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import { selectAuth } from "@/redux/auth/authSlice";
 import { useCreateSupportTicketMutation } from "@/redux/support-tickets/supportTicketsApi";
 import { RootRoute } from "@/Root.Route";
+import MarkdownRenderer from "@/components/MarkdownRenderer";
 
 function detectLanguage(text) {
   const arabicChars = text.match(/[\u0600-\u06FF]/g);
@@ -444,7 +445,7 @@ export default function DashboardFloatingButton() {
                       >
                         <div className="flex items-center gap-2 mb-1">
                           {session.ticketId ? <IoChatbubbles size={13} className="text-blue-500 shrink-0" /> : <FaRobot size={13} className="text-blue-500 shrink-0" />}
-                          <span className="text-[13px] font-medium truncate text-cell-primary">{session.title}</span>
+                          <span className="text-[13px] font-medium truncate text-white">{session.title}</span>
                           {session.ticketNumber && <span className="text-[9px] bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded-full shrink-0">{session.ticketNumber}</span>}
                         </div>
                         <div className="flex items-center justify-between">
@@ -467,9 +468,11 @@ export default function DashboardFloatingButton() {
                 <div className="flex-1 p-4 flex flex-col gap-3 overflow-y-auto">
                   {viewingHistory.messages?.map((msg, i) => (
                     <div key={`ai-${i}`} className={`flex flex-col gap-1.5 ${msg.role === "user" ? "items-end" : "items-start"}`}>
-                      <div className={`max-w-[85%] px-3.5 py-2.5 text-[13px] leading-relaxed whitespace-pre-wrap ${
-                        msg.role === "user" ? "bg-blue-500 text-white rounded-2xl rounded-br-sm" : "bg-gray-100 dark:bg-gray-800 text-cell-primary rounded-2xl rounded-bl-sm"
-                      }`}>{msg.content}</div>
+                      <div className={`max-w-[85%] px-3.5 py-2.5 text-[13px] leading-relaxed ${
+                        msg.role === "user" ? "bg-blue-500 text-white rounded-2xl rounded-br-sm whitespace-pre-wrap" : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-2xl rounded-bl-sm"
+                      }`}>
+                        {msg.role === "user" ? msg.content : <MarkdownRenderer content={msg.content} />}
+                      </div>
                       <span className={`text-[9px] text-sub-500 px-1 ${msg.role === "user" ? "text-right" : "text-left"}`}>{formatMsgTime(msg.time)}</span>
                     </div>
                   ))}
@@ -482,7 +485,7 @@ export default function DashboardFloatingButton() {
                       </div>
                       {viewingHistory.supportMessages.map((msg) => (
                         <div key={`sup-${msg.id}`} className={`flex flex-col ${msg.role === "user" ? "items-end" : "items-start"}`}>
-                          <div className={`max-w-[85%] px-3.5 py-2.5 text-[13px] leading-relaxed whitespace-pre-wrap rounded-2xl shadow-sm border ${msg.role === "user" ? "bg-primary-500 dark:bg-primary-200 dark:text-black text-white rounded-br-sm border-transparent" : "rounded-bl-sm text-cell-primary border-status-border"}`} style={msg.role === "user" ? {} : { backgroundColor: 'var(--color-blue-ebf1ff)' }}>{msg.content}</div>
+                      <div className={`max-w-[85%] px-3.5 py-2.5 text-[13px] leading-relaxed whitespace-pre-wrap rounded-2xl shadow-sm border ${msg.role === "user" ? "bg-primary-500 dark:bg-primary-200 dark:text-black text-white rounded-br-sm border-transparent" : "rounded-bl-sm text-cell-primary border-status-border"}`} style={msg.role === "user" ? {} : { backgroundColor: 'var(--color-blue-ebf1ff)' }}>{msg.content}</div>
                           <span className="text-[9px] text-sub-500 px-1">{formatMsgTime(msg.time)}</span>
                         </div>
                       ))}
@@ -508,9 +511,11 @@ export default function DashboardFloatingButton() {
                 <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
                   {viewMode === "ai" && messages.map((msg, i) => (
                     <div key={i} className={`flex flex-col gap-1.5 ${msg.role === "user" ? "items-end" : "items-start"}`}>
-                      <div className={`max-w-[85%] px-3.5 py-2.5 text-[13px] leading-relaxed whitespace-pre-wrap ${
-                        msg.role === "user" ? "bg-blue-500 text-white rounded-2xl rounded-br-sm" : "bg-gray-100 dark:bg-gray-800 text-cell-primary rounded-2xl rounded-bl-sm"
-                      }`}>{msg.content}</div>
+                      <div className={`max-w-[85%] px-3.5 py-2.5 text-[13px] leading-relaxed ${
+                        msg.role === "user" ? "bg-blue-500 text-white rounded-2xl rounded-br-sm whitespace-pre-wrap" : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-2xl rounded-bl-sm"
+                      }`}>
+                        {msg.role === "user" ? msg.content : <MarkdownRenderer content={msg.content} />}
+                      </div>
                     </div>
                   ))}
 
@@ -541,11 +546,11 @@ export default function DashboardFloatingButton() {
 
                   {isLoading && (
                     <div className="flex justify-start">
-                      <div className="px-3.5 py-2.5 rounded-2xl rounded-bl-sm bg-gray-100 dark:bg-gray-800">
-                        <div className="flex gap-1">
-                          <span className="animate-bounce w-2 h-2 rounded-full bg-gray-400" style={{ animationDelay: "0ms" }} />
-                          <span className="animate-bounce w-2 h-2 rounded-full bg-gray-400" style={{ animationDelay: "150ms" }} />
-                          <span className="animate-bounce w-2 h-2 rounded-full bg-gray-400" style={{ animationDelay: "300ms" }} />
+                      <div className="px-4 py-3 rounded-2xl rounded-bl-sm bg-gray-100 dark:bg-gray-800">
+                        <div className="flex items-center gap-1">
+                          <span className="w-2 h-2 rounded-full bg-primary-400 dark:bg-primary-500 animate-bounce" style={{ animationDelay: "0ms", animationDuration: "0.8s" }} />
+                          <span className="w-2 h-2 rounded-full bg-primary-400 dark:bg-primary-500 animate-bounce" style={{ animationDelay: "160ms", animationDuration: "0.8s" }} />
+                          <span className="w-2 h-2 rounded-full bg-primary-400 dark:bg-primary-500 animate-bounce" style={{ animationDelay: "320ms", animationDuration: "0.8s" }} />
                         </div>
                       </div>
                     </div>
