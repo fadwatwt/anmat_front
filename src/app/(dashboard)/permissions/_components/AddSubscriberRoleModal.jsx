@@ -1,5 +1,5 @@
 import { ImSpinner2 } from "react-icons/im";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import PropTypes from "prop-types";
@@ -97,6 +97,39 @@ function AddSubscriberRoleModal({ isOpen, onClose }) {
         formik.setFieldValue("permissions_ids", tags);
     };
 
+    const allSelected =
+        permissionsSuggestions.length > 0 &&
+        permissionsSuggestions.every((permission) =>
+            formik.values.permissions_ids.some((p) => p.id === permission.id)
+        );
+
+    const someSelected = permissionsSuggestions.some((permission) =>
+        formik.values.permissions_ids.some((p) => p.id === permission.id)
+    );
+
+    const selectAllRef = useRef(null);
+
+    useEffect(() => {
+        if (selectAllRef.current) {
+            selectAllRef.current.indeterminate = someSelected && !allSelected;
+        }
+    }, [someSelected, allSelected]);
+
+    const handleSelectAllChange = (e) => {
+        if (e.target.checked) {
+            const existing = formik.values.permissions_ids;
+            const merged = [...existing];
+            permissionsSuggestions.forEach((permission) => {
+                if (!merged.some((p) => p.id === permission.id)) {
+                    merged.push(permission);
+                }
+            });
+            handlePermissionsChange(merged);
+        } else {
+            handlePermissionsChange([]);
+        }
+    };
+
     const handleApiResponseClose = () => {
         if (apiResponse.status === "success") {
             formik.resetForm();
@@ -139,6 +172,16 @@ function AddSubscriberRoleModal({ isOpen, onClose }) {
                                 <p className="text-sm text-gray-500"> <div className="flex items-center justify-center w-full p-4"><ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} /></div> </p>
                             ) : (
                                 <div className="flex flex-col gap-3 max-h-60 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-md p-3">
+                                    <label className="flex items-center gap-2 cursor-pointer border-b border-gray-200 dark:border-gray-700 pb-2 mb-1">
+                                        <input
+                                            ref={selectAllRef}
+                                            type="checkbox"
+                                            checked={allSelected}
+                                            onChange={handleSelectAllChange}
+                                            className="w-4 h-4 text-primary-base bg-gray-100 border-gray-300 rounded focus:ring-primary-base dark:focus:ring-primary-base focus:ring-2 dark:bg-gray-700 dark:border-gray-600 checkbox-custom"
+                                        />
+                                        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t("Select All")}</span>
+                                    </label>
                                     {permissionsSuggestions.map((permission) => {
                                         const isChecked = formik.values.permissions_ids.some(
                                             (p) => p.id === permission.id

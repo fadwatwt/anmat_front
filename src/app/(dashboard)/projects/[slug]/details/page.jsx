@@ -296,7 +296,7 @@ function ProjectDetailsPage() {
                 </div>
                 <div className={"flex-1 flex flex-col gap-6"}>
                     <div className="flex flex-col gap-3">
-                        {true && <ProjectMembers members={projectMembers} />}
+                        {true && <ProjectMembers members={projectMembers} canAddMember={canManageTeam} canDeleteMember={canManageTeam} />}
                         {(canManageTeam && false) && (
                             <button
                                 onClick={() => setIsTeamModalOpen(true)}

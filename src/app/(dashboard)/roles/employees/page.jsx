@@ -1,5 +1,4 @@
 "use client"
-import { t } from "i18next";
 import {
     RiCheckboxCircleFill,
     RiCheckboxCircleLine,
@@ -23,6 +22,7 @@ import { usePermission } from "@/Hooks/usePermission";
 import { getPermissionLabel } from "@/config/permissionTranslations";
 
 function PermissionsPage() {
+    const { t } = useTranslation();
     const { data: rolesData, isLoading, isError, error } = useGetSubscriberRolesQuery();
     const [deleteRole, { isLoading: isDeleting }] = useDeleteSubscriberRoleMutation();
     const { showProcessing, hideProcessing } = useProcessing();

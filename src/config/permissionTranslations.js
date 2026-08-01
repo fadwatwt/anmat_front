@@ -250,7 +250,7 @@ const permissionTranslations = {
  * @returns {string} translated label or the original name as fallback
  */
 export const getPermissionLabel = (permissionName, permission) => {
-  const lang = i18n?.language || "en";
+  const lang = (i18n?.resolvedLanguage || i18n?.language || "en").split("-")[0];
   const translation = permissionTranslations[permissionName];
 
   if (translation) {
@@ -319,7 +319,7 @@ const permissionDetailsTranslations = {
 };
 
 export const getPermissionDetails = (permissionName, permission) => {
-  const lang = i18n?.language || "en";
+  const lang = (i18n?.resolvedLanguage || i18n?.language || "en").split("-")[0];
   const translation = permissionDetailsTranslations[permissionName];
 
   if (translation) {

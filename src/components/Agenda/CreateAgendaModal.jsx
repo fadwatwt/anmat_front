@@ -143,7 +143,7 @@ function CreateAgendaModal({ isOpen, onClose, initialDate, initialTab }) {
 
       } else {
         if (!formData.title.trim()) { setError(t("Title is required")); return; }
-        await createAppointment(formData).unwrap();
+        await createAppointment({ ...formData, task_id: formData.task_id || null }).unwrap();
       }
 
       onClose(true);

@@ -1,5 +1,4 @@
 "use client"
-import { t } from "i18next";
 import {
     RiCheckboxCircleFill,
     RiCheckboxCircleLine,
@@ -23,6 +22,7 @@ import { getPermissionLabel } from "@/config/permissionTranslations";
 
 
 function PermissionsPage() {
+    const { t } = useTranslation();
     const headers = [
         { label: t("Role Name"), width: "200px" },
         { label: t("Permissions"), width: "400px" },

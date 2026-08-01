@@ -18,6 +18,7 @@ import EditAppointmentModal from "@/components/Appointments/EditAppointmentModal
 import EditReminderModal from "@/components/Agenda/EditReminderModal";
 import ReminderCard from "@/components/Agenda/ReminderCard";
 import Alert from "@/components/Alerts/Alert";
+import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import MonthlyCalendar from "@/components/Agenda/MonthlyCalendar";
 import DayDetailSidebar from "@/components/Agenda/DayDetailSidebar";
 import AgendaHeader from "@/components/Agenda/AgendaHeader";
@@ -53,6 +54,7 @@ function AppointmentsPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [createModalDate, setCreateModalDate] = useState(null);
   const [createModalTab, setCreateModalTab] = useState("appointment");
+  const [apiResponse, setApiResponse] = useState({ isOpen: false, status: null, message: "" });
 
   const {
     data: appointments = [],
@@ -102,6 +104,11 @@ function AppointmentsPage() {
       await updateAppointment({ id: _id, title, date, start_time, reminder_types, notes }).unwrap();
       setIsEditReminderModalOpen(false);
       setReminderToEdit(null);
+      setApiResponse({
+        isOpen: true,
+        status: "success",
+        message: t("Appointment updated successfully"),
+      });
     } catch (error) {
       console.error("Failed to update reminder:", error);
     }
@@ -149,6 +156,11 @@ function AppointmentsPage() {
         await updateAppointment({ id: appointmentToEdit._id, ...data }).unwrap();
         setIsEditModalOpen(false);
         setAppointmentToEdit(null);
+        setApiResponse({
+          isOpen: true,
+          status: "success",
+          message: t("Appointment updated successfully"),
+        });
       } catch (error) {
         console.error("Failed to update appointment:", error);
       }
@@ -440,12 +452,29 @@ function AppointmentsPage() {
 
       <CreateAgendaModal
         isOpen={isCreateModalOpen}
-        onClose={() => {
+        onClose={(success) => {
           setIsCreateModalOpen(false);
           setCreateModalDate(null);
+          if (success) {
+            setApiResponse({
+              isOpen: true,
+              status: "success",
+              message:
+                createModalTab === "task"
+                  ? t("Daily task created successfully")
+                  : t("Appointment created successfully"),
+            });
+          }
         }}
         initialDate={createModalDate}
         initialTab={createModalTab}
+      />
+
+      <ApiResponseAlert
+        isOpen={apiResponse.isOpen}
+        status={apiResponse.status}
+        message={apiResponse.message}
+        onClose={() => setApiResponse({ ...apiResponse, isOpen: false })}
       />
 
       <ShareAppointment

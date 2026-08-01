@@ -9,7 +9,7 @@ import {
 } from "@/redux/appointments/appointmentsApi";
 import { useGetSubscriberTasksQuery } from "@/redux/tasks/subscriberTasksApi";
 import Page from "@/components/Page.jsx";
-import Alert from "@/components/Alerts/Alert";
+import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import { format } from "date-fns";
 import { RiArrowLeftLine } from "react-icons/ri";
 
@@ -52,8 +52,7 @@ function CreateAppointmentPage() {
     notes: "",
   });
 
-  const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
-  const [isErrorAlertOpen, setIsErrorAlertOpen] = useState(false);
+  const [apiResponse, setApiResponse] = useState({ isOpen: false, status: null, message: "" });
 
   const [createAppointment, { isLoading: isCreatingAppointment }] =
     useCreateAppointmentMutation();
@@ -105,11 +104,19 @@ function CreateAppointmentPage() {
       if (!dailyTaskData.title.trim()) return;
       try {
         await createDailyTask(dailyTaskData).unwrap();
-        setIsSuccessAlertOpen(true);
+        setApiResponse({
+          isOpen: true,
+          status: "success",
+          message: t("Daily task created successfully"),
+        });
         setTimeout(() => router.push("/appointments"), 1500);
       } catch (error) {
         console.error("Failed to create daily task:", error);
-        setIsErrorAlertOpen(true);
+        setApiResponse({
+          isOpen: true,
+          status: "error",
+          message: error?.data?.message || t("Failed to create daily task"),
+        });
       }
     } else {
       if (!formData.title.trim()) return;
@@ -117,12 +124,21 @@ function CreateAppointmentPage() {
         await createAppointment({
           ...formData,
           type: itemType,
+          task_id: formData.task_id || null,
         }).unwrap();
-        setIsSuccessAlertOpen(true);
+        setApiResponse({
+          isOpen: true,
+          status: "success",
+          message: t("Appointment created successfully"),
+        });
         setTimeout(() => router.push("/appointments"), 1500);
       } catch (error) {
         console.error("Failed to create appointment:", error);
-        setIsErrorAlertOpen(true);
+        setApiResponse({
+          isOpen: true,
+          status: "error",
+          message: error?.data?.message || t("Failed to create appointment"),
+        });
       }
     }
   };
@@ -550,30 +566,11 @@ function CreateAppointmentPage() {
         </div>
       </Page>
 
-      <Alert
-        type="success"
-        title={t("Success")}
-        message={
-          itemType === "daily_task"
-            ? t("Daily task created successfully")
-            : t("Appointment created successfully")
-        }
-        isOpen={isSuccessAlertOpen}
-        onClose={() => setIsSuccessAlertOpen(false)}
-        isBtns={0}
-      />
-
-      <Alert
-        type="error"
-        title={t("Error")}
-        message={
-          itemType === "daily_task"
-            ? t("Failed to create daily task")
-            : t("Failed to create appointment")
-        }
-        isOpen={isErrorAlertOpen}
-        onClose={() => setIsErrorAlertOpen(false)}
-        isBtns={0}
+      <ApiResponseAlert
+        isOpen={apiResponse.isOpen}
+        status={apiResponse.status}
+        message={apiResponse.message}
+        onClose={() => setApiResponse({ ...apiResponse, isOpen: false })}
       />
     </>
   );

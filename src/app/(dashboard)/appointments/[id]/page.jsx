@@ -17,6 +17,7 @@ import AppointmentNotes from "@/components/Agenda/AppointmentNotes";
 import ShareAppointment from "@/components/Appointments/ShareAppointment";
 import EditAppointmentModal from "@/components/Appointments/EditAppointmentModal";
 import Alert from "@/components/Alerts/Alert";
+import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import {
   RiArrowLeftLine,
   RiCalendarLine,
@@ -44,6 +45,7 @@ function AppointmentDetailPage() {
   const [isCompleteAlertOpen, setIsCompleteAlertOpen] = useState(false);
   const [isCancelAlertOpen, setIsCancelAlertOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [apiResponse, setApiResponse] = useState({ isOpen: false, status: null, message: "" });
 
   const { data: appointment, isLoading, error } = useGetAppointmentDetailsQuery(appointmentId);
   const [completeAppointment] = useCompleteAppointmentMutation();
@@ -101,6 +103,11 @@ function AppointmentDetailPage() {
     try {
       await updateAppointment({ id: appointmentId, ...data }).unwrap();
       setIsEditModalOpen(false);
+      setApiResponse({
+        isOpen: true,
+        status: "success",
+        message: t("Appointment updated successfully"),
+      });
     } catch (error) {
       console.error("Failed to update appointment:", error);
     }
@@ -377,6 +384,13 @@ function AppointmentDetailPage() {
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         onSave={handleEditSave}
+      />
+
+      <ApiResponseAlert
+        isOpen={apiResponse.isOpen}
+        status={apiResponse.status}
+        message={apiResponse.message}
+        onClose={() => setApiResponse({ ...apiResponse, isOpen: false })}
       />
     </>
   );

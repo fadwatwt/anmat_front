@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { format, parse } from "date-fns";
 import Page from "@/components/Page.jsx";
@@ -55,7 +55,13 @@ StatusBadge.propTypes = { status: PropTypes.string.isRequired };
 /* ─── Check-In / Check-Out Action Card ─────────────────────────── */
 const AttendanceActionCard = ({ hasCheckedIn, checkOutDone, isCheckingIn, isCheckingOut, onClickCheckIn, onClickCheckOut }) => {
     const { t } = useTranslation();
-    const now = new Date();
+    const [now, setNow] = useState(new Date());
+
+    useEffect(() => {
+        const timer = setInterval(() => setNow(new Date()), 1000);
+        return () => clearInterval(timer);
+    }, []);
+
     const timeString = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     const dateString = now.toLocaleDateString([], {
         weekday: "long",
