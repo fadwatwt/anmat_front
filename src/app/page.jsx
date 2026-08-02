@@ -21,6 +21,7 @@ import FloatingAiButton from "@/components/FloatingAiButton";
 import Link from "next/link";
 import { useGetPublicSubscriptionPlansQuery } from "@/redux/plans/subscriptionPlansApi";
 import { useTranslation } from "react-i18next";
+import { getPlanFeatureTitle, getPlanFeatureValue } from "@/functions/planFeatures";
 
 function Desktop2Page() {
   const { i18n, t } = useTranslation();
@@ -530,9 +531,9 @@ function Desktop2Page() {
                               </div>
                               <div className="flex flex-col gap-1 flex-1">
                                 <p className={"text-sm font-medium text-gray-700 dark:text-gray-300"}>
-                                  {feature.plan_feature?.title || feature.feature_type?.title}
-                                  {feature.properties?.length > 0 && (
-                                    <span className="text-gray-500 dark:text-gray-400 font-normal">: {feature.properties.map(p => p.value).join(' · ')}</span>
+                                  {getPlanFeatureTitle(feature)}
+                                  {getPlanFeatureValue(feature) && (
+                                    <span className="text-gray-500 dark:text-gray-400 font-normal">: {getPlanFeatureValue(feature)}</span>
                                   )}
                                 </p>
                               </div>

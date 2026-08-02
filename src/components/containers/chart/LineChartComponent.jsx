@@ -29,7 +29,7 @@ const LineChartComponent = ({
                                 <div className="flex gap-1 items-center">
                                     <RiCircleFill size={10} className={`text-[${line.stroke}]`} />
                                     <span className="text-sm text-gray-500 dark:text-gray-400">
-                                        {line.dataKey}
+                                        {line.name ?? line.dataKey}
                                     </span>
                                 </div>
                             );

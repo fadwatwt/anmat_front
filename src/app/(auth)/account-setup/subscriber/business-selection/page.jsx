@@ -9,9 +9,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 
 const SelectYourBusiness = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const dispatch = useDispatch();
-    const { data: industriesResponse, isLoading } = useGetIndustriesForSubscribersQuery();
+    const { data: industriesResponse, isLoading } = useGetIndustriesForSubscribersQuery(i18n.language);
     const [selectedId, setSelectedId] = useState(null);
     const [isNavigating, setIsNavigating] = useState(false);
     const user = useSelector((state) => state.auth.user);

@@ -17,15 +17,15 @@ i18n.use(HttpApi)
     detection:{
         order: [
             'localStorage',
-            'htmlTag',
-            'querystring',
             'cookie',
+            'querystring',
             'sessionStorage',
+            'htmlTag',
             'navigator',
             'path',
             'subdomain'
         ],
-        cache:"cookie",
+        cache: ["localStorage", "cookie"],
         load: 'languageOnly'
     },
     react:{

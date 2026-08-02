@@ -1,11 +1,15 @@
 import { apiSlice } from "../api/apiSlice";
 
+const localeParams = (locale) =>
+  locale ? { locale: locale.split('-')[0] } : undefined;
+
 export const industriesApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getIndustries: builder.query({
-            query: () => ({
+            query: (locale) => ({
                 url: "api/admin/industries",
                 method: "GET",
+                params: localeParams(locale),
             }),
             transformResponse: (response) => response.data,
             providesTags: ["Industries"],
@@ -34,17 +38,19 @@ export const industriesApi = apiSlice.injectEndpoints({
             invalidatesTags: ["Industries"],
         }),
         getIndustriesOrganizationsCount: builder.query({
-            query: () => ({
+            query: (locale) => ({
                 url: "api/admin/industries/organizations-count",
                 method: "GET",
+                params: localeParams(locale),
             }),
             transformResponse: (response) => response.data,
             providesTags: ["Industries"],
         }),
         getIndustriesForSubscribers: builder.query({
-            query: () => ({
+            query: (locale) => ({
                 url: "api/subscriber/industries",
                 method: "GET",
+                params: localeParams(locale),
             }),
             transformResponse: (response) => response.data,
             providesTags: ["Industries"],

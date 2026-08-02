@@ -23,7 +23,7 @@ import {
 import { formatAdminAnalytics, exportAsPdf, exportCsv, exportXlsx } from './exportHelpers';
 
 const AdminAnalytics = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     const [sectionFilter, setSectionFilter] = useState("");
     const [chartTypeFilter, setChartTypeFilter] = useState("");
@@ -65,7 +65,8 @@ const AdminAnalytics = () => {
     const filters = useMemo(() => ({
         ...dateRange,
         section: sectionFilter || undefined,
-    }), [dateRange, sectionFilter]);
+        locale: i18n.language,
+    }), [dateRange, sectionFilter, i18n.language]);
 
     const { data: adminData, isLoading, error } = useGetAdminAnalyticsQuery(filters);
 

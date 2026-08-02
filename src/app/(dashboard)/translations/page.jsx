@@ -4,16 +4,37 @@ import { useTranslation } from "react-i18next";
 import Page from "@/components/Page.jsx";
 import Table from "@/components/Tables/Table.jsx";
 import StatusActions from "@/components/Dropdowns/StatusActions";
+import Tabs from "@/components/Tabs";
 import {
   RiFlashlightLine,
   RiTranslate2,
+  RiLeafLine,
 } from "@remixicon/react";
 import { useGetSubscriptionPlansQuery } from "@/redux/plans/subscriptionPlansApi";
 import { useGetPlanTranslationsQuery } from "@/redux/plans/planTranslationsApi";
+import { useGetIndustriesQuery } from "@/redux/industries/industriesApi";
+import { useGetIndustryTranslationsQuery } from "@/redux/industries/industryTranslationsApi";
 import PlanTranslationsModal from "./_components/PlanTranslations.modal";
+import IndustriesTranslationsModal from "./_components/IndustriesTranslations.modal";
 import { statusCell } from "@/components/StatusCell";
 import PermissionGuard from "@/components/PermissionGuard";
 import { usePermission } from "@/Hooks/usePermission";
+
+function PlanTranslationBadge({ planId, locale }) {
+  const { data: translations } = useGetPlanTranslationsQuery(planId);
+  const hasTranslation = translations?.some((t) => t.locale === locale);
+  return (
+    <span
+      className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+        hasTranslation
+          ? "bg-green-100 text-green-700"
+          : "bg-badge-bg text-badge-text border border-status-border"
+      }`}
+    >
+      {hasTranslation ? "\u2713" : "\u2717"}
+    </span>
+  );
+}
 
 function SubscriptionPlansTranslationsTab({ canUpdate }) {
   const { t, i18n } = useTranslation();
@@ -100,8 +121,8 @@ function SubscriptionPlansTranslationsTab({ canUpdate }) {
   );
 }
 
-function PlanTranslationBadge({ planId, locale }) {
-  const { data: translations } = useGetPlanTranslationsQuery(planId);
+function IndustryTranslationBadge({ industryId, locale }) {
+  const { data: translations } = useGetIndustryTranslationsQuery(industryId);
   const hasTranslation = translations?.some((t) => t.locale === locale);
   return (
     <span
@@ -116,20 +137,120 @@ function PlanTranslationBadge({ planId, locale }) {
   );
 }
 
+function IndustriesTranslationsTab({ canUpdate }) {
+  const { t, i18n } = useTranslation();
+  const { data: industries } = useGetIndustriesQuery();
+
+  const [selectedIndustry, setSelectedIndustry] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const headers = [
+    { label: t("Industry Name"), width: "200px" },
+    { label: t("Organizations"), width: "120px" },
+    { label: t("Arabic"), width: "80px" },
+    { label: t("English"), width: "80px" },
+    { label: t("Status"), width: "100px" },
+    { label: "", width: "50px" },
+  ];
+
+  const rows =
+    industries?.map((industry) => [
+      <div key={`${industry._id}_name`} className="flex items-center gap-2">
+        <div className="rounded-full p-2 bg-primary-100">
+          <RiLeafLine size={16} className="text-primary-500" />
+        </div>
+        <span className="text-sm font-medium text-cell-primary truncate max-w-[150px]" title={industry.name}>
+          {industry.name}
+        </span>
+      </div>,
+      <div key={`${industry._id}_count`} className="text-sm">
+        {industry.organizations_count ?? 0}
+      </div>,
+      <IndustryTranslationBadge key={`${industry._id}_ar`} industryId={industry._id} locale="ar" />,
+      <IndustryTranslationBadge key={`${industry._id}_en`} industryId={industry._id} locale="en" />,
+      <div key={`${industry._id}_status`}>
+        {statusCell(industry.is_allowed ? "active" : "in-active", industry._id)}
+      </div>,
+    ]) || [];
+
+  const IndustryActions = ({ industry }) => {
+    if (!canUpdate) return null;
+    return (
+      <StatusActions
+        states={[
+          {
+            text: t("Translate"),
+            icon: <RiTranslate2 className="text-blue-500" />,
+            onClick: () => {
+              setSelectedIndustry(industry);
+              setModalOpen(true);
+            },
+          },
+        ]}
+        className={i18n.language === "ar" ? "left-0" : "right-0"}
+      />
+    );
+  };
+
+  return (
+    <div>
+      <Table
+        classContainer={"rounded-2xl px-8"}
+        title={t("Industries Translations")}
+        headers={headers}
+        isActions={false}
+        rows={rows}
+        customActions={(actualRowIndex) => (
+          <IndustryActions industry={industries?.[actualRowIndex]} />
+        )}
+        isFilter={true}
+      />
+
+      {selectedIndustry && (
+        <IndustriesTranslationsModal
+          isOpen={modalOpen}
+          onClose={() => {
+            setModalOpen(false);
+            setSelectedIndustry(null);
+          }}
+          industry={selectedIndustry}
+        />
+      )}
+    </div>
+  );
+}
+
 function TranslationsPageContent() {
   const { t } = useTranslation();
-  const canUpdate = usePermission("admin.subscription_plans.update");
+  const canViewPlans = usePermission("admin.subscription_plans.list");
+  const canUpdatePlans = usePermission("admin.subscription_plans.update");
+  const canViewIndustries = usePermission("admin.industries.list");
+  const canUpdateIndustries = usePermission("admin.industries.update");
+
+  const tabs = [];
+  if (canViewPlans) {
+    tabs.push({
+      title: t("Subscription Plans"),
+      content: <SubscriptionPlansTranslationsTab canUpdate={canUpdatePlans} />,
+    });
+  }
+  if (canViewIndustries) {
+    tabs.push({
+      title: t("Industries"),
+      content: <IndustriesTranslationsTab canUpdate={canUpdateIndustries} />,
+    });
+  }
 
   return (
     <Page title={t("Translations")}>
-      <SubscriptionPlansTranslationsTab canUpdate={canUpdate} />
+      {tabs.length > 0 && <Tabs tabs={tabs} />}
     </Page>
   );
 }
 
 function TranslationsPage() {
   return (
-    <PermissionGuard permission="admin.subscription_plans.list">
+    <PermissionGuard anyOf={["admin.subscription_plans.list", "admin.industries.list"]}>
       <TranslationsPageContent />
     </PermissionGuard>
   );

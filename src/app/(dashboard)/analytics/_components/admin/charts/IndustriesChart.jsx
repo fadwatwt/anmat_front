@@ -13,9 +13,9 @@ const COLORS = [
 ];
 
 const IndustriesChart = ({ industries: industriesProp }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const skip = Array.isArray(industriesProp) && industriesProp.length > 0;
-    const { data: fallback, isLoading, error } = useGetIndustriesOrganizationsCountQuery(undefined, { skip });
+    const { data: fallback, isLoading, error } = useGetIndustriesOrganizationsCountQuery(i18n.language, { skip });
 
     const chartData = useMemo(() => {
         const source = skip

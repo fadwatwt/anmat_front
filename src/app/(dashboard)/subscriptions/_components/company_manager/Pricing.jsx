@@ -20,6 +20,7 @@ import { useGetMySubscriptionQuery } from "@/redux/subscriptions/subscriptionsAp
 
 
 import { useTranslation } from "react-i18next";
+import { getPlanFeatureTitle, getPlanFeatureValue } from "@/functions/planFeatures";
 
 
 function Pricing() {
@@ -106,17 +107,8 @@ function Pricing() {
             );
         }
         return plan.features.map((feature, index) => {
-            const title =
-                feature.plan_feature?.title ||
-                feature.feature_type?.title ||
-                feature.feature_type_id?.title ||
-                feature.title ||
-                t("Feature");
-            const details =
-                feature.plan_feature?.details ||
-                feature.feature_type?.details ||
-                feature.details ||
-                "";
+            const title = getPlanFeatureTitle(feature, t("Feature"));
+            const value = getPlanFeatureValue(feature);
 
             return (
                 <div
@@ -130,29 +122,12 @@ function Pricing() {
                     <div className="flex flex-col items-start text-start gap-1 flex-1 min-w-0">
                         <span className="!text-table-title text-sm font-semibold break-words">
                             {title}
+                            {value ? (
+                                <span className="!text-cell-secondary font-normal">
+                                    : {value}
+                                </span>
+                            ) : null}
                         </span>
-                        {details ? (
-                            <span className="!text-cell-secondary text-xs leading-snug">
-                                {details}
-                            </span>
-                        ) : null}
-                        {feature.properties && feature.properties.length > 0 ? (
-                            <div className="flex flex-wrap gap-1.5 mt-1">
-                                {feature.properties.map((prop, pIdx) => (
-                                    <span
-                                        key={pIdx}
-                                        className="inline-flex items-center px-2 py-0.5 bg-surface border border-status-border rounded-md text-[11px]"
-                                    >
-                                        <span className="!text-cell-secondary font-medium me-1">
-                                            {prop.key}:
-                                        </span>
-                                        <span className="!text-primary-base font-bold">
-                                            {prop.value}
-                                        </span>
-                                    </span>
-                                ))}
-                            </div>
-                        ) : null}
                     </div>
                 </div>
             );

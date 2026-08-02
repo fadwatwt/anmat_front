@@ -51,7 +51,7 @@ const SectionSkeleton = () => (
 );
 
 const AdminDashboard = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const router = useRouter();
     const [selectedIndustry, setSelectedIndustry] = useState([]);
     const industryId = selectedIndustry[0]?.id;
@@ -60,13 +60,13 @@ const AdminDashboard = () => {
     const canViewSubscribers = usePermission('admin.subscribers.list');
     const canViewIndustries = usePermission('admin.industries.list');
 
-    const { data: adminStats, isLoading: statsLoading } = useGetAdminAnalyticsQuery(undefined, {
+    const { data: adminStats, isLoading: statsLoading } = useGetAdminAnalyticsQuery({ locale: i18n.language }, {
         skip: !canViewAnalytics,
     });
     const { data: subscriptions, isLoading: subsLoading } = useGetSubscriptionsBasicDetailsQuery(undefined, {
         skip: !canViewSubscribers,
     });
-    const { data: industriesResponse } = useGetIndustriesQuery(undefined, {
+    const { data: industriesResponse } = useGetIndustriesQuery(i18n.language, {
         skip: !canViewIndustries,
     });
     const { data: organizations, isLoading: orgsLoading } = useGetOrganizationsQuery(

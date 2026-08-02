@@ -8,6 +8,7 @@ export const analyticsApi = apiSlice.injectEndpoints({
         if (filters.startDate) params.startDate = filters.startDate;
         if (filters.endDate) params.endDate = filters.endDate;
         if (filters.section) params.section = filters.section;
+        if (filters.locale) params.locale = filters.locale.split('-')[0];
         return { url: "/api/admin/analytics", params };
       },
       providesTags: ["Analytics"],

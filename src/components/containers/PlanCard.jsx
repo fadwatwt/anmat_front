@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { RiCopperDiamondLine, RiCheckboxCircleFill } from "@remixicon/react";
 import PropTypes from "prop-types";
 import { useState } from "react";
+import { getPlanFeatureTitle, getPlanFeatureValue } from "@/functions/planFeatures";
 
 function PlanCard({
     name = "",
@@ -93,11 +94,11 @@ function PlanCard({
                                     </div>
                                     <div className="flex flex-col">
                                         <span className={`text-sm font-bold capitalize ${selectedLocalIndex === index ? "text-primary-base" : "text-cell-primary"}`}>
-                                            {item.interval_count > 1 ? `${item.interval_count} ` : ""}{item.interval}ly
+                                            {item.interval_count > 1 ? `${item.interval_count} ` : ""}{t(item.interval === 'month' ? 'Monthly' : 'Yearly')}
                                         </span>
                                         {item.discount > 0 && (
                                             <span className="text-[10px] text-green-600 font-bold bg-green-50 px-1.5 py-0.5 rounded">
-                                                Save {item.discount}%
+                                                {t("Save {{discount}}%", { discount: item.discount })}
                                             </span>
                                         )}
                                     </div>
@@ -107,7 +108,7 @@ function PlanCard({
                                         ${item.price}
                                     </span>
                                     <span className="text-[10px] text-cell-secondary font-medium">
-                                        /{item.interval === 'month' ? 'mth' : 'yr'}
+                                        /{t(item.interval === 'month' ? 'mth' : 'yr')}
                                     </span>
                                 </div>
                             </label>
@@ -123,37 +124,30 @@ function PlanCard({
                     </p>
                     <div className={"flex flex-col items-start gap-5 w-full"}>
                         {features.length > 0 ? (
-                            features.map((feature, index) => (
-                                <div key={index} className={"flex items-start gap-4 justify-start w-full"}>
-                                    <RiCheckboxCircleFill
-                                        size={"22"}
-                                        className={"text-primary-base shrink-0 mt-0.5"}
-                                    />
-                                    <div className="flex flex-col gap-1.5 flex-1">
-                                        <div className="flex flex-col">
-                                            <p className={"text-sm text-cell-primary font-bold"}>
-                                                {feature.plan_feature?.title || feature.title || feature.feature_type?.title || "Feature"}
-                                            </p>
-                                            {(feature.plan_feature?.details || feature.details || feature.feature_type?.details) && (
-                                                <p className="text-xs text-cell-secondary leading-normal">
-                                                    {feature.plan_feature?.details || feature.details || feature.feature_type?.details}
+                            features.map((feature, index) => {
+                                const title = getPlanFeatureTitle(feature);
+                                const value = getPlanFeatureValue(feature);
+                                return (
+                                    <div key={index} className={"flex items-start gap-4 justify-start w-full"}>
+                                        <RiCheckboxCircleFill
+                                            size={"22"}
+                                            className={"text-primary-base shrink-0 mt-0.5"}
+                                        />
+                                        <div className="flex flex-col gap-1.5 flex-1">
+                                            <div className="flex flex-col">
+                                                <p className={"text-sm text-cell-primary font-bold"}>
+                                                    {title}
+                                                    {value ? (
+                                                        <span className="text-cell-secondary font-normal">
+                                                            : {value}
+                                                        </span>
+                                                    ) : null}
                                                 </p>
-                                            )}
-                                        </div>
-
-                                        {feature.properties && feature.properties.length > 0 && (
-                                            <div className="flex flex-wrap gap-2 mt-1">
-                                                {feature.properties.map((prop, pIdx) => (
-                                                    <div key={pIdx} className="inline-flex items-center px-2 py-1 bg-badge-bg rounded-md text-[10px] text-cell-secondary border border-status-border">
-                                                        <span className="font-medium mr-1 text-cell-primary/70">{prop.key}:</span>
-                                                        <span className="text-primary-base font-bold">{prop.value}</span>
-                                                    </div>
-                                                ))}
                                             </div>
-                                        )}
+                                        </div>
                                     </div>
-                                </div>
-                            ))
+                                );
+                            })
                         ) : (
                             <p className="text-cell-secondary text-sm italic">{t("Standard features included")}</p>
                         )}

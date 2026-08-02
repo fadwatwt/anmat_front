@@ -14,7 +14,13 @@ const CompaniesContactedChart = ({ data }) => {
         ],
     };
     // Check efficiency: ensures data is present
-    const chartData = data && data.records ? data : FALLBACK;
+    const chartData = data && data.records ? {
+        ...data,
+        records: data.records.map(record => ({
+            ...record,
+            title: t(record.title),
+        })),
+    } : FALLBACK;
 
     return (
         <DonutChartComponent

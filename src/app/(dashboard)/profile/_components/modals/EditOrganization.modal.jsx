@@ -14,10 +14,10 @@ import { useProcessing } from "@/app/providers";
 import { useTranslation } from "react-i18next";
 
 function EditOrganizationModal({ isOpen, onClose, organization }) {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [updateOrganization] = useUpdateSubscriberOrganizationMutation();
     const { showProcessing, hideProcessing } = useProcessing();
-    const { data: industriesData, isLoading: isLoadingIndustries } = useGetIndustriesForSubscribersQuery(undefined, {
+    const { data: industriesData, isLoading: isLoadingIndustries } = useGetIndustriesForSubscribersQuery(i18n.language, {
         skip: !isOpen
     });
 

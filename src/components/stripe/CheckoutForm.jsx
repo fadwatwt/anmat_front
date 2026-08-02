@@ -196,7 +196,7 @@ const CheckoutForm = ({ amount, onFinish, clientSecret, userName, userEmail, use
             billingDetails: {
                 name: 'never',
                 email: 'never',
-                phone: 'never',
+                phone: 'auto',
                 address: 'auto',
             }
         }
