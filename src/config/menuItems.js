@@ -231,10 +231,10 @@ export const dashboardSideMenuItems = [
     },
 
     // ═══════════════════════════════════════════
-    // Section: System (Admin only)
+    // Section: System Administration (Admin only)
     // ═══════════════════════════════════════════
     {
-        section: 'System',
+        section: 'System Administration',
         allowed_to: ['Admin'],
         title: 'System Admins',
         path: '/system-admins',
@@ -242,7 +242,7 @@ export const dashboardSideMenuItems = [
         permission: 'admin.system_admins.list'
     },
     {
-        section: 'System',
+        section: 'System Administration',
         allowed_to: ['Admin'],
         title: 'Roles',
         path: '/roles/admins',
@@ -250,7 +250,7 @@ export const dashboardSideMenuItems = [
         permission: 'admin.admin_roles.list'
     },
     {
-        section: 'System',
+        section: 'System Administration',
         allowed_to: ['Admin'],
         title: 'Permissions',
         path: '/permissions/admins',
@@ -258,33 +258,19 @@ export const dashboardSideMenuItems = [
         permission: 'admin.admin_permissions.list'
     },
     {
-        section: 'System',
+        section: 'System Administration',
         allowed_to: ['Admin'],
         title: 'Industries',
         path: '/industries',
         icon: <Category2 />,
         permission: 'admin.industries.list'
     },
-    {
-        section: 'System',
-        allowed_to: ['Admin'],
-        title: 'Money Receiving Methods',
-        path: '/money-receiving',
-        icon: <EmptyWallet />
-    },
-    {
-        section: 'System',
-        allowed_to: ['Admin'],
-        title: 'Translations',
-        path: '/translations',
-        icon: <LanguageSquare />
-    },
 
     // ═══════════════════════════════════════════
-    // Section: Subscribers & Plans (Admin only)
+    // Section: Subscriptions & Payments (Admin only)
     // ═══════════════════════════════════════════
     {
-        section: 'Subscribers & Plans',
+        section: 'Subscriptions & Payments',
         allowed_to: ['Admin'],
         title: 'Subscribers',
         path: '/subscribers',
@@ -292,7 +278,7 @@ export const dashboardSideMenuItems = [
         permission: 'admin.subscribers.list'
     },
     {
-        section: 'Subscribers & Plans',
+        section: 'Subscriptions & Payments',
         allowed_to: ['Admin'],
         title: 'Plans',
         path: '/plans',
@@ -310,6 +296,20 @@ export const dashboardSideMenuItems = [
                 permission: 'admin.subscription_plans.list',
             },
         ]
+    },
+    {
+        section: 'Subscriptions & Payments',
+        allowed_to: ['Admin'],
+        title: 'Money Receiving Methods',
+        path: '/money-receiving',
+        icon: <EmptyWallet />
+    },
+    {
+        section: 'Subscriptions & Payments',
+        allowed_to: ['Admin'],
+        title: 'Translations',
+        path: '/translations',
+        icon: <LanguageSquare />
     },
 
     // ═══════════════════════════════════════════
@@ -332,23 +332,27 @@ export const dashboardSideMenuItems = [
     },
 
     // ═══════════════════════════════════════════
-    // Section: Settings (bottom of sidebar)
+    // Section: Support (Communication)
     // ═══════════════════════════════════════════
     {
-        section: 'Settings',
+        section: 'Support',
         allowed_to: ['Admin', 'Subscriber', 'Employee'],
         title: 'Notifications',
         path: '/notifications',
         icon: <NotificationIcon />
     },
     {
-        section: 'Settings',
+        section: 'Support',
         allowed_to: ['Admin', 'Subscriber', 'Employee'],
         title: 'Support Tickets',
         path: '/support-tickets',
         icon: <Messages1 />,
         permission: 'admin.support_tickets.list'
     },
+
+    // ═══════════════════════════════════════════
+    // Section: Settings (bottom of sidebar)
+    // ═══════════════════════════════════════════
     {
         section: 'Settings',
         allowed_to: ['Subscriber'],
