@@ -1,6 +1,6 @@
 // export const RootRoute = "https://anmat-backend-system.onrender.com";
-// export const RootRoute = "https://api.anmaat.com";
-export const RootRoute = "http://127.0.0.1:3000";
+export const RootRoute = "https://api.anmaat.com";
+// export const RootRoute = "http://127.0.0.1:3000";
 
 // export const RootRoute = "https://anmat-backend-system-2.onrender.com";
 export const ExternalServer = "http://localhost:8000/api/v1";
