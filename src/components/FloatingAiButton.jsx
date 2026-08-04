@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { IoClose, IoSend, IoChatbubbles, IoTimeOutline } from "react-icons/io5";
 import { FaRobot } from "react-icons/fa";
@@ -20,6 +20,10 @@ function wantsHuman(message, lang) {
   const lower = message.toLowerCase();
   const keywords = lang === "ar" ? HUMAN_KEYWORDS_AR : HUMAN_KEYWORDS_EN;
   return keywords.some((kw) => lower.includes(kw));
+}
+
+function normalizeArabic(s) {
+  return String(s).replace(/[أإآ]/g, "ا").replace(/ة/g, "ه");
 }
 
 const VISITOR_KNOWLEDGE = {
@@ -105,16 +109,16 @@ const VISITOR_KNOWLEDGE = {
 
 function getVisitorReply(message, lang) {
   const knowledge = lang === "ar" ? VISITOR_KNOWLEDGE.ar : VISITOR_KNOWLEDGE.en;
-  const lowerMsg = message.toLowerCase();
+  const lowerMsg = normalizeArabic(message.toLowerCase());
 
   for (const pattern of knowledge.patterns) {
     for (const kw of pattern.keywords) {
-      if (lowerMsg.includes(kw.toLowerCase())) return { content: pattern.reply, hasRegisterLink: !!pattern.hasRegisterLink, hasSignInLink: !!pattern.hasSignInLink };
+      if (lowerMsg.includes(normalizeArabic(kw.toLowerCase()))) return { content: pattern.reply, hasRegisterLink: !!pattern.hasRegisterLink, hasSignInLink: !!pattern.hasSignInLink };
     }
   }
 
   const thankWords = lang === "ar" ? ["شكرا", "Thank"] : ["Thank"];
-  if (thankWords.some((w) => lowerMsg.includes(w.toLowerCase()))) {
+  if (thankWords.some((w) => lowerMsg.includes(normalizeArabic(w.toLowerCase())))) {
     return { content: lang === "ar" ? "على الرحب والسعة! 😊" : "You're welcome! 😊", hasRegisterLink: false, hasSignInLink: false };
   }
 
@@ -196,6 +200,7 @@ export default function FloatingAiButton() {
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   const pollingRef = useRef(null);
+  const restoreRef = useRef(null);
 
   const isAr = i18n.language === "ar";
   const knowledge = isAr ? VISITOR_KNOWLEDGE.ar : VISITOR_KNOWLEDGE.en;
@@ -210,17 +215,25 @@ export default function FloatingAiButton() {
     }
   }, [guestEmail]);
 
-  const archiveAndNew = () => {
+  const saveCurrentSession = useCallback(() => {
     const hasContent = messages.length > 1 || supportMessages.length > 0;
-    if (hasContent) {
-      const firstUser = messages.find((m) => m.role === "user") || supportMessages.find((m) => m.role === "user");
-      const title = firstUser?.content?.slice(0, 60) || (isAr ? "محادثة" : "Chat");
-      const list = loadHistory(sessionKey);
+    if (!hasContent) return;
+    const firstUser = messages.find((m) => m.role === "user") || supportMessages.find((m) => m.role === "user");
+    const title = firstUser?.content?.slice(0, 60) || (isAr ? "محادثة" : "Chat");
+    const list = loadHistory(sessionKey);
+    const restoredId = restoreRef.current;
+    const idx = restoredId ? list.findIndex((h) => h.id === restoredId) : -1;
+    if (idx !== -1) {
+      list[idx] = { ...list[idx], messages, supportMessages, ticketId, ticketNumber, guestEmail, guestName, timestamp: new Date().toISOString(), title };
+    } else {
       list.unshift({ id: Date.now().toString(), messages, supportMessages, ticketId, ticketNumber, guestEmail, guestName, timestamp: new Date().toISOString(), title });
-      if (list.length > 30) list.length = 30;
-      saveHistory(sessionKey, list);
-      setHistory(list);
     }
+    if (list.length > 30) list.length = 30;
+    saveHistory(sessionKey, list);
+    setHistory(list);
+  }, [messages, supportMessages, sessionKey, guestEmail, guestName, ticketId, ticketNumber, isAr]);
+
+  const resetBotState = useCallback(() => {
     setMessages([]);
     setViewMode("ai");
     setTicketId(null);
@@ -231,25 +244,23 @@ export default function FloatingAiButton() {
     setShowHistory(false);
     setViewingHistory(null);
     setTicketClosed(false);
+    restoreRef.current = null;
+  }, []);
+
+  const archiveAndNew = () => {
+    saveCurrentSession();
+    resetBotState();
     clearGuestSession();
   };
 
   const prevOpenRef = useRef(false);
   useEffect(() => {
     if (prevOpenRef.current && !isOpen) {
-      const hasContent = messages.length > 1 || supportMessages.length > 0;
-      if (hasContent) {
-        const firstUser = messages.find((m) => m.role === "user") || supportMessages.find((m) => m.role === "user");
-        const title = firstUser?.content?.slice(0, 60) || (isAr ? "محادثة" : "Chat");
-        const list = loadHistory(sessionKey);
-        list.unshift({ id: Date.now().toString(), messages, supportMessages, ticketId, ticketNumber, guestEmail, guestName, timestamp: new Date().toISOString(), title });
-        if (list.length > 30) list.length = 30;
-        saveHistory(sessionKey, list);
-        setHistory(list);
-      }
+      saveCurrentSession();
+      resetBotState();
     }
     prevOpenRef.current = isOpen;
-  }, [isOpen, messages, supportMessages, sessionKey, guestEmail, guestName, ticketId, ticketNumber, isAr]);
+  }, [isOpen, saveCurrentSession, resetBotState]);
 
   useEffect(() => {
     const saved = loadGuestSession();
@@ -550,7 +561,7 @@ export default function FloatingAiButton() {
     setIsLoading(true);
 
     const pricingKeywords = ["سعر", "تسعير", "كم يكلف", "مجاني", "free", "price", "اسعار", "الاسعار", "السعر", "خطط", "الخطط", "تكلفة", "اشتراك", "اشتراكات", "باقي"];
-    const isPricingQuery = pricingKeywords.some((kw) => trimmed.toLowerCase().includes(kw.toLowerCase()));
+    const isPricingQuery = pricingKeywords.some((kw) => normalizeArabic(trimmed).toLowerCase().includes(normalizeArabic(kw).toLowerCase()));
 
     if (isPricingQuery) {
       try {
@@ -571,7 +582,7 @@ export default function FloatingAiButton() {
                   if (!p.is_active) continue;
                   const interval = p.interval === "month" ? (isAr ? "شهري" : "monthly") : (isAr ? "سنوي" : "yearly");
                   const discount = p.discount > 0 ? ` (${p.discount}% ${isAr ? "خصم" : "off"})` : "";
-                  pricingText += `  • ${interval}: ${p.price}${isAr ? " ر.س" : " SAR"}${discount}\n`;
+                  pricingText += `  • ${interval}: $${p.price}${discount}\n`;
                 }
               }
               if (plan.trial?.is_active && plan.trial?.trial_days) {
@@ -684,6 +695,7 @@ export default function FloatingAiButton() {
     if (!trimmed) return;
     const session = viewingHistory;
     if (!session) return;
+    restoreRef.current = session.id;
     setInput("");
     if (session.ticketId) {
       setTicketId(session.ticketId);
@@ -737,7 +749,7 @@ export default function FloatingAiButton() {
 
       {isOpen && (
         <div
-          className="fixed z-[9999] w-[380px] max-w-[calc(100vw-2rem)] h-[520px] max-h-[calc(100vh-8rem)] bg-white dark:bg-gray-900 text-cell-primary rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden"
+          className="fixed z-[9999] w-[380px] max-w-[calc(100vw-2rem)] h-[520px] max-h-[calc(100vh-8rem)] bg-white dark:bg-[#2A2E37] text-cell-primary rounded-2xl shadow-2xl dark:shadow-[0_16px_44px_rgba(0,0,0,0.6)] border border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden"
           style={{ bottom: "96px", [isAr ? "left" : "right"]: "24px" }}
         >
           <div className="flex items-center gap-3 px-4 py-3 text-white shrink-0" style={{ backgroundColor: 'var(--color-primary)' }}>
@@ -785,7 +797,7 @@ export default function FloatingAiButton() {
               history.length === 0 ? (
                 <div className="flex-1 flex items-center justify-center text-sm opacity-40">{isAr ? "لا توجد محادثات سابقة" : "No history yet"}</div>
               ) : (
-                <div className="flex flex-col">
+                <div className="flex flex-col overflow-y-auto custom-scroll">
                   {history.map((session) => (
                     <div key={session.id} className="flex items-center border-b border-gray-100 dark:border-gray-800">
                       <button
@@ -814,7 +826,7 @@ export default function FloatingAiButton() {
               )
             ) : viewingHistory ? (
               <>
-                <div className="flex-1 p-4 flex flex-col gap-3 overflow-y-auto">
+                <div className="flex-1 p-4 flex flex-col gap-3 overflow-y-auto custom-scroll">
                   {viewingHistory.messages?.map((msg, i) => (
                     <div key={`ai-${i}`} className={`flex flex-col gap-1.5 ${msg.role === "user" ? "items-end" : "items-start"}`}>
                       <div className={`max-w-[85%] px-3.5 py-2.5 text-[13px] leading-relaxed ${
@@ -857,7 +869,7 @@ export default function FloatingAiButton() {
               </>
             ) : (
               <>
-                <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
+                <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 custom-scroll">
                   {viewMode === "ai" && messages.map((msg, i) => (
                     <div key={i} className={`flex flex-col gap-1.5 ${msg.role === "user" ? "items-end" : "items-start"}`}>
                       <div className={`max-w-[85%] px-3.5 py-2.5 text-[13px] leading-relaxed ${

@@ -4,6 +4,7 @@ import Page from "@/components/Page";
 import Table from "@/components/Tables/Table";
 import { statusCell } from "@/components/StatusCell";
 import { useTranslation } from "react-i18next";
+import i18n from "i18next";
 import { RiEyeLine, RiPencilLine, RiDeleteBinLine, RiUserAddLine, RiCalendarEventLine, RiCalendarCheckLine, RiFileCopyLine, RiShareForwardLine, RiLink } from "@remixicon/react";
 import { IoAdd } from "react-icons/io5";
 import CreateMeetingModal from "./modals/CreateMeetingModal";
@@ -24,8 +25,9 @@ const formatDateTime = (value) => {
     if (!value) return "-";
     const d = new Date(value);
     if (Number.isNaN(d.getTime())) return "-";
-    const date = d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
-    const time = d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+    const locale = i18n.language === "ar" ? "ar" : "en-GB";
+    const date = d.toLocaleDateString(locale, { day: "2-digit", month: "short", year: "numeric" });
+    const time = d.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" });
     return { date, time };
 };
 

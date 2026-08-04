@@ -33,7 +33,7 @@ export default function EmployeeSalaryPage() {
                         {transaction.employee?.name || t("Unknown")}
                     </span>
                     <span className="text-xs text-cell-secondary">
-                        {transaction.employee?.email || "N/A"}
+                        {transaction.employee?.email || t("N/A")}
                     </span>
                 </div>
             </div>,

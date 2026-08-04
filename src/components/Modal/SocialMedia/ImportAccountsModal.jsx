@@ -7,6 +7,7 @@ import Modal from "@/components/Modal/Modal.jsx";
 import FileUpload from "@/components/Form/FileUpload";
 import SelectAndLabel from "@/components/Form/SelectAndLabel";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
+import translateApiError from "@/utils/apiErrorTranslator";
 import { useProcessing } from "@/app/providers";
 import {
     useImportTwitterAccountsMutation,
@@ -69,6 +70,7 @@ function ImportAccountsModal({ isOpen, onClose }) {
             });
         } catch (error) {
             const message =
+                translateApiError(error, t) ||
                 error?.data?.message ||
                 error?.data?.error ||
                 error?.error ||

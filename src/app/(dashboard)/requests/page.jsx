@@ -11,6 +11,7 @@ import {
 import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import { format } from "date-fns";
+import { getDateLocale } from "@/lib/dateLocale";
 import CreateRequestModal from "./_components/CreateRequestModal";
 import { Add } from "iconsax-react";
 import { useProcessing } from "@/app/providers";
@@ -91,7 +92,7 @@ function EmployeeRequestsPage() {
     const rows = currentData.map((req) => {
         const commonCells = [
             <div key={req._id + "_created_at"} className="text-cell-primary">
-                {req.created_at ? format(new Date(req.created_at), "dd MMM yyyy") : "N/A"}
+                {req.created_at ? format(new Date(req.created_at), "dd MMM yyyy", { locale: getDateLocale() }) : t("N/A")}
             </div>
         ];
 
@@ -99,22 +100,22 @@ function EmployeeRequestsPage() {
         if (activeTab === "DAY_OFF") {
             specificCells = [
                 <div key={req._id + "_vacation"} className="text-cell-primary">
-                    {req.vacation_date ? format(new Date(req.vacation_date), "dd MMM yyyy") : "N/A"}
+                    {req.vacation_date ? format(new Date(req.vacation_date), "dd MMM yyyy", { locale: getDateLocale() }) : t("N/A")}
                 </div>,
-                <div key={req._id + "_reason"} className="text-cell-secondary truncate max-w-[300px]">{req.reason || "N/A"}</div>
+                <div key={req._id + "_reason"} className="text-cell-secondary truncate max-w-[300px]">{req.reason || t("N/A")}</div>
             ];
         } else if (activeTab === "SALARY_ADVANCE") {
             specificCells = [
-                <div key={req._id + "_advance"} className="text-cell-primary">{req.advance_salary_by || "N/A"}</div>,
-                <div key={req._id + "_old_salary"} className="text-cell-secondary">{req.old_salary_amount || "N/A"}</div>,
-                <div key={req._id + "_reason"} className="text-cell-secondary truncate max-w-[250px]">{req.reason || "N/A"}</div>
+                <div key={req._id + "_advance"} className="text-cell-primary">{req.advance_salary_by || t("N/A")}</div>,
+                <div key={req._id + "_old_salary"} className="text-cell-secondary">{req.old_salary_amount || t("N/A")}</div>,
+                <div key={req._id + "_reason"} className="text-cell-secondary truncate max-w-[250px]">{req.reason || t("N/A")}</div>
             ];
         } else { // WORK_DELAY
             specificCells = [
                 <div key={req._id + "_due"} className="text-cell-primary">
-                    {req.work_due_at ? format(new Date(req.work_due_at), "dd MMM yyyy HH:mm") : "N/A"}
+                    {req.work_due_at ? format(new Date(req.work_due_at), "dd MMM yyyy HH:mm", { locale: getDateLocale() }) : t("N/A")}
                 </div>,
-                <div key={req._id + "_reason"} className="text-cell-secondary truncate max-w-[300px]">{req.reason || "N/A"}</div>
+                <div key={req._id + "_reason"} className="text-cell-secondary truncate max-w-[300px]">{req.reason || t("N/A")}</div>
             ];
         }
 

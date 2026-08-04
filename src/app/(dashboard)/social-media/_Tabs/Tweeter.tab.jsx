@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { FiPlus, FiTag, FiLogIn } from "react-icons/fi";
+import { FiPlus, FiTag, FiLogIn, FiTrash2 } from "react-icons/fi";
 import { TfiImport } from "react-icons/tfi";
 import { ImSpinner2 } from "react-icons/im";
 import { useTranslation } from "react-i18next";
@@ -22,6 +22,7 @@ import AccountQuotaCard from "./_components/AccountQuotaCard.jsx";
 import {
     useGetTwitterAccountsQuery,
     useDeleteTwitterAccountMutation,
+    useDeleteTwitterAccountsMutation,
 } from "@/redux/socialMedia/twitterAccountsApi";
 import { useGetMySocialMediaQuotaQuery } from "@/redux/socialMedia/socialMediaQuotaApi";
 import { selectPermissions } from "@/redux/auth/authSlice";
@@ -88,11 +89,14 @@ function TweeterTab() {
     const [isLoginOpen, setIsLoginOpen] = useState(false);
     const [editingAccount, setEditingAccount] = useState(null);
     const [deletingAccountId, setDeletingAccountId] = useState(null);
+    const [selectedAccountIds, setSelectedAccountIds] = useState([]);
+    const [isBulkDeleteOpen, setIsBulkDeleteOpen] = useState(false);
     const [apiResponse, setApiResponse] = useState({ isOpen: false, status: null, message: "" });
 
     const { data: accountsResp, isLoading: accountsLoading, isFetching } = useGetTwitterAccountsQuery({});
     const { data: quota, isLoading: quotaLoading } = useGetMySocialMediaQuotaQuery();
     const [deleteAccount, { isLoading: deleting }] = useDeleteTwitterAccountMutation();
+    const [deleteAccounts, { isLoading: bulkDeleting }] = useDeleteTwitterAccountsMutation();
 
     const accounts = accountsResp?.data || [];
 
@@ -143,6 +147,53 @@ function TweeterTab() {
 
     const handleDelete = (rowIndex) => {
         setDeletingAccountId(accounts[rowIndex]?._id || null);
+    };
+
+    const handleSelectionChange = (indices) => {
+        setSelectedAccountIds(
+            indices
+                .map((i) => accounts[i]?._id)
+                .filter(Boolean),
+        );
+    };
+
+    const selectedAccountNames = useMemo(
+        () =>
+            selectedAccountIds
+                .map((id) => accounts.find((a) => a._id === id)?.name)
+                .filter(Boolean),
+        [selectedAccountIds, accounts],
+    );
+
+    const openBulkDelete = () => {
+        if (selectedAccountIds.length === 0) return;
+        setIsBulkDeleteOpen(true);
+    };
+
+    const confirmBulkDelete = async () => {
+        if (selectedAccountIds.length === 0) return;
+        showProcessing(t("Deleting accounts..."));
+        try {
+            await deleteAccounts(selectedAccountIds).unwrap();
+            setApiResponse({
+                isOpen: true,
+                status: "success",
+                message: t("{{count}} accounts deleted successfully", {
+                    count: selectedAccountIds.length,
+                }),
+            });
+            setSelectedAccountIds([]);
+        } catch (error) {
+            const message =
+                error?.data?.message ||
+                error?.data?.error ||
+                error?.error ||
+                t("Failed to delete accounts");
+            setApiResponse({ isOpen: true, status: "error", message });
+        } finally {
+            hideProcessing();
+            setIsBulkDeleteOpen(false);
+        }
     };
 
     const confirmDelete = async () => {
@@ -223,6 +274,17 @@ function TweeterTab() {
                                 {t("Login")}
                             </button>
                         </PermissionGuard>
+                        {selectedAccountIds.length > 0 && (
+                            <PermissionGuard permission="social_media_accounts.delete" fallback={null}>
+                                <button
+                                    onClick={openBulkDelete}
+                                    className="flex gap-1 items-center bg-rose-100 dark:bg-rose-950 px-3 py-2 rounded-lg text-rose-600 dark:text-rose-300 text-sm hover:bg-rose-200 transition-colors"
+                                >
+                                    <FiTrash2 />
+                                    {t("Delete Selected ({{count}})", { count: selectedAccountIds.length })}
+                                </button>
+                            </PermissionGuard>
+                        )}
                     </div>
 
                     {accountsLoading ? (
@@ -244,6 +306,7 @@ function TweeterTab() {
                             }
                             handelEdit={handleEdit}
                             handelDelete={handleDelete}
+                            onSelectionChange={handleSelectionChange}
                         />
                     )}
                 </div>
@@ -339,7 +402,11 @@ function TweeterTab() {
             <FollowAndUnfollow isOpen={isFollowOpen} onClose={() => setIsFollowOpen(false)} />
             <LikeAndUnLike isOpen={isLikeOpen} onClose={() => setIsLikeOpen(false)} />
             <ReplayAndDeleteReplay isOpen={isReplyOpen} onClose={() => setIsReplyOpen(false)} />
-            <LoginAccountsModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
+            <LoginAccountsModal
+                isOpen={isLoginOpen}
+                onClose={() => setIsLoginOpen(false)}
+                initialSelectedAccounts={selectedAccountNames}
+            />
 
             <ApprovalAlert
                 isOpen={!!deletingAccountId}
@@ -348,6 +415,17 @@ function TweeterTab() {
                 title={t("Confirm Delete")}
                 message={t("Are you sure you want to delete this Twitter account?")}
                 confirmBtnText={deleting ? t("Deleting...") : t("Delete")}
+                type="warning"
+            />
+            <ApprovalAlert
+                isOpen={isBulkDeleteOpen}
+                onClose={() => setIsBulkDeleteOpen(false)}
+                onConfirm={confirmBulkDelete}
+                title={t("Confirm Delete")}
+                message={t("Are you sure you want to delete the {{count}} selected accounts?", {
+                    count: selectedAccountIds.length,
+                })}
+                confirmBtnText={bulkDeleting ? t("Deleting...") : t("Delete")}
                 type="warning"
             />
             <ApiResponseAlert

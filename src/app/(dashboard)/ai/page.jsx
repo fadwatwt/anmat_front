@@ -679,7 +679,7 @@ const AssistantPage = () => {
               Object.entries(groupedConversations).map(([groupName, groupConvs]) => (
                 <div key={groupName} className="space-y-1">
                   <h3 className="px-3 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
-                    {groupName}
+                    {t(groupName)}
                   </h3>
                   {groupConvs.map((conv) => {
                     const isActive = conversationId === conv._id;

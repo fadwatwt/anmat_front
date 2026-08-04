@@ -3,6 +3,7 @@ import Page from "@/components/Page";
 import Table from "@/components/Tables/Table";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import i18n from "i18next";
 import { HiPlus } from "react-icons/hi";
 import AddHolidayModal from "./modals/AddHolidayModal";
 import DeleteHolidayModal from "./modals/DeleteHolidayModal";
@@ -17,7 +18,7 @@ const formatDate = (value) => {
     if (!value) return "-";
     const d = new Date(value);
     if (Number.isNaN(d.getTime())) return "-";
-    return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+    return d.toLocaleDateString(i18n.language === "ar" ? "ar" : "en-GB", { day: "2-digit", month: "short", year: "numeric" });
 };
 
 function HolidaysPage() {

@@ -7,6 +7,7 @@ import { useGetTokensBalanceQuery, useGetTokenHistoryQuery } from "@/redux/api/a
 import { CreditCard, Calendar, BarChart3, Receipt, ArrowUpRight, ArrowDownRight, RefreshCw, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
+import { getDateLocale } from "@/lib/dateLocale";
 
 const AnalyticsPage = () => {
   const { t } = useTranslation();
@@ -18,7 +19,7 @@ const AnalyticsPage = () => {
 
   // Map daily usage for Recharts
   const chartData = (balanceData?.daily_usage || []).map((item) => ({
-    name: format(new Date(item._id), "MMM dd"),
+    name: format(new Date(item._id), "MMM dd", { locale: getDateLocale() }),
     tokens: item.total,
   }));
 
@@ -33,7 +34,7 @@ const AnalyticsPage = () => {
     if (!balanceData?.last_renewal) return t("N/A");
     const date = new Date(balanceData.last_renewal);
     date.setDate(date.getDate() + 30);
-    return format(date, "MMM dd, yyyy");
+    return format(date, "MMM dd, yyyy", { locale: getDateLocale() });
   };
 
   const getTransactionTypeBadge = (type) => {
@@ -249,7 +250,7 @@ const AnalyticsPage = () => {
                               {tx.balance_after?.toLocaleString()}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                              {format(new Date(tx.created_at || tx.date), "MMM dd, yyyy HH:mm")}
+                              {format(new Date(tx.created_at || tx.date), "MMM dd, yyyy HH:mm", { locale: getDateLocale() })}
                             </td>
                             <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 font-medium">
                               {tx.description}

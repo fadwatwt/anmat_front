@@ -14,6 +14,7 @@ import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import ElementsSelect from "@/components/Form/ElementsSelect.jsx";
 import { format } from "date-fns";
+import { getDateLocale } from "@/lib/dateLocale";
 import { RiFilter2Line, RiCalendarEventLine, RiCheckboxCircleFill, RiCloseCircleFill } from "@remixicon/react";
 
 function RequestsTab() {
@@ -182,7 +183,7 @@ function RequestsTab() {
                 </div>
             </div>,
             <div key={req.id + "_created_at"} className="text-cell-secondary font-medium">
-                {req.created_at ? format(new Date(req.created_at), "dd MMM yyyy") : "N/A"}
+                {req.created_at ? format(new Date(req.created_at), "dd MMM yyyy", { locale: getDateLocale() }) : "N/A"}
             </div>
         ];
 
@@ -192,14 +193,14 @@ function RequestsTab() {
                 <div key={req.id + "_vacation"} className="flex flex-col gap-0.5">
                     <div className="flex items-center gap-1.5 text-cell-primary font-bold text-xs">
                         <RiCalendarEventLine size={14} className="text-primary-500" />
-                        {req.vacation_date ? format(new Date(req.vacation_date), "dd MMM") : "N/A"}
+                        {req.vacation_date ? format(new Date(req.vacation_date), "dd MMM", { locale: getDateLocale() }) : "N/A"}
                         {req.vacation_end_date && (
                             <>
                                 <span>-</span>
-                                {format(new Date(req.vacation_end_date), "dd MMM yyyy")}
+                                {format(new Date(req.vacation_end_date), "dd MMM yyyy", { locale: getDateLocale() })}
                             </>
                         )}
-                        {!req.vacation_end_date && req.vacation_date && format(new Date(req.vacation_date), " yyyy")}
+                        {!req.vacation_end_date && req.vacation_date && format(new Date(req.vacation_date), " yyyy", { locale: getDateLocale() })}
                     </div>
                 </div>,
                 <div key={req.id + "_reason"} className="text-cell-secondary font-medium truncate max-w-[200px]" title={req.reason}>{req.reason || "N/A"}</div>
@@ -223,7 +224,7 @@ function RequestsTab() {
         } else { // WORK_DELAY
             specificCells = [
                 <div key={req.id + "_due"} className="text-cell-primary font-bold text-xs">
-                    {req.work_due_at ? format(new Date(req.work_due_at), "dd MMM yyyy HH:mm") : "N/A"}
+                    {req.work_due_at ? format(new Date(req.work_due_at), "dd MMM yyyy HH:mm", { locale: getDateLocale() }) : "N/A"}
                 </div>,
                 <div key={req.id + "_reason"} className="text-cell-secondary font-medium truncate max-w-[250px]" title={req.reason}>{req.reason || "N/A"}</div>
             ];

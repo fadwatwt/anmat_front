@@ -1,0 +1,12 @@
+# نواتج الاختبارات والجلسات
+/node_modules/.cache/
+/playwright-report/
+/test-results/
+/blob-report/
+/e2e/.auth/
+/e2e/*/__snapshots__/*-actual.png
+/e2e/*/__snapshots__/*-diff.png
+/e2e/*/__snapshots__/*-new.png
+/e2e/*-actual.png
+/e2e/*-diff.png
+/e2e/*-new.png

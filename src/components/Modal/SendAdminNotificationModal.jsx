@@ -267,7 +267,7 @@ const SendAdminNotificationModal = ({ isOpen, onClose, preSelectedUser, sourceTy
               </div>
 
               {/* Scrollable user list */}
-              <div className="border border-status-border rounded-lg overflow-hidden max-h-44 overflow-y-auto">
+              <div className="border border-status-border rounded-lg overflow-hidden max-h-44 overflow-y-auto custom-scroll">
                 {filteredUsers.length === 0 ? (
                   <p className="p-4 text-sm text-sub-500 text-center">{t("No users found")}</p>
                 ) : (

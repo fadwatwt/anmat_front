@@ -1,0 +1,12 @@
+
+> next-new-dashboard@0.1.0 start
+> next start -p 3001
+
+   ▲ Next.js 15.5.20
+   - Local:        http://localhost:3001
+   - Network:      http://192.168.0.103:3001
+
+ ✓ Starting...
+ ⚠ "next start" does not work with "output: standalone" configuration. Use "node .next/standalone/server.js" instead.
+ ✓ Ready in 848ms
+ ⚠ The "images.domains" configuration is deprecated. Please use "images.remotePatterns" configuration instead.

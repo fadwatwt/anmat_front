@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { IoClose, IoSend, IoChatbubbles, IoTimeOutline } from "react-icons/io5";
 import { FaRobot } from "react-icons/fa";
@@ -24,10 +24,17 @@ function wantsHuman(message, lang) {
   return keywords.some((kw) => lower.includes(kw));
 }
 
-const QUICK_ACTIONS_AR = ["ما هو أنماط؟", "الأسعار والخطط", "المميزات", "مشكلة في الحساب"];
-const QUICK_ACTIONS_EN = ["What is Anmaat?", "Pricing & Plans", "Features", "Account issue"];
+const QUICK_ACTIONS_AR = ["إنشاء مهمة", "تقرير مهامي", "إنشاء مشروع", "ملخص الأداء", "تذكير باجتماع", "دليل استخدام النظام"];
+const QUICK_ACTIONS_EN = ["Create a task", "My tasks report", "Create a project", "Performance summary", "Set a meeting reminder", "System usage guide"];
 const SUPPORT_ACTION_AR = "التحدث مع الدعم الفني";
 const SUPPORT_ACTION_EN = "Talk to support";
+
+const PROBLEM_KEYWORDS_AR = ["مشكلة", "مشكله", "خطأ", "خطا", "لا يعمل", "تعطل", "عطل", "فشل", "مساعد", "ساعدني", "دعم", "لا استطيع", "لا أستطيع", "معلق", "بطيء", "تجمّد"];
+const PROBLEM_KEYWORDS_EN = ["problem", "issue", "error", "bug", "not working", "broken", "failed", "stuck", "slow", "freeze", "help", "support", "can't", "cannot"];
+function hasProblemInChat(messages, lang) {
+  const keywords = lang === "ar" ? PROBLEM_KEYWORDS_AR : PROBLEM_KEYWORDS_EN;
+  return messages.some((m) => m.role === "user" && keywords.some((kw) => m.content.toLowerCase().includes(kw)));
+}
 
 const HISTORY_KEY = "anmat_bot_history_";
 function loadHistory(userId) {
@@ -82,6 +89,7 @@ export default function DashboardFloatingButton() {
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   const pollingRef = useRef(null);
+  const restoreRef = useRef(null);
 
   const isAr = i18n.language === "ar";
   const userName = user?.name || user?.first_name || "";
@@ -93,17 +101,26 @@ export default function DashboardFloatingButton() {
     }
   }, [userId]);
 
-  const archiveAndNew = () => {
+  const saveCurrentSession = useCallback(() => {
+    if (!userId) return;
     const hasContent = messages.length > 1 || supportMessages.length > 0;
-    if (userId && hasContent) {
-      const firstUser = messages.find((m) => m.role === "user") || supportMessages.find((m) => m.role === "user");
-      const title = firstUser?.content?.slice(0, 60) || (isAr ? "محادثة" : "Chat");
-      const list = loadHistory(userId);
+    if (!hasContent) return;
+    const firstUser = messages.find((m) => m.role === "user") || supportMessages.find((m) => m.role === "user");
+    const title = firstUser?.content?.slice(0, 60) || (isAr ? "محادثة" : "Chat");
+    const list = loadHistory(userId);
+    const restoredId = restoreRef.current;
+    const idx = restoredId ? list.findIndex((h) => h.id === restoredId) : -1;
+    if (idx !== -1) {
+      list[idx] = { ...list[idx], messages, supportMessages, ticketId, ticketNumber, timestamp: new Date().toISOString(), title };
+    } else {
       list.unshift({ id: Date.now().toString(), messages, supportMessages, ticketId, ticketNumber, timestamp: new Date().toISOString(), title });
-      if (list.length > 30) list.length = 30;
-      saveHistory(userId, list);
-      setHistory(list);
     }
+    if (list.length > 30) list.length = 30;
+    saveHistory(userId, list);
+    setHistory(list);
+  }, [userId, messages, supportMessages, ticketId, ticketNumber, isAr]);
+
+  const resetBotState = useCallback(() => {
     setMessages([]);
     setViewMode("ai");
     setTicketId(null);
@@ -114,24 +131,22 @@ export default function DashboardFloatingButton() {
     setShowHistory(false);
     setViewingHistory(null);
     setTicketClosed(false);
+    restoreRef.current = null;
+  }, []);
+
+  const archiveAndNew = () => {
+    saveCurrentSession();
+    resetBotState();
   };
 
   const prevOpenRef = useRef(false);
   useEffect(() => {
     if (prevOpenRef.current && !isOpen && userId) {
-      const hasContent = messages.length > 1 || supportMessages.length > 0;
-      if (hasContent) {
-        const firstUser = messages.find((m) => m.role === "user") || supportMessages.find((m) => m.role === "user");
-        const title = firstUser?.content?.slice(0, 60) || (isAr ? "محادثة" : "Chat");
-        const list = loadHistory(userId);
-        list.unshift({ id: Date.now().toString(), messages, supportMessages, ticketId, ticketNumber, timestamp: new Date().toISOString(), title });
-        if (list.length > 30) list.length = 30;
-        saveHistory(userId, list);
-        setHistory(list);
-      }
+      saveCurrentSession();
+      resetBotState();
     }
     prevOpenRef.current = isOpen;
-  }, [isOpen, userId, messages, supportMessages, isAr]);
+  }, [isOpen, userId, saveCurrentSession, resetBotState]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -344,6 +359,7 @@ export default function DashboardFloatingButton() {
     if (!trimmed || !token) return;
     const session = viewingHistory;
     if (!session) return;
+    restoreRef.current = session.id;
     setInput("");
     if (session.ticketId) {
       setTicketId(session.ticketId);
@@ -388,7 +404,7 @@ export default function DashboardFloatingButton() {
 
       {isOpen && (
         <div
-          className="fixed z-[9999] w-[380px] max-w-[calc(100vw-2rem)] h-[520px] max-h-[calc(100vh-8rem)] bg-white dark:bg-gray-900 text-cell-primary rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden"
+          className="fixed z-[9999] w-[380px] max-w-[calc(100vw-2rem)] h-[520px] max-h-[calc(100vh-8rem)] bg-white dark:bg-[#2A2E37] text-cell-primary rounded-2xl shadow-2xl dark:shadow-[0_16px_44px_rgba(0,0,0,0.6)] border border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden"
           style={{ bottom: "96px", [isAr ? "left" : "right"]: "24px" }}
         >
           <div className="flex items-center gap-3 px-4 py-3 text-white shrink-0" style={{ backgroundColor: 'var(--color-primary)' }}>
@@ -436,7 +452,7 @@ export default function DashboardFloatingButton() {
               history.length === 0 ? (
                 <div className="flex-1 flex items-center justify-center text-sm opacity-40">{isAr ? "لا توجد محادثات سابقة" : "No history yet"}</div>
               ) : (
-                <div className="flex flex-col">
+                <div className="flex flex-col overflow-y-auto custom-scroll">
                   {history.map((session) => (
                     <div key={session.id} className="flex items-center border-b border-gray-100 dark:border-gray-800">
                       <button
@@ -445,7 +461,7 @@ export default function DashboardFloatingButton() {
                       >
                         <div className="flex items-center gap-2 mb-1">
                           {session.ticketId ? <IoChatbubbles size={13} className="text-blue-500 shrink-0" /> : <FaRobot size={13} className="text-blue-500 shrink-0" />}
-                          <span className="text-[13px] font-medium truncate text-white">{session.title}</span>
+                          <span className="text-[13px] font-medium truncate text-cell-primary">{session.title}</span>
                           {session.ticketNumber && <span className="text-[9px] bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded-full shrink-0">{session.ticketNumber}</span>}
                         </div>
                         <div className="flex items-center justify-between">
@@ -465,7 +481,7 @@ export default function DashboardFloatingButton() {
               )
             ) : viewingHistory ? (
               <>
-                <div className="flex-1 p-4 flex flex-col gap-3 overflow-y-auto">
+                <div className="flex-1 p-4 flex flex-col gap-3 overflow-y-auto custom-scroll">
                   {viewingHistory.messages?.map((msg, i) => (
                     <div key={`ai-${i}`} className={`flex flex-col gap-1.5 ${msg.role === "user" ? "items-end" : "items-start"}`}>
                       <div className={`max-w-[85%] px-3.5 py-2.5 text-[13px] leading-relaxed ${
@@ -508,7 +524,7 @@ export default function DashboardFloatingButton() {
               </>
             ) : (
               <>
-                <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
+                <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 custom-scroll">
                   {viewMode === "ai" && messages.map((msg, i) => (
                     <div key={i} className={`flex flex-col gap-1.5 ${msg.role === "user" ? "items-end" : "items-start"}`}>
                       <div className={`max-w-[85%] px-3.5 py-2.5 text-[13px] leading-relaxed ${
@@ -564,7 +580,7 @@ export default function DashboardFloatingButton() {
                     </div>
                   )}
 
-                  {viewMode === "ai" && messages.length > 6 && messages.length <= 10 && !ticketId && !isLoading && (
+                  {viewMode === "ai" && messages.length > 6 && messages.length <= 10 && hasProblemInChat(messages, isAr ? "ar" : "en") && !ticketId && !isLoading && (
                     <div className="flex flex-wrap gap-1.5 mt-1">
                       <button onClick={() => handleSend(isAr ? SUPPORT_ACTION_AR : SUPPORT_ACTION_EN)} className="px-3 py-1.5 rounded-full border border-orange-300 dark:border-orange-600 bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 text-xs cursor-pointer hover:bg-orange-100 dark:hover:bg-orange-900/30 hover:border-orange-500 transition-colors">
                         {isAr ? "💬 " + SUPPORT_ACTION_AR : "💬 " + SUPPORT_ACTION_EN}

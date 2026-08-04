@@ -13,6 +13,7 @@ import PasswordInput from "@/components/Form/PasswordInput";
 import SelectAndLabel from "@/components/Form/SelectAndLabel";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import AddCategoryModal from "@/components/Modal/SocialMedia/AddCategoryModal.jsx";
+import translateApiError from "@/utils/apiErrorTranslator";
 import { useProcessing } from "@/app/providers";
 import { selectPermissions } from "@/redux/auth/authSlice";
 import {
@@ -86,6 +87,7 @@ function AddTwitterAccountModal({ isOpen, onClose }) {
                 });
             } catch (error) {
                 const message =
+                    translateApiError(error, t) ||
                     error?.data?.message ||
                     error?.data?.error ||
                     error?.error ||

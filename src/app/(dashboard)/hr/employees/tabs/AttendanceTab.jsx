@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { usePermission } from "@/Hooks/usePermission";
 import { format, parse } from "date-fns";
+import { getDateLocale } from "@/lib/dateLocale";
 import Table from "@/components/Tables/Table";
 import {
   useGetAttendancesQuery,
@@ -103,7 +104,7 @@ function AttendanceTab() {
       </div>
     </div>,
     <span key={`date-${record._id}`} className="text-sm text-cell-primary">
-      {record.date ? format(parse(record.date, "yyyy-MM-dd", new Date()), "dd MMM, yyyy") : "N/A"}
+      {record.date ? format(parse(record.date, "yyyy-MM-dd", new Date()), "dd MMM, yyyy", { locale: getDateLocale() }) : "N/A"}
     </span>,
     <span key={`start-${record._id}`} className="text-sm text-cell-primary">
       {record.start_time || "-"}

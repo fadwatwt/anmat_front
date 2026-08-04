@@ -154,12 +154,12 @@ function SocialMediaCategoriesPage() {
 
     return (
         <Page
-            title={"Account Categories"}
+            title={t("Account Categories")}
             otherHeaderActions={
                 <PermissionGuard permission="social_media_categories.create" fallback={null}>
                     <button
                         onClick={() => setIsCreateOpen(true)}
-                        className="bg-primary-500 hover:bg-primary-600 text-white flex gap-1 items-center px-3 py-2 rounded-lg text-sm transition-colors"
+                        className="bg-primary-500 hover:bg-primary-600 text-white flex gap-1 items-center px-3 py-2 rounded-lg text-sm transition-colors whitespace-nowrap"
                     >
                         <FiPlus />
                         {t("Add Category")}
@@ -168,12 +168,6 @@ function SocialMediaCategoriesPage() {
             }
         >
             <div className="bg-surface rounded-2xl border border-status-border p-4 flex flex-col gap-2">
-                <p className="text-cell-secondary text-sm">
-                    {t(
-                        "Categories let you group your social media accounts. Each subscriber has their own private set — categories are never shared across tenants.",
-                    )}
-                </p>
-
                 {isLoading ? (
                     <div className="flex items-center justify-center w-full p-8">
                         <ImSpinner2 className="animate-spin text-primary-500" size={30} />

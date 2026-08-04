@@ -5,6 +5,7 @@ import { RiVipDiamondLine } from "react-icons/ri";
 import CheckAlert from "@/components/Alerts/CheckِِAlert";
 import { useGetMySubscriptionQuery, useCancelRenewalMutation, useReactivateRenewalMutation } from "@/redux/subscriptions/subscriptionsApi";
 import { format } from "date-fns";
+import { getDateLocale } from "@/lib/dateLocale";
 import toast from "react-hot-toast";
 
 function Details({ onUpgradeClick }) {
@@ -96,7 +97,7 @@ function Details({ onUpgradeClick }) {
                             {t("Subscription end date")}
                         </span>
                         <span className="!text-table-title text-sm font-bold">
-                            {subscription.expires_at ? format(new Date(subscription.expires_at), "MMMM dd, yyyy") : t("N/A")}
+                            {subscription.expires_at ? format(new Date(subscription.expires_at), "MMMM dd, yyyy", { locale: getDateLocale() }) : t("N/A")}
                         </span>
                     </div>
                     <div className="flex flex-col items-start justify-start gap-0 min-w-0 sm:min-w-[12rem]">

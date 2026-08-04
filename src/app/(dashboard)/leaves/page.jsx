@@ -6,6 +6,7 @@ import Table from "@/components/Tables/Table.jsx";
 import ActionsBtns from "@/components/ActionsBtns";
 import { useGetMyLeavesQuery, useDeleteMyLeaveMutation } from "@/redux/leaves/employeeLeavesApi";
 import { format, parse } from "date-fns";
+import { getDateLocale } from "@/lib/dateLocale";
 import { HiPlus } from "react-icons/hi";
 import AddMyLeaveModal from "./modals/AddMyLeaveModal";
 import EditMyLeaveModal from "./modals/EditMyLeaveModal";
@@ -52,7 +53,7 @@ function MyLeavesPage() {
 
     const rows = sortedLeaves.map((record) => [
         <div key={`date-${record._id}`} className="text-cell-primary font-medium">
-            {record.date ? format(parse(record.date, "yyyy-MM-dd", new Date()), "dd MMM, yyyy") : "N/A"}
+            {record.date ? format(parse(record.date, "yyyy-MM-dd", new Date()), "dd MMM, yyyy", { locale: getDateLocale() }) : t("N/A")}
         </div>,
         <div key={`start-${record._id}`} className="text-cell-secondary">
             {formatTime(record.start_time)}

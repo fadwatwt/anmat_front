@@ -148,7 +148,7 @@ function NotificationDetailsModal({ isOpen, onClose, notification, onMarkAsRead 
           className={`flex items-start gap-3 p-4 rounded-xl ${
             isUnread
               ? "bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800"
-              : "bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700"
+              : "bg-gray-50 dark:bg-[#20232D]/50 border border-gray-200 dark:border-gray-700"
           }`}
         >
           <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center shrink-0">
@@ -225,7 +225,7 @@ function NotificationDetailsModal({ isOpen, onClose, notification, onMarkAsRead 
 
 function DetailRow({ icon, label, value }) {
   return (
-    <div className="flex flex-col gap-1.5 p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700/50">
+    <div className="flex flex-col gap-1.5 p-3 rounded-xl bg-gray-50 dark:bg-[#20232D]/50 border border-gray-100 dark:border-gray-700/50">
       <div className="flex items-center gap-1.5 text-gray-400 dark:text-gray-500">
         {icon}
         <span className="text-xs font-medium">{label}</span>

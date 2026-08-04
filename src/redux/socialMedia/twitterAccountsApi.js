@@ -85,7 +85,7 @@ export const twitterAccountsApi = createApi({
             query: (ids) => ({
                 url: "/accounts/delete/tweet",
                 method: "POST",
-                body: { ids },
+                body: { accounts: ids },
             }),
             invalidatesTags: [
                 { type: "TwitterAccounts", id: "LIST" },

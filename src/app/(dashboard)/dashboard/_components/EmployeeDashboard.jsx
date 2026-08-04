@@ -10,6 +10,7 @@ import { useGetEmployeeTaskStatisticsStatusQuery, useGetEmployeeTasksQuery } fro
 import { useGetEmployeeDashboardLogsQuery } from "@/redux/activity-logs/activityLogsApi";
 import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
+import { getDateLocale } from "@/lib/dateLocale";
 
 const EmployeeDashboard = () => {
     const { t } = useTranslation();
@@ -67,7 +68,7 @@ const EmployeeDashboard = () => {
             />
         </div>,
         <span key={`date-${index}`} className="text-cell-secondary">
-            {task.due_date ? format(new Date(task.due_date), "dd MMM, yyyy") : "-"}
+            {task.due_date ? format(new Date(task.due_date), "dd MMM, yyyy", { locale: getDateLocale() }) : "-"}
         </span>
     ]);
 

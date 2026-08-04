@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { format, parse } from "date-fns";
+import { getDateLocale } from "@/lib/dateLocale";
 import Page from "@/components/Page.jsx";
 import Table from "@/components/Tables/Table.jsx";
 import {
@@ -255,8 +256,8 @@ export default function EmployeeAttendancePage() {
         return attendances.map((record) => [
             <span key={`date-${record._id}`} className="text-sm text-cell-primary">
                 {record.date
-                    ? format(parse(record.date, "yyyy-MM-dd", new Date()), "dd MMM, yyyy")
-                    : "N/A"}
+                    ? format(parse(record.date, "yyyy-MM-dd", new Date()), "dd MMM, yyyy", { locale: getDateLocale() })
+                    : t("N/A")}
             </span>,
 
             <span key={`start-${record._id}`} className="text-sm text-cell-primary font-medium">

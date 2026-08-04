@@ -241,6 +241,15 @@ const permissionTranslations = {
   "admin.support_tickets.update": { en: "Update Support Ticket", ar: "تعديل تذكرة دعم" },
   "admin.support_tickets.delete": { en: "Delete Support Ticket", ar: "حذف تذكرة دعم" },
   "admin.support_tickets.respond": { en: "Respond to Escalation Requests", ar: "الرد على طلبات التحويل لبشري" },
+  "admin.chat_settings.manage": { en: "Manage Chat Settings", ar: "إدارة إعدادات المحادثة" },
+
+  // ── Money Receiving Methods ──
+  "admin.money_receiving_methods.create": { en: "Create Money Receiving Method", ar: "إنشاء طريقة استلام مبالغ" },
+  "admin.money_receiving_methods.delete": { en: "Delete Money Receiving Method", ar: "حذف طريقة استلام مبالغ" },
+  "admin.money_receiving_methods.list": { en: "List Money Receiving Methods", ar: "عرض طرق استلام المبالغ" },
+  "admin.money_receiving_methods.toggle_activity": { en: "Toggle Money Receiving Method Activity", ar: "تفعيل/تعطيل طريقة استلام المبالغ" },
+  "admin.money_receiving_methods.update": { en: "Update Money Receiving Method", ar: "تعديل طريقة استلام مبالغ" },
+  "admin.money_receiving_methods.view": { en: "View Money Receiving Method", ar: "عرض طريقة استلام مبالغ" },
 };
 
 /**
@@ -308,6 +317,7 @@ const permissionDetailsTranslations = {
   "admin.support_tickets.update": { en: "Allows the admin to update support tickets.", ar: "يسمح للمسؤول بتعديل تذاكر الدعم." },
   "admin.support_tickets.delete": { en: "Allows the admin to delete support tickets.", ar: "يسمح للمسؤول بحذف تذاكر الدعم." },
   "admin.support_tickets.respond": { en: "Allows responding to human escalation requests from the AI chat.", ar: "يسمح بالرد على طلبات التحويل لموظف بشري من شات الذكاء الاصطناعي." },
+  "admin.chat_settings.manage": { en: "Allows managing the chat settings.", ar: "يسمح بإدارة إعدادات المحادثة." },
   "admin.system_admins.create": { en: "Allows creating a new system admin.", ar: "يسمح بإنشاء مدير نظام جديد." },
   "admin.system_admins.list": { en: "Allows viewing all system admins.", ar: "يسمح بعرض جميع مدراء النظام." },
   "admin.system_admins.view": { en: "Allows viewing a specific system admin.", ar: "يسمح بعرض مدير نظام محدد." },
@@ -316,6 +326,12 @@ const permissionDetailsTranslations = {
   "admin.admin_roles.update": { en: "Allows updating an existing admin role.", ar: "يسمح بتعديل دور مسؤول موجود." },
   "admin.admin_roles.delete": { en: "Allows deleting an admin role.", ar: "يسمح بحذف دور مسؤول." },
   "admin.admin_permissions.list": { en: "Allows viewing all admin permissions.", ar: "يسمح بعرض جميع صلاحيات المسؤولين." },
+  "admin.money_receiving_methods.create": { en: "Allows creating a new money receiving method.", ar: "يسمح بإنشاء طريقة استلام مبالغ جديدة." },
+  "admin.money_receiving_methods.delete": { en: "Allows deleting a money receiving method.", ar: "يسمح بحذف طريقة استلام مبالغ." },
+  "admin.money_receiving_methods.list": { en: "Allows viewing all money receiving methods.", ar: "يسمح بعرض جميع طرق استلام المبالغ." },
+  "admin.money_receiving_methods.toggle_activity": { en: "Allows activating or deactivating a money receiving method.", ar: "يسمح بتفعيل/تعطيل طريقة استلام مبالغ." },
+  "admin.money_receiving_methods.update": { en: "Allows updating an existing money receiving method.", ar: "يسمح بتعديل طريقة استلام مبالغ موجودة." },
+  "admin.money_receiving_methods.view": { en: "Allows viewing a specific money receiving method.", ar: "يسمح بعرض طريقة استلام مبالغ محددة." },
 };
 
 export const getPermissionDetails = (permissionName, permission) => {

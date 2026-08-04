@@ -208,7 +208,7 @@ function ElementsSelect({
                         <div
                             ref={dropdownRef}
                             style={dropdownStyle}
-                            className={`fixed z-[9999] bg-surface border border-status-border rounded-xl shadow-2xl mt-1 max-h-64 overflow-y-auto ${dropDownClassName || ""}`}
+                            className={`fixed z-[9999] bg-surface border border-status-border rounded-xl shadow-2xl mt-1 max-h-64 overflow-y-auto custom-scroll ${dropDownClassName || ""}`}
                         >
                             {options.map((option) => (
                                 <div
@@ -221,7 +221,7 @@ function ElementsSelect({
                                             type="checkbox"
                                             checked={selectedOptions.some((u) => u.id === option.id)}
                                             readOnly
-                                            className="mr-3 w-4 h-4 rounded border-status-border accent-primary-500 shrink-0 pointer-events-none"
+                                            className="ms-3 w-4 h-4 rounded border-status-border accent-primary-500 shrink-0 pointer-events-none"
                                         />
                                     )}
 

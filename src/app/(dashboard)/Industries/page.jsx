@@ -25,14 +25,14 @@ import {
     useUpdateIndustryMutation,
 } from "@/redux/industries/industriesApi";
 
-const headers = [
-    { label: "Industry Name", width: "25%" },
-    { label: "Icon",          width: "12%" },
-    { label: "Created By",    width: "12%" },
-    { label: "Subscribers",   width: "12%" },
-    { label: "Allowed",       width: "12%" },
-    { label: "Status",        width: "15%" },
-    { label: "",              width: "12%" },
+const getHeaders = (t) => [
+    { label: t("Industry Name"), width: "25%" },
+    { label: t("Icon"),          width: "12%" },
+    { label: t("Created By"),    width: "12%" },
+    { label: t("Subscribers"),   width: "12%" },
+    { label: t("Allowed"),       width: "12%" },
+    { label: t("Status"),        width: "15%" },
+    { label: "",                 width: "12%" },
 ];
 
 function IndustriesPage() {
@@ -201,7 +201,7 @@ function IndustriesPage() {
             <Table
                 classContainer="rounded-2xl px-8"
                 title={t("All Industries")}
-                headers={headers}
+                headers={getHeaders(t)}
                 rows={rows}
                 isActions={false}
                 customActions={(idx) => <IndustryActions industry={industries[idx]} />}

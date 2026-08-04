@@ -31,6 +31,7 @@ import CheckAlert from "@/components/Alerts/CheckِِAlert";
 import { useGetSubscriberQuery } from "@/redux/subscribers/subscribersApi";
 import { useGetSubscriptionsQuery, useUpdateSubscriptionStatusMutation } from "@/redux/subscriptions/subscriptionsApi";
 import { format, differenceInDays } from "date-fns";
+import { getDateLocale } from "@/lib/dateLocale";
 import Switch2 from "@/components/Form/Switch2";
 import SelectWithoutLabel from "@/components/Form/SelectWithoutLabel";
 import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
@@ -167,7 +168,7 @@ function AdminProfile() {
 
         // Created at cell
         <div key={`${subscription._id}_created_at`}>
-            {subscription.createdAt ? format(new Date(subscription.createdAt), "MMM dd, yyyy") : "N/A"}
+            {subscription.createdAt ? format(new Date(subscription.createdAt), "MMM dd, yyyy", { locale: getDateLocale() }) : "N/A"}
         </div>,
 
 
@@ -214,7 +215,7 @@ function AdminProfile() {
                                             <RiCake2Line size={18} className={"text-cell-secondary"} />
                                             <p className={"text-cell-secondary text-sm"}>{t("Joined")}:</p>
                                             <p className={"text-cell-primary text-sm font-medium"}>
-                                                {subscriber?.createdAt ? format(new Date(subscriber.createdAt), "MMM dd, yyyy") : "N/A"}
+                                                {subscriber?.createdAt ? format(new Date(subscriber.createdAt), "MMM dd, yyyy", { locale: getDateLocale() }) : "N/A"}
                                             </p>
                                         </div>
                                         <div className={"name-profile flex items-center gap-1"}>
@@ -446,7 +447,7 @@ function AdminProfile() {
                                     <RiCalendarLine size={18} className={"text-cell-secondary"} />
                                     <span className={"text-cell-secondary text-sm"}>{t("Subscription Date")}:</span>
                                     <p className={"text-cell-primary text-sm font-medium"}>
-                                        {lastActiveSubscription?.starts_at ? format(new Date(lastActiveSubscription.starts_at), "MMM dd, yyyy") : "N/A"}
+                                        {lastActiveSubscription?.starts_at ? format(new Date(lastActiveSubscription.starts_at), "MMM dd, yyyy", { locale: getDateLocale() }) : "N/A"}
                                     </p>
                                 </div>
                                 <div className={"name-profile flex items-center gap-2"}>

@@ -27,13 +27,28 @@ export async function downloadExport({ headers, rows, format, fileName }, token)
 
   const blob = await response.blob();
   const disposition = response.headers.get("Content-Disposition");
-  const match = disposition?.match(/filename="?(.+?)"?$/);
-  const filename = match?.[1] || `${fileName || "export"}.${format}`;
+
+  let filename = null;
+  // Prefer the RFC 5987 UTF-8 filename (supports Arabic and other scripts).
+  const starMatch = disposition?.match(/filename\*=UTF-8''([^;]+)/i);
+  if (starMatch) {
+    try {
+      filename = decodeURIComponent(starMatch[1].trim());
+    } catch {
+      filename = null;
+    }
+  }
+  if (!filename) {
+    const plainMatch = disposition?.match(/filename="?([^";]+)"?/i);
+    filename = plainMatch?.[1];
+  }
+
+  const finalName = filename || `${fileName || "export"}.${format}`;
 
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = filename;
+  link.download = finalName;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);

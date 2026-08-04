@@ -6,11 +6,12 @@ import { useMemo } from 'react'
 import ContentCard from "@/components/containers/ContentCard";
 import { RiCircleFill } from "@remixicon/react";
 import { Line, LineChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
+import { localizeMonthLabel } from "@/lib/dateLocale";
 
 const RevenuesChart = ({ data = [] }) => {
     const { t } = useTranslation();
     // Check efficiency: ensures data is present
-    const chartData = data.length > 0 ? data : [];
+    const chartData = data.map((item) => ({ ...item, name: localizeMonthLabel(item.name) }));
 
     const summary = useMemo(() => {
         if (chartData.length < 2) return null;

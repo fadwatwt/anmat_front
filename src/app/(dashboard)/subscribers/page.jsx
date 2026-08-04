@@ -18,6 +18,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FiEye } from "react-icons/fi";
 import { format } from "date-fns";
+import { getDateLocale } from "@/lib/dateLocale";
 import SendAdminNotificationModal from "@/components/Modal/SendAdminNotificationModal";
 
 import InitialsAvatar from "@/components/InitialsAvatar";
@@ -94,15 +95,15 @@ function Subscribers() {
       <div className="flex flex-col items-start justify-start gap-0 overflow-hidden">
         <span
           className="text-sm font-medium text-cell-primary truncate w-full block max-w-[200px]"
-          title={subscriber.organization?.name || "N/A"}
+          title={subscriber.organization?.name || t("N/A")}
         >
-          {subscriber.organization?.name || "N/A"}
+          {subscriber.organization?.name || t("N/A")}
         </span>
         <span
           className="text-xs text-cell-secondary truncate w-full block max-w-[200px]"
-          title={subscriber.organization?.website || "N/A"}
+          title={subscriber.organization?.website || t("N/A")}
         >
-          {subscriber.organization?.website || "N/A"}
+          {subscriber.organization?.website || t("N/A")}
         </span>
       </div>
     </div>,
@@ -115,19 +116,19 @@ function Subscribers() {
         </div>
       </div>
       <span className="text-sm font-medium text-cell-primary">
-        {subscriber.activePlan?.name || "N/A"}
+        {subscriber.activePlan?.name || t("N/A")}
       </span>
     </div>,
 
     // Industry and Date cell
-    <div key={`${subscriber._id}_industry`} className="text-sm text-cell-secondary truncate max-w-[120px]" title={subscriber.organization?.industry?.name || "N/A"}>
-      {subscriber.organization?.industry?.name || "N/A"}
+    <div key={`${subscriber._id}_industry`} className="text-sm text-cell-secondary truncate max-w-[120px]" title={subscriber.organization?.industry?.name || t("N/A")}>
+      {subscriber.organization?.industry?.name || t("N/A")}
     </div>,
     <div key={`${subscriber._id}_date`} className="text-sm text-cell-secondary">
-      {(subscriber.subscribed_at || subscriber.createdAt) ? format(new Date(subscriber.subscribed_at || subscriber.createdAt), "MMM dd, yyyy") : "N/A"}
+      {(subscriber.subscribed_at || subscriber.createdAt) ? format(new Date(subscriber.subscribed_at || subscriber.createdAt), "MMM dd, yyyy", { locale: getDateLocale() }) : t("N/A")}
     </div>,
     <div key={`${subscriber._id}_expiry`} className="text-sm text-cell-secondary">
-      {subscriber.expires_at ? format(new Date(subscriber.expires_at), "MMM dd, yyyy") : "N/A"}
+      {subscriber.expires_at ? format(new Date(subscriber.expires_at), "MMM dd, yyyy", { locale: getDateLocale() }) : t("N/A")}
     </div>,
 
     // Users Subscribed cell

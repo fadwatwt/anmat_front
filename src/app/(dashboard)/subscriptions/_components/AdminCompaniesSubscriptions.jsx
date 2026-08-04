@@ -16,6 +16,7 @@ import {useState} from "react";
 import {useRouter} from "next/navigation";
 import { useGetSubscriptionsBasicDetailsQuery, useUpdateSubscriptionStatusMutation } from "@/redux/subscriptions/subscriptionsApi";
 import { format } from "date-fns";
+import { getDateLocale } from "@/lib/dateLocale";
 
 function AdminCompaniesSubscriptions() {
     const { data: subscriptions, isLoading, error } = useGetSubscriptionsBasicDetailsQuery();
@@ -78,10 +79,10 @@ function AdminCompaniesSubscriptions() {
 
         // Dates
         <div key={`${item.subscription._id}_start`} className="text-sm text-cell-secondary">
-            {item.subscription.starts_at ? format(new Date(item.subscription.starts_at), "MMM dd, yyyy") : t("N/A")}
+            {item.subscription.starts_at ? format(new Date(item.subscription.starts_at), "MMM dd, yyyy", { locale: getDateLocale() }) : t("N/A")}
         </div>,
         <div key={`${item.subscription._id}_end`} className="text-sm text-cell-secondary">
-            {item.subscription.expires_at ? format(new Date(item.subscription.expires_at), "MMM dd, yyyy") : t("N/A")}
+            {item.subscription.expires_at ? format(new Date(item.subscription.expires_at), "MMM dd, yyyy", { locale: getDateLocale() }) : t("N/A")}
         </div>,
 
         // Status cell

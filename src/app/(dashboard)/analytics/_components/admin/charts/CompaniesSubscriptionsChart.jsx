@@ -4,6 +4,7 @@ import { ImSpinner2 } from "react-icons/im";
 
 import { useMemo } from "react";
 import { format, subMonths, startOfMonth, isWithinInterval, endOfMonth } from "date-fns";
+import { getDateLocale } from "@/lib/dateLocale";
 import { useGetSubscriptionsQuery } from "@/redux/subscriptions/subscriptionsApi";
 import ChartSelect from "@/app/(dashboard)/analytics/_components/admin/ChartSelect";
 import BarChartComponent from "@/components/containers/chart/BarChartComponent";
@@ -22,7 +23,7 @@ const CompaniesSubscriptionsChart = ({ monthlyData: monthlyProp }) => {
         const last12Months = Array.from({ length: 12 }, (_, i) => {
             const date = subMonths(new Date(), 11 - i);
             return {
-                name: format(date, "MMM"),
+                name: format(date, "MMM", { locale: getDateLocale() }),
                 start: startOfMonth(date),
                 end: endOfMonth(date),
                 count: 0

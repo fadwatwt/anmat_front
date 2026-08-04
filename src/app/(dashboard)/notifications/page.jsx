@@ -383,7 +383,7 @@ function NotificationCard({ notification, onMarkAsRead, onViewDetails }) {
       className={`relative flex items-stretch rounded-2xl border transition-all cursor-pointer hover:shadow-md ${
         isUnread
           ? "border-blue-200 dark:border-blue-800 bg-white dark:bg-gray-800"
-          : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/60"
+          : "border-gray-200 dark:border-gray-700 bg-white dark:bg-[#20232D]/60"
       }`}
     >
       <div className={`w-1.5 shrink-0 rounded-l-2xl ${priority.bar}`} />

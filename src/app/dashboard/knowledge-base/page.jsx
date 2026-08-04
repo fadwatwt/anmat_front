@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import Page from "@/components/Page/Page";
+import Page from "@/components/Page.jsx";
 import { useGetKbEntriesQuery, useCreateKbEntryMutation, useUpdateKbEntryMutation, useDeleteKbEntryMutation, useUploadKbFileMutation } from "@/redux/api/knowledgeBaseApi";
 import { X, FileText, Search, Plus, Trash2, Edit, FileUp } from "lucide-react";
 

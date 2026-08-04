@@ -8,6 +8,7 @@ import StatusActions from "@/components/Dropdowns/StatusActions";
 import CheckAlert from "@/components/Alerts/CheckِِAlert";
 import { useGetMyPaymentsQuery } from "@/redux/subscriptions/subscriptionsApi";
 import { format } from "date-fns";
+import { getDateLocale } from "@/lib/dateLocale";
 
 const headers = [
     { label: "Product", width: "200px" },
@@ -61,7 +62,7 @@ function History() {
         </div>,
 
         // Date cell
-        <div key={`date-${payment._id}`}>{payment.createdAt ? format(new Date(payment.createdAt), "MMM dd, yyyy") : "N/A"}</div>,
+        <div key={`date-${payment._id}`}>{payment.createdAt ? format(new Date(payment.createdAt), "MMM dd, yyyy", { locale: getDateLocale() }) : "N/A"}</div>,
 
         // Amount cell
         <div key={`amount-${payment._id}`}>{payment.currency?.toUpperCase()} {payment.amount}</div>,

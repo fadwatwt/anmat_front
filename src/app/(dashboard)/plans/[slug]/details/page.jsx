@@ -22,6 +22,7 @@ import {
 } from "@remixicon/react";
 import { useGetSubscriptionPlanQuery, useGetSubscriptionPlanHistoryQuery } from "@/redux/plans/subscriptionPlansApi";
 import { format } from "date-fns";
+import { getDateLocale } from "@/lib/dateLocale";
 import ContentCard from "@/components/containers/ContentCard";
 import Table from "@/components/Tables/Table.jsx";
 import Status from "@/app/(dashboard)/projects/_components/TableInfo/Status.jsx";
@@ -53,7 +54,7 @@ function PlanDetails() {
             {h.version}
         </div>,
         <span key={`date-${h._id}`} className="text-sm text-cell-primary">
-            {format(new Date(h.createdAt), "MMM dd, yyyy HH:mm")}
+            {format(new Date(h.createdAt), "MMM dd, yyyy HH:mm", { locale: getDateLocale() })}
         </span>,
         <div key={`pricing-${h._id}`} className="flex flex-col gap-1.5">
             {h.pricing?.map((p, idx) => (
@@ -166,7 +167,7 @@ function PlanDetails() {
                                         />
                                         <InfoRow
                                             label={t("Created At")}
-                                            value={plan.createdAt ? format(new Date(plan.createdAt), "MMM dd, yyyy") : "N/A"}
+                                            value={plan.createdAt ? format(new Date(plan.createdAt), "MMM dd, yyyy", { locale: getDateLocale() }) : "N/A"}
                                             icon={RiCalendarLine}
                                         />
                                     </div>

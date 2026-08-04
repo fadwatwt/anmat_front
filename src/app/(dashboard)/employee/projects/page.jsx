@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import dynamic from "next/dynamic";
 import { format } from "date-fns";
+import { getDateLocale } from "@/lib/dateLocale";
 import PropTypes from "prop-types";
 import { GoCheckCircleFill, GoClockFill, GoAlertFill } from "react-icons/go";
 import { User, Calendar } from "iconsax-react";
@@ -146,11 +147,11 @@ const EmployeeProjectsPage = () => {
       <ProgressIndicator key={`progress-${project._id}`} progress={project.progress || 0} />,
       <div key={`start-${project._id}`} className="flex items-center gap-1.5 text-sm text-cell-secondary">
         <Calendar size={14} className="opacity-60" />
-        {project.start_date ? format(new Date(project.start_date), "dd MMM, yyyy") : "—"}
+        {project.start_date ? format(new Date(project.start_date), "dd MMM, yyyy", { locale: getDateLocale() }) : "—"}
       </div>,
       <div key={`due-${project._id}`} className="flex items-center gap-1.5 text-sm text-primary-base font-semibold">
         <Calendar size={14} className="opacity-80" />
-        {project.due_date ? format(new Date(project.due_date), "dd MMM, yyyy") : "—"}
+        {project.due_date ? format(new Date(project.due_date), "dd MMM, yyyy", { locale: getDateLocale() }) : "—"}
       </div>,
       <div key={`assignees-${project._id}`} className="flex -space-x-2">
         {project.assignees?.slice(0, 3).map((assignee, idx) => (

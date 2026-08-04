@@ -14,6 +14,7 @@ import Table from "@/components/Tables/Table";
 import { useTranslation } from "react-i18next";
 import { useGetMyPaymentsQuery } from "@/redux/subscriptions/subscriptionsApi";
 import { format } from "date-fns";
+import { getDateLocale } from "@/lib/dateLocale";
 
 const headers = [
     { label: "Product", width: "300px" },
@@ -94,7 +95,7 @@ function OrdersTable() {
         </div>,
 
         // Date cell
-        <div key={`date-${payment._id}`}>{payment.createdAt ? format(new Date(payment.createdAt), "MMM dd, yyyy") : "N/A"}</div>,
+        <div key={`date-${payment._id}`}>{payment.createdAt ? format(new Date(payment.createdAt), "MMM dd, yyyy", { locale: getDateLocale() }) : "N/A"}</div>,
 
         // Amount cell
         <div key={`amount-${payment._id}`}>{payment.currency?.toUpperCase()} {payment.amount}</div>,

@@ -7,6 +7,7 @@ import { CartesianGrid } from "recharts/es6/cartesian/CartesianGrid";
 import { ResponsiveContainer } from "recharts/es6/component/ResponsiveContainer";
 import { XAxis } from "recharts/es6/cartesian/XAxis";
 import { YAxis } from "recharts/es6/cartesian/YAxis";
+import { localizeMonthLabel } from "@/lib/dateLocale";
 
 const BarChartDraw = ({
     barGab = 4,
@@ -17,6 +18,7 @@ const BarChartDraw = ({
     ticks = [0, 25, 50, 75, 100, 125]
 }) => {
     const [theme] = useTheme();
+    const localizedData = (monthlyData || []).map((item) => ({ ...item, name: localizeMonthLabel(item.name) }));
 
     return (
         <div className="flex flex-col items-start justify-start gap-0 w-full">
@@ -27,7 +29,7 @@ const BarChartDraw = ({
             </span>}
             <div className="h-64 w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={monthlyData} barGap={barGab}>
+                    <BarChart data={localizedData} barGap={barGab}>
                         {" "}
 
                         {/* Reduce barGap */}

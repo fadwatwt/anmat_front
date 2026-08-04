@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import Modal from "../Modal.jsx";
@@ -10,7 +10,7 @@ import ApiResponseAlert from "../../Alerts/ApiResponseAlert.jsx";
 import { useProcessing } from "@/app/providers";
 import { useCheckTwitterAccountsMutation } from "@/redux/socialMedia/twitterAccountsApi";
 
-function LoginAccountsModal({ isOpen, onClose, className }) {
+function LoginAccountsModal({ isOpen, onClose, className, initialSelectedAccounts = [] }) {
     const { t } = useTranslation();
     const [checkTwitterAccounts, { isLoading }] = useCheckTwitterAccountsMutation();
     const { showProcessing, hideProcessing } = useProcessing();
@@ -23,6 +23,13 @@ function LoginAccountsModal({ isOpen, onClose, className }) {
         status: null,
         message: "",
     });
+
+    // Pre-fill the picker with the accounts selected in the table when the modal opens.
+    useEffect(() => {
+        if (isOpen) {
+            setSelectedAccounts(initialSelectedAccounts);
+        }
+    }, [isOpen, initialSelectedAccounts]);
 
     const reset = () => {
         setSelectedAccounts([]);
@@ -175,6 +182,7 @@ LoginAccountsModal.propTypes = {
     isOpen: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     className: PropTypes.string,
+    initialSelectedAccounts: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default LoginAccountsModal;

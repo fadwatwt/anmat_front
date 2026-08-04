@@ -26,6 +26,7 @@ import {
     useToggleSubscriptionPlanTrialStatusMutation
 } from "@/redux/plans/subscriptionPlansApi";
 import { format } from "date-fns";
+import { getDateLocale } from "@/lib/dateLocale";
 import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import PermissionGuard from "@/components/PermissionGuard";
@@ -198,12 +199,12 @@ function SubscriptionPlansTab({ canCreate, canUpdate, canDelete, canToggleActivi
 
         // Price cell
         <div key={`${plan._id}_price`} className="text-sm">
-            {plan.pricing?.[0] ? `${plan.pricing[0].price} / ${plan.pricing[0].interval}` : t("N/A")}
+            {plan.pricing?.[0] ? `${plan.pricing[0].price} / ${t(plan.pricing[0].interval)}` : t("N/A")}
         </div>,
 
         // Created at cell
         <div key={`${plan._id}_created_at`} className="text-sm">
-            {plan.createdAt ? format(new Date(plan.createdAt), "MMM dd, yyyy") : t("N/A")}
+            {plan.createdAt ? format(new Date(plan.createdAt), "MMM dd, yyyy", { locale: getDateLocale() }) : t("N/A")}
         </div>,
 
         // Trial Cell

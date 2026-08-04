@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
+import { getDateLocale } from "@/lib/dateLocale";
 import { useGetSubscriptionsBasicDetailsQuery } from "@/redux/subscriptions/subscriptionsApi";
 import { useGetIndustriesQuery } from "@/redux/industries/industriesApi";
 import { useGetOrganizationsQuery } from "@/redux/organizations/organizationsApi";
@@ -111,10 +112,10 @@ const AdminDashboard = () => {
             {statusCell(item.subscription?.status, item.subscription?._id)}
         </div>,
         <span key={`start-${item.subscription?._id}`} className="text-sm text-cell-secondary font-medium">
-            {item.subscription?.starts_at ? format(new Date(item.subscription.starts_at), "MMM dd, yyyy") : t("N/A")}
+            {item.subscription?.starts_at ? format(new Date(item.subscription.starts_at), "MMM dd, yyyy", { locale: getDateLocale() }) : t("N/A")}
         </span>,
         <span key={`expires-${item.subscription?._id}`} className="text-sm text-cell-secondary font-medium">
-            {item.subscription?.expires_at ? format(new Date(item.subscription.expires_at), "MMM dd, yyyy") : t("N/A")}
+            {item.subscription?.expires_at ? format(new Date(item.subscription.expires_at), "MMM dd, yyyy", { locale: getDateLocale() }) : t("N/A")}
         </span>,
     ]) || [];
 

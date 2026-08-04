@@ -64,7 +64,7 @@ function SubscriptionPlansTranslationsTab({ canUpdate }) {
       </div>,
       <div key={`${plan._id}_price`} className="text-sm">
         {plan.pricing?.[0]
-          ? `${plan.pricing[0].price} / ${plan.pricing[0].interval}`
+          ? `${plan.pricing[0].price} / ${t(plan.pricing[0].interval)}`
           : t("N/A")}
       </div>,
       <PlanTranslationBadge key={`${plan._id}_ar`} planId={plan._id} locale="ar" />,

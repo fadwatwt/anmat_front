@@ -70,11 +70,11 @@ function Table({
     showExport = true,
     onExport,
     exportFileName,
+    onSelectionChange,
 }) {
     const { t, i18n } = useTranslation();
     // Only users granted the export capability may see/use the export button.
     const canExport = usePermission(EXPORT_PERMISSION);
-    const [isAllSelected, setIsAllSelected] = useState(false);
     const [selectedRows, setSelectedRows] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -106,7 +106,18 @@ function Table({
         "aria-label",
     ];
 
-    const extractText = (node) => {
+    // Tailwind classes that mean an element is never visible on screen
+    // (hover panels, sr-only labels, etc.). Responsive `hidden` classes are
+    // NOT included here because they can still be visible at some breakpoint.
+    const HIDDEN_CLASS_RE = /(?:^|\s)(invisible|opacity-0|sr-only|collapse)(?:\s|$)/;
+
+    const isHiddenElement = (node) => {
+        if (!isValidElement(node)) return false;
+        const className = node.props?.className;
+        return typeof className === "string" && HIDDEN_CLASS_RE.test(className);
+    };
+
+    const extractText = (node, separator = " ") => {
         if (node === null || node === undefined || typeof node === "boolean") {
             return "";
         }
@@ -114,11 +125,19 @@ function Table({
             return String(node);
         }
         if (Array.isArray(node)) {
-            return node.map(extractText).filter(Boolean).join(" ");
+            return node
+                .map((child) => extractText(child, separator))
+                .filter(Boolean)
+                .join(separator);
         }
         if (isValidElement(node)) {
+            // Skip elements that are visually hidden (hover panels, screen-
+            // reader-only text) so exports don't contain duplicated UI text.
+            if (isHiddenElement(node)) {
+                return "";
+            }
             const nodeProps = node.props || {};
-            const childrenText = extractText(nodeProps.children);
+            const childrenText = extractText(nodeProps.children, separator);
             if (childrenText.trim()) {
                 return childrenText;
             }
@@ -183,19 +202,22 @@ function Table({
 
     const filteredRows = filtered.map((item) => item.row);
 
+    // "Select all" covers every filtered row across all pages.
+    const isAllSelected =
+        filtered.length > 0 &&
+        filtered.every((item) => selectedRows.includes(item.originalIndex));
+
     const totalPages = Math.max(1, Math.ceil(filteredRows.length / rowsPerPage));
 
     const handleHeaderCheckboxChange = () => {
-        const pageItems = filtered.slice(
-            (currentPage - 1) * rowsPerPage,
-            currentPage * rowsPerPage
-        );
         const newSelectedRows = isAllSelected
             ? []
-            : pageItems.map((item) => item.originalIndex);
+            : filtered.map((item) => item.originalIndex);
 
-        setIsAllSelected(!isAllSelected);
         setSelectedRows(newSelectedRows);
+        if (typeof onSelectionChange === "function") {
+            onSelectionChange(newSelectedRows);
+        }
     };
 
     const handleDropdownToggle = (index, event) => {
@@ -221,6 +243,9 @@ function Table({
             ? selectedRows.filter((id) => id !== rowIndex)
             : [...selectedRows, rowIndex];
         setSelectedRows(newSelectedRows);
+        if (typeof onSelectionChange === "function") {
+            onSelectionChange(newSelectedRows);
+        }
     };
 
     const handlePageChange = (page) => {
@@ -233,6 +258,9 @@ function Table({
         setRowsPerPage(Number(event.target.value));
         setCurrentPage(1);
         setSelectedRows([]);
+        if (typeof onSelectionChange === "function") {
+            onSelectionChange([]);
+        }
     };
 
     const startIndex = (currentPage - 1) * rowsPerPage;
@@ -288,8 +316,13 @@ function Table({
         setExportMenuOpen(false);
         const rowsToExport = getRowsToExport();
         const headerLabels = getHeaderLabels();
+        // For PDF, sibling cell items (e.g. permission badges) are joined with
+        // a separator so the backend can render each one as its own badge.
+        const cellSeparator = format === "pdf" ? " | " : " ";
         const plainRows = rowsToExport.map((row) =>
-            (row || []).map((cell) => extractText(cell).trim().replace(/\s+/g, " "))
+            (row || []).map((cell) =>
+                extractText(cell, cellSeparator).trim().replace(/\s+/g, " ")
+            )
         );
         const token = typeof window !== "undefined" ? localStorage.getItem("token") : "";
         try {
@@ -728,6 +761,7 @@ Table.propTypes = {
     showExport: PropTypes.bool,
     onExport: PropTypes.func,
     exportFileName: PropTypes.string,
+    onSelectionChange: PropTypes.func,
 };
 
 export default Table;
