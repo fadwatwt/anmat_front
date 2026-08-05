@@ -17,7 +17,7 @@ import { useGetPositionsQuery } from "@/redux/positions/positionsApi";
 const validationSchema = Yup.object({
     name: Yup.string().required("required"),
     description: Yup.string().required("required"),
-    rate: Yup.number().required("required").min(0).max(1),
+    rate: Yup.number().required("required").min(0).max(5),
     positions_ids: Yup.array().min(1, "At least one position is required"),
 });
 
@@ -145,11 +145,11 @@ function EditDepartmentModal({ isOpen, onClose, department }) {
                             value={formik.values.rate}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
-                            placeholder={t("Enter rate (0 - 1)")}
+                            placeholder={t("Enter rate (0 - 5)")}
                             isRequired={true}
                             disabled={isLoading}
                             min={0}
-                            max={1}
+                            max={5}
                             step={0.01}
                             error={formik.touched.rate && formik.errors.rate ? t(formik.errors.rate) : ""}
                         />

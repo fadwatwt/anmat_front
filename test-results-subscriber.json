@@ -1,0 +1,138 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "H:\\Company\\anmaat-system\\anmat_front-main\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "playwright.subscriber.config.js",
+      "--project=subscriber-setup"
+    ],
+    "configFile": "H:\\Company\\anmaat-system\\anmat_front-main\\playwright.subscriber.config.js",
+    "rootDir": "H:/Company/anmaat-system/anmat_front-main/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "H:/Company/anmaat-system/anmat_front-main/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "subscriber-setup",
+        "name": "subscriber-setup",
+        "testDir": "H:/Company/anmaat-system/anmat_front-main/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/subscriber-auth\\.setup\\.js/"
+        ],
+        "timeout": 240000
+      },
+      {
+        "outputDir": "H:/Company/anmaat-system/anmat_front-main/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "subscriber-check",
+        "name": "subscriber-check",
+        "testDir": "H:/Company/anmaat-system/anmat_front-main/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/subscriber-check\\.spec\\.js/"
+        ],
+        "timeout": 240000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results-subscriber.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "subscriber-auth.setup.js",
+      "file": "subscriber-auth.setup.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "subscriber session is stored",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 240000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "subscriber-setup",
+              "projectName": "subscriber-setup",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2852,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-08-05T11:01:31.690Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f50de7f54baec6726a63-6d4850f231bb294131ac",
+          "file": "subscriber-auth.setup.js",
+          "line": 15,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-08-05T11:01:30.796Z",
+    "duration": 4516.665000000001,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

@@ -10,7 +10,7 @@ function SearchInput({ value, onChange, placeholder }) {
             <div className="w-full max-w-sm min-w-[200px]">
                 <div className="relative flex items-center">
                     <div className="absolute w-5 h-5 top-2.5 left-2.5 text-cell-secondary">
-                        <CiSearch size={"lg"} />
+                        <CiSearch size={16} />
                     </div>
 
                     <input

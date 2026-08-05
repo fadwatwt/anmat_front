@@ -1,0 +1,39 @@
+{
+  "title": "فحص اللغة العربية — لوحة تحكم المشترك (Subscriber Dashboard)",
+  "date": "2026-08-05",
+  "user": "nextsub1@anmat.test",
+  "languageSet": "ar (i18nextLng=ar)",
+  "staticCheck": {
+    "enKeys": 2490,
+    "arKeys": 3005,
+    "missingInAr": 0,
+    "note": "لا توجد مفاتيح ناقصة: كل المفاتيح الإنجليزية مترجمة بالعربية (الملف العربي أكبر لأن فيه مفاتيح قديمة إضافية)"
+  },
+  "runtimeCheck": {
+    "screensScanned": 21,
+    "htmlLangOnAllScreens": "ar",
+    "dirOnAllScreens": "rtl",
+    "rawTranslationKeysVisible": 0,
+    "unresolvedInterpolation": 0,
+    "uiChromeArabic": true,
+    "notes": {
+      "sidebar": "القائمة الجانبية كلها عربية (الرئيسية، المشاريع، المهام، الأجندة، الموظفين، الأقسام، الفرق، المناصب، الاجتماعات، الاجازات، المحادثة، إدارة وسائل التواصل الاجتماعي...)"
+    }
+  },
+  "remainingLatinText": [
+    {
+      "type": "بيانات من قاعدة البيانات",
+      "examples": ["Sample Project Name Updated", "Test Template 6", "Dep 2 updated", "Leave Updated", "Emp 1 Org 1", "Nx Org", "Subscriber 4"],
+      "note": "أسماء/أوصاف أُدخلت بالإنجليزية في بيانات الاختبار — ليست نصوص واجهة"
+    },
+    {
+      "type": "اسم اللغة (اسم علم)",
+      "examples": ["English", "EN"],
+      "note": "زر تبديل اللغة يعرض اسم اللغة بالإنجليزية — سلوك قياسي"
+    }
+  ],
+  "extraFindings": {
+    "englishNotificationMessages": "رسائل الإشعارات القادمة من الخادم بالإنجليزية تُحوَّل آلياً للعربية عبر regex (مثال: 'X has logged in to the system' → 'X قام بتسجيل الدخول إلى النظام.') في NotificationsDropdown.jsx و notifications/page.jsx و NotificationDetails.modal.jsx"
+  },
+  "conclusion": "النسخة العربية كاملة: جميع نصوص الواجهة في لوحة المشترك تظهر بالعربية، ولا توجد مفاتيح ناقصة أو نصوص واجهة إنجليزية متبقية"
+}

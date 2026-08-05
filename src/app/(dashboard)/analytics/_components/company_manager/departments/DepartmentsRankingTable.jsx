@@ -21,7 +21,7 @@ const DepartmentsRankingTable = ({ rows: rowsProp = [] }) => {
             <React.Fragment key={dept.rank + dept.name}>
                 <div className={"flex justify-start items-center gap-2"}>
                     <div className={"flex justify-center items-center rounded-full w-9 h-9 border border-gray-400 dark:border-gray-700"}>
-                        <img src="/images/Department Brands/departmentBrand1.png" alt={t("")} className={"w-6 h-6 rounded-full"} />
+                        <img src="/images/department/departmentBrand1.png" alt={dept.name} className={"w-6 h-6 rounded-full"} />
                     </div>
                     <div className={"flex flex-col items-start gap-1"}>
                         <p className={"text-sm dark:text-gray-200"}>{dept.name}</p>

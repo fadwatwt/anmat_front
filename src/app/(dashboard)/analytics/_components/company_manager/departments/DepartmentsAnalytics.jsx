@@ -14,7 +14,7 @@ const DepartmentsAnalytics = () => {
 
     const chartData = departments.map(dept => ({
         name: dept.name,
-        rate: parseFloat(((dept.rate || 0) * 5).toFixed(2))
+        rate: parseFloat(((dept.overall_rating || dept.rate || 0)).toFixed(2))
     }));
 
     const bars = [

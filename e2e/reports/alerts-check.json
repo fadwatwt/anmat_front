@@ -1,0 +1,95 @@
+{
+  "checkedAt": "2026-08-05",
+  "scope": "All Alerts in the Subscriber dashboard (Arabic RTL, lang=ar)",
+  "summary": {
+    "total_checks": 10,
+    "verified_arabic": 7,
+    "confirmed_bugs": 3
+  },
+  "verified_arabic": [
+    {
+      "id": "approval_confirm_create",
+      "type": "ApprovalAlert",
+      "flow": "positions > create",
+      "text": "تأكيد الإنشاء | هل أنت متأكد أنك تريد إنشاء منصب \"AlertTest 1785928738736\"؟",
+      "buttons": ["إلغاء", "نعم، إنشاء"]
+    },
+    {
+      "id": "api_success_create",
+      "type": "ApiResponseAlert (success)",
+      "flow": "positions > create",
+      "text": "تم إنشاء المنصب بنجاح!",
+      "buttons": ["موافق"]
+    },
+    {
+      "id": "api_error_generic",
+      "type": "ApiResponseAlert (error)",
+      "flow": "positions > create (backend 400)",
+      "text": "خطأ | فشل في إنشاء المنصب. يرجى المحاولة مرة أخرى.",
+      "note": "رسالة الخطأ الحقيقية من backend (بالإنجليزية) مخفية عن المستخدم."
+    },
+    {
+      "id": "meeting_cancel_check",
+      "type": "CheckAlert",
+      "flow": "meetings > row menu > Cancel",
+      "text": "إلغاء الاجتماع | هل أنت متأكد أنك تريد الإلغاء \"Test Meet\"?",
+      "buttons": ["إلغاء", "نعم، إلغاء الاجتماع"]
+    },
+    {
+      "id": "meetings_row_menu",
+      "type": "dropdown menu",
+      "flow": "meetings > row dots",
+      "text": "عرض | تعديل | دعوة موظف | إزالة التذكير | إلغاء | انضمام إلى الاجتماع"
+    },
+    {
+      "id": "notifications_bell",
+      "type": "dropdown panel",
+      "flow": "header bell (hover)",
+      "text": "الإشعارات | وضع علامة كمقروء للجميع | لا توجد إشعارات جديدة | عرض جميع الإشعارات"
+    },
+    {
+      "id": "static_keys",
+      "type": "translation file check",
+      "flow": "ar/translation.json",
+      "result": "All standard alert keys OK. Also OK: Reminder Set/Removed, notification panel keys, cancel-meeting template. en: 2490 keys / ar: 3005 keys / missing: 0"
+    }
+  ],
+  "confirmed_bugs": [
+    {
+      "id": "positions_delete_dynamic_en",
+      "severity": "HIGH (visible)",
+      "text": "حذف المنصب؟ | Are you sure you want to Delete AlertTest 1785928738736 position? | إلغاء | نعم، حذف",
+      "root_cause": "handleDelete in hr/positions/page.jsx passes the whole dynamic string as the i18n KEY: t(`Are you sure you want to Delete ${title} position?`) - key not found => raw English fallback.",
+      "fix": "t('Are you sure you want to Delete {{title}} position?', { title }) + add the key to ar/en translation files. Also add missing keys 'Are you sure you want to proceed?' and 'Are you sure you want to Delete'."
+    },
+    {
+      "id": "backend_title_regex_blocks_arabic",
+      "severity": "HIGH (functional)",
+      "text": "Creating a position with an Arabic title fails with 400 (server English error, shown to user as generic Arabic failure).",
+      "root_cause": "position.schema.ts:24 regex /^[a-zA-Z0-9\\s&-]+$/ rejects Arabic letters.",
+      "fix": "Use /^[\\p{L}\\p{N}\\s&-]+$/u (unicode flag) so Arabic titles are accepted."
+    },
+    {
+      "id": "arabic_hydration_mismatch",
+      "severity": "MEDIUM (console + SSR loss)",
+      "text": "Minified React error #418 (hydration mismatch, args=[text]) fired on 4/4 screens when stored language = ar; 0 errors with default language.",
+      "root_cause": "SSR renders English (server cannot read localStorage) while the client hydrates in Arabic (i18nextLng=ar).",
+      "fix": "Persist language in a cookie readable by the server, or add server-side i18n detection, or defer hydration of translated trees."
+    }
+  ],
+  "not_fully_captured": [
+    "Reminder auto-close toast Alert (meetings): live capture was shadowed by the ProcessingOverlay ('جارٍ المعالجة...'); all its text keys verified present in Arabic. Same Alert base component already verified via create success/error flows."
+  ],
+  "artifacts": {
+    "report": "e2e/reports/alerts-check.json",
+    "arabic_scan": "e2e/reports/arabic-check.json",
+    "screenshots": [
+      "e2e/reports/subscriber/alert_approval_confirm_create.png",
+      "e2e/reports/subscriber/alert_api_success_create.png",
+      "e2e/reports/subscriber/alert_approval_delete_dynamic.png",
+      "e2e/reports/subscriber/alert_api_error_arabic_title.png",
+      "e2e/reports/subscriber/alert_meeting_cancel_check.png",
+      "e2e/reports/subscriber/alert_notifications_dropdown.png"
+    ]
+  }
+}

@@ -146,7 +146,7 @@ function PositionsPage() {
                 <ApprovalAlert
                     type="danger"
                     title="Delete Position?"
-                    message={`Are you sure you want to Delete ${selectedPosition?.title} position?`}
+                    message={t("Are you sure you want to Delete {{title}} position?", { title: selectedPosition?.title })}
                     isOpen={isDeleteAlertOpen}
                     onClose={() => setIsDeleteAlertOpen(false)}
                     onConfirm={confirmDelete}

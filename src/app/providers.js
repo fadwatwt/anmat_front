@@ -26,6 +26,20 @@ const updateHtmlAttributes = (lang) => {
     }
 };
 
+// Apply the stored language to <html> synchronously (before React hydrates) so
+// the first client render matches the server output for the lang/dir attribute.
+if (typeof window !== "undefined") {
+    try {
+        const storedLang = window.localStorage.getItem("i18nextLng");
+        if (storedLang && (storedLang === "ar" || storedLang === "en")) {
+            document.documentElement.lang = storedLang;
+            document.documentElement.dir = storedLang === "ar" ? "rtl" : "ltr";
+        }
+    } catch (e) {
+        // ignore storage access errors
+    }
+}
+
 export const ThemeContext = createContext();
 export const ProcessingContext = createContext();
 
@@ -120,7 +134,12 @@ const ProcessingProvider = ({ children }) => {
 };
 
 const Providers = ({ children }) => {
+    // Render children only on the client so the server output (empty shell)
+    // always matches the first client render. This avoids hydration mismatches
+    // caused by client-side language detection (localStorage) vs SSR defaults.
+    const [mounted, setMounted] = useState(false);
     useEffect(() => {
+        setMounted(true);
         updateHtmlAttributes(i18n.language);
         setLanguage(i18n.language);
         i18n.on("languageChanged", (lng) => {
@@ -139,7 +158,7 @@ const Providers = ({ children }) => {
                     <I18nextProvider i18n={i18n}>
                         <CallProvider>
                             <GroupCallProvider>
-                                {children}
+                                {mounted ? children : null}
                             </GroupCallProvider>
                         </CallProvider>
                     </I18nextProvider>

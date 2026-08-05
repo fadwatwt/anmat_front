@@ -1,0 +1,18 @@
+{
+  "pageErrors": [],
+  "createApproval": {
+    "found": true,
+    "text": "تأكيد الإنشاء | هل أنت متأكد أنك تريد إنشاء منصب \"منصب اختبار عربي 1785930128009\"؟ | إلغاء | نعم، إنشاء"
+  },
+  "createSuccess": {
+    "found": true,
+    "text": "تم إنشاء المنصب بنجاح! | موافق"
+  },
+  "createdInTable": true,
+  "deleteAlert": {
+    "found": true,
+    "text": "حذف المنصب؟ | هل أنت متأكد أنك تريد حذف المنصب \"منصب اختبار عربي 1785930128009\"؟ | إلغاء | نعم، حذف"
+  },
+  "cleanup": "deleted via UI confirm",
+  "hydrationErrorsArabic": []
+}

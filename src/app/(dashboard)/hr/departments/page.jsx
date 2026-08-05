@@ -127,7 +127,7 @@ function DepartmentsPage() {
                 {dept.stats?.employees_count ?? 0}
             </p>,
             <div key={`rating-${dept._id}`} className="flex items-center">
-                <StarRating rating={dept.rate || 0} />
+                <StarRating rating={dept.evaluation_method === 'MANUAL' ? (dept.manual_rating || 0) : (dept.overall_rating || dept.rate || 0)} />
             </div>,
             <div key={`positions-${dept._id}`} className="flex flex-wrap gap-1">
                 {dept.positions_ids?.map((pos) => (
