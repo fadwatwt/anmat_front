@@ -13,6 +13,7 @@ import EditMyLeaveModal from "./modals/EditMyLeaveModal";
 import DeleteMyLeaveModal from "./modals/DeleteMyLeaveModal";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import { useProcessing } from "@/app/providers";
+import usePermission from "@/Hooks/usePermission";
 
 const STATUS_STYLES = {
     pending: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
@@ -25,6 +26,10 @@ function MyLeavesPage() {
     const { showProcessing, hideProcessing } = useProcessing();
     const { data: leavesData, isLoading } = useGetMyLeavesQuery();
     const [deleteMyLeave] = useDeleteMyLeaveMutation();
+
+    const canCreateLeave = usePermission("leaves.create");
+    const canUpdateLeave = usePermission("leaves.update");
+    const canDeleteLeave = usePermission("leaves.delete");
 
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -108,7 +113,7 @@ function MyLeavesPage() {
         setApiResponse(prev => ({ ...prev, isOpen: false }));
     };
 
-    const HeaderButtons = (
+    const HeaderButtons = canCreateLeave ? (
         <button
             onClick={() => setIsAddModalOpen(true)}
             className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2"
@@ -116,7 +121,7 @@ function MyLeavesPage() {
             <HiPlus size={18} />
             {t("Request Leave")}
         </button>
-    );
+    ) : null;
 
     return (
         <>
@@ -132,10 +137,13 @@ function MyLeavesPage() {
                     customActions={(rowIndex) => {
                         const leave = sortedLeaves[rowIndex];
                         if (leave?.status !== "pending") return null;
+                        if (!canUpdateLeave && !canDeleteLeave) return null;
                         return (
                             <ActionsBtns
-                                handleEdit={() => handleEdit(rowIndex)}
-                                handleDelete={() => handleDeleteClick(rowIndex)}
+                                handleEdit={canUpdateLeave ? () => handleEdit(rowIndex) : undefined}
+                                handleDelete={canDeleteLeave ? () => handleDeleteClick(rowIndex) : undefined}
+                                isEditBtn={canUpdateLeave}
+                                isDeleteBtn={canDeleteLeave}
                                 className="!static !mt-0"
                             />
                         );

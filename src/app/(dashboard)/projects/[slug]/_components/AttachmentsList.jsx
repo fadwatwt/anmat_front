@@ -116,7 +116,7 @@ function AttachmentsList({ attachments = [], onUpload, onDelete, isUploading }) 
                    <p className="text-xs text-primary-base dark:text-primary-200 animate-pulse">{t("Uploading...")}</p>
                 )}
 
-                {!selectedFile && (
+                {!selectedFile && onUpload && (
                     <div className={"cursor-pointer"}>
                         <BtnAddOutline onClick={handleAddFileClick} title={t("Add a file")} disabled={isUploading} />
                     </div>

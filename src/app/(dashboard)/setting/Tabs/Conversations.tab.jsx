@@ -2,11 +2,10 @@ import DefaultButton from "@/components/Form/DefaultButton.jsx";
 import { useTranslation } from "react-i18next";
 import ElementsSelect from "@/components/Form/ElementsSelect.jsx";
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
 import { useGetChatSettingsQuery, useUpdateChatSettingsMutation } from "@/redux/api/settingsApi";
-import { selectUser, selectPermissions } from "@/redux/auth/authSlice";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import WordTheMiddleAndLine from "@/components/Subcomponents/WordTheMiddleAndLine.jsx";
+import { usePermission } from "@/Hooks/usePermission";
 
 const fileSizeOptions = [
     { id: "5242880", element: "5 MB" },
@@ -24,9 +23,7 @@ const retentionOptions = [
 
 function ConversationsTab() {
     const { t } = useTranslation();
-    const user = useSelector(selectUser);
-    const userPermissions = useSelector(selectPermissions);
-    const canEdit = user?.type === "Subscriber" || (Array.isArray(userPermissions) && userPermissions.includes("chats.manage_settings"));
+    const canEdit = usePermission("chats.manage_settings");
     const { data: settings, isLoading } = useGetChatSettingsQuery();
     const [updateSettings, { isLoading: isUpdating }] = useUpdateChatSettingsMutation();
 

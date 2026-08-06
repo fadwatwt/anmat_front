@@ -4,18 +4,15 @@ import DefaultButton from "@/components/Form/DefaultButton.jsx";
 import { useTranslation } from "react-i18next";
 import BtnAddOutline from "@/components/Form/BtnAddOutline.jsx";
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
 import { useGetSubscriberOrganizationQuery, useUpdateSubscriberOrganizationMutation } from "@/redux/organizations/organizationsApi";
-import { selectUserType, selectPermissions } from "@/redux/auth/authSlice";
 import Switch2 from "@/components/Form/Switch2.jsx";
 import ElementsSelect from "@/components/Form/ElementsSelect.jsx";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
+import { usePermission } from "@/Hooks/usePermission";
 
 function Rating() {
     const { t } = useTranslation();
-    const userType = useSelector(selectUserType);
-    const userPermissions = useSelector(selectPermissions);
-    const canEdit = userType === "Subscriber" || (Array.isArray(userPermissions) && userPermissions.includes("organizations.manage_settings"));
+    const canEdit = usePermission("organizations.manage_settings");
     const { data: orgData, isLoading } = useGetSubscriberOrganizationQuery();
     const [updateOrg] = useUpdateSubscriberOrganizationMutation();
 

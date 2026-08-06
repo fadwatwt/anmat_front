@@ -18,6 +18,7 @@ import { BsClockFill, BsSlashCircleFill } from "react-icons/bs";
 import { GoCheckCircleFill } from "react-icons/go";
 import { LuLogIn, LuLogOut } from "react-icons/lu";
 import PropTypes from "prop-types";
+import usePermission from "@/Hooks/usePermission";
 
 /* ─── Status Badge ─────────────────────────────────────────────── */
 const StatusBadge = ({ status }) => {
@@ -54,8 +55,8 @@ const StatusBadge = ({ status }) => {
 StatusBadge.propTypes = { status: PropTypes.string.isRequired };
 
 /* ─── Check-In / Check-Out Action Card ─────────────────────────── */
-const AttendanceActionCard = ({ hasCheckedIn, checkOutDone, isCheckingIn, isCheckingOut, onClickCheckIn, onClickCheckOut }) => {
-    const { t } = useTranslation();
+const AttendanceActionCard = ({ hasCheckedIn, checkOutDone, isCheckingIn, isCheckingOut, canCheckIn, canCheckOut, onClickCheckIn, onClickCheckOut }) => {
+    const { t, i18n } = useTranslation();
     const [now, setNow] = useState(new Date());
 
     useEffect(() => {
@@ -63,8 +64,9 @@ const AttendanceActionCard = ({ hasCheckedIn, checkOutDone, isCheckingIn, isChec
         return () => clearInterval(timer);
     }, []);
 
-    const timeString = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-    const dateString = now.toLocaleDateString([], {
+    const dateLocale = i18n.language === "ar" ? "ar-EG" : "en-GB";
+    const timeString = now.toLocaleTimeString(dateLocale, { hour: "2-digit", minute: "2-digit" });
+    const dateString = now.toLocaleDateString(dateLocale, {
         weekday: "long",
         year: "numeric",
         month: "long",
@@ -92,7 +94,7 @@ const AttendanceActionCard = ({ hasCheckedIn, checkOutDone, isCheckingIn, isChec
             {/* Action buttons */}
             <div className="flex items-center gap-3">
                 {/* Check-In — hidden once successfully checked in */}
-                {!hasCheckedIn && (
+                {!hasCheckedIn && canCheckIn && (
                     <button
                         id="btn-checkin"
                         onClick={onClickCheckIn}
@@ -109,7 +111,7 @@ const AttendanceActionCard = ({ hasCheckedIn, checkOutDone, isCheckingIn, isChec
                 )}
 
                 {/* Check-Out — visible after check-in, hidden immediately on success */}
-                {hasCheckedIn && !checkOutDone && (
+                {hasCheckedIn && !checkOutDone && canCheckOut && (
                     <button
                         id="btn-checkout"
                         onClick={onClickCheckOut}
@@ -134,6 +136,8 @@ AttendanceActionCard.propTypes = {
     checkOutDone: PropTypes.bool.isRequired,
     isCheckingIn: PropTypes.bool.isRequired,
     isCheckingOut: PropTypes.bool.isRequired,
+    canCheckIn: PropTypes.bool.isRequired,
+    canCheckOut: PropTypes.bool.isRequired,
     onClickCheckIn: PropTypes.func.isRequired,
     onClickCheckOut: PropTypes.func.isRequired,
 };
@@ -142,6 +146,9 @@ AttendanceActionCard.propTypes = {
 export default function EmployeeAttendancePage() {
     const { t } = useTranslation();
     const { showProcessing, hideProcessing } = useProcessing();
+
+    const canCheckIn = usePermission("attendances.create");
+    const canCheckOut = usePermission("attendances.update");
 
     const { data: attendances = [], isLoading } = useGetMyAttendancesQuery();
     const [checkIn, { isLoading: isCheckingIn }] = useCheckInMutation();
@@ -288,6 +295,8 @@ export default function EmployeeAttendancePage() {
                     checkOutDone={checkOutDone}
                     isCheckingIn={isCheckingIn}
                     isCheckingOut={isCheckingOut}
+                    canCheckIn={canCheckIn}
+                    canCheckOut={canCheckOut}
                     onClickCheckIn={handleClickCheckIn}
                     onClickCheckOut={handleClickCheckOut}
                 />

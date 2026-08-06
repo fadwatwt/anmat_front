@@ -20,6 +20,8 @@ const ChatDetailsModal = ({ activeChat, onClose }) => {
   const currentUser = useSelector(selectUser);
   // Subscribers bypass via wildcard; employees need the explicit chats.export grant.
   const canExportChat = usePermission("chats.export");
+  const canArchiveChat = usePermission("chats.initiate");
+  const canManageParticipants = usePermission("chats.manage_participants");
   const [archiveChat, { isLoading: isArchiving }] = useArchiveChatMutation();
   const [addParticipants, { isLoading: isAdding }] = useAddParticipantsMutation();
   const [removeParticipant] = useRemoveParticipantMutation();
@@ -31,7 +33,6 @@ const ChatDetailsModal = ({ activeChat, onClose }) => {
   const [addSearch, setAddSearch] = useState("");
   const [selectedToAdd, setSelectedToAdd] = useState([]);
 
-  const isSubscriber = currentUser?.type === "Subscriber" || currentUser?.role === "Admin";
   const isGroup = activeChat?.is_group || activeChat?.isGroup;
 
   // participants_ids is the populated array from the API
@@ -144,14 +145,16 @@ const ChatDetailsModal = ({ activeChat, onClose }) => {
               <div className="w-full space-y-2">
                 <h4 className="text-sm font-bold text-cell-secondary uppercase tracking-wider mb-3 px-1">{t("Actions")}</h4>
 
-                <button
-                  onClick={handleArchive}
-                  disabled={isArchiving}
-                  className="w-full flex items-center gap-3 p-3 bg-weak-50 hover:bg-weak-100 rounded-xl text-cell-primary font-medium transition-colors border border-status-border"
-                >
-                  <Archive size={18} className="text-sub-500" />
-                  {activeChat.is_archived ? t("Unarchive Chat") : t("Archive Chat")}
-                </button>
+                {canArchiveChat && (
+                  <button
+                    onClick={handleArchive}
+                    disabled={isArchiving}
+                    className="w-full flex items-center gap-3 p-3 bg-weak-50 hover:bg-weak-100 rounded-xl text-cell-primary font-medium transition-colors border border-status-border"
+                  >
+                    <Archive size={18} className="text-sub-500" />
+                    {activeChat.is_archived ? t("Unarchive Chat") : t("Archive Chat")}
+                  </button>
+                )}
 
                 {canExportChat && (
                   <button
@@ -175,7 +178,7 @@ const ChatDetailsModal = ({ activeChat, onClose }) => {
                           {t("Members")} ({participants.length})
                         </h4>
                       </div>
-                      {isSubscriber && (
+                      {canManageParticipants && (
                         <button
                           onClick={() => { setShowAddPanel(prev => !prev); setSelectedToAdd([]); setAddSearch(""); }}
                           className="flex items-center gap-1 text-sm font-medium text-primary hover:text-primary-600 transition-colors"
@@ -188,7 +191,7 @@ const ChatDetailsModal = ({ activeChat, onClose }) => {
                     </div>
 
                     {/* Add members panel */}
-                    {showAddPanel && isSubscriber && (
+                    {showAddPanel && canManageParticipants && (
                       <div className="mb-4 p-3 bg-weak-50 rounded-xl border border-status-border space-y-3">
                         <div className="relative">
                           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-sub-400" />
@@ -270,7 +273,7 @@ const ChatDetailsModal = ({ activeChat, onClose }) => {
                                 </div>
                               </div>
 
-                              {isSubscriber && !isCurrentUser && (
+                              {canManageParticipants && !isCurrentUser && (
                                 <button
                                   onClick={() => handleRemoveParticipant(pid)}
                                   disabled={isRemoving}

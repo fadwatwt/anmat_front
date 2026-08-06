@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import React, { useState } from "react";
 import { useGetChatsQuery } from "@/redux/conversations/conversationsAPI";
 import { formatDistanceToNow } from "date-fns";
+import { getDateLocale } from "@/lib/dateLocale";
 import { Search, MoreVertical, MessageSquare } from "lucide-react";
 import { useSelector } from "react-redux";
 import { selectUserId } from "@/redux/auth/authSlice";
@@ -112,7 +113,7 @@ const ChatList = ({ activeChatId, onSelectChat }) => {
                   </h3>
                   {chat.lastMessage && (
                     <span className="text-[10px] whitespace-nowrap text-sub-500">
-                      {formatDistanceToNow(new Date(chat.lastMessage.created_at), { addSuffix: false })}
+                      {formatDistanceToNow(new Date(chat.lastMessage.created_at), { addSuffix: false, locale: getDateLocale() })}
                     </span>
                   )}
                 </div>

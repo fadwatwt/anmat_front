@@ -78,13 +78,14 @@ function Status({ type }) {
 
   const normalizedType = type?.toLowerCase() || "inactive";
   const status = statusStyles[normalizedType] || statusStyles.inactive; // Default to "Inactive"
+  const label = { "in-progress": "In Progress", "in progress": "In Progress" }[normalizedType] || capitalize(type);
 
   return (
     <div
       className={`rounded-md text-nowrap text-xs border inline-flex py-1 px-2 gap-1 items-center bg-status-bg border-status-border`}
     >
       {status.icon}
-      <span className="text-cell-primary">{t(capitalize(type))}</span>
+      <span className="text-cell-primary">{t(label)}</span>
     </div>
   );
 }

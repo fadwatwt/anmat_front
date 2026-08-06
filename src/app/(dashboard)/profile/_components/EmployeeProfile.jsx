@@ -185,7 +185,7 @@ function EmployeeProfile() {
                     <span className={`p-1.5 rounded-full ${colorClass}`}>
                         {Icon}
                     </span>
-                    <span className="font-medium text-sm text-cell-primary">{type.name || t("Notification")}</span>
+                    <span className="font-medium text-sm text-cell-primary">{type.name ? t(type.name) : t("Notification")}</span>
                 </div>,
                 <div key={`info-${notif._id}`} className="flex flex-col max-w-xs">
                     <span className="font-semibold text-cell-primary text-sm truncate" title={notif.title}>{notif.title}</span>

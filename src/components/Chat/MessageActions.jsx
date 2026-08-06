@@ -2,11 +2,13 @@
 import { useTranslation } from "react-i18next";
 import React, { useState } from "react";
 import { MoreHorizontal, Edit2, Trash2, MessageSquareQuote, Smile, X } from "lucide-react";
+import { usePermission } from "@/Hooks/usePermission";
 
 const EMOJI_LIST = ["👍", "❤️", "😂", "😮", "😢", "👏"];
 
 const MessageActions = ({ message, isMe, onEdit, onDelete, onReply, onReact }) => {
   const { t } = useTranslation();
+  const canInitiate = usePermission("chats.initiate");
   const [showMenu, setShowMenu] = useState(false);
   const [showEmojis, setShowEmojis] = useState(false);
 
@@ -36,7 +38,7 @@ const MessageActions = ({ message, isMe, onEdit, onDelete, onReply, onReact }) =
             <MessageSquareQuote size={12} /> {t("Reply")}
           </button>
 
-          {isMe && (
+          {isMe && canInitiate && (
             <>
               <button 
                 onClick={() => { onEdit(); setShowMenu(false); }}

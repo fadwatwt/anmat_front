@@ -4,14 +4,15 @@ import ElementsSelect from "@/components/Form/ElementsSelect.jsx";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useGetAttendanceSettingsQuery, useUpdateAttendanceSettingsMutation } from "@/redux/api/settingsApi";
-import { selectUserType, selectPermissions } from "@/redux/auth/authSlice";
+import { selectUserType } from "@/redux/auth/authSlice";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
+import { usePermission } from "@/Hooks/usePermission";
 
 function AttendanceTab() {
     const { t } = useTranslation();
     const userType = useSelector(selectUserType);
-    const userPermissions = useSelector(selectPermissions);
-    const canEdit = userType === "Subscriber" || userType === "Admin" || (Array.isArray(userPermissions) && userPermissions.includes("attendances.manage_settings"));
+    const canManageSettings = usePermission("attendances.manage_settings");
+    const canEdit = userType === "Admin" || canManageSettings;
     const { data: settings, isLoading } = useGetAttendanceSettingsQuery();
     const [updateAttendance, { isLoading: isUpdating }] = useUpdateAttendanceSettingsMutation();
 

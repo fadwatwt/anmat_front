@@ -226,6 +226,7 @@ function TaskDetailsPage({ params }) {
     }, [task?.assignee]);
 
     const canDeleteAttachments = usePermission("attachments.delete");
+    const canUploadAttachments = usePermission("attachments.upload");
     const canManageTeam = usePermission("tasks.manage_participants");
     const canComment = usePermission("tasks.comment");
     const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
@@ -321,7 +322,7 @@ function TaskDetailsPage({ params }) {
                         {/* Hiding components not yet linked to backend data */}
                         {true && <AttachmentsList
                             attachments={task.attachments || []}
-                            onUpload={handleUploadAttachment}
+                            onUpload={canUploadAttachments ? handleUploadAttachment : null}
                             onDelete={canDeleteAttachments ? handleDeleteAttachment : null}
                             isUploading={isUploadingAttachment}
                         />}

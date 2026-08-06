@@ -1,0 +1,209 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "H:\\Company\\anmaat-system\\anmat_front-main\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "e2e/employee-i18n-check.spec.js",
+      "--config=playwright.employee.config.js",
+      "--project=employee-i18n"
+    ],
+    "configFile": "H:\\Company\\anmaat-system\\anmat_front-main\\playwright.employee.config.js",
+    "rootDir": "H:/Company/anmaat-system/anmat_front-main/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "H:/Company/anmaat-system/anmat_front-main/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "employee-setup",
+        "name": "employee-setup",
+        "testDir": "H:/Company/anmaat-system/anmat_front-main/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/employee-auth\\.setup\\.js/"
+        ],
+        "timeout": 240000
+      },
+      {
+        "outputDir": "H:/Company/anmaat-system/anmat_front-main/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "employee-check",
+        "name": "employee-check",
+        "testDir": "H:/Company/anmaat-system/anmat_front-main/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/employee-check\\.spec\\.js/"
+        ],
+        "timeout": 240000
+      },
+      {
+        "outputDir": "H:/Company/anmaat-system/anmat_front-main/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "employee-i18n",
+        "name": "employee-i18n",
+        "testDir": "H:/Company/anmaat-system/anmat_front-main/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/employee-i18n-check\\.spec\\.js/"
+        ],
+        "timeout": 240000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results-employee.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "employee-auth.setup.js",
+      "file": "employee-auth.setup.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "employee session is stored",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 240000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "employee-setup",
+              "projectName": "employee-setup",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2895,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-08-06T14:32:08.628Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "439e752be4bedb1498c2-e987cb3e599d0bd4a55e",
+          "file": "employee-auth.setup.js",
+          "line": 15,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "employee-i18n-check.spec.js",
+      "file": "employee-i18n-check.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Arabic text audit (employee dashboard)",
+          "file": "employee-i18n-check.spec.js",
+          "line": 257,
+          "column": 6,
+          "specs": [
+            {
+              "title": "scan all employee pages for Latin text in Arabic mode",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 1500000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "employee-i18n",
+                  "projectName": "employee-i18n",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 438915,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "\nEmployee i18n report: H:\\Company\\anmaat-system\\anmat_front-main\\e2e\\reports\\employee-i18n-check.txt\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-08-06T14:32:15.447Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "c8428732b54bae502bf1-7147dd88b9f5aaab9a70",
+              "file": "employee-i18n-check.spec.js",
+              "line": 260,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-08-06T14:32:07.546Z",
+    "duration": 448815.367,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

@@ -2,17 +2,14 @@ import ElementsSelect from "@/components/Form/ElementsSelect.jsx";
 import DefaultButton from "@/components/Form/DefaultButton.jsx";
 import i18n from "i18next";
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
-import { selectUserType, selectPermissions } from "@/redux/auth/authSlice";
 import { useGetSubscriberOrganizationQuery, useUpdateSubscriberOrganizationMutation } from "@/redux/organizations/organizationsApi";
+import { usePermission } from "@/Hooks/usePermission";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 
 function RegionalPreferences() {
     const {t} = useTranslation()
-    const userType = useSelector(selectUserType);
-    const userPermissions = useSelector(selectPermissions);
-    const canEdit = userType === "Subscriber" || (Array.isArray(userPermissions) && userPermissions.includes("organizations.manage_settings"));
+    const canEdit = usePermission("organizations.manage_settings");
     const { data: orgData, isLoading } = useGetSubscriberOrganizationQuery();
     const [updateOrg, { isLoading: isUpdating }] = useUpdateSubscriberOrganizationMutation();
 

@@ -1,0 +1,351 @@
+{
+  "pages": [
+    {
+      "route": "/dashboard",
+      "ok": true,
+      "jsErrors": [],
+      "brokenImages": [
+        {
+          "src": "http://localhost:3001/images/logo.png",
+          "alt": "img"
+        },
+        {
+          "src": "https://api.anmaat.com/uploads/User/69d3d25af265322590686505/1783696965674.jpg",
+          "alt": "Emp 1 Org 1"
+        }
+      ],
+      "horizontalOverflow": false,
+      "screenshot": "dashboard.png"
+    },
+    {
+      "route": "/employee/projects",
+      "ok": true,
+      "jsErrors": [],
+      "brokenImages": [
+        {
+          "src": "http://localhost:3001/images/logo.png",
+          "alt": "img"
+        },
+        {
+          "src": "https://api.anmaat.com/uploads/User/69d3d25af265322590686505/1783696965674.jpg",
+          "alt": "Emp 1 Org 1"
+        }
+      ],
+      "horizontalOverflow": false,
+      "screenshot": "employee_projects.png"
+    },
+    {
+      "route": "/employee/tasks",
+      "ok": true,
+      "jsErrors": [],
+      "brokenImages": [
+        {
+          "src": "http://localhost:3001/images/logo.png",
+          "alt": "img"
+        },
+        {
+          "src": "https://api.anmaat.com/uploads/User/69d3d25af265322590686505/1783696965674.jpg",
+          "alt": "Emp 1 Org 1"
+        }
+      ],
+      "horizontalOverflow": false,
+      "screenshot": "employee_tasks.png"
+    },
+    {
+      "route": "/appointments",
+      "ok": true,
+      "jsErrors": [],
+      "brokenImages": [
+        {
+          "src": "http://localhost:3001/images/logo.png",
+          "alt": "img"
+        },
+        {
+          "src": "https://api.anmaat.com/uploads/User/69d3d25af265322590686505/1783696965674.jpg",
+          "alt": "Emp 1 Org 1"
+        }
+      ],
+      "horizontalOverflow": false,
+      "screenshot": "my_agenda_appointments.png"
+    },
+    {
+      "route": "/attendance",
+      "ok": true,
+      "jsErrors": [],
+      "brokenImages": [
+        {
+          "src": "http://localhost:3001/images/logo.png",
+          "alt": "img"
+        },
+        {
+          "src": "https://api.anmaat.com/uploads/User/69d3d25af265322590686505/1783696965674.jpg",
+          "alt": "Emp 1 Org 1"
+        }
+      ],
+      "horizontalOverflow": false,
+      "screenshot": "attendance.png"
+    },
+    {
+      "route": "/salary",
+      "ok": true,
+      "jsErrors": [],
+      "brokenImages": [
+        {
+          "src": "http://localhost:3001/images/logo.png",
+          "alt": "img"
+        },
+        {
+          "src": "https://api.anmaat.com/uploads/User/69d3d25af265322590686505/1783696965674.jpg",
+          "alt": "Emp 1 Org 1"
+        }
+      ],
+      "horizontalOverflow": false,
+      "screenshot": "salary.png"
+    },
+    {
+      "route": "/leaves",
+      "ok": true,
+      "jsErrors": [],
+      "brokenImages": [
+        {
+          "src": "http://localhost:3001/images/logo.png",
+          "alt": "img"
+        },
+        {
+          "src": "https://api.anmaat.com/uploads/User/69d3d25af265322590686505/1783696965674.jpg",
+          "alt": "Emp 1 Org 1"
+        }
+      ],
+      "horizontalOverflow": false,
+      "screenshot": "short_leave_requests.png"
+    },
+    {
+      "route": "/requests",
+      "ok": true,
+      "jsErrors": [],
+      "brokenImages": [
+        {
+          "src": "http://localhost:3001/images/logo.png",
+          "alt": "img"
+        },
+        {
+          "src": "https://api.anmaat.com/uploads/User/69d3d25af265322590686505/1783696965674.jpg",
+          "alt": "Emp 1 Org 1"
+        }
+      ],
+      "horizontalOverflow": false,
+      "screenshot": "requests.png"
+    },
+    {
+      "route": "/conversations",
+      "ok": true,
+      "jsErrors": [],
+      "brokenImages": [
+        {
+          "src": "http://localhost:3001/images/logo.png",
+          "alt": "img"
+        },
+        {
+          "src": "https://api.anmaat.com/uploads/User/69d3d25af265322590686505/1783696965674.jpg",
+          "alt": "Emp 1 Org 1"
+        }
+      ],
+      "horizontalOverflow": false,
+      "screenshot": "conversations.png"
+    },
+    {
+      "route": "/ai",
+      "ok": true,
+      "jsErrors": [],
+      "brokenImages": [
+        {
+          "src": "http://localhost:3001/images/logo.png",
+          "alt": "img"
+        },
+        {
+          "src": "https://api.anmaat.com/uploads/User/69d3d25af265322590686505/1783696965674.jpg",
+          "alt": "Emp 1 Org 1"
+        },
+        {
+          "src": "http://localhost:3001/images/AiAssistant/file.svg",
+          "alt": "Chat icon"
+        },
+        {
+          "src": "http://localhost:3001/images/AiAssistant/file.svg",
+          "alt": "Chat icon"
+        },
+        {
+          "src": "http://localhost:3001/images/AiAssistant/file.svg",
+          "alt": "Chat icon"
+        },
+        {
+          "src": "http://localhost:3001/images/AiAssistant/file.svg",
+          "alt": "Chat icon"
+        },
+        {
+          "src": "http://localhost:3001/images/AiAssistant/file.svg",
+          "alt": "Chat icon"
+        },
+        {
+          "src": "http://localhost:3001/images/AiAssistant/file.svg",
+          "alt": "Chat icon"
+        },
+        {
+          "src": "http://localhost:3001/images/AiAssistant/file.svg",
+          "alt": "Chat icon"
+        },
+        {
+          "src": "http://localhost:3001/images/AiAssistant/file.svg",
+          "alt": "Chat icon"
+        },
+        {
+          "src": "http://localhost:3001/images/AiAssistant/file.svg",
+          "alt": "Chat icon"
+        },
+        {
+          "src": "http://localhost:3001/images/AiAssistant/file.svg",
+          "alt": "Chat icon"
+        },
+        {
+          "src": "http://localhost:3001/images/AiAssistant/file.svg",
+          "alt": "Chat icon"
+        },
+        {
+          "src": "http://localhost:3001/images/AiAssistant/file.svg",
+          "alt": "Assistant Logo"
+        }
+      ],
+      "horizontalOverflow": false,
+      "screenshot": "ai.png"
+    },
+    {
+      "route": "/notifications",
+      "ok": true,
+      "jsErrors": [],
+      "brokenImages": [
+        {
+          "src": "http://localhost:3001/images/logo.png",
+          "alt": "img"
+        },
+        {
+          "src": "https://api.anmaat.com/uploads/User/69d3d25af265322590686505/1783696965674.jpg",
+          "alt": "Emp 1 Org 1"
+        }
+      ],
+      "horizontalOverflow": false,
+      "screenshot": "notifications.png"
+    },
+    {
+      "route": "/setting",
+      "ok": true,
+      "jsErrors": [],
+      "brokenImages": [
+        {
+          "src": "http://localhost:3001/images/logo.png",
+          "alt": "img"
+        },
+        {
+          "src": "https://api.anmaat.com/uploads/User/69d3d25af265322590686505/1783696965674.jpg",
+          "alt": "Emp 1 Org 1"
+        },
+        {
+          "src": "https://api.anmaat.com/uploads/User/69d3d25af265322590686505/1783696965674.jpg",
+          "alt": "user-profile-image"
+        },
+        {
+          "src": "https://api.anmaat.com/uploads/User/69d3d25af265322590686505/1783696965674.jpg",
+          "alt": "user-profile-image"
+        }
+      ],
+      "horizontalOverflow": false,
+      "screenshot": "setting.png"
+    },
+    {
+      "route": "/profile",
+      "ok": true,
+      "jsErrors": [],
+      "brokenImages": [
+        {
+          "src": "http://localhost:3001/images/logo.png",
+          "alt": "img"
+        },
+        {
+          "src": "https://api.anmaat.com/uploads/User/69d3d25af265322590686505/1783696965674.jpg",
+          "alt": "Emp 1 Org 1"
+        },
+        {
+          "src": "http://localhost:3001/images/profileBanner.png",
+          "alt": ""
+        }
+      ],
+      "horizontalOverflow": false,
+      "screenshot": "profile.png"
+    }
+  ],
+  "modals": [
+    {
+      "route": "/attendance",
+      "opened": true,
+      "screenshot": "modal__attendance.png",
+      "jsErrors": [],
+      "modalContentCount": 3
+    },
+    {
+      "route": "/leaves",
+      "opened": true,
+      "screenshot": "modal__leaves.png",
+      "jsErrors": [],
+      "modalContentCount": 11
+    },
+    {
+      "route": "/requests",
+      "opened": true,
+      "screenshot": "modal__requests.png",
+      "jsErrors": [],
+      "modalContentCount": 8
+    },
+    {
+      "route": "/salary",
+      "opened": false,
+      "screenshot": null,
+      "jsErrors": []
+    },
+    {
+      "route": "/employee/projects",
+      "opened": false,
+      "screenshot": null,
+      "jsErrors": []
+    },
+    {
+      "route": "/employee/tasks",
+      "opened": false,
+      "screenshot": null,
+      "jsErrors": []
+    },
+    {
+      "route": "/conversations",
+      "opened": false,
+      "screenshot": null,
+      "jsErrors": []
+    },
+    {
+      "route": "/notifications",
+      "opened": false,
+      "screenshot": null,
+      "jsErrors": []
+    },
+    {
+      "route": "/setting",
+      "opened": false,
+      "screenshot": null,
+      "jsErrors": []
+    }
+  ],
+  "shell": {
+    "header": true,
+    "sidebar": true,
+    "floatingBtn": true,
+    "menuCount": 9
+  },
+  "errors": []
+}

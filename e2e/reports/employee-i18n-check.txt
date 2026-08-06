@@ -1,0 +1,167 @@
+
+=== PAGE /dashboard  [lang=ar, dir=rtl, latin=17] ===
+  - Task Test-2
+  - Department Test-2
+  - test
+  - test tt
+  - Test Task 5
+  - Tset
+  - Admin سجل الدخول.
+  - Admin سجل الخروج.
+  - Employee سجل الدخول.
+  - Subscriber سجل الدخول.
+  - Subscriber أنشأ جديد اشتراك.
+  - Subscriber تم التنفيذ user.registered في Bulk Tester.
+  - [title] English
+  - [title] test
+
+=== PAGE /employee/projects  [lang=ar, dir=rtl, latin=22] ===
+  - Anmat
+  - Web app. test
+  - Sample Project Name Updated
+  - This is a sample project description.
+  - Test
+  - Test Noti.
+  - Website Redesign Template
+  - Standard template for website redesign projects
+  - Test Template 6
+  - Test desciption
+  - [title] English
+  - [title] Belal Test
+  - [title] Test
+
+=== PAGE /employee/tasks  [lang=ar, dir=rtl, latin=17] ===
+  - Task Test-2
+  - Description task test-2
+  - test
+  - test tt
+  - Test Task 5
+  - Description test
+  - Tset
+  - [title] English
+  - [title] Task Test-2
+  - [title] Description task test-2
+  - [title] test
+  - [title] test tt
+  - [title] Test Task 5
+  - [title] Description test
+  - [title] Tset
+
+=== PAGE /appointments  [lang=ar, dir=rtl, latin=3] ===
+  - [title] English
+
+=== PAGE /attendance  [lang=ar, dir=rtl, latin=3] ===
+  - [title] English
+
+=== PAGE /salary  [lang=ar, dir=rtl, latin=6] ===
+  - test
+  - [title] English
+  - [title] test
+
+=== PAGE /leaves  [lang=ar, dir=rtl, latin=13] ===
+  - [title] English
+
+=== PAGE /requests  [lang=ar, dir=rtl, latin=4] ===
+  - test
+  - [title] English
+
+=== PAGE /conversations  [lang=ar, dir=rtl, latin=9] ===
+  - Subscriber 4
+  - Voice call
+  - Test Team Group
+  - Group call
+  - [title] English
+
+=== PAGE /ai  [lang=ar, dir=rtl, latin=4] ===
+  - What should I work on next ?
+  - [title] English
+
+=== PAGE /notifications  [lang=ar, dir=rtl, latin=12] ===
+  - تم تحديث حالة طلبك SHORT_LEAVE إلى "accepted".
+  - تم تحديث مهمتك "test tt".
+  - تم تحديث مهمتك "test".
+  - تم تقييم مهمتك "test tt" بدرجة 4.3/5.
+  - تم تقييم مهمتك "test" بدرجة 3.0/5.
+  - تم تقييم مهمتك "test tt" بدرجة 3.0/5.
+  - تم تقييم مهمتك "test" بدرجة 3.7/5.
+  - تم تحديث مهمتك "Test Task 5".
+  - تم تحديث مهمتك "Tset".
+  - [title] English
+
+=== PAGE /setting  [lang=ar, dir=rtl, latin=1] ===
+  - English
+
+=== PAGE /profile  [lang=ar, dir=rtl, latin=24] ===
+  - Cairo, Egypt
+  - Friday
+  - test notification
+  - test
+  - message
+  - Test All
+  - Message Test All
+  - Project: Anmat
+  - Project: Sample Project Name Updated
+  - Task: Test Program
+  - Task: Test Task 5
+  - [title] English
+  - [title] test notification
+  - [title] test
+  - [title] message
+  - [title] Test All
+  - [title] Message Test All
+
+=== MODAL /attendance  [lang=ar, dir=rtl, latin=0] ===
+  !! no modal opened
+  (no suspicious Latin text)
+
+=== MODAL /leaves  [lang=ar, dir=rtl, latin=0] ===
+  !! no modal opened
+  (no suspicious Latin text)
+
+=== MODAL /requests  [lang=ar, dir=rtl, latin=0] ===
+  (no suspicious Latin text)
+
+=== MODAL /salary  [lang=ar, dir=rtl, latin=0] ===
+  !! no modal opened
+  (no suspicious Latin text)
+
+=== MODAL /employee/projects  [lang=ar, dir=rtl, latin=0] ===
+  !! no modal opened
+  (no suspicious Latin text)
+
+=== MODAL /employee/tasks  [lang=ar, dir=rtl, latin=0] ===
+  !! no modal opened
+  (no suspicious Latin text)
+
+=== MODAL /conversations  [lang=ar, dir=rtl, latin=0] ===
+  !! no modal opened
+  (no suspicious Latin text)
+
+=== MODAL /notifications  [lang=ar, dir=rtl, latin=0] ===
+  !! no modal opened
+  (no suspicious Latin text)
+
+=== MODAL /setting  [lang=ar, dir=rtl, latin=0] ===
+  !! no modal opened
+  (no suspicious Latin text)
+
+=== ALERT /profile → notifications  [lang=ar, dir=rtl, latin=24] ===
+  - Cairo, Egypt
+  - Friday
+  - test notification
+  - test
+  - message
+  - Test All
+  - Message Test All
+  - Project: Anmat
+  - Project: Sample Project Name Updated
+  - Task: Test Program
+  - Task: Test Task 5
+  - [title] English
+  - [title] test notification
+  - [title] test
+  - [title] message
+  - [title] Test All
+  - [title] Message Test All
+
+===== TOTAL SUSPICIOUS: 102 =====

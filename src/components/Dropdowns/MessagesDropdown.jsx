@@ -5,6 +5,7 @@ import { RiChat3Line } from "@remixicon/react";
 import { CheckCheck } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { formatDistanceToNow } from "date-fns";
+import { getDateLocale } from "@/lib/dateLocale";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { useGetUnreadChatsQuery, useMarkChatAsReadMutation } from "@/redux/conversations/conversationsAPI";
@@ -169,7 +170,7 @@ const MessagesDropdown = () => {
                             )}
                             {msg?.created_at && (
                               <span className="text-[10px] text-sub-500 whitespace-nowrap">
-                                {formatDistanceToNow(new Date(msg.created_at), { addSuffix: false })}
+                                {formatDistanceToNow(new Date(msg.created_at), { addSuffix: false, locale: getDateLocale() })}
                               </span>
                             )}
                           </div>

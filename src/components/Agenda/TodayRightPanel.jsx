@@ -32,6 +32,7 @@ import {
   RiCalendarEventLine,
 } from "react-icons/ri";
 import { format } from "date-fns";
+import usePermission from "@/Hooks/usePermission";
 
 const PRIORITY_COLORS = {
   urgent: { dot: "bg-red-500",    text: "text-red-600 dark:text-red-400",       badge: "bg-red-100 dark:bg-red-900/30" },
@@ -44,6 +45,8 @@ const PRIORITY_COLORS = {
 
 function PriorityItem({ task, onComplete, onDelete, onEdit }) {
   const { t } = useTranslation();
+  const canUpdate = usePermission("appointments.update");
+  const canDelete = usePermission("appointments.delete");
   const cfg = PRIORITY_COLORS[task.priority] || PRIORITY_COLORS.medium;
   const done = task.status === "completed";
   return (
@@ -53,17 +56,21 @@ function PriorityItem({ task, onComplete, onDelete, onEdit }) {
         {task.title}
       </span>
       <div className="flex-shrink-0 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-        {!done && (
+        {!done && canUpdate && (
           <button onClick={() => onComplete(task._id)} className="p-0.5 text-green-600 hover:bg-green-100 dark:hover:bg-green-900/30 rounded" title={t("Complete")}>
             <RiCheckLine size={14} />
           </button>
         )}
-        <button onClick={() => onEdit(task)} className="p-0.5 text-primary-500 hover:bg-primary-100 dark:hover:bg-primary-900/30 rounded" title={t("Edit")}>
-          <RiEditLine size={14} />
-        </button>
-        <button onClick={() => onDelete(task._id)} className="p-0.5 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 rounded" title={t("Delete")}>
-          <RiDeleteBinLine size={14} />
-        </button>
+        {canUpdate && (
+          <button onClick={() => onEdit(task)} className="p-0.5 text-primary-500 hover:bg-primary-100 dark:hover:bg-primary-900/30 rounded" title={t("Edit")}>
+            <RiEditLine size={14} />
+          </button>
+        )}
+        {canDelete && (
+          <button onClick={() => onDelete(task._id)} className="p-0.5 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 rounded" title={t("Delete")}>
+            <RiDeleteBinLine size={14} />
+          </button>
+        )}
       </div>
     </div>
   );
@@ -71,6 +78,8 @@ function PriorityItem({ task, onComplete, onDelete, onEdit }) {
 
 function TaskItem({ task, onComplete, onDelete, onEdit }) {
   const { t } = useTranslation();
+  const canUpdate = usePermission("appointments.update");
+  const canDelete = usePermission("appointments.delete");
   const [expanded, setExpanded] = useState(false);
   const done = task.status === "completed";
   const cfg  = PRIORITY_COLORS[task.priority] || PRIORITY_COLORS.medium;
@@ -80,7 +89,7 @@ function TaskItem({ task, onComplete, onDelete, onEdit }) {
     <div className={`rounded-lg border border-gray-100 dark:border-gray-700 ${done ? "opacity-50" : ""}`}>
       <div className={`flex items-start gap-2 p-2 group ${done ? "" : "hover:bg-gray-50 dark:hover:bg-gray-700/50"} rounded-lg`}>
         <button
-          onClick={() => !done && onComplete(task._id)}
+          onClick={() => !done && canUpdate && onComplete(task._id)}
           className={`flex-shrink-0 mt-0.5 ${done ? "text-green-500" : "text-gray-300 dark:text-gray-600 hover:text-green-500 transition-colors"}`}
           title={t("Complete")}
         >
@@ -114,10 +123,12 @@ function TaskItem({ task, onComplete, onDelete, onEdit }) {
               <RiArrowDownSLine size={14} className={`transition-transform ${expanded ? "rotate-180" : ""}`} />
             </button>
           )}
-          <button onClick={() => onEdit(task)} className="p-0.5 text-primary-500 hover:bg-primary-100 dark:hover:bg-primary-900/30 rounded" title={t("Edit")}>
-            <RiEditLine size={14} />
-          </button>
-          {!done && (
+          {canUpdate && (
+            <button onClick={() => onEdit(task)} className="p-0.5 text-primary-500 hover:bg-primary-100 dark:hover:bg-primary-900/30 rounded" title={t("Edit")}>
+              <RiEditLine size={14} />
+            </button>
+          )}
+          {!done && canDelete && (
             <button
               onClick={() => onDelete(task._id)}
               className="p-0.5 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 rounded"
@@ -147,6 +158,8 @@ function TaskItem({ task, onComplete, onDelete, onEdit }) {
 
 function AppointmentItem({ appointment, onComplete, onDelete, isArabic }) {
   const { t } = useTranslation();
+  const canUpdate = usePermission("appointments.update");
+  const canDelete = usePermission("appointments.delete");
   const color = appointment.color || "#3B82F6";
   const done = appointment.status === "completed";
 
@@ -176,14 +189,16 @@ function AppointmentItem({ appointment, onComplete, onDelete, isArabic }) {
         )}
       </div>
       <div className="flex-shrink-0 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-        {!done && (
+        {!done && canUpdate && (
           <button onClick={() => onComplete(appointment._id)} className="p-0.5 text-green-600 hover:bg-green-100 dark:hover:bg-green-900/30 rounded" title={t("Complete")}>
             <RiCheckLine size={14} />
           </button>
         )}
-        <button onClick={() => onDelete(appointment._id)} className="p-0.5 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 rounded" title={t("Delete")}>
-          <RiDeleteBinLine size={14} />
-        </button>
+        {canDelete && (
+          <button onClick={() => onDelete(appointment._id)} className="p-0.5 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 rounded" title={t("Delete")}>
+            <RiDeleteBinLine size={14} />
+          </button>
+        )}
       </div>
     </div>
   );
@@ -213,6 +228,7 @@ function QuickAddInput({ onAdd, placeholder }) {
 function TodayRightPanel({ onOpenCreateModal }) {
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language === "ar";
+  const canCreate = usePermission("appointments.create");
   const today = format(new Date(), "yyyy-MM-dd");
 
   const { data: todayTasks = [],        isLoading: loadingTasks }   = useGetDailyTasksQuery({ date: today });
@@ -358,7 +374,7 @@ function TodayRightPanel({ onOpenCreateModal }) {
             ))}
           </div>
         )}
-        {priorityTasks.length < 3 && (
+        {priorityTasks.length < 3 && canCreate && (
           <QuickAddInput onAdd={handleQuickAddPriority} placeholder={t("Add priority...")} />
         )}
       </div>
@@ -373,10 +389,12 @@ function TodayRightPanel({ onOpenCreateModal }) {
               {regularTasks.filter((t) => t.status !== "completed").length}/{regularTasks.length}
             </span>
           </div>
-          <button onClick={() => onOpenCreateModal?.("task")}
-            className="p-1 text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded transition-colors" title={t("Add task")}>
-            <RiAddLine size={16} />
-          </button>
+          {canCreate && (
+            <button onClick={() => onOpenCreateModal?.("task")}
+              className="p-1 text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded transition-colors" title={t("Add task")}>
+              <RiAddLine size={16} />
+            </button>
+          )}
         </div>
         {regularTasks.length === 0 ? (
           <p className="text-xs text-gray-400 dark:text-gray-500 text-center py-2">{t("No tasks for today")}</p>
@@ -397,7 +415,7 @@ function TodayRightPanel({ onOpenCreateModal }) {
             )}
           </div>
         )}
-        <QuickAddInput onAdd={handleQuickAddTask} placeholder={t("Add task...")} />
+        {canCreate && <QuickAddInput onAdd={handleQuickAddTask} placeholder={t("Add task...")} />}
       </div>
 
       {/* ── Today's Appointments ── */}
@@ -439,11 +457,13 @@ function TodayRightPanel({ onOpenCreateModal }) {
               <span className="text-xs text-gray-400 dark:text-gray-500">{todayReminders.length}</span>
             )}
           </div>
-          <button onClick={() => onOpenCreateModal?.("reminder")}
-            className="p-1 text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded transition-colors"
-            title={isArabic ? "إضافة تذكير" : "Add reminder"}>
-            <RiAddLine size={16} />
-          </button>
+          {canCreate && (
+            <button onClick={() => onOpenCreateModal?.("reminder")}
+              className="p-1 text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded transition-colors"
+              title={isArabic ? "إضافة تذكير" : "Add reminder"}>
+              <RiAddLine size={16} />
+            </button>
+          )}
         </div>
 
         {todayReminders.length === 0 ? (
@@ -451,13 +471,15 @@ function TodayRightPanel({ onOpenCreateModal }) {
             <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">
               {isArabic ? "لا توجد تذكيرات اليوم" : "No reminders today"}
             </p>
-            <button
-              onClick={() => onOpenCreateModal?.("reminder")}
-              className="inline-flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400 hover:underline"
-            >
-              <RiAddLine size={12} />
-              {isArabic ? "إضافة تذكير" : "Add a reminder"}
-            </button>
+            {canCreate && (
+              <button
+                onClick={() => onOpenCreateModal?.("reminder")}
+                className="inline-flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400 hover:underline"
+              >
+                <RiAddLine size={12} />
+                {isArabic ? "إضافة تذكير" : "Add a reminder"}
+              </button>
+            )}
           </div>
         ) : (
           <div className="space-y-1">
@@ -487,14 +509,16 @@ function TodayRightPanel({ onOpenCreateModal }) {
           placeholder={isArabic ? "اكتب ملاحظاتك لهذا اليوم..." : "Write your notes for today..."}
           className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 resize-none"
         />
-        <div className="flex items-center justify-end mt-2">
-          <button onClick={handleSaveNotes} disabled={!notesText.trim()}
-            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
-              notesSaved ? "bg-green-500 text-white" : "bg-primary-500 hover:bg-primary-600 text-white disabled:opacity-40"
-            }`}>
-            {notesSaved ? t("Saved!") : t("Save Note")}
-          </button>
-        </div>
+        {canCreate && (
+          <div className="flex items-center justify-end mt-2">
+            <button onClick={handleSaveNotes} disabled={!notesText.trim()}
+              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                notesSaved ? "bg-green-500 text-white" : "bg-primary-500 hover:bg-primary-600 text-white disabled:opacity-40"
+              }`}>
+              {notesSaved ? t("Saved!") : t("Save Note")}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Edit Task Modal */}

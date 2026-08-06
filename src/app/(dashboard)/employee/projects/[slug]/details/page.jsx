@@ -44,6 +44,7 @@ function EmployeeProjectDetailsPage() {
     const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
 
     const canDeleteAttachments = usePermission("attachments.delete");
+    const canUploadAttachments = usePermission("attachments.upload");
     const canEvaluate = usePermission("projects.evaluate");
     const canManageTeam = usePermission("tasks.manage_participants");
     const canComment = usePermission("tasks.comment");
@@ -267,7 +268,7 @@ function EmployeeProjectDetailsPage() {
                     </div>
                     <AttachmentsList
                         attachments={attachments}
-                        onUpload={handleUploadAttachment}
+                        onUpload={canUploadAttachments ? handleUploadAttachment : null}
                         onDelete={canDeleteAttachments ? handleDeleteAttachment : null}
                         isUploading={isUploadingAttachment}
                     />

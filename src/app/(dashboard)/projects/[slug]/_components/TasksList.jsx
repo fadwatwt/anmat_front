@@ -6,7 +6,7 @@ import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert.jsx";
 import { useState, useMemo, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { selectUser } from "@/redux/auth/authSlice";
-import { usePermission } from "@/Hooks/usePermission";
+import { usePermission, useHasAnyPermission } from "@/Hooks/usePermission";
 import { useTranslation } from "react-i18next";
 import { useGetSubscriberOrganizationQuery } from "@/redux/organizations/organizationsApi";
 import CreateTeamModal from "@/app/(dashboard)/projects/_modal/CreateTeamModal";
@@ -183,6 +183,7 @@ function TasksList({ tasks = [], isAssignedDate = false, isEmployeeView = false,
     const canDeleteAttachments = usePermission("attachments.delete");
     const canEvaluate = usePermission("tasks.evaluate");
     const canManageTeam = usePermission("tasks.manage_participants");
+    const canUpdateTasks = useHasAnyPermission(["tasks.update", "tasks.track_all", "tasks.track_department"]);
 
     const [evaluateStage] = useEvaluateSubscriberTaskStageMutation();
     const [evaluateTask] = useEvaluateSubscriberTaskMutation();
@@ -309,13 +310,8 @@ function TasksList({ tasks = [], isAssignedDate = false, isEmployeeView = false,
 
                                         const isAssignee = !!userId && !!assigneeId && userId === assigneeId;
                                         const isSubscriber = user?.type === "Subscriber";
-                                        const hasPermission = Array.isArray(user?.permissions) && (
-                                            user.permissions.includes('manage_tasks') ||
-                                            user.permissions.includes('edit_tasks') ||
-                                            user.permissions.includes('update_tasks')
-                                        );
 
-                                        const canChangeStatus = isEmployeeView && (isAssignee || isSubscriber || hasPermission);
+                                        const canChangeStatus = isEmployeeView && (isAssignee || isSubscriber || canUpdateTasks);
 
                                         return (
                                             <div className="relative">

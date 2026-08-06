@@ -23,6 +23,7 @@ import {
   RiTaskLine,
   RiArrowDownSLine,
 } from "react-icons/ri";
+import usePermission from "@/Hooks/usePermission";
 
 const TimeBadge = ({ time }) => {
   if (!time) return null;
@@ -118,6 +119,8 @@ function DayDetailSidebar({ selectedDate, onAddAppointment, onAddTask }) {
   const { t, i18n } = useTranslation();
   const router = useRouter();
   const isArabic = i18n.language === "ar";
+  const canCreate = usePermission("appointments.create");
+  const canUpdate = usePermission("appointments.update");
 
   const { data: appointments = [], isLoading: loadingAppointments } = useGetAppointmentsQuery(
     { date: selectedDate },
@@ -190,13 +193,15 @@ function DayDetailSidebar({ selectedDate, onAddAppointment, onAddTask }) {
           </p>
         </div>
         <div className="flex items-center gap-1">
-          <button
-            onClick={() => onAddAppointment?.(selectedDate)}
-            className="p-1.5 text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
-            title={t("Add Appointment")}
-          >
-            <RiAddLine size={18} />
-          </button>
+          {canCreate && (
+            <button
+              onClick={() => onAddAppointment?.(selectedDate)}
+              className="p-1.5 text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
+              title={t("Add Appointment")}
+            >
+              <RiAddLine size={18} />
+            </button>
+          )}
         </div>
       </div>
 
@@ -237,7 +242,7 @@ function DayDetailSidebar({ selectedDate, onAddAppointment, onAddTask }) {
                           )}
                         </div>
                       </div>
-                      {apt.status === "upcoming" && (
+                      {apt.status === "upcoming" && canUpdate && (
                         <div className="flex items-center gap-1">
                           <button
                             onClick={(e) => {
@@ -276,7 +281,7 @@ function DayDetailSidebar({ selectedDate, onAddAppointment, onAddTask }) {
               </h4>
               <div className="space-y-2">
                 {dailyTasks.map((task) => (
-                  <DailyTaskRow key={task._id} task={task} onComplete={handleCompleteTask} t={t} />
+                  <DailyTaskRow key={task._id} task={task} onComplete={canUpdate ? handleCompleteTask : () => {}} t={t} />
                 ))}
               </div>
             </div>
@@ -287,20 +292,24 @@ function DayDetailSidebar({ selectedDate, onAddAppointment, onAddTask }) {
               <RiCalendarLine size={40} className="mx-auto text-gray-300 dark:text-gray-600 mb-2" />
               <p className="text-gray-500 dark:text-gray-400">{t("No items for this day")}</p>
               <div className="flex items-center justify-center gap-2 mt-3">
-                <button
-                  onClick={() => onAddAppointment?.(selectedDate)}
-                  className="flex items-center gap-1 px-3 py-1.5 text-sm text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
-                >
-                  <RiAddLine size={14} />
-                  {t("Add Appointment")}
-                </button>
-                <button
-                  onClick={() => onAddTask?.(selectedDate)}
-                  className="flex items-center gap-1 px-3 py-1.5 text-sm text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors"
-                >
-                  <RiAddLine size={14} />
-                  {t("Add Task")}
-                </button>
+                {canCreate && (
+                  <button
+                    onClick={() => onAddAppointment?.(selectedDate)}
+                    className="flex items-center gap-1 px-3 py-1.5 text-sm text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
+                  >
+                    <RiAddLine size={14} />
+                    {t("Add Appointment")}
+                  </button>
+                )}
+                {canCreate && (
+                  <button
+                    onClick={() => onAddTask?.(selectedDate)}
+                    className="flex items-center gap-1 px-3 py-1.5 text-sm text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors"
+                  >
+                    <RiAddLine size={14} />
+                    {t("Add Task")}
+                  </button>
+                )}
               </div>
             </div>
           )}

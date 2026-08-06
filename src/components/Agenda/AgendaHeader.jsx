@@ -2,10 +2,12 @@
 
 import { useTranslation } from "react-i18next";
 import AgendaSearch from "./AgendaSearch";
+import usePermission from "@/Hooks/usePermission";
 import { RiAddLine, RiCalendarScheduleLine, RiTaskLine, RiSunLine } from "react-icons/ri";
 
 function AgendaHeader({ view, setView, onAdd }) {
   const { t } = useTranslation();
+  const canCreate = usePermission("appointments.create");
 
   const tabs = [
     { id: "today", icon: <RiSunLine size={16} />, label: t("Today") },
@@ -38,13 +40,15 @@ function AgendaHeader({ view, setView, onAdd }) {
         <div className="flex-1 sm:flex-initial sm:w-64">
           <AgendaSearch />
         </div>
-        <button
-          onClick={onAdd}
-          className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 rounded-lg transition-colors"
-        >
-          <RiAddLine size={16} />
-          <span className="hidden sm:inline">{t("Add")}</span>
-        </button>
+        {canCreate && (
+          <button
+            onClick={onAdd}
+            className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 rounded-lg transition-colors"
+          >
+            <RiAddLine size={16} />
+            <span className="hidden sm:inline">{t("Add")}</span>
+          </button>
+        )}
       </div>
     </div>
   );

@@ -46,10 +46,17 @@ const ProjectStatusBadge = ({ status }) => {
       colors = "bg-status-bg text-cell-secondary border-status-border";
   }
 
+  const statusLabel = {
+    "completed": "Completed",
+    "in-progress": "In Progress",
+    "pending": "Pending",
+    "on-hold": "On Hold",
+  }[status?.toLowerCase()] || status;
+
   return (
     <div className={`flex items-center gap-1.5 border rounded-full px-2.5 py-1 w-fit ${colors}`}>
       {Icon}
-      <span className="text-[11px] font-medium">{t(status || "Unknown")}</span>
+      <span className="text-[11px] font-medium">{t(statusLabel || "Unknown")}</span>
     </div>
   );
 };

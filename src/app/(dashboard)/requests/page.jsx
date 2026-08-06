@@ -23,6 +23,7 @@ function EmployeeRequestsPage() {
     const [activeTab, setActiveTab] = useState("DAY_OFF"); // "DAY_OFF", "SALARY_ADVANCE", "WORK_DELAY"
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const canCreateRequest = usePermission("employee_requests.create");
+    const canUpdateRequest = usePermission("employee_requests.update");
 
     // API Hooks
     const { data: requestsData, isLoading } = useGetEmployeeAuthRequestsQuery();
@@ -135,7 +136,7 @@ function EmployeeRequestsPage() {
 
     const customActions = (rowIndex) => {
         const request = currentData[rowIndex];
-        const canCancel = request.status === "open";
+        const canCancel = request.status === "open" && canUpdateRequest;
 
         return (
             <div className="flex flex-col bg-surface shadow-xl rounded-xl border border-status-border min-w-40 overflow-hidden transform scale-95 transition-all duration-200 origin-top-right">

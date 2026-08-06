@@ -14,6 +14,7 @@ import {
   useCompleteAppointmentMutation,
   useCancelAppointmentMutation,
 } from "@/redux/appointments/appointmentsApi";
+import usePermission from "@/Hooks/usePermission";
 
 const HOUR_HEIGHT = 64; // px per hour
 const START_HOUR = 7;   // 7am
@@ -31,6 +32,7 @@ function minutesFromStart(minutes) {
 
 function AppointmentBlock({ apt, hourHeight, onComplete, onCancel }) {
   const { t } = useTranslation();
+  const canUpdate = usePermission("appointments.update");
   const startMin = timeToMinutes(apt.start_time);
   const endMin = timeToMinutes(apt.end_time) || (startMin ? startMin + 60 : null);
 
@@ -72,7 +74,7 @@ function AppointmentBlock({ apt, hourHeight, onComplete, onCancel }) {
           )}
         </div>
 
-        {apt.status === "upcoming" && (
+        {apt.status === "upcoming" && canUpdate && (
           <div className="flex-shrink-0 hidden group-hover:flex items-center gap-0.5">
             <button
               onClick={(e) => {

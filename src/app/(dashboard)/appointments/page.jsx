@@ -26,9 +26,14 @@ import DailyTaskCard from "@/components/Agenda/DailyTaskCard";
 import CreateAgendaModal from "@/components/Agenda/CreateAgendaModal";
 import TodayView from "@/components/Agenda/TodayView";
 import YesterdayTasksNotice from "@/components/Agenda/YesterdayTasksNotice";
+import usePermission from "@/Hooks/usePermission";
 
 function AppointmentsPage() {
   const { t } = useTranslation();
+
+  const canCreateAppointment = usePermission("appointments.create");
+  const canUpdateAppointment = usePermission("appointments.update");
+  const canDeleteAppointment = usePermission("appointments.delete");
 
   const [view, setView] = useState("today");
   const [selectedDate, setSelectedDate] = useState(null);
@@ -233,7 +238,7 @@ function AppointmentsPage() {
           <AgendaHeader
             view={view}
             setView={setView}
-            onAdd={() => openCreateModal("appointment")}
+            onAdd={canCreateAppointment ? () => openCreateModal("appointment") : undefined}
           />
 
           {/* Yesterday's incomplete tasks notice — only show on today tab */}
@@ -325,10 +330,10 @@ function AppointmentsPage() {
                                 appointment={appointment}
                                 size="md"
                                 showCountdown={true}
-                                onComplete={requestComplete}
-                                onCancel={requestCancel}
-                                onEdit={requestEdit}
-                                onDelete={requestDelete}
+                                onComplete={canUpdateAppointment ? requestComplete : null}
+                                onCancel={canUpdateAppointment ? requestCancel : null}
+                                onEdit={canUpdateAppointment ? requestEdit : null}
+                                onDelete={canDeleteAppointment ? requestDelete : null}
                                 onShare={setShareAppointment}
                               />
                             ))}
@@ -384,9 +389,9 @@ function AppointmentsPage() {
                               <ReminderCard
                                 key={reminder._id}
                                 reminder={reminder}
-                                onComplete={requestCompleteReminder}
-                                onDelete={requestDeleteReminder}
-                                onEdit={requestEdit}
+                                onComplete={canUpdateAppointment ? requestCompleteReminder : null}
+                                onDelete={canDeleteAppointment ? requestDeleteReminder : null}
+                                onEdit={canUpdateAppointment ? requestEdit : null}
                               />
                             ))}
                           </div>
@@ -403,8 +408,9 @@ function AppointmentsPage() {
                               <ReminderCard
                                 key={reminder._id}
                                 reminder={reminder}
-                                onComplete={requestCompleteReminder}
-                                onDelete={requestDeleteReminder}
+                                onComplete={canUpdateAppointment ? requestCompleteReminder : null}
+                                onDelete={canDeleteAppointment ? requestDeleteReminder : null}
+                                onEdit={canUpdateAppointment ? requestEdit : null}
                               />
                             ))}
                           </div>

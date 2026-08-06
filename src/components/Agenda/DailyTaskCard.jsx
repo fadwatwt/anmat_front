@@ -21,6 +21,7 @@ import {
   RiSaveLine,
   RiArrowDownSLine,
 } from "react-icons/ri";
+import usePermission from "@/Hooks/usePermission";
 
 const PRIORITY_CONFIG = {
   low:    { bg: "bg-gray-100 dark:bg-gray-700",           text: "text-gray-600 dark:text-gray-400",    dot: "bg-gray-400" },
@@ -44,6 +45,8 @@ function DailyTaskCard({ task, size = "md", onUpdate }) {
   const isArabic  = i18n.language === "ar";
   const isSmall   = size === "sm";
   const isCompleted = task.status === "completed";
+  const canUpdate = usePermission("appointments.update");
+  const canDelete = usePermission("appointments.delete");
 
   const [showNotes, setShowNotes] = useState(false);
   const [showNotesView, setShowNotesView] = useState(false);
@@ -190,8 +193,8 @@ function DailyTaskCard({ task, size = "md", onUpdate }) {
       <div className="flex items-start gap-3">
         {/* complete toggle */}
         <button
-          onClick={handleComplete}
-          className={`mt-0.5 flex-shrink-0 ${isCompleted ? "text-green-500" : "text-gray-400 hover:text-green-500 transition-colors"}`}
+          onClick={canUpdate ? handleComplete : undefined}
+          className={`mt-0.5 flex-shrink-0 ${isCompleted ? "text-green-500" : "text-gray-400 hover:text-green-500 transition-colors"} ${canUpdate ? "" : "opacity-50"}`}
           title={t("Complete")}
         >
           {isCompleted ? <RiCheckLine size={20} /> : <RiCheckboxCircleLine size={20} />}
@@ -234,7 +237,7 @@ function DailyTaskCard({ task, size = "md", onUpdate }) {
         </div>
 
         {/* ── Action buttons — always visible on hover, regardless of size ── */}
-        {!isCompleted && (
+        {!isCompleted && (canUpdate || canDelete) && (
           <div className={`flex items-center gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity`}>
             {task.notes && (
               <button
@@ -245,27 +248,33 @@ function DailyTaskCard({ task, size = "md", onUpdate }) {
                 <RiArrowDownSLine size={isSmall ? 14 : 16} className={`transition-transform ${showNotesView ? "rotate-180" : ""}`} />
               </button>
             )}
-            <button
-              onClick={() => setEditing(true)}
-              className="p-1.5 text-gray-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
-              title={t("Edit")}
-            >
-              <RiEditLine size={isSmall ? 14 : 16} />
-            </button>
-            <button
-              onClick={() => { setShowNotes(!showNotes); setEditing(false); setShowNotesView(false); }}
-              className="p-1.5 text-gray-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
-              title={t("Add Note")}
-            >
-              <RiStickyNoteLine size={isSmall ? 14 : 16} />
-            </button>
-            <button
-              onClick={handleDelete}
-              className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-              title={t("Delete")}
-            >
-              <RiDeleteBinLine size={isSmall ? 14 : 16} />
-            </button>
+            {canUpdate && (
+              <button
+                onClick={() => setEditing(true)}
+                className="p-1.5 text-gray-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
+                title={t("Edit")}
+              >
+                <RiEditLine size={isSmall ? 14 : 16} />
+              </button>
+            )}
+            {canUpdate && (
+              <button
+                onClick={() => { setShowNotes(!showNotes); setEditing(false); setShowNotesView(false); }}
+                className="p-1.5 text-gray-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
+                title={t("Add Note")}
+              >
+                <RiStickyNoteLine size={isSmall ? 14 : 16} />
+              </button>
+            )}
+            {canDelete && (
+              <button
+                onClick={handleDelete}
+                className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                title={t("Delete")}
+              >
+                <RiDeleteBinLine size={isSmall ? 14 : 16} />
+              </button>
+            )}
           </div>
         )}
       </div>

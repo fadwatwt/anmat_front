@@ -3,10 +3,12 @@ import { useTranslation } from "react-i18next";
 import React, { useState, useRef, useEffect } from "react";
 import EmojiPicker from "emoji-picker-react";
 import { useUploadFileMutation } from "@/redux/conversations/conversationsAPI";
+import { usePermission } from "@/Hooks/usePermission";
 import { Send, Paperclip, Smile, Edit3, X, BarChart2, FileIcon, ImageIcon } from "lucide-react";
 
 const MessageInput = ({ onSendMessage, onTyping, editMessageData, onCancelEdit, onEditMessage, onOpenPoll, activeChatId }) => {
   const { t } = useTranslation();
+  const canInitiate = usePermission("chats.initiate");
   const [message, setMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -103,6 +105,8 @@ const MessageInput = ({ onSendMessage, onTyping, editMessageData, onCancelEdit, 
     // Keep focus on input after adding emoji
     if (inputRef.current) inputRef.current.focus();
   };
+
+  if (!canInitiate) return null;
 
   return (
     <div className="flex flex-col bg-surface border-t border-status-border">
