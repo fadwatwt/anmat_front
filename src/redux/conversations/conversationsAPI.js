@@ -28,6 +28,10 @@ export const conversationsAPI = createApi({
       query: () => "/unread",
       providesTags: ["UnreadChats"],
     }),
+    getChatCandidates: builder.query({
+      query: () => "/candidates",
+      providesTags: ["Chats"],
+    }),
     getChatPermissions: builder.query({
       query: () => "/permissions",
       providesTags: ["ChatPermissions"],
@@ -172,6 +176,7 @@ export const conversationsAPI = createApi({
 export const {
   useGetChatsQuery,
   useGetUnreadChatsQuery,
+  useGetChatCandidatesQuery,
   useGetChatPermissionsQuery,
   useGetMessagesQuery,
   useSendMessageMutation,

@@ -1,19 +1,26 @@
 "use client";
 
 import { useTranslation } from "react-i18next";
-import React, { useState } from "react";
+import { useState } from "react";
+import PropTypes from "prop-types";
 import { useGetChatsQuery } from "@/redux/conversations/conversationsAPI";
 import { formatDistanceToNow } from "date-fns";
 import { getDateLocale } from "@/lib/dateLocale";
-import { Search, MoreVertical, MessageSquare } from "lucide-react";
+import { Search, MessageSquare, SquarePen } from "lucide-react";
 import { useSelector } from "react-redux";
-import { selectUserId } from "@/redux/auth/authSlice";
+import { selectUserId, selectUserType } from "@/redux/auth/authSlice";
+import { usePermission } from "@/Hooks/usePermission";
+import NewConversationModal from "./NewConversationModal";
 
 const ChatList = ({ activeChatId, onSelectChat }) => {
   const { t } = useTranslation();
   const userId = useSelector(selectUserId);
+  const isAdmin = useSelector(selectUserType) === "Admin";
+  const hasInitiatePermission = usePermission("chats.initiate");
+  const canInitiateChat = isAdmin || hasInitiatePermission;
   const [searchQuery, setSearchQuery] = useState("");
   const [showArchived, setShowArchived] = useState(false);
+  const [showNewChat, setShowNewChat] = useState(false);
 
   const { data: chatsData, isLoading } = useGetChatsQuery({ is_archived: showArchived }, {
     refetchOnMountOrArgChange: true,
@@ -43,19 +50,30 @@ const ChatList = ({ activeChatId, onSelectChat }) => {
       <div className="p-4 border-b border-status-border">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold text-cell-primary">{t("Messages")}</h2>
-          <div className="flex gap-1 bg-weak-50 p-1 rounded-lg">
-            <button 
-              onClick={() => setShowArchived(false)}
-              className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${!showArchived ? 'bg-white dark:bg-gray-800 shadow-sm text-primary' : 'text-sub-500 hover:text-cell-primary'}`}
-            >
-              {t("Active")}
-            </button>
-            <button 
-              onClick={() => setShowArchived(true)}
-              className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${showArchived ? 'bg-white dark:bg-gray-800 shadow-sm text-primary' : 'text-sub-500 hover:text-cell-primary'}`}
-            >
-              {t("Archived")}
-            </button>
+          <div className="flex items-center gap-2">
+            {canInitiateChat && (
+              <button
+                onClick={() => setShowNewChat(true)}
+                className="flex items-center gap-1.5 bg-primary-500 hover:bg-primary-600 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-all"
+              >
+                <SquarePen size={14} />
+                {t("New Conversation")}
+              </button>
+            )}
+            <div className="flex gap-1 bg-weak-50 p-1 rounded-lg">
+              <button 
+                onClick={() => setShowArchived(false)}
+                className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${!showArchived ? 'bg-white dark:bg-gray-800 shadow-sm text-primary' : 'text-sub-500 hover:text-cell-primary'}`}
+              >
+                {t("Active")}
+              </button>
+              <button 
+                onClick={() => setShowArchived(true)}
+                className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${showArchived ? 'bg-white dark:bg-gray-800 shadow-sm text-primary' : 'text-sub-500 hover:text-cell-primary'}`}
+              >
+                {t("Archived")}
+              </button>
+            </div>
           </div>
         </div>
         <div className="relative">
@@ -130,8 +148,22 @@ const ChatList = ({ activeChatId, onSelectChat }) => {
           ))
         )}
       </div>
+
+      <NewConversationModal
+        isOpen={showNewChat}
+        onClose={() => setShowNewChat(false)}
+        onCreate={(chat) => {
+          setShowNewChat(false);
+          if (chat?._id) onSelectChat(chat);
+        }}
+      />
     </div>
   );
 };
 
 export default ChatList;
+
+ChatList.propTypes = {
+  activeChatId: PropTypes.string,
+  onSelectChat: PropTypes.func.isRequired,
+};

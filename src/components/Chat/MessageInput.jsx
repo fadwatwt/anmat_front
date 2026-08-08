@@ -1,14 +1,18 @@
 "use client";
 import { useTranslation } from "react-i18next";
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import EmojiPicker from "emoji-picker-react";
 import { useUploadFileMutation } from "@/redux/conversations/conversationsAPI";
 import { usePermission } from "@/Hooks/usePermission";
+import { useSelector } from "react-redux";
+import { selectUserType } from "@/redux/auth/authSlice";
 import { Send, Paperclip, Smile, Edit3, X, BarChart2, FileIcon, ImageIcon } from "lucide-react";
 
 const MessageInput = ({ onSendMessage, onTyping, editMessageData, onCancelEdit, onEditMessage, onOpenPoll, activeChatId }) => {
   const { t } = useTranslation();
-  const canInitiate = usePermission("chats.initiate");
+  const isAdmin = useSelector(selectUserType) === "Admin";
+  const hasInitiatePermission = usePermission("chats.initiate");
+  const canInitiate = isAdmin || hasInitiatePermission;
   const [message, setMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);

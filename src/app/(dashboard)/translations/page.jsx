@@ -1,5 +1,6 @@
 "use client"
 import { useState } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import Page from "@/components/Page.jsx";
 import Table from "@/components/Tables/Table.jsx";
@@ -9,13 +10,17 @@ import {
   RiFlashlightLine,
   RiTranslate2,
   RiLeafLine,
+  RiSparklingLine,
 } from "@remixicon/react";
 import { useGetSubscriptionPlansQuery } from "@/redux/plans/subscriptionPlansApi";
 import { useGetPlanTranslationsQuery } from "@/redux/plans/planTranslationsApi";
 import { useGetIndustriesQuery } from "@/redux/industries/industriesApi";
 import { useGetIndustryTranslationsQuery } from "@/redux/industries/industryTranslationsApi";
+import { useGetTokenPackagesQuery } from "@/redux/plans/tokenPackagesApi";
+import { useGetTokenPackageTranslationsQuery } from "@/redux/plans/tokenPackageTranslationsApi";
 import PlanTranslationsModal from "./_components/PlanTranslations.modal";
 import IndustriesTranslationsModal from "./_components/IndustriesTranslations.modal";
+import TokenPackagesTranslationsModal from "./_components/TokenPackagesTranslations.modal";
 import { statusCell } from "@/components/StatusCell";
 import PermissionGuard from "@/components/PermissionGuard";
 import { usePermission } from "@/Hooks/usePermission";
@@ -220,6 +225,129 @@ function IndustriesTranslationsTab({ canUpdate }) {
   );
 }
 
+function TokenPackageTranslationBadge({ packageId, locale }) {
+  const { data: translations } = useGetTokenPackageTranslationsQuery(packageId);
+  const hasTranslation = translations?.some((t) => t.locale === locale);
+  return (
+    <span
+      className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+        hasTranslation
+          ? "bg-green-100 text-green-700"
+          : "bg-badge-bg text-badge-text border border-status-border"
+      }`}
+    >
+      {hasTranslation ? "\u2713" : "\u2717"}
+    </span>
+  );
+}
+
+TokenPackageTranslationBadge.propTypes = {
+  packageId: PropTypes.string.isRequired,
+  locale: PropTypes.string.isRequired,
+};
+
+function PackageActions({ canUpdate, onTranslate }) {
+  const { t, i18n } = useTranslation();
+  if (!canUpdate) return null;
+  return (
+    <StatusActions
+      states={[
+        {
+          text: t("Translate"),
+          icon: <RiTranslate2 className="text-blue-500" />,
+          onClick: onTranslate,
+        },
+      ]}
+      className={i18n.language === "ar" ? "left-0" : "right-0"}
+    />
+  );
+}
+
+PackageActions.propTypes = {
+  canUpdate: PropTypes.bool.isRequired,
+  onTranslate: PropTypes.func.isRequired,
+};
+
+function TokenPackagesTranslationsTab({ canUpdate }) {
+  const { t } = useTranslation();
+  const { data: packages } = useGetTokenPackagesQuery();
+
+  const [selectedPackage, setSelectedPackage] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const headers = [
+    { label: t("Package"), width: "200px" },
+    { label: t("Tokens"), width: "120px" },
+    { label: t("Price"), width: "120px" },
+    { label: t("Arabic"), width: "80px" },
+    { label: t("English"), width: "80px" },
+    { label: t("Status"), width: "100px" },
+    { label: "", width: "50px" },
+  ];
+
+  const rows =
+    packages?.map((pkg) => [
+      <div key={`${pkg._id}_name`} className="flex items-center gap-2">
+        <div className="rounded-full p-2 bg-violet-100 dark:bg-violet-900/30">
+          <RiSparklingLine size={16} className="text-violet-500" />
+        </div>
+        <span className="text-sm font-medium text-cell-primary truncate max-w-[150px]" title={pkg.name}>
+          {pkg.name}
+        </span>
+      </div>,
+      <div key={`${pkg._id}_tokens`} className="text-sm">
+        {pkg.tokens?.toLocaleString()}
+      </div>,
+      <div key={`${pkg._id}_price`} className="text-sm">
+        {pkg.price_label}
+      </div>,
+      <TokenPackageTranslationBadge key={`${pkg._id}_ar`} packageId={pkg._id} locale="ar" />,
+      <TokenPackageTranslationBadge key={`${pkg._id}_en`} packageId={pkg._id} locale="en" />,
+      <div key={`${pkg._id}_status`}>
+        {statusCell(pkg.is_active ? "active" : "in-active", pkg._id)}
+      </div>,
+    ]) || [];
+
+  const openTranslation = (pkg) => {
+    setSelectedPackage(pkg);
+    setModalOpen(true);
+  };
+
+  return (
+    <div>
+      <Table
+        classContainer={"rounded-2xl px-8"}
+        title={t("AI Token Packages Translations")}
+        headers={headers}
+        isActions={false}
+        rows={rows}
+        customActions={(actualRowIndex) => (
+          <PackageActions
+            canUpdate={canUpdate}
+            onTranslate={() => openTranslation(packages?.[actualRowIndex])}
+          />
+        )}
+        isFilter={true}
+      />
+
+      {selectedPackage && (
+        <TokenPackagesTranslationsModal
+          isOpen={modalOpen}
+          onClose={() => {
+            setModalOpen(false);
+            setSelectedPackage(null);
+          }}
+          pkg={selectedPackage}
+        />
+      )}
+    </div>
+  );
+}
+
+TokenPackagesTranslationsTab.propTypes = {
+  canUpdate: PropTypes.bool.isRequired,
+};
+
 function TranslationsPageContent() {
   const { t } = useTranslation();
   const canViewPlans = usePermission("admin.subscription_plans.list");
@@ -232,6 +360,12 @@ function TranslationsPageContent() {
     tabs.push({
       title: t("Subscription Plans"),
       content: <SubscriptionPlansTranslationsTab canUpdate={canUpdatePlans} />,
+    });
+  }
+  if (canViewPlans) {
+    tabs.push({
+      title: t("AI Token Plans"),
+      content: <TokenPackagesTranslationsTab canUpdate={canUpdatePlans} />,
     });
   }
   if (canViewIndustries) {

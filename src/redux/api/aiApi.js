@@ -20,9 +20,10 @@ export const aiApi = apiSlice.injectEndpoints({
             transformResponse: (response) => response.data || response,
         }),
         getTokenPackages: builder.query({
-            query: () => ({
+            query: (locale) => ({
                 url: "api/ai/tokens/packages",
                 method: "GET",
+                params: { locale },
             }),
             transformResponse: (response) => response.data || response,
         }),

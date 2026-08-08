@@ -626,12 +626,12 @@ const AssistantPage = () => {
     <Page isTitle={false}>
       <div className="relative flex h-[calc(100vh-140px)] min-h-[550px] w-full bg-white dark:bg-gray-950 overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm">
 
-        {/* Backdrop when history drawer is open (mobile) */}
+        {/* Backdrop when history drawer is open */}
         {isHistoryOpen && (
           <button
             type="button"
             aria-label={t("Close chat history")}
-            className="absolute inset-0 z-20 bg-black/30 md:bg-black/10 md:pointer-events-none"
+            className="absolute inset-0 z-20 bg-black/30 md:bg-black/10"
             onClick={() => setIsHistoryOpen(false)}
           />
         )}

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { X, Users, Download, Archive, UserPlus, UserMinus, Search, ChevronDown, ChevronUp, Check } from "lucide-react";
 import {
@@ -40,7 +40,33 @@ const ChatDetailsModal = ({ activeChat, onClose }) => {
     ? activeChat.participants_ids
     : [];
 
-  const currentParticipantIds = new Set(participants.map(p => (p?._id || p)?.toString()));
+  const currentParticipantIds = useMemo(
+    () => new Set(participants.map(p => (p?._id || p)?.toString())),
+    [participants]
+  );
+
+  // Map user_id -> employee record, used as a fallback when the chat object
+  // contains raw participant ObjectIds without populated names.
+  const employeeByUserId = useMemo(() => {
+    const map = {};
+    (allEmployees || []).forEach(emp => {
+      const uid = (emp.user_id || emp.user?._id || emp._id)?.toString();
+      if (uid) map[uid] = emp;
+    });
+    return map;
+  }, [allEmployees]);
+
+  const resolveParticipant = (participant) => {
+    const pid = (participant?._id || participant)?.toString();
+    const emp = employeeByUserId[pid];
+    return {
+      pid,
+      name: participant?.name || participant?.user?.name || emp?.user?.name || t("Unknown"),
+      image: participant?.image || participant?.user?.avatar || emp?.user?.avatar || null,
+      email: participant?.email || participant?.user?.email || emp?.user?.email || null,
+      isCurrentUser: pid === currentUser?._id?.toString(),
+    };
+  };
 
   // Employees not already in the group — available to add
   const availableToAdd = useMemo(() => {
@@ -108,6 +134,13 @@ const ChatDetailsModal = ({ activeChat, onClose }) => {
 
   const avatarLetter = (name) => (name || "?").charAt(0).toUpperCase();
 
+  const otherParticipant = participants.find(
+    (p) => (p?._id || p)?.toString() !== currentUser?._id?.toString()
+  );
+  const otherName = otherParticipant
+    ? resolveParticipant(otherParticipant).name
+    : null;
+
   return (
     <>
       {!isAlertOpen && (
@@ -132,12 +165,12 @@ const ChatDetailsModal = ({ activeChat, onClose }) => {
                 {activeChat.image ? (
                   <img src={activeChat.image} alt={activeChat.title} className="w-24 h-24 rounded-full object-cover" />
                 ) : (
-                  avatarLetter(activeChat.title || participants.find(p => p._id !== currentUser?._id)?.name)
+                  avatarLetter(activeChat.title || otherName)
                 )}
               </div>
 
               <h3 className="text-xl font-bold text-cell-primary mb-1">
-                {activeChat.title || participants.find(p => p._id !== currentUser?._id)?.name || t("Direct Chat")}
+                {activeChat.title || otherName || t("Direct Chat")}
               </h3>
               <p className="text-sm text-sub-500 mb-6">{isGroup ? t("Group Chat") : t("Direct Chat")}</p>
 
@@ -245,9 +278,7 @@ const ChatDetailsModal = ({ activeChat, onClose }) => {
                         <p className="text-sm text-sub-400 text-center py-4">{t("No members found")}</p>
                       ) : (
                         participants.map((participant) => {
-                          const pid = participant?._id?.toString();
-                          const pname = participant?.name || participant?.user?.name || t("Unknown");
-                          const isCurrentUser = pid === currentUser?._id?.toString();
+                          const { pid, name: pname, image: pimage, email: pemail, isCurrentUser } = resolveParticipant(participant);
                           const isRemoving = removingId === pid;
                           return (
                             <div
@@ -256,8 +287,8 @@ const ChatDetailsModal = ({ activeChat, onClose }) => {
                             >
                               <div className="flex items-center gap-3">
                                 <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs flex-shrink-0">
-                                  {participant?.image ? (
-                                    <img src={participant.image} alt={pname} className="w-full h-full rounded-full object-cover" />
+                                  {pimage ? (
+                                    <img src={pimage} alt={pname} className="w-full h-full rounded-full object-cover" />
                                   ) : avatarLetter(pname)}
                                 </div>
                                 <div>
@@ -267,8 +298,8 @@ const ChatDetailsModal = ({ activeChat, onClose }) => {
                                       <span className="ml-2 text-[10px] text-primary font-normal">({t("You")})</span>
                                     )}
                                   </p>
-                                  {participant?.email && (
-                                    <p className="text-[10px] text-sub-500">{participant.email}</p>
+                                  {pemail && (
+                                    <p className="text-[10px] text-sub-500">{pemail}</p>
                                   )}
                                 </div>
                               </div>

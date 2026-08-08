@@ -1,14 +1,18 @@
 "use client";
 import { useTranslation } from "react-i18next";
-import React, { useState } from "react";
+import { useState } from "react";
 import { MoreHorizontal, Edit2, Trash2, MessageSquareQuote, Smile, X } from "lucide-react";
 import { usePermission } from "@/Hooks/usePermission";
+import { useSelector } from "react-redux";
+import { selectUserType } from "@/redux/auth/authSlice";
 
 const EMOJI_LIST = ["👍", "❤️", "😂", "😮", "😢", "👏"];
 
 const MessageActions = ({ message, isMe, onEdit, onDelete, onReply, onReact }) => {
   const { t } = useTranslation();
-  const canInitiate = usePermission("chats.initiate");
+  const isAdmin = useSelector(selectUserType) === "Admin";
+  const hasInitiatePermission = usePermission("chats.initiate");
+  const canInitiate = isAdmin || hasInitiatePermission;
   const [showMenu, setShowMenu] = useState(false);
   const [showEmojis, setShowEmojis] = useState(false);
 

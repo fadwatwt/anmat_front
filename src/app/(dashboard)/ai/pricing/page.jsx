@@ -28,8 +28,8 @@ function getPackStyle(tokens) {
 }
 
 const PricingPage = () => {
-  const { t } = useTranslation();
-  const { data: packages, isLoading: loadingPackages } = useGetTokenPackagesQuery();
+  const { t, i18n } = useTranslation();
+  const { data: packages, isLoading: loadingPackages } = useGetTokenPackagesQuery(i18n.language);
   const [createCheckout, { isLoading: isCreatingCheckout }] = useCreateTokenCheckoutMutation();
   const [purchasingId, setPurchasingId] = useState(null);
   const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });

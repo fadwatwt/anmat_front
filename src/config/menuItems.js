@@ -189,7 +189,7 @@ export const dashboardSideMenuItems = [
     // ═══════════════════════════════════════════
     {
         section: 'Internal Communication',
-        allowed_to: ['Subscriber', 'Employee'],
+        allowed_to: ['Subscriber', 'Employee', 'Admin'],
         title: 'Conversations',
         path: '/conversations',
         icon: <Messages1 />
