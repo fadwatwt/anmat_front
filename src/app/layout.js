@@ -1,13 +1,8 @@
+/* global process */
 import { Almarai } from "next/font/google";
-import dynamic from "next/dynamic";
 import "./globals.css";
 import PropTypes from "prop-types";
-import { LoadingSplash } from "@/components/Loading";
-
-// Lazy-load Providers so layout.js stays small (avoids ChunkLoadError timeouts during dev recompiles)
-const Providers = dynamic(() => import("./providers"), {
-    loading: () => <LoadingSplash message="Loading application..." />,
-});
+import Providers from "./providers";
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3001";
 
 export const metadata = {

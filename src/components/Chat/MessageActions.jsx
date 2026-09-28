@@ -1,23 +1,18 @@
 "use client";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
+import PropTypes from "prop-types";
 import { MoreHorizontal, Edit2, Trash2, MessageSquareQuote, Smile, X } from "lucide-react";
-import { usePermission } from "@/Hooks/usePermission";
-import { useSelector } from "react-redux";
-import { selectUserType } from "@/redux/auth/authSlice";
 
 const EMOJI_LIST = ["👍", "❤️", "😂", "😮", "😢", "👏"];
 
-const MessageActions = ({ message, isMe, onEdit, onDelete, onReply, onReact }) => {
+const MessageActions = ({ isMe, onEdit, onDelete, onReply, onReact }) => {
   const { t } = useTranslation();
-  const isAdmin = useSelector(selectUserType) === "Admin";
-  const hasInitiatePermission = usePermission("chats.initiate");
-  const canInitiate = isAdmin || hasInitiatePermission;
   const [showMenu, setShowMenu] = useState(false);
   const [showEmojis, setShowEmojis] = useState(false);
 
   return (
-    <div className={`absolute top-0 ${isMe ? "-left-12" : "-right-12"} opacity-0 group-hover:opacity-100 transition-opacity z-10 flex flex-col items-center gap-1`}>
+    <div className={`absolute top-0 ${isMe ? "-start-12" : "-end-12"} opacity-0 group-hover:opacity-100 transition-opacity z-10 flex flex-col items-center gap-1`}>
       <button 
         onClick={() => setShowMenu(!showMenu)}
         className="p-1.5 bg-surface border border-status-border rounded-full shadow-sm text-sub-500 hover:text-primary transition-colors"
@@ -27,32 +22,32 @@ const MessageActions = ({ message, isMe, onEdit, onDelete, onReply, onReact }) =
 
       {/* Action Menu */}
       {showMenu && (
-        <div className={`absolute top-0 ${isMe ? "right-10" : "left-10"} bg-surface border border-status-border rounded-lg shadow-lg py-1 min-w-[120px] z-20`}>
+        <div className={`absolute top-0 ${isMe ? "end-10" : "start-10"} bg-surface border border-status-border rounded-lg shadow-lg py-1 min-w-[120px] z-20`}>
           <button 
             onClick={() => { setShowEmojis(!showEmojis); }}
-            className="w-full text-left px-3 py-1.5 text-xs text-cell-primary hover:bg-weak-100 flex items-center gap-2"
+            className="w-full text-start px-3 py-1.5 text-xs text-cell-primary hover:bg-weak-100 flex items-center gap-2"
           >
             <Smile size={12} /> {t("React")}
           </button>
           
           <button 
             onClick={() => { onReply(); setShowMenu(false); }}
-            className="w-full text-left px-3 py-1.5 text-xs text-cell-primary hover:bg-weak-100 flex items-center gap-2"
+            className="w-full text-start px-3 py-1.5 text-xs text-cell-primary hover:bg-weak-100 flex items-center gap-2"
           >
             <MessageSquareQuote size={12} /> {t("Reply")}
           </button>
 
-          {isMe && canInitiate && (
+          {isMe && (
             <>
               <button 
                 onClick={() => { onEdit(); setShowMenu(false); }}
-                className="w-full text-left px-3 py-1.5 text-xs text-cell-primary hover:bg-weak-100 flex items-center gap-2"
+                className="w-full text-start px-3 py-1.5 text-xs text-cell-primary hover:bg-weak-100 flex items-center gap-2"
               >
                 <Edit2 size={12} /> {t("Edit")}
               </button>
               <button 
                 onClick={() => { onDelete(); setShowMenu(false); }}
-                className="w-full text-left px-3 py-1.5 text-xs text-red-500 hover:bg-red-50 flex items-center gap-2 dark:hover:bg-red-900/20"
+                className="w-full text-start px-3 py-1.5 text-xs text-red-500 hover:bg-red-50 flex items-center gap-2 dark:hover:bg-red-900/20"
               >
                 <Trash2 size={12} /> {t("Delete")}
               </button>
@@ -63,7 +58,7 @@ const MessageActions = ({ message, isMe, onEdit, onDelete, onReply, onReact }) =
 
       {/* Emoji Picker */}
       {showEmojis && (
-        <div className={`absolute top-8 ${isMe ? "right-10" : "left-10"} bg-surface border border-status-border rounded-lg shadow-lg p-2 flex gap-1 z-30`}>
+        <div className={`absolute top-8 ${isMe ? "end-10" : "start-10"} bg-surface border border-status-border rounded-lg shadow-lg p-2 flex gap-1 z-30`}>
           {EMOJI_LIST.map((emoji) => (
             <button
               key={emoji}
@@ -75,7 +70,7 @@ const MessageActions = ({ message, isMe, onEdit, onDelete, onReply, onReact }) =
           ))}
           <button
               onClick={() => setShowEmojis(false)}
-              className="w-6 h-6 flex items-center justify-center hover:bg-red-50 text-red-500 rounded text-sm transition-colors ml-1 border-l border-status-border dark:hover:bg-red-900/20"
+              className="w-6 h-6 flex items-center justify-center hover:bg-red-50 text-red-500 rounded text-sm transition-colors ms-1 border-s border-status-border dark:hover:bg-red-900/20"
             >
               <X size={12} />
           </button>
@@ -86,3 +81,11 @@ const MessageActions = ({ message, isMe, onEdit, onDelete, onReply, onReact }) =
 };
 
 export default MessageActions;
+
+MessageActions.propTypes = {
+  isMe: PropTypes.bool.isRequired,
+  onEdit: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+  onReply: PropTypes.func.isRequired,
+  onReact: PropTypes.func.isRequired,
+};

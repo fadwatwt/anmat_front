@@ -8,6 +8,7 @@ import CompaniesSubscriptionsChart from "@/app/(dashboard)/analytics/_components
 import Table from "@/components/Tables/Table";
 import { useTranslation } from "react-i18next";
 import { useState, useMemo } from "react";
+import PropTypes from "prop-types";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { getDateLocale } from "@/lib/dateLocale";
@@ -50,6 +51,14 @@ const SummaryCard = ({ title, value, icon: Icon, color, trend }) => {
     );
 };
 
+SummaryCard.propTypes = {
+    title: PropTypes.string.isRequired,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    icon: PropTypes.elementType.isRequired,
+    color: PropTypes.string.isRequired,
+    trend: PropTypes.number,
+};
+
 const SectionSkeleton = () => (
     <div className="animate-pulse bg-surface rounded-[24px] border border-status-border h-48" />
 );
@@ -78,11 +87,13 @@ const AdminDashboard = () => {
         { skip: !canViewSubscribers }
     );
 
-    const industries = industriesResponse?.data || industriesResponse || [];
-    const industryOptions = useMemo(() => [
-        { id: null, value: t("All") },
-        ...industries.map(ind => ({ id: ind._id, value: ind.name }))
-    ], [industries]);
+    const industryOptions = useMemo(() => {
+        const industries = industriesResponse?.data || industriesResponse || [];
+        return [
+            { id: null, value: t("All") },
+            ...industries.map(ind => ({ id: ind._id, value: ind.name }))
+        ];
+    }, [industriesResponse, t]);
 
     const stats = adminStats?.data || adminStats || {};
 
@@ -94,7 +105,8 @@ const AdminDashboard = () => {
         { label: t("Expiration"), width: "120px" },
     ];
 
-    const subsRows = subscriptions?.map((item) => [
+    const recentSubscriptions = subscriptions?.slice(0, 25) || [];
+    const subsRows = recentSubscriptions.map((item) => [
         <div key={`sub-${item.subscription?._id}`} className="flex flex-col gap-0.5 max-w-[150px]">
             <span className="text-sm font-semibold text-cell-primary truncate" title={item.subscriber?.name}>
                 {item.subscriber?.name || t("N/A")}
@@ -209,8 +221,8 @@ const AdminDashboard = () => {
                                 isTitle={true}
                                 classContainer="shadow-sm border border-status-border rounded-[24px]"
                                 onRowClick={(index) => {
-                                    if (subscriptions?.[index]?.subscriber?._id) {
-                                        router.push(`/subscribers/${subscriptions[index].subscriber._id}`);
+                                    if (recentSubscriptions[index]?.subscriber?._id) {
+                                        router.push(`/subscribers/${recentSubscriptions[index].subscriber._id}`);
                                     }
                                 }}
                             />
@@ -242,7 +254,7 @@ const AdminDashboard = () => {
                                         ))}
                                     </div>
                                 ) : organizations?.length > 0 ? (
-                                    organizations.map((org, index) => (
+                                    organizations.slice(0, 25).map((org, index) => (
                                         <div key={org._id || index} className="flex gap-4 items-center p-3 hover:bg-status-bg rounded-2xl transition-all group border border-transparent hover:border-status-border">
                                             <div className="w-12 h-12 rounded-2xl overflow-hidden bg-surface border border-status-border flex-shrink-0 group-hover:scale-105 transition-transform">
                                                 <img

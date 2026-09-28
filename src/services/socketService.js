@@ -3,9 +3,12 @@ import { RootRoute } from "@/Root.Route";
 import { io } from "socket.io-client";
 
 let socket;
+let activeToken;
 
 export const initSocket = (token) => {
-  if (socket) return socket;
+  if (socket && activeToken === token) return socket;
+  if (socket) socket.disconnect();
+  activeToken = token;
   
   const baseUrl = RootRoute || "http://localhost:3000";
   // The report specifies /chat namespace
@@ -32,6 +35,7 @@ export const disconnectSocket = () => {
     socket.disconnect();
     socket = null;
   }
+  activeToken = null;
 };
 
 export const getSocket = () => {

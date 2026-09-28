@@ -1,9 +1,10 @@
 "use client";
 import { useTranslation } from "react-i18next";
 import { ImSpinner2 } from "react-icons/im";
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
+import PropTypes from "prop-types";
 import { format } from "date-fns";
-import { X, Send, Paperclip, Smile } from "lucide-react";
+import { X, Send } from "lucide-react";
 import { useGetThreadRepliesQuery, useCreateThreadReplyMutation } from "@/redux/conversations/conversationsAPI";
 import { useSelector } from "react-redux";
 import { selectUserId } from "@/redux/auth/authSlice";
@@ -16,7 +17,7 @@ const ThreadSidebar = ({ message, onClose }) => {
 
   const messageId = message?._id || message?.id;
 
-  const { data: repliesData, isLoading, error } = useGetThreadRepliesQuery(messageId, {
+  const { data: repliesData, isLoading } = useGetThreadRepliesQuery(messageId, {
     skip: !messageId,
   });
   const [createReply] = useCreateThreadReplyMutation();
@@ -25,9 +26,9 @@ const ThreadSidebar = ({ message, onClose }) => {
   console.log("Thread Message ID:", messageId);
   console.log("Replies Data Response:", repliesData);
 
-  const replies = Array.isArray(repliesData?.data?.data) 
-    ? repliesData.data.data 
-    : (Array.isArray(repliesData?.data) ? repliesData.data : (Array.isArray(repliesData) ? repliesData : []));
+  const replies = useMemo(() => Array.isArray(repliesData?.data?.data)
+    ? repliesData.data.data
+    : (Array.isArray(repliesData?.data) ? repliesData.data : (Array.isArray(repliesData) ? repliesData : [])), [repliesData]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -77,7 +78,7 @@ const ThreadSidebar = ({ message, onClose }) => {
       </div>
 
       {/* Replies */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar bg-main" ref={scrollRef}>
+      <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-4 custom-scrollbar bg-main" ref={scrollRef}>
         <div className="flex items-center gap-2">
           <div className="h-px bg-status-border flex-1"></div>
           <span className="text-xs text-sub-500 font-medium">{replies.length} {t("Replies")}</span>
@@ -129,7 +130,7 @@ const ThreadSidebar = ({ message, onClose }) => {
             type="submit"
             disabled={!replyText.trim()}
             className={`p-2 rounded-xl transition-colors ${
-              replyText.trim() ? "bg-primary-500 dark:bg-primary-200 dark:text-black text-white" : "bg-weak-100 text-sub-500"
+              replyText.trim() ? "chat-button-primary" : "bg-weak-100 text-sub-500"
             }`}
           >
             <Send size={16} />
@@ -141,3 +142,17 @@ const ThreadSidebar = ({ message, onClose }) => {
 };
 
 export default ThreadSidebar;
+
+ThreadSidebar.propTypes = {
+  message: PropTypes.shape({
+    _id: PropTypes.string,
+    id: PropTypes.string,
+    sent_by: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.shape({ name: PropTypes.string }),
+    ]),
+    created_at: PropTypes.string,
+    content: PropTypes.string,
+  }).isRequired,
+  onClose: PropTypes.func.isRequired,
+};

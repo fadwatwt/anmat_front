@@ -1,0 +1,43 @@
+
+> next-new-dashboard@0.1.0 build
+> next build
+
+   ▲ Next.js 15.5.20
+   - Environments: .env.local
+
+   Creating an optimized production build ...
+
+
+#
+# Fatal error in , line 0
+# Fatal process out of memory: Zone
+#
+#
+#
+#FailureMessage Object: 0000003AE41F5EA0
+----- Native stack trace -----
+
+ 1: 00007FF6C183A62B node::SetCppgcReference+19819
+ 2: 00007FF6C172CE9F node::TriggerNodeReport+74223
+ 3: 00007FF6C264A022 V8_Fatal+162
+ 4: 00007FF6C220DEF3 v8::Function::Experimental_IsNopFunction+835
+ 5: 00007FF6C1CF0914 v8::SnapshotCreator::GetIsolate+53284
+ 6: 00007FF6C26DA6F3 inflateInit2_+503843
+ 7: 00007FF6C283FC01 inflateInit2_+1967409
+ 8: 00007FF6C283D1F6 inflateInit2_+1956646
+ 9: 00007FF6C275CDE7 inflateInit2_+1038103
+10: 00007FF6C2711E31 inflateInit2_+730977
+11: 00007FF6C275C9F4 inflateInit2_+1037092
+12: 00007FF6C275D166 inflateInit2_+1038998
+13: 00007FF6C275CE72 inflateInit2_+1038242
+14: 00007FF6C2713FD6 inflateInit2_+739590
+15: 00007FF6C270FA1A inflateInit2_+721738
+16: 00007FF6C270BB6A inflateInit2_+705690
+17: 00007FF6C217C701 v8::SharedValueConveyor::SharedValueConveyor+29329
+18: 00007FF6C2149621 v8::ModuleRequest::GetImportAssertions+45521
+19: 00007FF6C172F97D X509_STORE_CTX_get_lookup_certs+829
+20: 00007FF6C188E28D uv_poll_stop+237
+21: 00007FF6C2A6D630 inflateValidate+153984
+22: 00007FFB27AACDF7 BaseThreadInitThunk+23
+23: 00007FFB281BEE4C RtlUserThreadStart+44
+Next.js build worker exited with code: 2147483651 and signal: null

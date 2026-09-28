@@ -5,15 +5,14 @@ import { LiaUser } from "react-icons/lia";
 import { GoMail } from "react-icons/go";
 import { IoIosLock } from "react-icons/io";
 import { FiEye, FiEyeOff } from "react-icons/fi";
-import { FcGoogle } from "react-icons/fc";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useLoginMutation, useLazyGetUserQuery, useLazyLogoutQuery } from "@/redux/auth/authAPI";
 import { useDispatch, useSelector } from "react-redux";
 import { loginSuccess, loginFailure, logout } from "@/redux/auth/authSlice";
 import Link from "next/link";
 
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useTranslation } from "react-i18next";
 import { getToken, clearToken } from "@/utils/tokenStorage";
 
@@ -41,6 +40,24 @@ function SignIn() {
     const { error, isAuthenticated } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
     const router = useRouter();
+    const searchParams = useSearchParams();
+
+    // الوجهة التي طُرد منها المستخدم عبر Middleware (?next=...) — نعود إليها
+    // فقط إذا كانت مساراً داخلياً آمناً وليست شاشة auth.
+    const getSafeNext = () => {
+        const next = searchParams?.get("next");
+        if (!next || !next.startsWith("/") || next.startsWith("//")) return null;
+        if (
+            next === "/sign-in" ||
+            next.startsWith("/sign-in?") ||
+            next.startsWith("/admin/sign-in") ||
+            next.startsWith("/register") ||
+            next.startsWith("/forget-password") ||
+            next.startsWith("/verify")
+        )
+            return null;
+        return next;
+    };
 
     const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
@@ -49,14 +66,16 @@ function SignIn() {
 
     // Decide where to send a user after a successful login based on their type,
     // setup state, and (for both subscribers and employees) subscription access.
+    // Fully-valid users return to ?next= (saved by middleware) instead of /dashboard.
     const routeAfterLogin = (userData) => {
+        const safeNext = getSafeNext();
         if (userData?.type === 'Subscriber') {
             if (userData.has_subscription_access === false || !userData.active_subscription_id) {
                 toast.info(t("Your subscription has expired. Redirecting to plans to renew."));
                 router.push("/account-setup/subscriber/plans");
                 return;
             }
-            router.push("/dashboard");
+            router.push(safeNext || "/dashboard");
             return;
         }
         if (userData?.type === 'Employee') {
@@ -70,7 +89,7 @@ function SignIn() {
                 router.push("/subscription-inactive");
                 return;
             }
-            router.push("/dashboard");
+            router.push(safeNext || "/dashboard");
             return;
         }
         router.push("/dashboard");
@@ -348,4 +367,10 @@ function SignIn() {
     );
 }
 
-export default SignIn;
+export default function SignInPage() {
+    return (
+        <Suspense fallback={null}>
+            <SignIn />
+        </Suspense>
+    );
+}

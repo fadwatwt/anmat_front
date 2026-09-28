@@ -29,7 +29,7 @@ test.describe('Sign-in UI', () => {
     await page.goto('/sign-in');
 
     await page.getByPlaceholder('Enter your email').fill('wrong@anmat.test');
-    await page.getByPlaceholder('*').fill('wrong-password');
+    await page.getByPlaceholder('Enter your password').fill('wrong-password');
     await page.getByRole('button', { name: 'Login' }).click();
 
     // رسالة الخطأ الحمراء تظهر، ويبقى المستخدم على صفحة الدخول
@@ -41,7 +41,7 @@ test.describe('Sign-in UI', () => {
     await page.goto('/admin/sign-in');
 
     await page.getByPlaceholder('Enter your email').fill(ADMIN.email);
-    await page.getByPlaceholder('*').fill(ADMIN.password);
+    await page.getByPlaceholder('Enter your password').fill(ADMIN.password);
     await page.getByRole('button', { name: 'Login' }).click();
 
     await expect(page).toHaveURL(/\/dashboard/, { timeout: 60000 });
@@ -52,7 +52,7 @@ test.describe('Sign-in UI', () => {
     await page.goto('/sign-in');
 
     await page.getByPlaceholder('Enter your email').fill(ADMIN.email);
-    await page.getByPlaceholder('*').fill(ADMIN.password);
+    await page.getByPlaceholder('Enter your password').fill(ADMIN.password);
     await page.getByRole('button', { name: 'Login' }).click();
 
     // يجب أن يظهر خطأ "Access Denied" ولا ينتقل للوحة التحكم

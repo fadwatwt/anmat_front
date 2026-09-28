@@ -58,7 +58,7 @@ const EmployeeDashboard = () => {
 
     const activityLogs = logsData?.data || [];
 
-    const rows = tasks.map((task, index) => [
+    const rows = tasks.slice(0, 25).map((task, index) => [
         <span key={`title-${index}`} className="text-cell-primary">{task.title}</span>,
         <span key={`dept-${index}`} className="text-cell-secondary">{task.department?.name || t("No Department")}</span>,
         <div key={`assignee-${index}`} className="flex">

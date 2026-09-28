@@ -3,6 +3,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
+import PropTypes from "prop-types";
 
 function AssigneeAvatar({ assignee, idx }) {
   const [imageFailed, setImageFailed] = useState(false);
@@ -28,6 +30,14 @@ function AssigneeAvatar({ assignee, idx }) {
   );
 }
 
+AssigneeAvatar.propTypes = {
+  assignee: PropTypes.shape({
+    name: PropTypes.string,
+    image: PropTypes.string,
+  }).isRequired,
+  idx: PropTypes.number.isRequired,
+};
+
 // Dynamic imports
 const Table = dynamic(() => import("@/components/Tables/Table"), { ssr: false });
 const ActivityLogs = dynamic(() => import("@/components/ActivityLogs"), { ssr: false });
@@ -35,7 +45,6 @@ const Alert = dynamic(() => import("@/components/Alerts/Alert"), { ssr: false })
 import Page from "@/components/Page";
 import AnalyticsCard from "../../analytics/_components/AnalyticsCard";
 import DynamicDoughnut from "../../analytics/_components/charts/SummaryDoughnut.";
-import DefaultSelect from "@/components/Form/DefaultSelect";
 import ProcessingOverlay from "@/components/Feedback/ProcessingOverlay";
 import DepartmentsPerformanceChat from "../../analytics/_components/employee/DepartmentsPerformanceChat";
 import { useGetDepartmentsQuery } from "@/redux/departments/departmentsApi";
@@ -47,6 +56,7 @@ import { useGetSubscriberAnalyticsQuery } from "@/redux/analytics/analyticsApi";
 
 const AdminDashboard = () => {
   const { t } = useTranslation();
+  const router = useRouter();
   const [isConfirmApprovalAlert, setIsConfirmApprovalAlert] = useState(false);
 
   const { data: statsData, isLoading: isStatsLoading } = useGetSubscriberTaskStatisticsStatusQuery();
@@ -149,7 +159,7 @@ const AdminDashboard = () => {
     { label: t("Delivery Date"), width: "120px" },
   ];
 
-  const rows = projects.map((project, index) => {
+  const rows = projects.slice(0, 25).map((project, index) => {
     return [
       project.name,
       project.department_id?.name || t("No Department"),
@@ -233,7 +243,7 @@ const AdminDashboard = () => {
             hideSearchInput={true}
             showStatusFilter={true}
             toolbarCustomContent={
-              <button className="bg-status-bg text-cell-secondary hover:bg-gray-50 px-4 py-2flex dark:text-gray-400 text-sm items-baseline p-2 gap-2 rounded-lg border border-status-border dark:border-gray-600">
+              <button onClick={() => router.push("/projects")} className="bg-status-bg text-cell-secondary hover:bg-gray-50 px-4 py-2flex dark:text-gray-400 text-sm items-baseline p-2 gap-2 rounded-lg border border-status-border dark:border-gray-600">
                 {t("See All")}
               </button>
             }

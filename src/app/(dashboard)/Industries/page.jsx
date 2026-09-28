@@ -8,7 +8,7 @@ import {
     RiCheckboxCircleLine,
     RiCloseCircleLine,
 } from "@remixicon/react";
-import * as Iconsax from "iconsax-react";
+import { getIndustryIcon } from "@/components/Form/industryIcons";
 
 import Table from "@/components/Tables/Table";
 import Page from "@/components/Page";
@@ -126,7 +126,7 @@ function IndustriesPage() {
     /* ── row data ────────────────────────────────────────────────── */
     const rows = industries.map((industry) => {
         const iconKey       = industry.icon_name || industry.logo;
-        const IconComponent = iconKey && Iconsax[iconKey];
+        const IconComponent = iconKey ? getIndustryIcon(iconKey) : null;
 
         return [
             /* Industry name + icon preview */

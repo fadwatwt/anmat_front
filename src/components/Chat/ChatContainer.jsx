@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setActiveChat } from "@/redux/conversations/conversationsSlice";
 import ChatList from "./ChatList";
@@ -24,7 +24,7 @@ const ChatContainer = () => {
   };
 
   return (
-    <div className="flex h-full overflow-hidden bg-surface" style={{ borderLeft: '1px solid var(--status-border)' }}>
+    <div className="chat-ui flex h-full overflow-hidden bg-surface" style={{ borderLeft: '1px solid var(--status-border)' }}>
 
       {/* Sidebar - hidden on mobile when a chat is selected */}
       <div className={`${showMobileList ? "flex" : "hidden"} md:flex w-full md:w-[350px] lg:w-[400px] flex-col h-full`}>

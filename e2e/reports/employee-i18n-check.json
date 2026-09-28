@@ -4,26 +4,30 @@
       "path": "/dashboard",
       "lang": "ar",
       "dir": "rtl",
-      "totalLatin": 20,
+      "totalLatin": 47,
       "flagged": [
-        "My Appointments",
         "English",
-        "Task Test-2",
-        "Department Test-2",
+        "Anmat System Admin",
+        "Subscriber 2",
+        "Subscriber 4",
+        "Test",
+        "Test Company",
+        "Bilal Alanjjar2",
+        "Anmaat Test",
         "test",
-        "test tt",
-        "Test Task 5",
-        "Tset",
-        "Admin سجل الدخول.",
-        "Employee سجل الدخول.",
-        "Subscriber سجل الدخول.",
-        "Subscriber أنشأ جديد اشتراك.",
-        "Subscriber أنشأ جديد Anmat 7.",
-        "Subscriber تم التنفيذ user.registered في Belal Alnajjar.",
-        "created by full employee test",
+        "Bilal Alanjjar",
+        "Anmat 7",
         "[aria-label] Switch to English",
         "[title] Switch to English",
-        "[title] created by full employee test"
+        "[title] Subscriber 2",
+        "[title] Subscriber 4",
+        "[title] Test",
+        "[title] Test Company",
+        "[title] Bilal Alanjjar2",
+        "[title] Anmaat Test",
+        "[title] test",
+        "[title] Bilal Alanjjar",
+        "[title] Anmat 7"
       ],
       "error": null
     },
@@ -31,24 +35,12 @@
       "path": "/employee/projects",
       "lang": "ar",
       "dir": "rtl",
-      "totalLatin": 24,
+      "totalLatin": 5,
       "flagged": [
-        "My Appointments",
         "English",
-        "Anmat",
-        "Web app. test",
-        "Sample Project Name Updated",
-        "This is a sample project description.",
-        "Test",
-        "Test Noti.",
-        "Website Redesign Template",
-        "Standard template for website redesign projects",
-        "Test Template 6",
-        "Test desciption",
+        "Anmat System Admin",
         "[aria-label] Switch to English",
-        "[title] Switch to English",
-        "[title] Belal Test",
-        "[title] Test"
+        "[title] Switch to English"
       ],
       "error": null
     },
@@ -56,26 +48,12 @@
       "path": "/employee/tasks",
       "lang": "ar",
       "dir": "rtl",
-      "totalLatin": 19,
+      "totalLatin": 5,
       "flagged": [
-        "My Appointments",
         "English",
-        "Task Test-2",
-        "Description task test-2",
-        "test",
-        "test tt",
-        "Test Task 5",
-        "Description test",
-        "Tset",
+        "Anmat System Admin",
         "[aria-label] Switch to English",
-        "[title] Switch to English",
-        "[title] Task Test-2",
-        "[title] Description task test-2",
-        "[title] test",
-        "[title] test tt",
-        "[title] Test Task 5",
-        "[title] Description test",
-        "[title] Tset"
+        "[title] Switch to English"
       ],
       "error": null
     },
@@ -85,8 +63,8 @@
       "dir": "rtl",
       "totalLatin": 5,
       "flagged": [
-        "My Appointments",
         "English",
+        "Anmat System Admin",
         "[aria-label] Switch to English",
         "[title] Switch to English"
       ],
@@ -98,8 +76,8 @@
       "dir": "rtl",
       "totalLatin": 5,
       "flagged": [
-        "My Appointments",
         "English",
+        "Anmat System Admin",
         "[aria-label] Switch to English",
         "[title] Switch to English"
       ],
@@ -109,14 +87,12 @@
       "path": "/salary",
       "lang": "ar",
       "dir": "rtl",
-      "totalLatin": 8,
+      "totalLatin": 5,
       "flagged": [
-        "My Appointments",
         "English",
-        "test",
+        "Anmat System Admin",
         "[aria-label] Switch to English",
-        "[title] Switch to English",
-        "[title] test"
+        "[title] Switch to English"
       ],
       "error": null
     },
@@ -124,10 +100,10 @@
       "path": "/leaves",
       "lang": "ar",
       "dir": "rtl",
-      "totalLatin": 15,
+      "totalLatin": 5,
       "flagged": [
-        "My Appointments",
         "English",
+        "Anmat System Admin",
         "[aria-label] Switch to English",
         "[title] Switch to English"
       ],
@@ -137,11 +113,10 @@
       "path": "/requests",
       "lang": "ar",
       "dir": "rtl",
-      "totalLatin": 6,
+      "totalLatin": 5,
       "flagged": [
-        "My Appointments",
         "English",
-        "created by full employee test",
+        "Anmat System Admin",
         "[aria-label] Switch to English",
         "[title] Switch to English"
       ],
@@ -151,15 +126,10 @@
       "path": "/conversations",
       "lang": "ar",
       "dir": "rtl",
-      "totalLatin": 13,
+      "totalLatin": 5,
       "flagged": [
-        "My Appointments",
         "English",
-        "Belal Test, Emp 1 Org 1, Test, Belal",
-        "Group call",
-        "Subscriber 4",
-        "Voice call",
-        "Test Team Group",
+        "Anmat System Admin",
         "[aria-label] Switch to English",
         "[title] Switch to English"
       ],
@@ -169,11 +139,10 @@
       "path": "/ai",
       "lang": "ar",
       "dir": "rtl",
-      "totalLatin": 6,
+      "totalLatin": 5,
       "flagged": [
-        "My Appointments",
         "English",
-        "What should I work on next ?",
+        "Anmat System Admin",
         "[aria-label] Switch to English",
         "[title] Switch to English"
       ],
@@ -183,19 +152,30 @@
       "path": "/notifications",
       "lang": "ar",
       "dir": "rtl",
-      "totalLatin": 14,
+      "totalLatin": 25,
       "flagged": [
-        "My Appointments",
         "English",
-        "تم تحديث حالة طلبك SHORT_LEAVE إلى \"accepted\".",
-        "تم تحديث مهمتك \"test tt\".",
-        "تم تحديث مهمتك \"test\".",
-        "تم تقييم مهمتك \"test tt\" بدرجة 4.3/5.",
-        "تم تقييم مهمتك \"test\" بدرجة 3.0/5.",
-        "تم تقييم مهمتك \"test tt\" بدرجة 3.0/5.",
-        "تم تقييم مهمتك \"test\" بدرجة 3.7/5.",
-        "تم تحديث مهمتك \"Test Task 5\".",
-        "تم تحديث مهمتك \"Tset\".",
+        "Anmat System Admin",
+        "New subscription created for Belal Alnajjar with plan: الموسعة.",
+        "تم إنشاء تفاصيل المؤسسة لـ \"Anmat 7\" من قِبَل المشترك.",
+        "تم إنشاء حساب مشترك جديد لـ Belal Alnajjar (nextsub8@anmat.test).",
+        "New Subscriber Registered",
+        "A new subscriber email has been registered: nextsub8@anmat.test.",
+        "انتهى الاشتراك الخاص بـ Subscriber 4.",
+        "New subscription created for Alanjjar with plan: الموسعة.",
+        "New subscription created for Subscriber 4 with plan: Basic.",
+        "تم إنشاء حساب مشترك جديد لـ Bulk Tester (bulkb-1785765141812@anmat.test).",
+        "A new subscriber email has been registered: bulkB-1785765141812@anmat.test.",
+        "تم إنشاء حساب مشترك جديد لـ Bulk Tester (bulka-1785765127374@anmat.test).",
+        "A new subscriber email has been registered: bulkA-1785765127374@anmat.test.",
+        "تم إنشاء حساب مشترك جديد لـ Bulk Tester (bulkb-1785764976120@anmat.test).",
+        "A new subscriber email has been registered: bulkB-1785764976120@anmat.test.",
+        "تم إنشاء حساب مشترك جديد لـ Bulk Tester (bulka-1785764962390@anmat.test).",
+        "A new subscriber email has been registered: bulkA-1785764962390@anmat.test.",
+        "تم إنشاء حساب مشترك جديد لـ Quota Verify (sm-verify-1785751838089@anmat.test).",
+        "A new subscriber email has been registered: sm-verify-1785751838089@anmat.test.",
+        "تم إنشاء حساب مشترك جديد لـ Quota Verify (sm-verify-1785751807100@anmat.test).",
+        "A new subscriber email has been registered: sm-verify-1785751807100@anmat.test.",
         "[aria-label] Switch to English",
         "[title] Switch to English"
       ],
@@ -207,8 +187,8 @@
       "dir": "rtl",
       "totalLatin": 2,
       "flagged": [
-        "My Appointments",
-        "English"
+        "English",
+        "UTC (التوقيت العالمي المنسق)"
       ],
       "error": null
     },
@@ -216,28 +196,14 @@
       "path": "/profile",
       "lang": "ar",
       "dir": "rtl",
-      "totalLatin": 26,
+      "totalLatin": 9,
       "flagged": [
-        "My Appointments",
         "English",
-        "Cairo, Egypt",
-        "Friday",
-        "test notification",
-        "test",
-        "message",
-        "Test All",
-        "Message Test All",
-        "Project: Anmat",
-        "Project: Sample Project Name Updated",
-        "Task: Test Program",
-        "Task: Test Task 5",
+        "Anmat System Admin",
+        "Admin",
+        "Unverified",
         "[aria-label] Switch to English",
-        "[title] Switch to English",
-        "[title] test notification",
-        "[title] test",
-        "[title] message",
-        "[title] Test All",
-        "[title] Message Test All"
+        "[title] Switch to English"
       ],
       "error": null
     }
@@ -297,7 +263,7 @@
       "dir": "rtl",
       "totalLatin": 0,
       "flagged": [],
-      "error": "no modal opened"
+      "error": null
     },
     {
       "path": "/notifications",
@@ -316,36 +282,6 @@
       "error": "no modal opened"
     }
   ],
-  "alerts": [
-    {
-      "path": "/profile → notifications",
-      "lang": "ar",
-      "dir": "rtl",
-      "totalLatin": 26,
-      "flagged": [
-        "My Appointments",
-        "English",
-        "Cairo, Egypt",
-        "Friday",
-        "test notification",
-        "test",
-        "message",
-        "Test All",
-        "Message Test All",
-        "Project: Anmat",
-        "Project: Sample Project Name Updated",
-        "Task: Test Program",
-        "Task: Test Task 5",
-        "[aria-label] Switch to English",
-        "[title] Switch to English",
-        "[title] test notification",
-        "[title] test",
-        "[title] message",
-        "[title] Test All",
-        "[title] Message Test All"
-      ],
-      "error": null
-    }
-  ],
+  "alerts": [],
   "errors": []
 }

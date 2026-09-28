@@ -2,7 +2,6 @@ import PropTypes from "prop-types";
 import Link from 'next/link'
 
 function NameAndDescription({ name, description, path }) {
-  console.log(description, "description")
   return (
     path ? <Link href={path}>
       <p title={name} className="text-sm text-cell-primary truncate max-w-[200px]">{name}</p>

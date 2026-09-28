@@ -1,5 +1,5 @@
 "use client";
-import * as Iconsax from "iconsax-react";
+import { getIndustryIcon } from "@/components/Form/industryIcons";
 import Link from "next/link";
 import { useGetIndustriesForSubscribersQuery } from "@/redux/industries/industriesApi";
 import { useTranslation } from "react-i18next";
@@ -36,7 +36,7 @@ const SelectYourBusiness = () => {
     const isBusy = isLoading || isNavigating;
 
     const typeCard = (id, icon_name, title) => {
-        const IconComponent = Iconsax[icon_name] || Iconsax.Category2;
+        const IconComponent = getIndustryIcon(icon_name);
         const isSelected = selectedId === id;
 
         return (

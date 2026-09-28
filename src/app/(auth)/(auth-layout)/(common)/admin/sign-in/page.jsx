@@ -5,14 +5,13 @@ import { LiaUser } from "react-icons/lia";
 import { GoMail } from "react-icons/go";
 import { IoIosLock } from "react-icons/io";
 import { FiEye, FiEyeOff } from "react-icons/fi";
-import { FcGoogle } from "react-icons/fc";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAdminLoginMutation, useLazyGetUserQuery, useLazyLogoutQuery } from "@/redux/auth/authAPI";
 import { useDispatch, useSelector } from "react-redux";
 import { loginSuccess, loginFailure, logout } from "@/redux/auth/authSlice";
 import Link from "next/link";
 
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useTranslation } from "react-i18next";
 import { getToken, clearToken } from "@/utils/tokenStorage";
 
@@ -24,9 +23,27 @@ function SignIn() {
     const [showPassword, setShowPassword] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
     const [adminLogin, { isLoading }] = useAdminLoginMutation();
-    const { error, isAuthenticated } = useSelector((state) => state.auth);
+    const { error } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
     const router = useRouter();
+    const searchParams = useSearchParams();
+
+    // الوجهة التي طُرد منها الأدمن عبر Middleware (?next=...) — نعود إليها
+    // فقط إذا كانت مساراً داخلياً آمناً وليست شاشة auth.
+    const getSafeNext = () => {
+        const next = searchParams?.get("next");
+        if (!next || !next.startsWith("/") || next.startsWith("//")) return null;
+        if (
+            next === "/sign-in" ||
+            next.startsWith("/sign-in?") ||
+            next.startsWith("/admin/sign-in") ||
+            next.startsWith("/register") ||
+            next.startsWith("/forget-password") ||
+            next.startsWith("/verify")
+        )
+            return null;
+        return next;
+    };
 
     const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
@@ -63,7 +80,7 @@ function SignIn() {
                             }
                         };
                         dispatch(loginSuccess(loginPayload));
-                        router.push("/dashboard");
+                        router.push(getSafeNext() || "/dashboard");
                     } else {
                         console.warn("User is not admin, logging out.");
                         await performLogout(token);
@@ -98,7 +115,7 @@ function SignIn() {
 
             if (userData?.type === 'Admin') {
                 dispatch(loginSuccess({ ...response, data: { ...response.data, remember: rememberMe } }));
-                router.push("/dashboard");
+                router.push(getSafeNext() || "/dashboard");
             } else {
                 // Logout immediately using the new token
                 await performLogout(response.data?.access_token);
@@ -122,7 +139,7 @@ function SignIn() {
                             }
                         };
                         dispatch(loginSuccess(loginPayload));
-                        router.push("/dashboard");
+                        router.push(getSafeNext() || "/dashboard");
                         return;
                     } else {
                         await performLogout(token);
@@ -250,4 +267,10 @@ function SignIn() {
     );
 }
 
-export default SignIn;
+export default function AdminSignInPage() {
+    return (
+        <Suspense fallback={null}>
+            <SignIn />
+        </Suspense>
+    );
+}

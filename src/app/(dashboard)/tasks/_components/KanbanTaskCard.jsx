@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
 import PropTypes from "prop-types";
 import { PRIORITY_COLORS } from "./kanbanConstants";
-import { convertToSlug } from "@/functions/AnotherFunctions";
+import { taskDetailsPath } from "@/functions/AnotherFunctions";
 import { translateDate } from "@/functions/Days";
 import { RiCalendarLine } from "react-icons/ri";
 
@@ -30,7 +30,8 @@ function KanbanTaskCard({ task }) {
   const handleClick = (e) => {
     if (isDragging) return;
     e.stopPropagation();
-    router.push(`/tasks/${task._id}-${convertToSlug(task.title)}/details`);
+    const path = taskDetailsPath(task);
+    if (path) router.push(path);
   };
 
   return (

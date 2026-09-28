@@ -27,20 +27,6 @@ const updateHtmlAttributes = (lang) => {
     }
 };
 
-// Apply the stored language to <html> synchronously (before React hydrates) so
-// the first client render matches the server output for the lang/dir attribute.
-if (typeof window !== "undefined") {
-    try {
-        const storedLang = window.localStorage.getItem("i18nextLng");
-        if (storedLang && (storedLang === "ar" || storedLang === "en")) {
-            document.documentElement.lang = storedLang;
-            document.documentElement.dir = storedLang === "ar" ? "rtl" : "ltr";
-        }
-    } catch (e) {
-        // ignore storage access errors
-    }
-}
-
 export const ThemeContext = createContext();
 export const ProcessingContext = createContext();
 
@@ -48,12 +34,11 @@ export const useTheme = () => useContext(ThemeContext);
 export const useProcessing = () => useContext(ProcessingContext);
 
 const ThemeProvider = ({ children }) => {
-    const [theme, setTheme] = useState(() => {
-        if (typeof window !== "undefined") {
-            return localStorage.getItem("theme") || "light";
-        }
-        return "light";
-    });
+    const [theme, setTheme] = useState("light");
+
+    useEffect(() => {
+        setTheme(localStorage.getItem("theme") || "light");
+    }, []);
 
     useEffect(() => {
         if (typeof window === "undefined") return;
@@ -135,19 +120,24 @@ const ProcessingProvider = ({ children }) => {
 };
 
 const Providers = ({ children }) => {
-    // Render children only on the client so the server output (empty shell)
-    // always matches the first client render. This avoids hydration mismatches
-    // caused by client-side language detection (localStorage) vs SSR defaults.
-    const [mounted, setMounted] = useState(false);
     useEffect(() => {
-        setMounted(true);
-        updateHtmlAttributes(i18n.language);
-        setLanguage(i18n.language);
-        i18n.on("languageChanged", (lng) => {
+        const handleLanguageChanged = (lng) => {
             updateHtmlAttributes(lng);
             setLanguage(lng);
-        });
-        return () => i18n.off("languageChanged");
+            localStorage.setItem("i18nextLng", lng);
+            document.cookie = `i18next=${lng}; path=/; max-age=31536000; SameSite=Lax`;
+        };
+        i18n.on("languageChanged", handleLanguageChanged);
+        updateHtmlAttributes(i18n.language);
+        setLanguage(i18n.language);
+
+        const storedLang = localStorage.getItem("i18nextLng");
+        const cookieLang = document.cookie.match(/(?:^|;\s*)i18next=([^;]+)/)?.[1];
+        const preferredLang = storedLang || cookieLang || navigator.language;
+        const nextLang = preferredLang?.toLowerCase().startsWith("ar") ? "ar" : "en";
+        if (nextLang !== i18n.language) i18n.changeLanguage(nextLang);
+
+        return () => i18n.off("languageChanged", handleLanguageChanged);
     }, []);
 
     return (
@@ -159,7 +149,7 @@ const Providers = ({ children }) => {
                     <I18nextProvider i18n={i18n}>
                         <CallProvider>
                             <GroupCallProvider>
-                                {mounted ? children : null}
+                                {children}
                             </GroupCallProvider>
                         </CallProvider>
                     </I18nextProvider>

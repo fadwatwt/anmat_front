@@ -1,153 +1,119 @@
 
-=== PAGE /dashboard  [lang=ar, dir=rtl, latin=20] ===
-  - My Appointments
+=== PAGE /dashboard  [lang=ar, dir=rtl, latin=47] ===
   - English
-  - Task Test-2
-  - Department Test-2
-  - test
-  - test tt
-  - Test Task 5
-  - Tset
-  - Admin سجل الدخول.
-  - Employee سجل الدخول.
-  - Subscriber سجل الدخول.
-  - Subscriber أنشأ جديد اشتراك.
-  - Subscriber أنشأ جديد Anmat 7.
-  - Subscriber تم التنفيذ user.registered في Belal Alnajjar.
-  - created by full employee test
-  - [aria-label] Switch to English
-  - [title] Switch to English
-  - [title] created by full employee test
-
-=== PAGE /employee/projects  [lang=ar, dir=rtl, latin=24] ===
-  - My Appointments
-  - English
-  - Anmat
-  - Web app. test
-  - Sample Project Name Updated
-  - This is a sample project description.
+  - Anmat System Admin
+  - Subscriber 2
+  - Subscriber 4
   - Test
-  - Test Noti.
-  - Website Redesign Template
-  - Standard template for website redesign projects
-  - Test Template 6
-  - Test desciption
-  - [aria-label] Switch to English
-  - [title] Switch to English
-  - [title] Belal Test
-  - [title] Test
-
-=== PAGE /employee/tasks  [lang=ar, dir=rtl, latin=19] ===
-  - My Appointments
-  - English
-  - Task Test-2
-  - Description task test-2
+  - Test Company
+  - Bilal Alanjjar2
+  - Anmaat Test
   - test
-  - test tt
-  - Test Task 5
-  - Description test
-  - Tset
+  - Bilal Alanjjar
+  - Anmat 7
   - [aria-label] Switch to English
   - [title] Switch to English
-  - [title] Task Test-2
-  - [title] Description task test-2
+  - [title] Subscriber 2
+  - [title] Subscriber 4
+  - [title] Test
+  - [title] Test Company
+  - [title] Bilal Alanjjar2
+  - [title] Anmaat Test
   - [title] test
-  - [title] test tt
-  - [title] Test Task 5
-  - [title] Description test
-  - [title] Tset
+  - [title] Bilal Alanjjar
+  - [title] Anmat 7
+
+=== PAGE /employee/projects  [lang=ar, dir=rtl, latin=5] ===
+  - English
+  - Anmat System Admin
+  - [aria-label] Switch to English
+  - [title] Switch to English
+
+=== PAGE /employee/tasks  [lang=ar, dir=rtl, latin=5] ===
+  - English
+  - Anmat System Admin
+  - [aria-label] Switch to English
+  - [title] Switch to English
 
 === PAGE /appointments  [lang=ar, dir=rtl, latin=5] ===
-  - My Appointments
   - English
+  - Anmat System Admin
   - [aria-label] Switch to English
   - [title] Switch to English
 
 === PAGE /attendance  [lang=ar, dir=rtl, latin=5] ===
-  - My Appointments
   - English
+  - Anmat System Admin
   - [aria-label] Switch to English
   - [title] Switch to English
 
-=== PAGE /salary  [lang=ar, dir=rtl, latin=8] ===
-  - My Appointments
+=== PAGE /salary  [lang=ar, dir=rtl, latin=5] ===
   - English
-  - test
-  - [aria-label] Switch to English
-  - [title] Switch to English
-  - [title] test
-
-=== PAGE /leaves  [lang=ar, dir=rtl, latin=15] ===
-  - My Appointments
-  - English
+  - Anmat System Admin
   - [aria-label] Switch to English
   - [title] Switch to English
 
-=== PAGE /requests  [lang=ar, dir=rtl, latin=6] ===
-  - My Appointments
+=== PAGE /leaves  [lang=ar, dir=rtl, latin=5] ===
   - English
-  - created by full employee test
+  - Anmat System Admin
   - [aria-label] Switch to English
   - [title] Switch to English
 
-=== PAGE /conversations  [lang=ar, dir=rtl, latin=13] ===
-  - My Appointments
+=== PAGE /requests  [lang=ar, dir=rtl, latin=5] ===
   - English
-  - Belal Test, Emp 1 Org 1, Test, Belal
-  - Group call
-  - Subscriber 4
-  - Voice call
-  - Test Team Group
+  - Anmat System Admin
   - [aria-label] Switch to English
   - [title] Switch to English
 
-=== PAGE /ai  [lang=ar, dir=rtl, latin=6] ===
-  - My Appointments
+=== PAGE /conversations  [lang=ar, dir=rtl, latin=5] ===
   - English
-  - What should I work on next ?
+  - Anmat System Admin
   - [aria-label] Switch to English
   - [title] Switch to English
 
-=== PAGE /notifications  [lang=ar, dir=rtl, latin=14] ===
-  - My Appointments
+=== PAGE /ai  [lang=ar, dir=rtl, latin=5] ===
   - English
-  - تم تحديث حالة طلبك SHORT_LEAVE إلى "accepted".
-  - تم تحديث مهمتك "test tt".
-  - تم تحديث مهمتك "test".
-  - تم تقييم مهمتك "test tt" بدرجة 4.3/5.
-  - تم تقييم مهمتك "test" بدرجة 3.0/5.
-  - تم تقييم مهمتك "test tt" بدرجة 3.0/5.
-  - تم تقييم مهمتك "test" بدرجة 3.7/5.
-  - تم تحديث مهمتك "Test Task 5".
-  - تم تحديث مهمتك "Tset".
+  - Anmat System Admin
+  - [aria-label] Switch to English
+  - [title] Switch to English
+
+=== PAGE /notifications  [lang=ar, dir=rtl, latin=25] ===
+  - English
+  - Anmat System Admin
+  - New subscription created for Belal Alnajjar with plan: الموسعة.
+  - تم إنشاء تفاصيل المؤسسة لـ "Anmat 7" من قِبَل المشترك.
+  - تم إنشاء حساب مشترك جديد لـ Belal Alnajjar (nextsub8@anmat.test).
+  - New Subscriber Registered
+  - A new subscriber email has been registered: nextsub8@anmat.test.
+  - انتهى الاشتراك الخاص بـ Subscriber 4.
+  - New subscription created for Alanjjar with plan: الموسعة.
+  - New subscription created for Subscriber 4 with plan: Basic.
+  - تم إنشاء حساب مشترك جديد لـ Bulk Tester (bulkb-1785765141812@anmat.test).
+  - A new subscriber email has been registered: bulkB-1785765141812@anmat.test.
+  - تم إنشاء حساب مشترك جديد لـ Bulk Tester (bulka-1785765127374@anmat.test).
+  - A new subscriber email has been registered: bulkA-1785765127374@anmat.test.
+  - تم إنشاء حساب مشترك جديد لـ Bulk Tester (bulkb-1785764976120@anmat.test).
+  - A new subscriber email has been registered: bulkB-1785764976120@anmat.test.
+  - تم إنشاء حساب مشترك جديد لـ Bulk Tester (bulka-1785764962390@anmat.test).
+  - A new subscriber email has been registered: bulkA-1785764962390@anmat.test.
+  - تم إنشاء حساب مشترك جديد لـ Quota Verify (sm-verify-1785751838089@anmat.test).
+  - A new subscriber email has been registered: sm-verify-1785751838089@anmat.test.
+  - تم إنشاء حساب مشترك جديد لـ Quota Verify (sm-verify-1785751807100@anmat.test).
+  - A new subscriber email has been registered: sm-verify-1785751807100@anmat.test.
   - [aria-label] Switch to English
   - [title] Switch to English
 
 === PAGE /setting  [lang=ar, dir=rtl, latin=2] ===
-  - My Appointments
   - English
+  - UTC (التوقيت العالمي المنسق)
 
-=== PAGE /profile  [lang=ar, dir=rtl, latin=26] ===
-  - My Appointments
+=== PAGE /profile  [lang=ar, dir=rtl, latin=9] ===
   - English
-  - Cairo, Egypt
-  - Friday
-  - test notification
-  - test
-  - message
-  - Test All
-  - Message Test All
-  - Project: Anmat
-  - Project: Sample Project Name Updated
-  - Task: Test Program
-  - Task: Test Task 5
+  - Anmat System Admin
+  - Admin
+  - Unverified
   - [aria-label] Switch to English
   - [title] Switch to English
-  - [title] test notification
-  - [title] test
-  - [title] message
-  - [title] Test All
-  - [title] Message Test All
 
 === MODAL /attendance  [lang=ar, dir=rtl, latin=0] ===
   !! no modal opened
@@ -173,7 +139,6 @@
   (no suspicious Latin text)
 
 === MODAL /conversations  [lang=ar, dir=rtl, latin=0] ===
-  !! no modal opened
   (no suspicious Latin text)
 
 === MODAL /notifications  [lang=ar, dir=rtl, latin=0] ===
@@ -184,26 +149,4 @@
   !! no modal opened
   (no suspicious Latin text)
 
-=== ALERT /profile → notifications  [lang=ar, dir=rtl, latin=26] ===
-  - My Appointments
-  - English
-  - Cairo, Egypt
-  - Friday
-  - test notification
-  - test
-  - message
-  - Test All
-  - Message Test All
-  - Project: Anmat
-  - Project: Sample Project Name Updated
-  - Task: Test Program
-  - Task: Test Task 5
-  - [aria-label] Switch to English
-  - [title] Switch to English
-  - [title] test notification
-  - [title] test
-  - [title] message
-  - [title] Test All
-  - [title] Message Test All
-
-===== TOTAL SUSPICIOUS: 144 =====
+===== TOTAL SUSPICIOUS: 90 =====

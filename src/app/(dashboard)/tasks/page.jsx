@@ -9,7 +9,7 @@ import Table from "@/components/Tables/Table.jsx";
 import { useSelector } from "react-redux";
 import { selectUserType, selectUserId } from "@/redux/auth/authSlice";
 import { usePermission } from "@/Hooks/usePermission";
-import { convertToSlug } from "@/functions/AnotherFunctions";
+import { taskDetailsPath } from "@/functions/AnotherFunctions";
 import { translateDate } from "@/functions/Days";
 import { RiEyeLine, RiDeleteBinLine, RiEditLine, RiCalendarCheckLine } from "react-icons/ri";
 import StatusActions from "@/components/Dropdowns/StatusActions";
@@ -236,7 +236,10 @@ function TasksPage() {
     actions.push({
       text: t("View"),
       icon: <RiEyeLine size={16} className="text-blue-500" />,
-      onClick: () => router.push(`/tasks/${task._id}-${convertToSlug(task.title)}/details`),
+      onClick: () => {
+        const path = taskDetailsPath(task);
+        if (path) router.push(path);
+      },
     });
 
     if (canEditTask) {
@@ -286,7 +289,7 @@ function TasksPage() {
     return tasks.map((task) => [
       <NameAndDescription
         key={`name-${task._id}`}
-        path={isEmployee ? null : `/tasks/${task._id}-${convertToSlug(task.title)}/details`}
+        path={taskDetailsPath(task)}
         name={task.title}
         description={task.description}
       />,
@@ -379,6 +382,10 @@ function TasksPage() {
                 statusOptions={taskStatusOptions}
                 exportFileName="tasks-table"
                 isActions={false}
+                onRowClick={(index) => {
+                  const path = taskDetailsPath(tasks[index]);
+                  if (path) router.push(path);
+                }}
               />
             )}
           </div>

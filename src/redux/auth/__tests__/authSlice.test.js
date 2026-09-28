@@ -20,6 +20,7 @@ const initialState = {
   isAuthenticated: false,
   permissions: [],
   permissionsLoaded: false,
+  socialMediaGrants: [],
 };
 
 describe('authSlice', () => {

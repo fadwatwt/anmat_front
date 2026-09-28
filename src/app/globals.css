@@ -100,6 +100,62 @@ html.font-default body {
     font-family: 'Roboto', sans-serif;
 }
 
+/* Calm chat surfaces with interactive accents tied to the brand color. */
+.chat-ui {
+    --chat-canvas: #F5F7FA;
+    --chat-sent: #EEF2FF;
+    --chat-received: #FFFFFF;
+    --chat-text: #24384D;
+    --chat-muted: #64758A;
+    --chat-border: #D9E2EC;
+    --chat-accent: var(--color-primary);
+    --chat-accent-soft: #EBF2FF;
+    --chat-button: var(--color-primary);
+    --chat-button-hover: #2C4BD0;
+    --chat-progress: #E8EDF3;
+    --chat-progress-selected: #D2DCFF;
+}
+
+html.dark .chat-ui {
+    --chat-canvas: #181E27;
+    --chat-sent: #263358;
+    --chat-received: #252E3A;
+    --chat-text: #E9F1F9;
+    --chat-muted: #A7B7C9;
+    --chat-border: #3A4A5C;
+    --chat-accent: var(--color-primary);
+    --chat-accent-soft: #28365E;
+    --chat-button: var(--color-primary);
+    --chat-button-hover: #4C6DFB;
+    --chat-progress: #344354;
+    --chat-progress-selected: #384D83;
+}
+
+.chat-ui .chat-canvas { background-color: var(--chat-canvas); }
+.chat-ui .chat-composer { background-color: var(--chat-received); border-color: var(--chat-border); }
+.chat-ui .chat-bubble { border: 1px solid var(--chat-border); color: var(--chat-text); box-shadow: 0 1px 3px #1B35520A; }
+.chat-ui .chat-bubble-sent { background-color: var(--chat-sent); }
+.chat-ui .chat-bubble-received { background-color: var(--chat-received); }
+.chat-ui .chat-bubble-text, .chat-ui .chat-bubble-text * { color: var(--chat-text); }
+.chat-ui .chat-attachment { background-color: var(--chat-received); border-color: var(--chat-border); }
+.chat-ui .chat-button-primary { background-color: var(--chat-button); color: #FFFFFF; }
+.chat-ui .chat-button-primary:hover:not(:disabled) { background-color: var(--chat-button-hover); }
+.chat-ui .chat-list-item:hover { background-color: var(--chat-canvas); }
+.chat-ui .chat-list-item-active, .chat-ui .chat-list-item-active:hover { background-color: var(--chat-accent-soft); border-color: var(--chat-accent); }
+.chat-ui .chat-unread { background-color: var(--chat-button); color: #FFFFFF; }
+.chat-ui .chat-poll { background-color: var(--chat-received); border-color: var(--chat-border); color: var(--chat-text); }
+.chat-ui .chat-poll-header, .chat-ui .chat-poll-header div { background-color: var(--chat-accent-soft); border-color: var(--chat-border); color: var(--chat-text); }
+.chat-ui .chat-poll-header svg { color: var(--chat-accent); }
+.chat-ui .chat-poll-meta { color: var(--chat-muted); }
+.chat-ui .chat-poll-option { background-color: var(--chat-received); border-color: var(--chat-border); color: var(--chat-text); }
+.chat-ui .chat-poll-option div { color: var(--chat-text); }
+.chat-ui .chat-poll-option:hover:not(:disabled) { background-color: var(--chat-canvas); }
+.chat-ui .chat-poll-option-selected { background-color: var(--chat-accent-soft); border-color: var(--chat-accent); }
+.chat-ui .chat-poll-progress { background-color: var(--chat-progress) !important; }
+.chat-ui .chat-poll-progress-selected { background-color: var(--chat-progress-selected) !important; }
+.chat-ui .chat-poll-check { border-color: var(--chat-muted); }
+.chat-ui .chat-poll-check-selected { border-color: var(--chat-button); background-color: var(--chat-button) !important; color: #FFFFFF !important; }
+
 p,
 div {
     color: var(--text-secondary);

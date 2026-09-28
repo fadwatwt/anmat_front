@@ -1,6 +1,7 @@
 "use client";
 import { useTranslation } from "react-i18next";
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
+import PropTypes from "prop-types";
 import { RootRoute } from "@/Root.Route";
 import { format } from "date-fns";
 import { Check, CheckCheck, Paperclip, Phone } from "lucide-react";
@@ -46,8 +47,7 @@ const MessageList = ({ messages, isLoading, onEdit, onDelete, onReact, onReply }
   return (
     <div
       ref={scrollRef}
-      className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar"
-      style={{ backgroundColor: 'var(--bg-main)' }}
+      className="chat-canvas flex-1 w-full min-w-0 overflow-y-auto overflow-x-hidden p-4 space-y-4 custom-scrollbar"
     >
       {messages?.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-full text-sub-300">
@@ -74,9 +74,9 @@ const MessageList = ({ messages, isLoading, onEdit, onDelete, onReact, onReply }
           return (
             <div
               key={message._id || index}
-              className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}
+              className={`flex flex-col min-w-0 ${isMe ? "items-end" : "items-start"}`}
             >
-              <div className={`flex items-end gap-2 max-w-[80%] ${isMe ? "flex-row-reverse" : "flex-row"}`}>
+              <div className={`flex items-end gap-2 min-w-0 max-w-[80%] ${isMe ? "flex-row-reverse" : "flex-row"}`}>
                 {!isMe && (
                   <div
                     className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold ${showAvatar ? "opacity-100" : "opacity-0"}`}
@@ -86,7 +86,7 @@ const MessageList = ({ messages, isLoading, onEdit, onDelete, onReact, onReply }
                   </div>
                 )}
 
-                <div className="flex flex-col relative group">
+                <div className="flex flex-col min-w-0 max-w-full relative group">
                   {!isMe && showAvatar && (
                     <span className="text-[10px] text-sub-500 mb-1 ml-1">
                       {message.sent_by?.name}
@@ -94,7 +94,6 @@ const MessageList = ({ messages, isLoading, onEdit, onDelete, onReact, onReply }
                   )}
 
                   <MessageActions
-                    message={message}
                     isMe={isMe}
                     onEdit={() => onEdit && onEdit(message)}
                     onDelete={() => onDelete && onDelete(message._id)}
@@ -102,28 +101,19 @@ const MessageList = ({ messages, isLoading, onEdit, onDelete, onReact, onReply }
                     onReact={(emoji) => onReact && onReact(message._id, emoji)}
                   />
 
-                  <div
-                    className={`px-4 py-2 rounded-2xl text-sm shadow-sm border ${isMe
-                        ? "bg-primary-500 dark:bg-primary-200 dark:text-black text-white rounded-tr-none border-transparent"
-                        : "rounded-tl-none text-cell-primary"
-                      }`}
-                    style={{
-                      borderColor: isMe ? 'transparent' : 'var(--status-border)',
-                      backgroundColor: isMe ? undefined : 'var(--color-blue-ebf1ff)',
-                    }}
-                  >
+                  <div className={`chat-bubble min-w-0 max-w-full px-4 py-2 rounded-2xl text-sm ${isMe ? "chat-bubble-sent rounded-tr-none" : "chat-bubble-received rounded-tl-none"}`}>
                     {message.content && !message.poll && (
-                      <div className={isMe ? "text-white dark:text-black" : ""}>
+                      <div className="chat-bubble-text break-words [overflow-wrap:anywhere]">
                         {message.content}
                         {message.is_edited && (
                           <span className="text-[10px] opacity-70 ml-2 italic">{t("(edited)")}</span>
                         )}
                       </div>
                     )}
-                    {message.poll && <PollBubble message={message} isMe={isMe} />}
+                    {message.poll && <PollBubble message={message} />}
                     {message.attachment && (
-                      <div className="mt-2 rounded-lg overflow-hidden border border-status-border bg-weak-50">
-                        {/\.(jpg|jpeg|png|gif|webp)$/i.test(message.attachment) ? (
+                      <div className="chat-attachment mt-2 max-w-full rounded-lg overflow-hidden border">
+                        {/\.(jpg|jpeg|png|gif|webp)$/i.test(message.attachment.split('?')[0]) ? (
                           <img 
                             src={getAttachmentUrl(message.attachment)} 
                             alt="attachment" 
@@ -141,8 +131,8 @@ const MessageList = ({ messages, isLoading, onEdit, onDelete, onReact, onReply }
                               <Paperclip size={20} />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className={`text-sm font-medium truncate ${isMe ? 'text-white dark:text-black' : 'text-cell-primary'}`}>
-                                {message.attachment.split('/').pop()}
+                              <p className="chat-bubble-text text-sm font-medium truncate">
+                                {message.attachment.split('?')[0].split('/').pop()}
                               </p>
                               <p className="text-[10px] text-sub-500">{t("Click to download")}</p>
                             </div>
@@ -185,6 +175,36 @@ const MessageList = ({ messages, isLoading, onEdit, onDelete, onReact, onReply }
       )}
     </div>
   );
+};
+
+const senderShape = PropTypes.oneOfType([
+  PropTypes.string,
+  PropTypes.shape({
+    _id: PropTypes.string,
+    name: PropTypes.string,
+  }),
+]);
+
+MessageList.propTypes = {
+  messages: PropTypes.arrayOf(PropTypes.shape({
+    _id: PropTypes.string,
+    chat_id: PropTypes.string,
+    sent_by: senderShape,
+    message_type: PropTypes.string,
+    content: PropTypes.string,
+    duration: PropTypes.number,
+    is_edited: PropTypes.bool,
+    poll: PropTypes.object,
+    attachment: PropTypes.string,
+    reactions: PropTypes.arrayOf(PropTypes.shape({ emoji: PropTypes.string })),
+    created_at: PropTypes.string,
+    read_by: PropTypes.arrayOf(PropTypes.string),
+  })),
+  isLoading: PropTypes.bool,
+  onEdit: PropTypes.func,
+  onDelete: PropTypes.func,
+  onReact: PropTypes.func,
+  onReply: PropTypes.func,
 };
 
 export default MessageList;

@@ -1,6 +1,6 @@
 // src/redux/auth/authSlice.js
 import { createSlice } from "@reduxjs/toolkit";
-import { getToken, setToken, clearToken } from "@/utils/tokenStorage";
+import { getToken, setToken, clearToken, syncAuthCookie } from "@/utils/tokenStorage";
 
 const initialState = {
   user: null,
@@ -69,6 +69,12 @@ const authSlice = createSlice({
         state.token = token;
         // We don't restore user from local storage anymore
         state.isAuthenticated = true;
+        // Migrate pre-middleware sessions: rewrite cookie so middleware sees it
+        try {
+          syncAuthCookie();
+        } catch {
+          // ignore — client guard in (dashboard)/layout.jsx remains fallback
+        }
       }
     },
     setUser: (state, action) => {

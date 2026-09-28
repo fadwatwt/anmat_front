@@ -63,7 +63,7 @@ const ChatList = ({ activeChatId, onSelectChat }) => {
             {canInitiateChat && (
               <button
                 onClick={() => setShowNewChat(true)}
-                className="flex items-center gap-1.5 bg-primary-500 hover:bg-primary-600 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-all"
+                className="chat-button-primary flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg transition-all"
               >
                 <SquarePen size={14} />
                 {t("New Conversation")}
@@ -108,19 +108,15 @@ const ChatList = ({ activeChatId, onSelectChat }) => {
             <button
               key={chat._id}
               onClick={() => onSelectChat(chat)}
-              className={`w-full flex items-center p-4 gap-3 transition-all border-l-4 ${activeChatId === chat._id
-                  ? "border-primary"
-                  : "border-transparent"
-                }`}
-              style={{ backgroundColor: activeChatId === chat._id ? 'var(--menu-active-bg)' : 'transparent' }}
+              className={`chat-list-item w-full flex items-center p-4 gap-3 transition-all border-l-4 ${activeChatId === chat._id ? "chat-list-item-active" : "border-transparent"}`}
             >
               <div className="relative flex-shrink-0">
                 <div
                   className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg overflow-hidden border"
                   style={{
-                    backgroundColor: activeChatId === chat._id ? 'var(--bg-surface)' : 'var(--color-blue-ebf1ff)',
-                    color: activeChatId === chat._id ? 'var(--menu-active-text)' : 'var(--color-primary)',
-                    borderColor: 'var(--status-border)'
+                    backgroundColor: 'var(--chat-accent-soft)',
+                    color: 'var(--chat-accent)',
+                    borderColor: 'var(--chat-border)'
                   }}
                 >
                   {chat.image ? (
@@ -149,7 +145,7 @@ const ChatList = ({ activeChatId, onSelectChat }) => {
                 </p>
               </div>
               {chat.unreadCount > 0 && (
-                <div className="bg-primary-500 dark:bg-primary-200 dark:text-black text-white text-[10px] font-bold px-2 py-1 rounded-full min-w-[20px] text-center">
+                <div className="chat-unread text-[10px] font-bold px-2 py-1 rounded-full min-w-[20px] text-center">
                   {chat.unreadCount}
                 </div>
               )}

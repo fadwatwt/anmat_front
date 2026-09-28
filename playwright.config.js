@@ -50,6 +50,10 @@ module.exports = defineConfig({
       command: 'npm run start:dev',
       cwd: '../Anmat_Backend_System-development',
       url: BACKEND_URL,
+      env: {
+        ...process.env,
+        SKIP_STARTUP_MAINTENANCE: 'true',
+      },
       reuseExistingServer: true,
       timeout: 240000,
       stdout: 'ignore',
@@ -60,6 +64,10 @@ module.exports = defineConfig({
         ? 'npm run dev'
         : 'npm run build && npm run start',
       cwd: '.',
+      env: {
+        ...process.env,
+        NEXT_PUBLIC_API_URL: BACKEND_URL,
+      },
       url: FRONTEND_URL,
       reuseExistingServer: true,
       timeout: 600000,

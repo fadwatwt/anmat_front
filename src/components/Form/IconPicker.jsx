@@ -1,22 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-    SearchNormal1, Building, Building3, Building4, Briefcase, Shop, Money, Card,
-    Health, Global, Cpu, Monitor, Flash, Cloud, Video, Gallery,
-    Truck, Wallet, Bill, Graph, Activity, Chart, Messages1, People,
-    Security, Setting, Category, Lamp, Music, Camera, Ticket,
-    Heart, Star, Verify, SafeHome, ShopAdd, Personalcard, Archive,
-    Book, Call, Direct, Notification, SecurityUser, User
-} from 'iconsax-react';
-
-const ICONS = {
-    Building, Building3, Building4, Briefcase, Shop, Money, Card,
-    Health, Global, Cpu, Monitor, Flash, Cloud, Video, Gallery,
-    Truck, Wallet, Bill, Graph, Activity, Chart, Messages1, People,
-    Security, Setting, Category, Lamp, Music, Camera, Ticket,
-    Heart, Star, Verify, SafeHome, ShopAdd, Personalcard, Archive,
-    Book, Call, Direct, Notification, SecurityUser, User
-};
+import { SearchNormal1 } from 'iconsax-react';
+import { INDUSTRY_ICONS as ICONS } from './industryIcons';
 
 const ICON_LIST = Object.keys(ICONS);
 

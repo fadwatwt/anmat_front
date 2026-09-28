@@ -1,23 +1,19 @@
 "use client";
 import { useTranslation } from "react-i18next";
 import { useState, useRef, useEffect } from "react";
+import PropTypes from "prop-types";
 import EmojiPicker from "emoji-picker-react";
 import { useUploadFileMutation } from "@/redux/conversations/conversationsAPI";
-import { usePermission } from "@/Hooks/usePermission";
-import { useSelector } from "react-redux";
-import { selectUserType } from "@/redux/auth/authSlice";
 import { Send, Paperclip, Smile, Edit3, X, BarChart2, FileIcon, ImageIcon } from "lucide-react";
 
 const MessageInput = ({ onSendMessage, onTyping, editMessageData, onCancelEdit, onEditMessage, onOpenPoll, activeChatId }) => {
   const { t } = useTranslation();
-  const isAdmin = useSelector(selectUserType) === "Admin";
-  const hasInitiatePermission = usePermission("chats.initiate");
-  const canInitiate = isAdmin || hasInitiatePermission;
   const [message, setMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [sendError, setSendError] = useState("");
   
   const [uploadFile] = useUploadFileMutation();
   
@@ -25,6 +21,8 @@ const MessageInput = ({ onSendMessage, onTyping, editMessageData, onCancelEdit, 
   const inputRef = useRef(null);
   const emojiPickerRef = useRef(null);
   const fileInputRef = useRef(null);
+  const uploadedAttachmentRef = useRef(null);
+  const submitInFlightRef = useRef(false);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -39,16 +37,27 @@ const MessageInput = ({ onSendMessage, onTyping, editMessageData, onCancelEdit, 
   useEffect(() => {
     if (editMessageData) {
       setMessage(editMessageData.content || "");
+      setSelectedFile(null);
+      uploadedAttachmentRef.current = null;
       if (inputRef.current) {
         inputRef.current.focus();
       }
     }
   }, [editMessageData]);
 
+  useEffect(() => {
+    setMessage("");
+    setSelectedFile(null);
+    setSendError("");
+    uploadedAttachmentRef.current = null;
+  }, [activeChatId]);
+
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
     if (file) {
       setSelectedFile(file);
+      setSendError("");
+      uploadedAttachmentRef.current = null;
     }
     // Reset input value so same file can be selected again
     e.target.value = null;
@@ -56,32 +65,39 @@ const MessageInput = ({ onSendMessage, onTyping, editMessageData, onCancelEdit, 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (message.trim() || selectedFile) {
+    if (submitInFlightRef.current || (!message.trim() && !selectedFile)) return;
+    submitInFlightRef.current = true;
+    setIsUploading(true);
+    setSendError("");
+    try {
       let attachmentUrl = "";
-      
-      if (selectedFile) {
-        setIsUploading(true);
-        try {
+      if (selectedFile && !editMessageData) {
+        if (uploadedAttachmentRef.current?.file === selectedFile) {
+          attachmentUrl = uploadedAttachmentRef.current.url;
+        } else {
           const result = await uploadFile({ chatId: activeChatId, file: selectedFile }).unwrap();
           attachmentUrl = result.data.url;
-        } catch (error) {
-          console.error("Upload failed:", error);
-          setIsUploading(false);
-          return;
+          uploadedAttachmentRef.current = { file: selectedFile, url: attachmentUrl };
         }
       }
 
       if (editMessageData) {
-        onEditMessage(editMessageData._id, message);
+        await onEditMessage(editMessageData._id, message);
         onCancelEdit();
       } else {
-        onSendMessage(message, attachmentUrl);
+        await onSendMessage(message, attachmentUrl);
       }
-      
+
       setMessage("");
       setSelectedFile(null);
-      setIsUploading(false);
+      uploadedAttachmentRef.current = null;
       handleTyping(false);
+    } catch (error) {
+      console.error("Chat message failed:", error);
+      setSendError(t("Something went wrong"));
+    } finally {
+      submitInFlightRef.current = false;
+      setIsUploading(false);
     }
   };
 
@@ -101,6 +117,7 @@ const MessageInput = ({ onSendMessage, onTyping, editMessageData, onCancelEdit, 
 
   const handleChange = (e) => {
     setMessage(e.target.value);
+    setSendError("");
     handleTyping(true);
   };
 
@@ -110,10 +127,8 @@ const MessageInput = ({ onSendMessage, onTyping, editMessageData, onCancelEdit, 
     if (inputRef.current) inputRef.current.focus();
   };
 
-  if (!canInitiate) return null;
-
   return (
-    <div className="flex flex-col bg-surface border-t border-status-border">
+    <div className="chat-composer flex flex-col border-t">
       {editMessageData && (
         <div className="flex items-center justify-between px-4 py-2 bg-weak-50 border-b border-status-border">
           <div className="flex items-center gap-2 text-sm text-sub-500">
@@ -126,7 +141,7 @@ const MessageInput = ({ onSendMessage, onTyping, editMessageData, onCancelEdit, 
         </div>
       )}
 
-      {selectedFile && (
+      {selectedFile && !editMessageData && (
         <div className="flex items-center gap-3 p-3 mx-4 mt-4 bg-weak-50 rounded-xl border border-status-border animate-in slide-in-from-bottom-2 duration-200">
           <div className="p-2 bg-main rounded-lg text-primary-500 dark:text-primary-400">
             {selectedFile.type.startsWith('image/') ? <ImageIcon size={20} /> : <FileIcon size={20} />}
@@ -137,7 +152,7 @@ const MessageInput = ({ onSendMessage, onTyping, editMessageData, onCancelEdit, 
           </div>
           <button 
             type="button"
-            onClick={() => setSelectedFile(null)}
+            onClick={() => { setSelectedFile(null); uploadedAttachmentRef.current = null; }}
             className="p-1.5 text-sub-500 hover:text-red-500 transition-colors"
           >
             <X size={16} />
@@ -145,6 +160,7 @@ const MessageInput = ({ onSendMessage, onTyping, editMessageData, onCancelEdit, 
         </div>
       )}
 
+      {sendError && <p role="alert" className="px-4 pt-2 text-xs text-red-500">{sendError}</p>}
       <form onSubmit={handleSubmit} className="flex items-center gap-2 p-4">
         <input 
           type="file" 
@@ -160,14 +176,14 @@ const MessageInput = ({ onSendMessage, onTyping, editMessageData, onCancelEdit, 
         >
           <BarChart2 size={20} />
         </button>
-        <button
+        {!editMessageData && <button
           type="button"
           title={t("Attach file")}
           onClick={() => fileInputRef.current?.click()}
           className={`p-2 transition-colors rounded-full ${selectedFile ? 'text-primary-500 dark:text-primary-400 bg-primary-50 dark:bg-primary-950/20' : 'text-sub-500 hover:bg-weak-100'}`}
         >
           <Paperclip size={20} />
-        </button>
+        </button>}
         <div className="relative flex-1">
           <input
             ref={inputRef}
@@ -203,7 +219,7 @@ const MessageInput = ({ onSendMessage, onTyping, editMessageData, onCancelEdit, 
           disabled={(!message.trim() && !selectedFile) || isUploading}
           className={`p-3 rounded-2xl transition-all ${
             (message.trim() || selectedFile) && !isUploading
-              ? "bg-primary-500 dark:bg-primary-200 dark:text-black text-white shadow-lg shadow-primary-500/30 scale-100 hover:scale-105 active:scale-95"
+              ? "chat-button-primary scale-100 hover:scale-105 active:scale-95"
               : "bg-main text-sub-500 scale-100"
           }`}
         >
@@ -219,3 +235,16 @@ const MessageInput = ({ onSendMessage, onTyping, editMessageData, onCancelEdit, 
 };
 
 export default MessageInput;
+
+MessageInput.propTypes = {
+  onSendMessage: PropTypes.func.isRequired,
+  onTyping: PropTypes.func.isRequired,
+  editMessageData: PropTypes.shape({
+    _id: PropTypes.string,
+    content: PropTypes.string,
+  }),
+  onCancelEdit: PropTypes.func.isRequired,
+  onEditMessage: PropTypes.func.isRequired,
+  onOpenPoll: PropTypes.func.isRequired,
+  activeChatId: PropTypes.string,
+};

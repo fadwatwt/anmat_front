@@ -1,13 +1,13 @@
 "use client";
 import { useTranslation } from "react-i18next";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import {
   useGetMessagesQuery,
   useMarkChatAsReadMutation,
   useEditMessageMutation,
   useDeleteMessageMutation,
   useAddReactionMutation,
-  useRemoveReactionMutation,
   useLazySearchMessagesQuery
 } from "@/redux/conversations/conversationsAPI";
 import { useSelector } from "react-redux";
@@ -17,7 +17,7 @@ import MessageInput from "./MessageInput";
 import ThreadSidebar from "./ThreadSidebar";
 import CreatePollModal from "./CreatePollModal";
 import ChatDetailsModal from "./ChatDetailsModal";
-import { Phone, Video, Info, ArrowLeft, Search, X, PhoneCall, Users } from "lucide-react";
+import { Phone, Video, Info, ArrowLeft, Search, X, PhoneCall } from "lucide-react";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import { useCall } from "@/components/Call/CallProvider";
 import { useGroupCall } from "@/components/Call/GroupCallProvider";
@@ -35,7 +35,6 @@ const ChatWindow = ({ activeChat, onBack }) => {
   const [editMessage] = useEditMessageMutation();
   const [deleteMessage] = useDeleteMessageMutation();
   const [addReaction] = useAddReactionMutation();
-  const [removeReaction] = useRemoveReactionMutation();
   const [triggerSearch, { data: searchData, isFetching: isSearching }] = useLazySearchMessagesQuery();
 
   const [editMessageData, setEditMessageData] = useState(null);
@@ -55,7 +54,7 @@ const ChatWindow = ({ activeChat, onBack }) => {
       setShowSearch(false);
       setSearchQuery("");
     }
-  }, [activeChat?._id]);
+  }, [activeChat?._id, markChatAsRead]);
 
   useEffect(() => {
     if (showSearch && searchQuery.trim() && activeChat?._id) {
@@ -64,7 +63,7 @@ const ChatWindow = ({ activeChat, onBack }) => {
       }, 500);
       return () => clearTimeout(delayFn);
     }
-  }, [searchQuery, showSearch, activeChat?._id]);
+  }, [searchQuery, showSearch, activeChat?._id, triggerSearch]);
 
   const rawMessages = Array.isArray(messagesData) ? messagesData : messagesData?.data || [];
   const messages = [...rawMessages].reverse();
@@ -75,7 +74,7 @@ const ChatWindow = ({ activeChat, onBack }) => {
 
   const { sendMessage, setTyping } = useChat(activeChat?._id);
   const { initiateCall, callState, isVideoCall } = useCall();
-  const { initiateGroupCall, groupCallState, isVideo: isGroupVideo, endGroupCall } = useGroupCall();
+  const { initiateGroupCall, groupCallState, endGroupCall } = useGroupCall();
   const canCall = usePermission("chats.call");
 
   const handleEditMessage = async (messageId, content) => {
@@ -83,13 +82,14 @@ const ChatWindow = ({ activeChat, onBack }) => {
       await editMessage({ messageId, content }).unwrap();
     } catch (err) {
       setApiResponse({ isOpen: true, status: "error", message: t("Failed to edit message") });
+      throw err;
     }
   };
 
   const handleDeleteMessage = async (messageId) => {
     try {
       await deleteMessage(messageId).unwrap();
-    } catch (err) {
+    } catch {
       setApiResponse({ isOpen: true, status: "error", message: t("Failed to delete message") });
     }
   };
@@ -97,7 +97,7 @@ const ChatWindow = ({ activeChat, onBack }) => {
   const handleReactMessage = async (messageId, emoji) => {
     try {
       await addReaction({ messageId, emoji }).unwrap();
-    } catch (err) {
+    } catch {
       // Reaction failures are silent — user can simply retry
     }
   };
@@ -145,7 +145,7 @@ const ChatWindow = ({ activeChat, onBack }) => {
             </div>
           ) : (
             <>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 min-w-0">
                 <button
                   onClick={onBack}
                   className="md:hidden p-2 hover:bg-status-bg rounded-full transition-colors mr-1"
@@ -167,8 +167,8 @@ const ChatWindow = ({ activeChat, onBack }) => {
                     <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-surface rounded-full"></div>
                   )}
                 </div>
-                <div>
-                  <h3 className="font-bold text-cell-primary leading-tight">
+                <div className="min-w-0">
+                  <h3 className="font-bold text-cell-primary leading-tight truncate">
                     {activeChat.title || activeChat.participants_ids?.find(p => p._id !== currentUserId)?.name || t("Direct Chat")}
                   </h3>
                   <span className="text-[11px] text-green-500 font-medium">
@@ -281,12 +281,12 @@ const ChatWindow = ({ activeChat, onBack }) => {
 
         {/* Messages or Search Results */}
         {showSearch && searchQuery.trim() ? (
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar bg-main">
+          <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-4 custom-scrollbar bg-main">
             <h4 className="text-sm font-semibold text-sub-500 mb-2">{t("Search Results")}</h4>
             {isSearching ? (
               <div className="text-center text-sm text-sub-300 py-8">{t("Searching...")}</div>
             ) : searchResults.length === 0 ? (
-              <div className="text-center text-sm text-sub-300 py-8">{t("No messages found for")} "{searchQuery}"</div>
+              <div className="text-center text-sm text-sub-300 py-8">{t("No messages found for")} &quot;{searchQuery}&quot;</div>
             ) : (
               searchResults.map(msg => (
                 <div key={msg._id} className="bg-surface p-3 rounded-xl border border-status-border shadow-sm flex flex-col gap-1 cursor-pointer hover:bg-weak-50">
@@ -311,7 +311,8 @@ const ChatWindow = ({ activeChat, onBack }) => {
 
         {/* Input */}
         <MessageInput
-          onSendMessage={(content, attachmentUrl) => sendMessage(content, attachmentUrl)}
+          key={activeChat._id}
+          onSendMessage={sendMessage}
           onTyping={(isTyping) => setTyping(isTyping)}
           editMessageData={editMessageData}
           onCancelEdit={() => setEditMessageData(null)}
@@ -356,3 +357,18 @@ const ChatWindow = ({ activeChat, onBack }) => {
 };
 
 export default ChatWindow;
+
+ChatWindow.propTypes = {
+  activeChat: PropTypes.shape({
+    _id: PropTypes.string,
+    image: PropTypes.string,
+    title: PropTypes.string,
+    participants_ids: PropTypes.arrayOf(PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.shape({ _id: PropTypes.string, name: PropTypes.string }),
+    ])),
+    isOnline: PropTypes.bool,
+    is_group: PropTypes.bool,
+  }),
+  onBack: PropTypes.func,
+};

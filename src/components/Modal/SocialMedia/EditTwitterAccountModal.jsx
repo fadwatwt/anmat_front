@@ -37,6 +37,8 @@ function EditTwitterAccountModal({ isOpen, onClose, account }) {
             location: account?.AccountBasicInfo?.Location || "",
             Category: account?.Category?._id || account?.Category || "",
             SecretKey: account?.AccountBasicInfo?.SecretKey || "",
+            newPassword: "",
+            confirmPassword: "",
         },
         validationSchema: Yup.object({
             name: Yup.string().nullable(),
@@ -47,6 +49,31 @@ function EditTwitterAccountModal({ isOpen, onClose, account }) {
                 .trim()
                 .matches(/^[A-Z2-7\s]*$/i, t("2FA secret key uses base32 characters (A–Z, 2–7) only"))
                 .nullable(),
+            newPassword: Yup.string()
+                .min(6, t("Password must be at least 6 characters"))
+                .nullable()
+                .test(
+                    "passwords-match",
+                    t("Passwords do not match!"),
+                    function (value) {
+                        const { confirmPassword } = this.parent;
+                        if (!value && !confirmPassword) return true;
+                        if (value && !confirmPassword) return true;
+                        return value === confirmPassword;
+                    },
+                ),
+            confirmPassword: Yup.string()
+                .nullable()
+                .test(
+                    "passwords-match",
+                    t("Passwords do not match!"),
+                    function (value) {
+                        const { newPassword } = this.parent;
+                        if (!value && !newPassword) return true;
+                        if (value && !newPassword) return true;
+                        return value === newPassword;
+                    },
+                ),
         }),
         onSubmit: async (values) => {
             if (!account?._id) return;
@@ -55,13 +82,18 @@ function EditTwitterAccountModal({ isOpen, onClose, account }) {
                 const payload = {};
                 if (values.name) payload.name = values.name;
                 if (values.description) payload.description = values.description;
-                if (values.location) payload.location = values.location;
+                // Always send location (including empty) so users can clear the proxy.
+                payload.location = values.location || "";
                 if (values.Category) payload.Category = values.Category;
                 // Always send SecretKey (including empty) so users can clear it.
                 const originalSecret = account?.AccountBasicInfo?.SecretKey || "";
                 const trimmed = (values.SecretKey || "").replace(/\s+/g, "").toUpperCase();
                 if (trimmed !== originalSecret) {
                     payload.SecretKey = trimmed;
+                }
+                // Only send newPassword if user typed one.
+                if (values.newPassword && values.newPassword.trim() !== "") {
+                    payload.newPassword = values.newPassword.trim();
                 }
 
                 const response = await updateAccount({ id: account._id, ...payload }).unwrap();
@@ -161,6 +193,38 @@ function EditTwitterAccountModal({ isOpen, onClose, account }) {
                         </p>
                         {formik.touched.SecretKey && formik.errors.SecretKey && (
                             <p className="text-red-500 text-xs mt-1">{formik.errors.SecretKey}</p>
+                        )}
+                    </div>
+                    <div className="flex flex-col gap-1 w-full items-start">
+                        <label className="text-cell-primary text-sm font-medium">{t("New Password")}</label>
+                        <input
+                            type="password"
+                            name="newPassword"
+                            value={formik.values.newPassword}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            placeholder={t("Leave empty to keep current password")}
+                            autoComplete="new-password"
+                            className="py-2 px-2 text-sm bg-status-bg border-status-border border-2 rounded-xl w-full focus:outline-none focus:border-primary-400 text-cell-primary placeholder:text-cell-secondary/50"
+                        />
+                        {formik.touched.newPassword && formik.errors.newPassword && (
+                            <p className="text-red-500 text-xs mt-1">{formik.errors.newPassword}</p>
+                        )}
+                    </div>
+                    <div className="flex flex-col gap-1 w-full items-start">
+                        <label className="text-cell-primary text-sm font-medium">{t("Confirm New Password")}</label>
+                        <input
+                            type="password"
+                            name="confirmPassword"
+                            value={formik.values.confirmPassword}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            placeholder={t("Confirm New Password")}
+                            autoComplete="new-password"
+                            className="py-2 px-2 text-sm bg-status-bg border-status-border border-2 rounded-xl w-full focus:outline-none focus:border-primary-400 text-cell-primary placeholder:text-cell-secondary/50"
+                        />
+                        {formik.touched.confirmPassword && formik.errors.confirmPassword && (
+                            <p className="text-red-500 text-xs mt-1">{formik.errors.confirmPassword}</p>
                         )}
                     </div>
                     <div className="flex flex-col gap-1 w-full items-start">

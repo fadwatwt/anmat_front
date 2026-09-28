@@ -144,20 +144,23 @@ export const useChat = (chatId) => {
 
   const sendMessage = useCallback((content, attachment = null) => {
     const socket = getSocket();
-    if (socket && chatId) {
-      console.log(`📤 [Chat] Sending message to ${chatId}:`, content);
-      socket.emit("send_message", {
+    if (!socket?.connected || !chatId) {
+      return Promise.reject(new Error("Chat connection is unavailable"));
+    }
+
+    return new Promise((resolve, reject) => {
+      socket.timeout(10000).emit("send_message", {
         chat_id: chatId,
         content,
-        attachment
-      }, (ack) => {
-        if (ack?.error) {
-          console.error("❌ [Chat] Send Message Error:", ack.error);
-        } else {
-          console.log("✅ [Chat] Message sent successfully");
+        attachment,
+      }, (error, ack) => {
+        if (error || ack?.error || !ack?._id) {
+          reject(new Error(ack?.error || error?.message || "Message was not saved"));
+          return;
         }
+        resolve(ack);
       });
-    }
+    });
   }, [chatId]);
 
   const setTyping = useCallback((isTyping) => {

@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import { X, Plus, Trash2 } from "lucide-react";
 import { useCreatePollMutation } from "@/redux/conversations/conversationsAPI";
@@ -140,7 +141,7 @@ const CreatePollModal = ({ chatId, onClose }) => {
             type="submit"
             onClick={handleSubmit}
             disabled={isLoading || !question.trim() || options.filter(o => o.trim()).length < 2}
-            className="px-5 py-2.5 text-sm font-bold text-white bg-primary-500 dark:bg-primary-200 dark:text-black hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors shadow-sm"
+            className="chat-button-primary px-5 py-2.5 text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors shadow-sm"
           >
             {isLoading ? t("Creating...") : t("Create Poll")}
           </button>
@@ -151,3 +152,8 @@ const CreatePollModal = ({ chatId, onClose }) => {
 };
 
 export default CreatePollModal;
+
+CreatePollModal.propTypes = {
+  chatId: PropTypes.string.isRequired,
+  onClose: PropTypes.func.isRequired,
+};

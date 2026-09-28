@@ -1,3 +1,6 @@
+// ARCHIVED 2026-09-27: replaced by root middleware.js (early redirect to /sign-in)
+// + (dashboard)/layout.jsx client guard. Kept for reference only — do not import.
+// Original redirected to /login (outdated); canonical login is /sign-in.
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router"; // Corrected import
 import PropTypes from "prop-types";
