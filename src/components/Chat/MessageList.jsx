@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import { selectUserId } from "@/redux/auth/authSlice";
 import MessageActions from "./MessageActions";
 import PollBubble from "./PollBubble";
+import { countLatestReactionPerUser } from "./reactionUtils";
 
 const MessageList = ({ messages, isLoading, onEdit, onDelete, onReact, onReply }) => {
   const { t } = useTranslation();
@@ -101,7 +102,7 @@ const MessageList = ({ messages, isLoading, onEdit, onDelete, onReact, onReply }
                     onReact={(emoji) => onReact && onReact(message._id, emoji)}
                   />
 
-                  <div className={`chat-bubble min-w-0 max-w-full px-4 py-2 rounded-2xl text-sm ${isMe ? "chat-bubble-sent rounded-tr-none" : "chat-bubble-received rounded-tl-none"}`}>
+                  <div className={`chat-bubble min-w-0 max-w-full ps-4 pe-11 py-2 rounded-2xl text-sm ${isMe ? "chat-bubble-sent rounded-tr-none" : "chat-bubble-received rounded-tl-none"}`}>
                     {message.content && !message.poll && (
                       <div className="chat-bubble-text break-words [overflow-wrap:anywhere]">
                         {message.content}
@@ -127,7 +128,7 @@ const MessageList = ({ messages, isLoading, onEdit, onDelete, onReact, onReply }
                             rel="noopener noreferrer"
                             className="flex items-center gap-3 p-3 hover:bg-weak-100 transition-colors no-underline"
                           >
-                            <div className="p-2 bg-primary-50 dark:bg-primary-950/20 text-primary-500 dark:text-primary-400 rounded-lg">
+                            <div className="p-2 bg-menu-active-bg text-menu-active-text rounded-lg">
                               <Paperclip size={20} />
                             </div>
                             <div className="flex-1 min-w-0">
@@ -145,12 +146,7 @@ const MessageList = ({ messages, isLoading, onEdit, onDelete, onReact, onReply }
                   {/* Reactions */}
                   {message.reactions && message.reactions.length > 0 && (
                     <div className={`flex flex-wrap gap-1 mt-1 ${isMe ? "justify-end" : "justify-start"}`}>
-                      {Object.entries(
-                        message.reactions.reduce((acc, r) => {
-                          acc[r.emoji] = (acc[r.emoji] || 0) + 1;
-                          return acc;
-                        }, {})
-                      ).map(([emoji, count]) => (
+                      {Object.entries(countLatestReactionPerUser(message.reactions)).map(([emoji, count]) => (
                         <div key={emoji} className="bg-surface border border-status-border rounded-full px-2 py-0.5 text-xs flex items-center gap-1 shadow-sm">
                           <span>{emoji}</span>
                           <span className="text-sub-500 text-[10px]">{count}</span>
@@ -196,7 +192,13 @@ MessageList.propTypes = {
     is_edited: PropTypes.bool,
     poll: PropTypes.object,
     attachment: PropTypes.string,
-    reactions: PropTypes.arrayOf(PropTypes.shape({ emoji: PropTypes.string })),
+    reactions: PropTypes.arrayOf(PropTypes.shape({
+      emoji: PropTypes.string,
+      user: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.shape({ _id: PropTypes.string }),
+      ]),
+    })),
     created_at: PropTypes.string,
     read_by: PropTypes.arrayOf(PropTypes.string),
   })),

@@ -19,9 +19,9 @@ function InputAndLabel({
   const { t } = useTranslation();
 
   return (
-    <div className={`flex flex-col gap-1 w-full items-start ${className}`}>
+    <div className={`flex flex-col gap-1.5 w-full items-start ${className}`}>
       <label className="text-cell-primary text-sm font-medium">
-        {t(title)}{isRequired && <span className={"text-red-500"}>*</span>}
+        {t(title)}{isRequired && <span className={"text-red-500"} aria-hidden="true"> *</span>}
       </label>
       <input
         type={type}
@@ -30,12 +30,13 @@ function InputAndLabel({
         onChange={onChange}
         onBlur={onBlur}
         value={value}
-        placeholder={`${t(placeholder)}...`}
-        className={`py-3 px-2 text-sm bg-status-bg border-status-border border-2 rounded-xl w-full focus:outline-none focus:border-primary-400 dark:focus:border-primary-500 dark:focus:ring-primary-500 text-cell-primary placeholder:text-cell-secondary/50 dark:placeholder-gray-400 ${error ? "border-red-500" : ""
+        placeholder={placeholder ? t(placeholder) : undefined}
+        aria-invalid={Boolean(error)}
+        className={`py-2.5 px-3 text-sm bg-surface border border-status-border rounded-xl w-full focus:outline-none focus:border-primary-base focus:ring-2 focus:ring-primary-base/20 text-cell-primary placeholder:text-cell-secondary/60 disabled:opacity-50 disabled:cursor-not-allowed ${error ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : ""
           }`}
         {...rest}
       />
-      {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+      {error && <p role="alert" className="text-red-500 text-xs mt-0.5">{error}</p>}
     </div>
   );
 }

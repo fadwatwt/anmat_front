@@ -1,9 +1,9 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Page from "@/components/Page.jsx";
 import { useTranslation } from "react-i18next";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import {
     useGetSupportTicketDetailsQuery,
     useGetSupportTicketMessagesQuery,
@@ -14,7 +14,7 @@ import {
 import Status from "@/app/(dashboard)/projects/_components/TableInfo/Status.jsx";
 import { translateDate } from "@/functions/Days";
 import { useSelector } from "react-redux";
-import { selectUser } from "@/redux/auth/authSlice";
+import { selectAuth, selectUser } from "@/redux/auth/authSlice";
 import { format } from "date-fns";
 import EmojiPicker from "emoji-picker-react";
 import { Send, Paperclip, Smile, X, FileIcon, ImageIcon } from "lucide-react";
@@ -22,14 +22,17 @@ import { RootRoute } from "@/Root.Route";
 import Alert from "@/components/Alerts/Alert";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import { usePermission } from "@/Hooks/usePermission";
+import { initSocket } from "@/services/socketService";
 
 function SupportTicketDetailsPage() {
     const { t } = useTranslation();
     const { id } = useParams();
+    const router = useRouter();
     const user = useSelector(selectUser);
+    const { token } = useSelector(selectAuth);
 
     const { data: ticketRes, isLoading: isLoadingTicket } = useGetSupportTicketDetailsQuery(id, { skip: !id });
-    const { data: messagesRes, isLoading: isLoadingMessages } = useGetSupportTicketMessagesQuery(id, { skip: !id, pollingInterval: 10000 });
+    const { data: messagesRes, isLoading: isLoadingMessages, refetch: refetchMessages } = useGetSupportTicketMessagesQuery(id, { skip: !id, pollingInterval: 60000 });
     const [addMessage, { isLoading: isSending }] = useAddSupportTicketMessageMutation();
     const [updateStatus, { isLoading: isUpdatingStatus }] = useUpdateSupportTicketStatusMutation();
     const [deleteTicket] = useDeleteSupportTicketMutation();
@@ -48,7 +51,7 @@ function SupportTicketDetailsPage() {
     const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
     const ticket = ticketRes?.data;
-    const messages = messagesRes?.data || [];
+    const messages = useMemo(() => messagesRes?.data || [], [messagesRes?.data]);
     // Admins can still reply on resolved tickets; subscribers cannot
     const isClosed = ticket?.status === 'closed' || (!isAdmin && ticket?.status === 'resolved');
 
@@ -88,6 +91,16 @@ function SupportTicketDetailsPage() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
+    useEffect(() => {
+        if (!token || !id) return;
+        const socket = initSocket(token);
+        const handleMessage = (message) => {
+            if (String(message?.ticket_id) === String(id)) refetchMessages();
+        };
+        socket.on("support_ticket_message", handleMessage);
+        return () => socket.off("support_ticket_message", handleMessage);
+    }, [token, id, refetchMessages]);
+
     const handleSendMessage = async (e) => {
         e.preventDefault();
         if (!messageText.trim() && selectedFiles.length === 0) return;
@@ -100,7 +113,11 @@ function SupportTicketDetailsPage() {
             setMessageText("");
             setSelectedFiles([]);
         } catch (error) {
-            console.error("Failed to send message:", error);
+            setApiResponse({
+                isOpen: true,
+                status: "error",
+                message: error?.data?.message || t("Failed to send message."),
+            });
         }
     };
 
@@ -118,7 +135,11 @@ function SupportTicketDetailsPage() {
         try {
             await updateStatus({ id, status: newStatus }).unwrap();
         } catch (error) {
-            console.error("Failed to update status:", error);
+            setApiResponse({
+                isOpen: true,
+                status: "error",
+                message: error?.data?.message || t("Failed to update ticket status."),
+            });
         }
     };
 
@@ -184,6 +205,10 @@ function SupportTicketDetailsPage() {
                                 <span className="font-semibold text-sm text-cell-primary">{t(ticket.priority || 'LOW')}</span>
                             </div>
                             <div className="flex justify-between items-center">
+                                <span className="text-sm text-cell-secondary">{t("Category")}</span>
+                                <span className="font-semibold text-sm text-cell-primary">{t(ticket.category || 'other')}</span>
+                            </div>
+                            <div className="flex justify-between items-center">
                                 <span className="text-sm text-cell-secondary">{t("Created At")}</span>
                                 <span className="text-sm text-cell-primary">{translateDate(ticket.created_at)}</span>
                             </div>
@@ -194,12 +219,33 @@ function SupportTicketDetailsPage() {
                             <p className="text-sm text-cell-secondary whitespace-pre-wrap">{ticket.description}</p>
                         </div>
 
+                        {isAdmin && ticket.ai_summary && (
+                            <div className="mt-2 rounded-xl border border-primary-200 bg-primary-50/50 p-3 dark:border-primary-800 dark:bg-primary-900/10">
+                                <h3 className="text-sm font-semibold text-cell-primary mb-2">{t("AI Support Summary")}</h3>
+                                <p className="text-sm text-cell-secondary whitespace-pre-wrap">{ticket.ai_summary}</p>
+                                {ticket.attempted_steps?.length > 0 && (
+                                    <ul className="mt-2 list-disc ps-5 text-xs text-cell-secondary space-y-1">
+                                        {ticket.attempted_steps.map((step, index) => <li key={index}>{step}</li>)}
+                                    </ul>
+                                )}
+                            </div>
+                        )}
+
                         {canDeleteTicket && (
                             <button
                                 onClick={() => setIsOpenDeleteAlert(true)}
                                 className="mt-2 w-full px-4 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 dark:text-red-400 rounded-xl transition-colors"
                             >
                                 {t("Delete Ticket")}
+                            </button>
+                        )}
+                        {isAdmin && String(ticket.admin_id?._id || ticket.admin_id || "") !== String(user?._id || "") && (
+                            <button
+                                onClick={() => updateStatus({ id, admin_id: user._id }).unwrap().catch((error) => setApiResponse({ isOpen: true, status: "error", message: error?.data?.message || t("Failed to assign ticket.") }))}
+                                disabled={isUpdatingStatus}
+                                className="w-full px-4 py-2 text-sm font-medium text-primary-600 border border-primary-300 hover:bg-primary-50 dark:text-primary-300 dark:border-primary-700 dark:hover:bg-primary-900/20 rounded-xl transition-colors disabled:opacity-50"
+                            >
+                                {t("Assign to me")}
                             </button>
                         )}
                     </div>
@@ -335,6 +381,19 @@ function SupportTicketDetailsPage() {
 
                     {/* Input Area */}
                     <div className="flex flex-col bg-surface border-t border-status-border">
+                        {isAdmin && !isClosed && (
+                            <div className="flex flex-wrap gap-2 px-4 pt-3">
+                                {[
+                                    t("We received your request and are reviewing it."),
+                                    t("Could you share the exact steps that caused the issue?"),
+                                    t("The issue has been resolved. Please try again."),
+                                ].map((reply) => (
+                                    <button key={reply} type="button" onClick={() => setMessageText(reply)} className="rounded-full border border-status-border bg-status-bg px-3 py-1.5 text-xs text-cell-primary hover:border-primary-400">
+                                        {reply}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                         {/* Selected Files Preview */}
                         {selectedFiles.length > 0 && (
                             <div className="flex flex-wrap gap-2 px-4 pt-3">

@@ -26,13 +26,13 @@ export const StatusBadge = ({ status }) => {
       );
       break;
     case "Late":
-      Icon = <BsClockFill className="text-[#C2540A] dark:text-yellow-300" />;
+      Icon = <BsClockFill className="text-amber-700 dark:text-orange-300" />;
       break;
     case "Absent":
       Icon = <BsSlashCircleFill className="text-cell-secondary" />;
       break;
     case "Pending":
-      Icon = <BsClockFill className="text-[#C2540A] dark:text-yellow-300" />;
+      Icon = <BsClockFill className="text-amber-700 dark:text-orange-300" />;
       break;
   }
 

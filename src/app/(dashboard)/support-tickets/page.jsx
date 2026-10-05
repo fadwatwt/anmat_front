@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import {
     useGetSupportTicketsQuery,
+    useGetSupportMetricsQuery,
     useDeleteSupportTicketMutation,
 } from "@/redux/support-tickets/supportTicketsApi";
 import Status from "@/app/(dashboard)/projects/_components/TableInfo/Status.jsx";
@@ -19,6 +20,7 @@ import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import ProcessingOverlay from "@/components/Feedback/ProcessingOverlay.jsx";
 import { RiDeleteBin7Line, RiEyeLine } from "@remixicon/react";
+import PropTypes from "prop-types";
 
 function SupportTicketsPage() {
     const { t } = useTranslation();
@@ -28,6 +30,7 @@ function SupportTicketsPage() {
     const canCreateTicket = usePermission("support_tickets.create");
     const canDeleteTicket = usePermission("support_tickets.delete");
     const { data: response, isLoading } = useGetSupportTicketsQuery();
+    const { data: metrics } = useGetSupportMetricsQuery(undefined, { skip: !isAdmin });
     const tickets = [...(response?.data || [])].sort((a, b) => {
         const dateA = new Date(a.created_at || a.createdAt);
         const dateB = new Date(b.created_at || b.createdAt);
@@ -67,6 +70,7 @@ function SupportTicketsPage() {
     const headers = [
         { label: t("Title") },
         ...(isAdmin ? [{ label: t("Subscriber") }] : []),
+        ...(isAdmin ? [{ label: t("Category") }] : []),
         { label: t("Priority") },
         { label: t("Status") },
         { label: t("Created At") },
@@ -101,10 +105,17 @@ function SupportTicketsPage() {
         }
         return <StatusActions states={actions} />;
     };
+    TicketActions.propTypes = {
+        ticket: PropTypes.shape({
+            _id: PropTypes.string.isRequired,
+            title: PropTypes.string,
+        }).isRequired,
+    };
 
     const rows = tickets.map(ticket => [
         <div key={ticket._id} className="font-medium text-cell-primary">{ticket.title}</div>,
         ...(isAdmin ? [<div key={`sub-${ticket._id}`} className="text-sm text-cell-secondary">{ticket.subscriber?.name || '-'}</div>] : []),
+        ...(isAdmin ? [<div key={`cat-${ticket._id}`} className="text-sm text-cell-secondary">{t(ticket.category || 'other')}</div>] : []),
         <span key={`pri-${ticket._id}`} className={`px-2 py-1 text-xs font-bold rounded-full ${getPriorityStyle(ticket.priority)}`}>
             {t(ticket.priority || 'LOW')}
         </span>,
@@ -126,6 +137,21 @@ function SupportTicketsPage() {
             btnTitle={t("Open Ticket")}
             btnOnClick={() => setIsCreateModalOpen(true)}
         >
+            {isAdmin && metrics && (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
+                    {[
+                        [t("Total Tickets"), metrics.total],
+                        [t("Open Tickets"), metrics.open],
+                        [t("Resolved Tickets"), metrics.resolved],
+                        [t("Average First Response"), metrics.average_first_response_ms == null ? "—" : `${Math.max(1, Math.round(metrics.average_first_response_ms / 60000))} ${t("min")}`],
+                    ].map(([label, value]) => (
+                        <div key={label} className="rounded-xl border border-status-border bg-surface p-4">
+                            <p className="text-xs text-cell-secondary m-0 mb-1">{label}</p>
+                            <p className="text-xl font-bold text-cell-primary m-0">{value}</p>
+                        </div>
+                    ))}
+                </div>
+            )}
             <Table
                 headers={headers}
                 rows={rows}

@@ -96,9 +96,14 @@ const ChatWindow = ({ activeChat, onBack }) => {
 
   const handleReactMessage = async (messageId, emoji) => {
     try {
-      await addReaction({ messageId, emoji }).unwrap();
+      await addReaction({
+        messageId,
+        emoji,
+        chatId: activeChat?._id,
+        userId: currentUserId,
+      }).unwrap();
     } catch {
-      // Reaction failures are silent — user can simply retry
+      setApiResponse({ isOpen: true, status: "error", message: t("Failed to add reaction") });
     }
   };
 

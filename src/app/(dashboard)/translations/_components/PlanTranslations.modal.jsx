@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import Modal from "@/components/Modal/Modal.jsx";
@@ -178,7 +178,7 @@ function PlanTranslationsModal({ isOpen, onClose, plan }) {
         className={"lg:w-5/12 md:w-8/12 sm:w-10/12 w-11/12"}
         title={`${t("Translations")} - ${plan?.name || ""}`}
       >
-        <div className="flex flex-col gap-4 max-h-[70vh] overflow-y-auto custom-scrollbar">
+        <div className="flex flex-col gap-4">
           <div className="px-4">
             <SelectAndLabel
               title={t("Language")}

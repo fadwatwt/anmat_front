@@ -3,9 +3,11 @@ import { useTranslation } from "react-i18next";
 
 import DefaultSelect from "@/components/Form/DefaultSelect";
 import BarChartComponent from "@/components/containers/chart/BarChartComponent";
+import PropTypes from "prop-types";
 
 const TasksPerformanceChart = ({ monthlyData = [] }) => {
     const { t } = useTranslation();
+    const rangeOption = { id: "6m", value: t("Last 6 Months") };
 
     const barGab = 4;
     const bars = [
@@ -30,7 +32,12 @@ const TasksPerformanceChart = ({ monthlyData = [] }) => {
             title={t("Tasks Performance")}
             toolbar={
                 <div className="w-32 flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end">
-                    <DefaultSelect variant="chart" multi={false} options={[{ id: 1, value: t("Last 6 Months") }]} />
+                    <DefaultSelect
+                        variant="chart"
+                        multi={false}
+                        options={[rangeOption]}
+                        value={[rangeOption]}
+                    />
                 </div>
             }
             barGab={barGab}
@@ -39,6 +46,10 @@ const TasksPerformanceChart = ({ monthlyData = [] }) => {
             yaxisTitle={t("Number of tasks")}
         />
     );
+};
+
+TasksPerformanceChart.propTypes = {
+    monthlyData: PropTypes.arrayOf(PropTypes.object),
 };
 
 export default TasksPerformanceChart;

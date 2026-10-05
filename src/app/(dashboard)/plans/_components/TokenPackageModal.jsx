@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import PropTypes from "prop-types";
@@ -119,7 +119,7 @@ function TokenPackageModal({ isOpen, onClose, editPackage = null }) {
             className={"lg:w-5/12 md:w-8/12 sm:w-10/12 w-11/12"}
             title={isEditMode ? t("Edit AI Token Package") : t("Add AI Token Package")}
         >
-            <div className="flex flex-col gap-4 max-h-[70vh] overflow-y-auto custom-scrollbar">
+            <div className="flex flex-col gap-4">
                 {/* Basic Info */}
                 <div className={"px-4 grid grid-cols-1 gap-4"}>
                     <InputAndLabel

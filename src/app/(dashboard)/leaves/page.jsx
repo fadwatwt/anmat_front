@@ -116,7 +116,7 @@ function MyLeavesPage() {
     const HeaderButtons = canCreateLeave ? (
         <button
             onClick={() => setIsAddModalOpen(true)}
-            className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2"
+            className="bg-primary-base hover:bg-primary-600 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 active:scale-[0.98] transition-all shadow-lg shadow-primary-500/20"
         >
             <HiPlus size={18} />
             {t("Request Leave")}

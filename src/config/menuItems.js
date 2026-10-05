@@ -319,7 +319,7 @@ export const dashboardSideMenuItems = [
         title: 'Support Tickets',
         path: '/support-tickets',
         icon: <Messages1 />,
-        permission: 'admin.support_tickets.list'
+        permission_any_of: ['admin.support_tickets.list', 'support_tickets.list']
     },
 
     // ═══════════════════════════════════════════

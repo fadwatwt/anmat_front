@@ -422,7 +422,7 @@ function TasksPage() {
             <button
               key={status}
               onClick={() => handleStatusUpdate(status)}
-              className="flex items-center justify-between p-3 rounded-xl border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900 transition-all"
+              className="flex items-center justify-between p-3 rounded-xl border border-status-border bg-surface hover:bg-status-bg transition-all"
             >
               <Status type={status} />
             </button>

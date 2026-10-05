@@ -690,7 +690,7 @@ const AssistantPage = () => {
                         key={conv._id}
                         onClick={() => !isEditing && handleSelectConversation(conv._id)}
                         className={`group relative flex items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-150 ${isActive
-                          ? "bg-primary-50 dark:bg-primary-950/20 text-primary-600 dark:text-primary-400 font-medium"
+                          ? "bg-menu-active-bg text-menu-active-text font-semibold"
                           : "hover:bg-status-bg text-cell-secondary"
                           }`}
                       >
@@ -829,7 +829,7 @@ const AssistantPage = () => {
               <button
                 type="button"
                 onClick={handleNewChat}
-                className="p-2 rounded-xl text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-950/30 transition-colors shrink-0"
+                className="p-2 rounded-xl text-primary-600 dark:text-primary-200 hover:bg-menu-active-bg hover:text-menu-active-text transition-colors shrink-0"
                 title={t("New chat")}
               >
                 <Plus size={20} />
@@ -844,7 +844,7 @@ const AssistantPage = () => {
             {!isHistoryOpen && !balanceLoading && (
               <div className="flex items-center gap-2 shrink-0">
                 {hasUnlimitedAiAccess ? (
-                  <span className="text-xs font-semibold text-primary-600 dark:text-primary-400 px-2 py-1 rounded-lg bg-primary-50 dark:bg-primary-950/30">
+                  <span className="text-xs font-semibold text-menu-active-text px-2 py-1 rounded-lg bg-menu-active-bg">
                     {t("Unlimited")}
                   </span>
                 ) : (
@@ -855,7 +855,7 @@ const AssistantPage = () => {
                 <button
                   type="button"
                   onClick={() => router.push("/ai/pricing")}
-                  className="text-xs font-semibold text-primary-600 hover:text-primary-700 dark:text-primary-400 px-2.5 py-1.5 rounded-lg border border-primary-200 dark:border-primary-800 hover:bg-primary-50 dark:hover:bg-primary-950/20 transition-colors"
+                  className="text-xs font-semibold text-primary-600 hover:text-menu-active-text dark:text-primary-200 px-2.5 py-1.5 rounded-lg border border-status-border hover:bg-menu-active-bg hover:border-primary-base transition-colors"
                 >
                   {t("Buy Tokens")}
                 </button>
@@ -893,7 +893,7 @@ const AssistantPage = () => {
                     return (
                       <button
                         key={i}
-                        className="inline-flex items-center gap-2 bg-status-bg hover:bg-primary-50 dark:hover:bg-primary-950/20 border border-status-border rounded-xl px-5 py-2.5 text-sm text-cell-secondary shadow-sm transition font-medium"
+                        className="inline-flex items-center gap-2 bg-status-bg hover:bg-menu-active-bg hover:text-menu-active-text hover:border-primary-base border border-status-border rounded-xl px-5 py-2.5 text-sm text-cell-secondary shadow-sm transition font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-base"
                         onClick={() => handleSuggestionClick(t(s.label))}
                       >
                         {t(s.label)}

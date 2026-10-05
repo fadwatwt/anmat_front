@@ -33,15 +33,15 @@ export const StatusBadge = ({ status }) => {
       colors = "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800";
       break;
     case "Late":
-      Icon = <BsClockFill size={14} className="text-[#C2540A]" />;
-      colors = "bg-[#FFF9F5] text-[#C2540A] border-[#FFD9C2]";
+      Icon = <BsClockFill size={14} className="text-amber-700 dark:text-orange-300" />;
+      colors = "bg-amber-50 text-amber-800 border-amber-200 dark:bg-orange-900/20 dark:text-orange-300 dark:border-orange-800";
       break;
     case "Absent":
       Icon = <BsSlashCircleFill size={14} className="text-cell-secondary" />;
       colors = "bg-status-bg text-cell-secondary border-status-border";
       break;
     default:
-      Icon = <BsClockFill size={14} className="text-[#C2540A]" />;
+      Icon = <BsClockFill size={14} className="text-amber-700 dark:text-orange-300" />;
       colors = "bg-status-bg text-cell-secondary border-status-border";
   }
 

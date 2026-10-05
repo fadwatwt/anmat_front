@@ -32,28 +32,28 @@ function MenuItem({ path, icon, title, children }) {
     };
 
     const ItemContent = (
-        <div className={`flex gap-1 w-11/12 items-center p-3 rounded-lg transition-all
-            ${isActive ? 'bg-menu-active-bg' : 'group-hover:bg-primary-100'} hover:text-cell-primary`}>
+        <div className={`flex gap-2.5 w-full items-center px-3 py-2.5 rounded-xl transition-colors
+            ${isActive ? 'bg-menu-active-bg' : 'hover:bg-status-bg'} focus-visible:outline-none`}>
             {icon && React.cloneElement(icon, {
-                size: 25,
+                size: 20,
                 color: `${isActive ? 'var(--menu-active-text)' : 'var(--menu-icon)'}`,
             })}
-            <p className={`text-sm flex-1 ${isActive ? 'text-menu-active-text' : 'dark:text-gray-300'}`}>
+            <p className={`text-sm flex-1 truncate ${isActive ? 'text-menu-active-text font-semibold' : 'text-cell-secondary'}`}>
                 {t(title)}
             </p>
             {children && (
                 <ArrowDown2
                     size={16}
-                    className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
+                    className={`transition-transform duration-300 shrink-0 ${isOpen ? 'rotate-180' : ''}`}
                 />
             )}
         </div>
     );
 
     return (
-        <div className="w-full">
-            <div className={`menu-item flex gap-2 items-center group w-full ${isActive ? 'active' : ''}`}>
-                <div className={`w-1 h-6 rounded-br-lg rounded-tr-lg ${isActive ? 'bg-primary-500' : 'group-hover:bg-primary-500'}`}></div>
+        <div className="w-full px-2">
+            <div className={`menu-item flex gap-2 items-center group w-full rounded-xl ${isActive ? 'active' : ''}`}>
+                <div className={`w-1 h-6 rounded-full shrink-0 transition-colors ${isActive ? 'bg-primary-base' : 'bg-transparent'}`}></div>
 
                 {children ? (
                     <div onClick={handleToggle} className="flex-1 text-cell-primary cursor-pointer">
@@ -67,18 +67,18 @@ function MenuItem({ path, icon, title, children }) {
             </div>
 
             {children && (
-                <div className={`ms-3 mt-1 flex flex-col gap-1 overflow-hidden transition-all duration-300 
+                <div className={`ms-4 mt-1 flex flex-col gap-1 overflow-hidden transition-all duration-300 
                     ${isOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
-                    <div className="bg-primary-100 rounded-lg p-2 me-4">
+                    <div className="bg-status-bg border border-status-border rounded-xl p-1.5 me-2">
                         {children.map((child, index) => {
                             const isSubActive = pathname === child.path;
                             return (
                                 <Link
                                     key={index}
                                     href={child.path}
-                                    className={`block p-2 text-sm rounded-md transition-colors ${isSubActive
-                                            ? 'bg-surface text-primary-600 dark:text-primary-200 shadow-sm font-medium'
-                                            : 'text-cell-secondary hover:bg-primary-100 hover:bg-surface dark:hover:bg-white/10 hover:text-primary-600 dark:hover:text-primary-400'}`}
+                                    className={`block px-3 py-2 text-sm rounded-lg transition-colors ${isSubActive
+                                            ? 'bg-surface text-primary-600 dark:text-primary-200 shadow-sm font-semibold'
+                                            : 'text-cell-secondary hover:bg-surface hover:text-cell-primary'}`}
                                 >
                                     {t(child.title)}
                                 </Link>

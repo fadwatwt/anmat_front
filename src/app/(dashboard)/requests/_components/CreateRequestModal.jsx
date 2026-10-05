@@ -189,12 +189,13 @@ function CreateRequestModal({ isOpen, onClose }) {
                             title={isLoading ? t("Submitting...") : t("Submit Request")}
                             onClick={formik.handleSubmit}
                             disabled={isLoading || !formik.isValid}
-                            className="bg-primary-base text-white dark:bg-primary-200 dark:text-black font-bold px-8 py-2.5 rounded-xl shadow-lg shadow-primary-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                            variant="primary"
+                            className="font-bold px-8 py-2.5 rounded-xl shadow-lg shadow-primary-500/20"
                         />
                     </div>
                 }
             >
-                <div className="flex flex-col gap-6 p-6 max-h-[70vh] overflow-y-auto bg-surface">
+                <div className="flex flex-col gap-6">
                     <ElementsSelect
                         title={t("Request Type")}
                         options={requestTypes}

@@ -13,7 +13,7 @@ import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import { format } from "date-fns";
 import { getDateLocale } from "@/lib/dateLocale";
 import CreateRequestModal from "./_components/CreateRequestModal";
-import { Add } from "iconsax-react";
+import { HiPlus } from "react-icons/hi";
 import { useProcessing } from "@/app/providers";
 import { usePermission } from "@/Hooks/usePermission";
 
@@ -138,17 +138,17 @@ function EmployeeRequestsPage() {
         const request = currentData[rowIndex];
         const canCancel = request.status === "open" && canUpdateRequest;
 
+        if (!canCancel) return null;
+
         return (
             <div className="flex flex-col bg-surface shadow-xl rounded-xl border border-status-border min-w-40 overflow-hidden transform scale-95 transition-all duration-200 origin-top-right">
-                {canCancel && (
-                    <button
-                        onClick={() => handleCancel(rowIndex)}
-                        className="w-full px-5 py-3 text-sm text-left flex items-center text-red-error gap-3 hover:bg-status-bg transition-colors font-medium border-l-4 border-transparent hover:border-red-error"
-                    >
-                        <span className="w-2 h-2 rounded-full bg-red-error"></span>
-                        {t("Cancel")}
-                    </button>
-                )}
+                <button
+                    onClick={() => handleCancel(rowIndex)}
+                    className="w-full px-5 py-3 text-sm text-left flex items-center text-red-error gap-3 hover:bg-status-bg transition-colors font-medium border-l-4 border-transparent hover:border-red-error"
+                >
+                    <span className="w-2 h-2 rounded-full bg-red-error"></span>
+                    {t("Cancel")}
+                </button>
             </div>
         );
     };
@@ -169,9 +169,9 @@ function EmployeeRequestsPage() {
             {canCreateRequest && (
                 <button
                     onClick={() => setIsCreateModalOpen(true)}
-                    className="flex items-center gap-2 px-6 py-2.5 bg-primary-base text-white dark:bg-primary-200 dark:text-black rounded-xl text-sm font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-primary-500/20"
+                    className="flex items-center gap-2 px-6 py-2.5 bg-primary-base text-white rounded-xl text-sm font-bold hover:bg-primary-600 active:scale-[0.98] transition-all shadow-lg shadow-primary-500/20"
                 >
-                    <Add size={20} variant="Bold" />
+                    <HiPlus size={18} className="shrink-0" />
                     {t("New Request")}
                 </button>
             )}

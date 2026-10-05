@@ -9,6 +9,14 @@ export const supportTicketsApi = apiSlice.injectEndpoints({
             }),
             providesTags: ["SupportTickets"],
         }),
+        getSupportMetrics: builder.query({
+            query: () => ({
+                url: "api/support-tickets/admin/metrics",
+                method: "GET",
+            }),
+            transformResponse: (response) => response.data,
+            providesTags: ["SupportTickets"],
+        }),
         getSupportTicketDetails: builder.query({
             query: (id) => ({
                 url: `api/support-tickets/${id}`,
@@ -25,10 +33,10 @@ export const supportTicketsApi = apiSlice.injectEndpoints({
             invalidatesTags: ["SupportTickets"],
         }),
         updateSupportTicketStatus: builder.mutation({
-            query: ({ id, status }) => ({
+            query: ({ id, ...changes }) => ({
                 url: `api/support-tickets/${id}`,
                 method: "PATCH",
-                body: { status },
+                body: changes,
             }),
             invalidatesTags: (result, error, { id }) => ["SupportTickets", { type: "SupportTickets", id }],
         }),
@@ -60,6 +68,7 @@ export const supportTicketsApi = apiSlice.injectEndpoints({
 
 export const {
     useGetSupportTicketsQuery,
+    useGetSupportMetricsQuery,
     useGetSupportTicketDetailsQuery,
     useCreateSupportTicketMutation,
     useUpdateSupportTicketStatusMutation,

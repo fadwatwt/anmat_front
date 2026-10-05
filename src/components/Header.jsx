@@ -8,25 +8,28 @@ import React from "react";
 import PropTypes from "prop-types";
 import { HiOutlineMenuAlt2 } from "react-icons/hi";
 import { useSelector } from "react-redux";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { selectNotifications, selectUnreadCount } from "@/redux/notifications/notificationsSlice";
 import NotificationsDropdown from "./Dropdowns/NotificationsDropdown.jsx";
 import MessagesDropdown from "./Dropdowns/MessagesDropdown.jsx";
 import HeaderUserMenu from "./Dropdowns/HeaderUserMenu.jsx";
 import { useTheme } from "@/app/providers";
 import { useTranslation } from "react-i18next";
+import Alert from "./Alerts/Alert.jsx";
 
-const Header = React.memo(({ taggleSlidebarOpen, className }) => {
+const Header = React.memo(({ taggleSlidebarOpen, toggleSlidebarOpen, className }) => {
   const { t, i18n } = useTranslation();
   const notifications = useSelector(selectNotifications);
   const unreadCount = useSelector(selectUnreadCount);
   const [theme, setTheme] = useTheme();
-  const router = useRouter();
   const pathname = usePathname();
+  const [isTourConfirmOpen, setIsTourConfirmOpen] = React.useState(false);
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
   };
+
+  const handleMenuClick = taggleSlidebarOpen || toggleSlidebarOpen;
 
   const toggleLanguage = () => {
     const newLang = i18n.language === "ar" ? "en" : "ar";
@@ -34,7 +37,10 @@ const Header = React.memo(({ taggleSlidebarOpen, className }) => {
   };
 
   const handleTourRestart = () => {
-    const confirmed = window.confirm(t("Restart the guided tour? The page will reload."));
+    setIsTourConfirmOpen(true);
+  };
+
+  const confirmTourRestart = (confirmed) => {
     if (!confirmed) return;
     localStorage.removeItem("subscriber_dashboard_tour_completed");
     // يجب الانتقال للصفحة الرئيسية قبل بدء الشرح — عناصر الجولة موجودة فقط في /dashboard
@@ -54,8 +60,8 @@ const Header = React.memo(({ taggleSlidebarOpen, className }) => {
       }
     >
       <button
-        onClick={taggleSlidebarOpen}
-        className="inline-flex items-center justify-center p-2.5 h-9 w-9 text-cell-secondary rounded-xl md:hidden hover:bg-status-bg focus:outline-none focus:ring-2 focus:ring-primary-base"
+        onClick={handleMenuClick}
+        className="inline-flex items-center justify-center p-2.5 h-10 w-10 text-cell-secondary rounded-xl md:hidden hover:bg-status-bg focus-visible:outline-none focus:ring-2 focus:ring-primary-base"
         aria-label={t("Open menu")}
       >
         <HiOutlineMenuAlt2 size={20} />
@@ -97,6 +103,18 @@ const Header = React.memo(({ taggleSlidebarOpen, className }) => {
         {/* User Profile Section */}
         <HeaderUserMenu />
       </div>
+      <Alert
+        type="warning"
+        isOpen={isTourConfirmOpen}
+        onClose={() => setIsTourConfirmOpen(false)}
+        onSubmit={confirmTourRestart}
+        isBtns={true}
+        autoClose={false}
+        title={t("Restart guided tour?")}
+        message={t("Restart the guided tour? The page will reload.")}
+        titleSubmitBtn={t("Restart tour")}
+        titleCancelBtn={t("Cancel")}
+      />
     </div>
   );
 });
@@ -105,6 +123,7 @@ Header.displayName = "HeaderComponent"
 
 Header.propTypes = {
   taggleSlidebarOpen: PropTypes.func,
+  toggleSlidebarOpen: PropTypes.func,
   className: PropTypes.string,
 };
 

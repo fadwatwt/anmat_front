@@ -29,9 +29,26 @@ const saveCollapsedSections = (state) => {
 const sectionTourMap = {
     'Overview': 'menu-overview',
     'Work Management': 'menu-work',
-    'Team Management': 'menu-team',
-    'Reports & Analytics': 'menu-analytics',
-    'Smart Tools': 'menu-ai',
+    'Team & Communication': 'menu-team',
+    'Insights & AI': 'menu-analytics',
+    'Administration & Settings': 'menu-ai',
+};
+
+// دمج الأقسام العشرة في 5 مجموعات لتقليل الحمل المعرفي
+const SECTION_GROUP_MAP = {
+    'Overview': 'Overview',
+    'My Work': 'Work Management',
+    'Work Management': 'Work Management',
+    'Team Management': 'Team & Communication',
+    'Internal Communication': 'Team & Communication',
+    'Content Management': 'Team & Communication',
+    'Reports & Analytics': 'Insights & AI',
+    'Smart Tools': 'Insights & AI',
+    'System Administration': 'Administration & Settings',
+    'Subscriptions & Payments': 'Administration & Settings',
+    'Administration': 'Administration & Settings',
+    'Support': 'Administration & Settings',
+    'Settings': 'Administration & Settings',
 };
 
 const SectionHeader = ({ title, isCollapsed, onToggle }) => {
@@ -39,19 +56,21 @@ const SectionHeader = ({ title, isCollapsed, onToggle }) => {
     if (!title) return null;
     const tourAttr = sectionTourMap[title] ? { 'data-tour': sectionTourMap[title] } : {};
     return (
-        <div
+        <button
+            type="button"
             {...tourAttr}
             onClick={onToggle}
-            className="px-4 pt-5 pb-1 flex items-center justify-between cursor-pointer select-none group/section hover:bg-status-bg rounded-lg mx-2 transition-colors"
+            aria-expanded={!isCollapsed}
+            className="w-[calc(100%-16px)] px-4 pt-4 pb-1.5 mx-2 flex items-center justify-between cursor-pointer select-none group/section hover:bg-status-bg rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-base"
         >
-            <p className="text-[11px] font-semibold text-cell-secondary uppercase tracking-widest">
+            <span className="text-xs font-semibold text-cell-secondary">
                 {t(title)}
-            </p>
+            </span>
             <ArrowDown2
                 size={14}
                 className={`text-cell-secondary transition-transform duration-200 ${isCollapsed ? '' : 'rotate-180'}`}
             />
-        </div>
+        </button>
     );
 };
 
@@ -134,12 +153,12 @@ const Menu = React.memo(({ isSlidebarOpen, toggleSlidebarOpen }) => {
             .map(filterItem)
             .filter(Boolean);
 
-        // Group items by section
+        // Group items by consolidated section (10 raw sections -> 5 groups)
         const grouped = [];
         let currentSection = null;
 
         for (const item of filteredItems) {
-            const sectionName = item.section || '';
+            const sectionName = SECTION_GROUP_MAP[item.section] || item.section || '';
             if (sectionName !== currentSection) {
                 currentSection = sectionName;
                 grouped.push({ name: sectionName, items: [] });

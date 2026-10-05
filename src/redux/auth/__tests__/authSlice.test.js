@@ -1,3 +1,4 @@
+/* global describe, beforeEach, it, expect */
 import authReducer, {
   loginStart,
   loginSuccess,
@@ -11,6 +12,7 @@ import authReducer, {
   selectIsAuthenticated,
   selectPermissions,
 } from '../authSlice';
+import { clearToken } from '@/utils/tokenStorage';
 
 const initialState = {
   user: null,
@@ -25,7 +27,9 @@ const initialState = {
 
 describe('authSlice', () => {
   beforeEach(() => {
+    clearToken();
     localStorage.clear();
+    sessionStorage.clear();
   });
 
   it('should return initial state', () => {

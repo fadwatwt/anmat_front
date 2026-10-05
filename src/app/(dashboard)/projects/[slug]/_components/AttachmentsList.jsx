@@ -123,7 +123,7 @@ function AttachmentsList({ attachments = [], onUpload, onDelete, isUploading }) 
                 )}
 
                 {selectedFile && (
-                    <div className="flex flex-col gap-3 p-3 mt-2 border border-primary-100 bg-primary-50 dark:bg-primary-950/20 dark:border-gray-700 rounded-xl w-full">
+                    <div className="flex flex-col gap-3 p-3 mt-2 border border-status-border bg-menu-active-bg rounded-xl w-full">
                         <div className="flex justify-between items-center">
                             <span className="text-sm font-medium text-gray-700 dark:text-gray-200 truncate">
                                 {selectedFile.name}

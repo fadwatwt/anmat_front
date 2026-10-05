@@ -32,15 +32,15 @@ const StatusBadge = ({ status }) => {
             colors = "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800";
             break;
         case "Late":
-            Icon = <BsClockFill size={14} className="text-[#C2540A] dark:text-orange-400" />;
-            colors = "bg-[#FFF9F5] text-[#C2540A] border-[#FFD9C2] dark:bg-orange-900/20 dark:text-orange-300 dark:border-orange-800";
+            Icon = <BsClockFill size={14} className="text-amber-700 dark:text-orange-300" />;
+            colors = "bg-amber-50 text-amber-800 border-amber-200 dark:bg-orange-900/20 dark:text-orange-300 dark:border-orange-800";
             break;
         case "Absent":
             Icon = <BsSlashCircleFill size={14} className="text-cell-secondary" />;
             colors = "bg-status-bg text-cell-secondary border-status-border";
             break;
         default:
-            Icon = <BsClockFill size={14} className="text-[#C2540A] dark:text-orange-400" />;
+            Icon = <BsClockFill size={14} className="text-amber-700 dark:text-orange-300" />;
             colors = "bg-status-bg text-cell-secondary border-status-border dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700";
     }
 
@@ -285,8 +285,8 @@ export default function EmployeeAttendancePage() {
                 {record.end_time ? (
                     record.end_time
                 ) : (
-                    <span className="inline-flex items-center gap-1.5 text-[#C2540A] dark:text-orange-300 text-xs font-medium">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#C2540A] dark:bg-orange-400 animate-pulse" />
+                    <span className="inline-flex items-center gap-1.5 text-amber-700 dark:text-orange-300 text-xs font-medium">
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-600 dark:bg-orange-400 animate-pulse" />
                         {t("In Progress")}
                     </span>
                 )}

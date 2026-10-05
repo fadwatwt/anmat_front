@@ -27,8 +27,8 @@ function Page({
       }
     >
       {isTitle && (
-        <div className="flex justify-between items-center w-full">
-          <div className="title-page text-page-title text-start w-full py-4 text-base sm:text-lg md:text-xl">
+        <div className="flex flex-wrap justify-between items-center gap-x-4 gap-y-2 w-full">
+          <div className="title-page text-page-title text-start flex-1 min-w-0 py-4 text-base sm:text-lg md:text-xl truncate">
             {t(title)}
           </div>
 
@@ -42,10 +42,10 @@ function Page({
             <div>
               <button
                 onClick={btnOnClick}
-                className="bg-primary-base dark:bg-primary-200 flex gap-1 items-center p-[10px] rounded-[10px]"
+                className="bg-primary-base hover:bg-primary-600 flex gap-1.5 items-center px-4 py-2.5 rounded-xl text-sm font-bold text-white active:scale-[0.98] transition-all shadow-lg shadow-primary-500/20 whitespace-nowrap"
               >
-                <FiPlus className="text-white text-md dark:text-black" />
-                <span className="text-white text-sm text-nowrap dark:text-black">
+                <FiPlus className="text-white text-md" />
+                <span className="text-white text-sm text-nowrap">
                   {t(btnTitle)}
                 </span>
               </button>

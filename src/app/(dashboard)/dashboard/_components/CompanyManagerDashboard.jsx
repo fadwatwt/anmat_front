@@ -54,7 +54,7 @@ import { useGetSubscriberProjectsQuery } from "@/redux/projects/subscriberProjec
 import { useGetOrganizationLogsQuery } from "@/redux/activity-logs/activityLogsApi";
 import { useGetSubscriberAnalyticsQuery } from "@/redux/analytics/analyticsApi";
 
-const AdminDashboard = () => {
+const CompanyManagerDashboard = () => {
   const { t } = useTranslation();
   const router = useRouter();
   const [isConfirmApprovalAlert, setIsConfirmApprovalAlert] = useState(false);
@@ -243,7 +243,7 @@ const AdminDashboard = () => {
             hideSearchInput={true}
             showStatusFilter={true}
             toolbarCustomContent={
-              <button onClick={() => router.push("/projects")} className="bg-status-bg text-cell-secondary hover:bg-gray-50 px-4 py-2flex dark:text-gray-400 text-sm items-baseline p-2 gap-2 rounded-lg border border-status-border dark:border-gray-600">
+              <button onClick={() => router.push("/projects")} className="bg-status-bg text-cell-secondary hover:bg-gray-50 px-4 py-2 dark:text-gray-400 text-sm flex items-center gap-2 rounded-lg border border-status-border dark:border-gray-600">
                 {t("See All")}
               </button>
             }
@@ -281,4 +281,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default CompanyManagerDashboard;

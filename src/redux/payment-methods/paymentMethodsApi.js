@@ -18,6 +18,14 @@ export const paymentMethodsApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["PaymentMethods"],
         }),
+        createStripePaymentMethod: builder.mutation({
+            query: (body) => ({
+                url: "api/subscriber/payment-methods/stripe",
+                method: "POST",
+                body,
+            }),
+            invalidatesTags: ["PaymentMethods"],
+        }),
         setDefaultPaymentMethod: builder.mutation({
             query: (id) => ({
                 url: `api/subscriber/payment-methods/${id}/default`,
@@ -46,6 +54,7 @@ export const paymentMethodsApi = apiSlice.injectEndpoints({
 export const {
     useGetPaymentMethodsQuery,
     useCreatePaymentMethodMutation,
+    useCreateStripePaymentMethodMutation,
     useSetDefaultPaymentMethodMutation,
     useUpdatePaymentMethodMutation,
     useDeletePaymentMethodMutation,

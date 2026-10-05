@@ -2,6 +2,7 @@ import { getToken } from "@/utils/tokenStorage";
 
 import { RootRoute } from "@/Root.Route";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { applyReactionToMessagesCache } from "./reactionCache";
 
 export const conversationsAPI = createApi({
   reducerPath: "conversationsAPI",
@@ -72,7 +73,24 @@ export const conversationsAPI = createApi({
         method: "POST",
         body: { emoji },
       }),
-      invalidatesTags: ["Messages"],
+      async onQueryStarted({ messageId, emoji, chatId, userId }, { dispatch, queryFulfilled }) {
+        const optimisticUpdate = chatId
+          ? dispatch(
+              conversationsAPI.util.updateQueryData("getMessages", chatId, (draft) => {
+                applyReactionToMessagesCache(draft, { messageId, userId, emoji });
+              }),
+            )
+          : null;
+
+        try {
+          await queryFulfilled;
+        } catch {
+          optimisticUpdate?.undo();
+        }
+      },
+      invalidatesTags: (result, error, { chatId }) => (
+        chatId ? [{ type: "Messages", id: chatId }] : ["Messages"]
+      ),
     }),
     removeReaction: builder.mutation({
       query: ({ messageId, emoji }) => ({

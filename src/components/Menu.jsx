@@ -8,7 +8,6 @@ import React from "react"
 import { Setting, Edit, Share, Messages1, Profile2User, TaskSquare, NoteText, Chart2, HambergerMenu, Cpu } from 'iconsax-react';
 
 const Menu = React.memo(({ isSlidebarOpen, toggleSlidebarOpen }) => {
-    console.log("Render Menu", { isSlidebarOpen });
 
     const { t, i18n } = useTranslation()
 
@@ -66,7 +65,6 @@ const Menu = React.memo(({ isSlidebarOpen, toggleSlidebarOpen }) => {
                         <MenuItem path={"/dashboard/time-line"} icon={<Edit />} title={"Timeline"} />
                         <MenuItem path={"/dashboard/setting"} icon={<Setting />} title={"Settings"} />
                         <MenuItem path={"/ai"} icon={<Cpu />} title={"AI Assistant"} />
-                        <MenuItem path={"/dashboard/knowledge-base"} icon={<NoteText />} title={"Knowledge Base"} />
                     </div>
                 </div>
                 {/*<BriefTimeLine tweet={tweet} myAccount={myAccount}/>*/}

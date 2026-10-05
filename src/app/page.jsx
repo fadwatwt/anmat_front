@@ -17,7 +17,6 @@ import {
   RiServerLine,
 } from "@remixicon/react";
 import Collapse from "@/components/LandingPage/Collapse.jsx";
-import FloatingAiButton from "@/components/FloatingAiButton";
 import Link from "next/link";
 import { useGetPublicSubscriptionPlansQuery } from "@/redux/plans/subscriptionPlansApi";
 import { useTranslation } from "react-i18next";
@@ -31,18 +30,21 @@ function Desktop2Page() {
 
   const scrollToSection = useCallback((id) => {
     const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (!el) return;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    el.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "start" });
   }, []);
   return (
     <div
       className={
-        "flex flex-col w-full items-center max-h-screen overflow-y-auto bg-status-bg"
+        "flex h-screen flex-col w-full items-center overflow-y-auto overscroll-contain bg-status-bg"
       }
     >
       <div
         id="home"
         className={
-          "w-full flex justify-center bg-gradient-to-t to-primary-500 from-primary-900 via-primary-600 pt-5 px-4"
+          "w-full flex justify-center bg-gradient-to-b from-primary-600 via-primary-700 to-primary-900 pt-5 px-4"
         }
       >
         <div className={"flex flex-col gap-8 w-full max-w-[87rem]"}>
@@ -56,71 +58,78 @@ function Desktop2Page() {
                 />
                 <p className={"text-white font-bold"}>{t("Anmaat")}</p>
               </div>
-              <nav className={"hidden md:flex gap-6 text-white"}>
-                <button onClick={() => scrollToSection("home")} className={"list-none cursor-pointer hover:text-primary-200 transition-colors"}>{t("Home")}</button>
-                <button onClick={() => scrollToSection("features")} className={"list-none cursor-pointer hover:text-primary-200 transition-colors"}>{t("Features")}</button>
-                <button onClick={() => scrollToSection("pricing")} className={"list-none cursor-pointer hover:text-primary-200 transition-colors"}>{t("Pricing")}</button>
-                <button onClick={() => scrollToSection("faq")} className={"list-none cursor-pointer hover:text-primary-200 transition-colors"}>{t("FAQ")}</button>
+              <nav aria-label={i18n.language === "ar" ? "التنقل الرئيسي" : "Primary navigation"} className={"hidden md:flex gap-6 text-white"}>
+                <button type="button" onClick={() => scrollToSection("home")} className={"list-none cursor-pointer rounded-sm hover:text-primary-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors"}>{t("Home")}</button>
+                <button type="button" onClick={() => scrollToSection("features")} className={"list-none cursor-pointer rounded-sm hover:text-primary-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors"}>{t("Features")}</button>
+                <button type="button" onClick={() => scrollToSection("pricing")} className={"list-none cursor-pointer rounded-sm hover:text-primary-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors"}>{t("Pricing")}</button>
+                <button type="button" onClick={() => scrollToSection("faq")} className={"list-none cursor-pointer rounded-sm hover:text-primary-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors"}>{t("FAQ")}</button>
               </nav>
             </div>
             <div className={"flex items-center gap-3"}>
               <button
+                type="button"
                 onClick={() => i18n.changeLanguage(i18n.language === "ar" ? "en" : "ar")}
-                className="hidden sm:inline-flex text-white text-sm md:text-base px-2 py-1 rounded-md border border-white/30 hover:bg-surface/10 transition-colors"
+                className="hidden sm:inline-flex min-h-11 min-w-11 items-center justify-center text-white text-sm md:text-base px-2 py-1 rounded-md border border-white/30 hover:bg-surface/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors"
                 title={i18n.language === "ar" ? "English" : "العربية"}
+                aria-label={i18n.language === "ar" ? "Switch to English" : "التبديل إلى العربية"}
               >
                 {i18n.language === "ar" ? "EN" : "AR"}
               </button>
               <p className={"hidden sm:block text-white text-sm md:text-base"}>
                 {" "}
-                <Link href="sign-in"> {t("Login")}</Link>
+                <Link href="/sign-in"> {t("Login")}</Link>
               </p>
-              <Link href={"/register/subscriber/email"} className={"hidden sm:inline-flex bg-surface dark:bg-surface py-1.5 px-3 rounded-md text-sm md:text-base"}>
+              <Link href={"/register/subscriber/email"} className={"hidden sm:inline-flex bg-white text-primary-700 hover:bg-primary-50 py-1.5 px-3 rounded-md text-sm md:text-base font-semibold transition-colors"}>
                 {t("Sign up")}
               </Link>
               <button
+                type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden text-white p-1"
+                className="md:hidden inline-flex min-h-11 min-w-11 items-center justify-center rounded-md text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
                 aria-label={t("Menu")}
+                aria-expanded={mobileMenuOpen}
+                aria-controls="mobile-navigation"
               >
                 {mobileMenuOpen ? <RiCloseLine size={24} /> : <RiMenu3Line size={24} />}
               </button>
             </div>
           </div>
           {mobileMenuOpen && (
-            <div className="md:hidden flex flex-col gap-3 pb-4 text-white">
-              <button onClick={() => { scrollToSection("home"); setMobileMenuOpen(false); }} className={"text-start cursor-pointer hover:text-primary-200 transition-colors py-1"}>{t("Home")}</button>
-              <button onClick={() => { scrollToSection("features"); setMobileMenuOpen(false); }} className={"text-start cursor-pointer hover:text-primary-200 transition-colors py-1"}>{t("Features")}</button>
-              <button onClick={() => { scrollToSection("pricing"); setMobileMenuOpen(false); }} className={"text-start cursor-pointer hover:text-primary-200 transition-colors py-1"}>{t("Pricing")}</button>
-              <button onClick={() => { scrollToSection("faq"); setMobileMenuOpen(false); }} className={"text-start cursor-pointer hover:text-primary-200 transition-colors py-1"}>{t("FAQ")}</button>
+            <nav id="mobile-navigation" aria-label={i18n.language === "ar" ? "التنقل عبر الهاتف" : "Mobile navigation"} className="md:hidden flex flex-col gap-3 pb-4 text-white">
+              <button type="button" onClick={() => { scrollToSection("home"); setMobileMenuOpen(false); }} className={"min-h-11 rounded-sm text-start cursor-pointer hover:text-primary-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors py-2"}>{t("Home")}</button>
+              <button type="button" onClick={() => { scrollToSection("features"); setMobileMenuOpen(false); }} className={"min-h-11 rounded-sm text-start cursor-pointer hover:text-primary-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors py-2"}>{t("Features")}</button>
+              <button type="button" onClick={() => { scrollToSection("pricing"); setMobileMenuOpen(false); }} className={"min-h-11 rounded-sm text-start cursor-pointer hover:text-primary-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors py-2"}>{t("Pricing")}</button>
+              <button type="button" onClick={() => { scrollToSection("faq"); setMobileMenuOpen(false); }} className={"min-h-11 rounded-sm text-start cursor-pointer hover:text-primary-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors py-2"}>{t("FAQ")}</button>
               <div className="flex gap-3 pt-2 border-t border-white/20">
                 <button
+                  type="button"
                   onClick={() => i18n.changeLanguage(i18n.language === "ar" ? "en" : "ar")}
-                  className="text-white text-sm px-2 py-1 rounded-md border border-white/30 hover:bg-surface/10 transition-colors"
+                  className="inline-flex min-h-11 min-w-11 items-center justify-center text-white text-sm px-2 py-1 rounded-md border border-white/30 hover:bg-surface/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors"
+                  aria-label={i18n.language === "ar" ? "Switch to English" : "التبديل إلى العربية"}
                 >
                   {i18n.language === "ar" ? "EN" : "AR"}
                 </button>
-                <Link href="sign-in" className={"text-white py-1"}>{t("Login")}</Link>
-                <Link href={"/register/subscriber/email"} className={"bg-surface dark:bg-surface py-1.5 px-3 rounded-md text-sm"}>
+                <Link href="/sign-in" className={"text-white py-1"}>{t("Login")}</Link>
+                <Link href={"/register/subscriber/email"} className={"bg-white text-primary-700 hover:bg-primary-50 py-1.5 px-3 rounded-md text-sm font-semibold transition-colors"}>
                   {t("Sign up")}
                 </Link>
               </div>
-            </div>
+            </nav>
           )}
           <div className={"w-full flex flex-col items-center gap-3 px-4 text-center"}>
-            <p
+            <h1
               className={
-                "text-3xl sm:text-4xl md:text-5xl max-w-3xl font-bold bg-gradient-to-r from-primary-400 to-primary-400 via-primary-100 bg-clip-text text-transparent text-wrap "
+                "text-3xl sm:text-4xl md:text-5xl max-w-3xl font-bold text-white text-wrap "
               }
             >
               {t("Your Ultimate Management Dashboard")}
-            </p>
+            </h1>
             <p className={"text-primary-200 max-w-3xl text-sm sm:text-base"}>
               {t("All the tools you need for collaboration, analytics, and decision-making in one place.")}
             </p>
           </div>
           <div className={"flex justify-center items-center gap-3"}>
-            <Link href={"/register/subscriber/email"} className={"bg-surface dark:bg-surface py-2 px-4 rounded-md text-sm font-medium"}>
+            <Link href={"/register/subscriber/email"} className={"bg-white text-primary-700 hover:bg-primary-50 py-2 px-4 rounded-md text-sm font-semibold transition-colors"}>
               {t("Get started free")}
             </Link>
           </div>
@@ -458,7 +467,7 @@ function Desktop2Page() {
               <img
                 src="/images/LandingPage/arrowSwitchImage.png"
                 alt={t("arrow")}
-                className={"absolute w-[120px] md:w-[185px] h-[50px] md:h-[87px] right-[8rem] md:right-[24rem] -top-7 hidden md:block"}
+                className={"absolute w-[120px] md:w-[185px] h-[50px] md:h-[87px] end-[8rem] md:end-[24rem] -top-7 hidden md:block rtl:-scale-x-100"}
               />
             </div>
             <div className={"w-full flex justify-center items-center gap-6 flex-wrap px-4"}>
@@ -665,7 +674,7 @@ function Desktop2Page() {
           </div>
         </div>
       </div>
-      <div className={"w-full bg-gray-700"}>
+      <div className={"w-full bg-gray-900 dark:bg-black"}>
         <div className={"max-w-[87rem] mx-auto px-4 sm:px-7 py-12 sm:py-16"}>
           <div className={"grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8"}>
             <div className={"flex flex-col gap-4"}>
@@ -677,13 +686,13 @@ function Desktop2Page() {
                 {t("All the tools you need for collaboration, analytics, and decision-making in one place.")}
               </p>
               <div className={"flex items-center gap-3 mt-2"}>
-                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className={"text-gray-300 hover:text-white transition-colors"}>
+                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className={"text-gray-300 hover:text-white transition-colors"}>
                   <RiFacebookCircleFill size={"22"} />
                 </a>
-                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className={"text-gray-300 hover:text-white transition-colors"}>
+                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className={"text-gray-300 hover:text-white transition-colors"}>
                   <RiLinkedinBoxFill size={"22"} />
                 </a>
-                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className={"text-gray-300 hover:text-white transition-colors"}>
+                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" aria-label="X" className={"text-gray-300 hover:text-white transition-colors"}>
                   <RiTwitterXLine size={"22"} />
                 </a>
               </div>
@@ -719,7 +728,6 @@ function Desktop2Page() {
           </div>
         </div>
       </div>
-      <FloatingAiButton />
     </div>
   );
 }

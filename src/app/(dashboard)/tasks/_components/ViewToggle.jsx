@@ -7,28 +7,32 @@ import { RiTableLine, RiLayoutColumnLine } from "react-icons/ri";
 function ViewToggle({ activeView, onChange }) {
   const { t } = useTranslation();
 
+  const btnBase = "flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-base";
+
   return (
-    <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-1 gap-1">
+    <div className="flex items-center bg-status-bg border border-status-border rounded-xl p-1 gap-1">
       <button
         onClick={() => onChange("table")}
-        className={`flex items-center gap-1.5 px-4 py-1.5 rounded-md text-xs font-medium transition-all whitespace-nowrap ${
+        className={`${btnBase} ${
           activeView === "table"
-            ? "bg-white dark:bg-gray-700 text-primary-500 shadow-sm"
-            : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+            ? "bg-surface text-primary-600 dark:text-primary-200 shadow-sm border border-status-border"
+            : "text-cell-secondary hover:text-cell-primary border border-transparent"
         }`}
         title={t("Table View")}
+        aria-pressed={activeView === "table"}
       >
         <RiTableLine size={14} />
         <span>{t("Table")}</span>
       </button>
       <button
         onClick={() => onChange("kanban")}
-        className={`flex items-center gap-1.5 px-4 py-1.5 rounded-md text-xs font-medium transition-all whitespace-nowrap ${
+        className={`${btnBase} ${
           activeView === "kanban"
-            ? "bg-white dark:bg-gray-700 text-primary-500 shadow-sm"
-            : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+            ? "bg-surface text-primary-600 dark:text-primary-200 shadow-sm border border-status-border"
+            : "text-cell-secondary hover:text-cell-primary border border-transparent"
         }`}
         title={t("Kanban View")}
+        aria-pressed={activeView === "kanban"}
       >
         <RiLayoutColumnLine size={14} />
         <span>{t("Kanban")}</span>

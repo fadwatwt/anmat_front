@@ -77,12 +77,17 @@ html.dark {
 
 #root {
     margin: 0 auto;
-    text-align: center;
 }
 
 body {
     background-color: var(--bg-main);
     color: var(--text-primary);
+}
+
+/* NOTE: never style bare p/div globally — it kills hierarchy/contrast.
+   Muted text must opt-in via .text-muted / text-cell-secondary classes. */
+.text-muted {
+    color: var(--text-secondary);
 }
 
 html,
@@ -156,10 +161,7 @@ html.dark .chat-ui {
 .chat-ui .chat-poll-check { border-color: var(--chat-muted); }
 .chat-ui .chat-poll-check-selected { border-color: var(--chat-button); background-color: var(--chat-button) !important; color: #FFFFFF !important; }
 
-p,
-div {
-    color: var(--text-secondary);
-}
+/* Headings keep primary color by default; body text uses .text-muted opt-in */
 
 .tab-content,
 .none-scroll {
@@ -175,23 +177,37 @@ div {
 .checkbox-custom {
     appearance: none;
     /* إزالة الشكل الافتراضي للـ checkbox */
-    width: 16px;
-    /* تحديد عرض الـ checkbox */
-    height: 16px;
-    /* تحديد ارتفاع الـ checkbox */
-    padding: 8px;
-    border: 1px solid #ccc;
+    width: 20px;
+    /* حجم موحد سهل اللمس */
+    height: 20px;
+    min-width: 20px;
+    min-height: 20px;
+    padding: 0;
+    margin: 0;
+    display: inline-grid;
+    place-content: center;
+    border: 1.5px solid var(--status-border);
     /* تحديد لون الحدود */
-    border-radius: 4px;
+    border-radius: 6px;
     /* إضافة حواف دائرية */
-    background-color: #fff;
+    background-color: var(--bg-surface);
     /* لون الخلفية للـ checkbox */
     position: relative;
     /* لجعل العنصر يحتوي على المحتويات بشكل صحيح */
     cursor: pointer;
     /* تغيير شكل المؤشر عند التمرير فوق الـ checkbox */
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     /* إضافة تأثيرات عند التغيير */
+    vertical-align: middle;
+}
+
+.checkbox-custom:hover {
+    border-color: var(--color-primary);
+}
+
+.checkbox-custom:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
 }
 
 
@@ -200,13 +216,15 @@ div {
     content: '';
     /* لا شيء في البداية */
     position: absolute;
-    top: 3.20px;
-    left: 4.80px;
-    width: 6.59px;
-    height: 9.06px;
+    top: 50%;
+    left: 50%;
+    width: 6px;
+    height: 10px;
+    margin-top: -5.5px;
+    margin-left: -3px;
     border: solid white;
     /* لون الخط */
-    border-width: 0 3px 3px 0;
+    border-width: 0 2.5px 2.5px 0;
     /* تحديد شكل الـ check */
     transform: rotate(45deg);
     /* تدوير الخط ليظهر كـ check */
@@ -215,22 +233,24 @@ div {
 
 /* الوضع الداكن */
 .dark .checkbox-custom {
-    background-color: #1a202c;
+    background-color: var(--bg-surface);
     /* خلفية داكنة */
-    border-color: #4a5568;
+    border-color: var(--status-border);
     /* لون الحدود */
 }
 
 .checkbox-custom:checked {
-    background-color: #375DFB;
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
 }
 
 .dark .checkbox-custom:checked {
-    background-color: #C2D6FF;
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
 }
 
 .dark .checkbox-custom:checked::before {
-    border-color: #000;
+    border-color: #fff;
     /* لون العلامة (check) في الوضع الداكن */
 }
 
@@ -253,13 +273,13 @@ div {
 .custom-scroll {
     /* دعم Firefox */
     scrollbar-width: thin;
-    scrollbar-color: #E2E4E9 #F6F8FA;
+    scrollbar-color: var(--status-border) var(--bg-main);
 }
 
 .dark .custom-scroll {
     /* دعم Firefox */
     scrollbar-width: thin;
-    scrollbar-color: #31353F #161922;
+    scrollbar-color: var(--status-border) var(--bg-main);
 }
 
 /* دعم Chrome و Edge و Safari */
@@ -268,12 +288,16 @@ div {
 }
 
 .custom-scroll::-webkit-scrollbar-thumb {
-    background-color: #4a90e2;
+    background-color: var(--status-border);
     border-radius: 50px;
 }
 
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-primary);
+}
+
 .custom-scroll::-webkit-scrollbar-track {
-    background: #f0f0f0;
+    background: var(--bg-main);
 }
 
 /* دعم Chrome و Edge و Safari */
@@ -282,12 +306,12 @@ div {
 }
 
 .dark .custom-scroll::-webkit-scrollbar-thumb {
-    background-color: #31353F;
+    background-color: var(--status-border);
     border-radius: 4px;
 }
 
 .dark .custom-scroll::-webkit-scrollbar-track {
-    background: #161922;
+    background: var(--bg-main);
 }
 
 /* AI Assistant Sidebar Icon Styling */

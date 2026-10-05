@@ -16,6 +16,7 @@ import { RootRoute } from "@/Root.Route";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import { useIsAlertOpen } from "@/store/alertStore";
 import { usePermission } from "@/Hooks/usePermission.js";
+import PropTypes from "prop-types";
 
 const ChatDetailsModal = ({ activeChat, onClose }) => {
   const { t } = useTranslation();
@@ -38,9 +39,10 @@ const ChatDetailsModal = ({ activeChat, onClose }) => {
   const isGroup = activeChat?.is_group || activeChat?.isGroup;
 
   // participants_ids is the populated array from the API
-  const participants = Array.isArray(activeChat?.participants_ids)
-    ? activeChat.participants_ids
-    : [];
+  const participants = useMemo(
+    () => Array.isArray(activeChat?.participants_ids) ? activeChat.participants_ids : [],
+    [activeChat?.participants_ids],
+  );
 
   const currentParticipantIds = useMemo(
     () => new Set(participants.map(p => (p?._id || p)?.toString())),
@@ -98,13 +100,31 @@ const ChatDetailsModal = ({ activeChat, onClose }) => {
     }
   };
 
-  const handleExport = () => {
+  const handleExport = async () => {
     if (!canExportChat) {
       setApiResponse({ isOpen: true, status: "error", message: t("You don't have permission to export chats.") });
       return;
     }
-    const token = getToken();
-    window.open(`${RootRoute}/api/chats/${activeChat._id}/export?token=${token}`, "_blank");
+    try {
+      const token = getToken();
+      const response = await fetch(`${RootRoute}/api/chats/${activeChat._id}/export`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) throw new Error(`Export failed with status ${response.status}`);
+
+      const disposition = response.headers.get("content-disposition") || "";
+      const filename = disposition.match(/filename="?([^";]+)"?/i)?.[1] || "chat-export.zip";
+      const objectUrl = URL.createObjectURL(await response.blob());
+      const link = document.createElement("a");
+      link.href = objectUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(objectUrl);
+    } catch {
+      setApiResponse({ isOpen: true, status: "error", message: t("Failed to export chat") });
+    }
   };
 
   const handleRemoveParticipant = async (userId) => {
@@ -341,6 +361,34 @@ const ChatDetailsModal = ({ activeChat, onClose }) => {
       />
     </>
   );
+};
+
+ChatDetailsModal.propTypes = {
+  activeChat: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    is_group: PropTypes.bool,
+    isGroup: PropTypes.bool,
+    is_archived: PropTypes.bool,
+    image: PropTypes.string,
+    title: PropTypes.string,
+    participants_ids: PropTypes.arrayOf(
+      PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.shape({
+          _id: PropTypes.string,
+          name: PropTypes.string,
+          email: PropTypes.string,
+          image: PropTypes.string,
+          user: PropTypes.shape({
+            name: PropTypes.string,
+            email: PropTypes.string,
+            avatar: PropTypes.string,
+          }),
+        }),
+      ]),
+    ),
+  }).isRequired,
+  onClose: PropTypes.func.isRequired,
 };
 
 export default ChatDetailsModal;

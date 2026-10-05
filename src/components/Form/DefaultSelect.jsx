@@ -8,7 +8,7 @@ import { createPortal } from "react-dom";
 function CustomSelect({
     title,
     options,
-    onChange,
+    onChange = () => {},
     classNameContainer = "",
     classNameSelect = "",
     isOption = false,
@@ -27,7 +27,7 @@ function CustomSelect({
     const inputContainerRef = useRef(null);
     const dropdownContentRef = useRef(null);
     const [dropdownStyle, setDropdownStyle] = useState({});
-    const [dropdownHeight, setDropdownHeight] = useState(250);
+    const [, setDropdownHeight] = useState(250);
 
     // Sync internal state with prop value
     // This made the problem of navigation in Employee Dashboard

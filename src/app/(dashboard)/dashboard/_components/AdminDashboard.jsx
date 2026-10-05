@@ -260,6 +260,10 @@ const AdminDashboard = () => {
                                                 <img
                                                     src={org.logo || `https://ui-avatars.com/api/?name=${org.name}&background=random`}
                                                     alt={org.name}
+                                                    onError={(event) => {
+                                                        event.currentTarget.onerror = null;
+                                                        event.currentTarget.src = "/images/userProfile.png";
+                                                    }}
                                                     className="w-full h-full object-cover"
                                                 />
                                             </div>

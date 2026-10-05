@@ -1,180 +1,154 @@
-"use client"
+"use client";
 
-import { useState } from "react";
-import { useFormik } from "formik";
-import * as Yup from "yup";
+import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import Modal from "@/components/Modal/Modal.jsx";
-import InputAndLabel from "@/components/Form/InputAndLabel.jsx";
-import MonthInput from "@/components/Form/MonthInput";
+import { Elements, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
+import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
-import { useCreatePaymentMethodMutation } from "@/redux/payment-methods/paymentMethodsApi";
+import Modal from "@/components/Modal/Modal.jsx";
+import DefaultButton from "@/components/Form/DefaultButton.jsx";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
+import { selectAuth } from "@/redux/auth/authSlice";
+import { useCreateStripePaymentMethodMutation } from "@/redux/payment-methods/paymentMethodsApi";
+import { RootRoute } from "@/Root.Route";
+import getStripe from "@/lib/stripe-client";
 
-const detectCardBrand = (number) => {
-  const num = number?.replace(/\s/g, "") || "";
-  if (/^4/.test(num)) return "Visa";
-  if (/^5[1-5]/.test(num) || /^2[2-7]/.test(num)) return "Mastercard";
-  if (/^3[47]/.test(num)) return "Amex";
-  if (/^6(?:011|5)/.test(num)) return "Discover";
-  return "Card";
+function SecureCardForm({ onClose, onResult }) {
+  const { t } = useTranslation();
+  const stripe = useStripe();
+  const elements = useElements();
+  const [createStripePaymentMethod] = useCreateStripePaymentMethodMutation();
+  const [isDefault, setIsDefault] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [elementReady, setElementReady] = useState(false);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (!stripe || !elements || isSaving) return;
+    setIsSaving(true);
+
+    try {
+      const { error, setupIntent } = await stripe.confirmSetup({
+        elements,
+        redirect: "if_required",
+        confirmParams: { return_url: window.location.href },
+      });
+      if (error) throw new Error(error.message || t("Failed to add payment method"));
+      if (setupIntent?.status !== "succeeded" || !setupIntent.payment_method) {
+        throw new Error(t("Payment method verification was not completed."));
+      }
+
+      await createStripePaymentMethod({
+        stripe_payment_method_id: setupIntent.payment_method,
+        is_default: isDefault,
+      }).unwrap();
+
+      onClose();
+      onResult("success", t("Payment method added successfully"));
+    } catch (error) {
+      onResult("error", error?.data?.message || error?.message || t("Failed to add payment method"));
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+      {!elementReady && <div className="h-24 animate-pulse rounded-xl bg-status-bg" />}
+      <div className={elementReady ? "block" : "h-0 overflow-hidden"}>
+        <PaymentElement onReady={() => setElementReady(true)} options={{ layout: "tabs" }} />
+      </div>
+
+      <label className="flex items-start gap-2 text-sm text-cell-primary">
+        <input
+          type="checkbox"
+          className="mt-1"
+          checked={isDefault}
+          onChange={(event) => setIsDefault(event.target.checked)}
+        />
+        <span>
+          <span className="block">{t("Save this method as default")}</span>
+          <span className="block text-cell-secondary">
+            {t("It will save your payment method as the default option.")}
+          </span>
+        </span>
+      </label>
+
+      <div className="flex gap-3 border-t border-status-border pt-4">
+        <DefaultButton type="button" title={t("Cancel")} onClick={onClose} variant="secondary" className="flex-1" />
+        <DefaultButton
+          type="submit"
+          title={isSaving ? t("Saving...") : t("Save")}
+          disabled={!stripe || !elements || !elementReady || isSaving}
+          variant="primary"
+          className="flex-1"
+        />
+      </div>
+    </form>
+  );
+}
+
+SecureCardForm.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  onResult: PropTypes.func.isRequired,
 };
 
 function AddNewPaymentModal({ isOpen, onClose }) {
   const { t } = useTranslation();
-  const [createPaymentMethod, { isLoading }] = useCreatePaymentMethodMutation();
+  const { token } = useSelector(selectAuth);
+  const [clientSecret, setClientSecret] = useState("");
+  const [isInitializing, setIsInitializing] = useState(false);
   const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
-  const formik = useFormik({
-    initialValues: {
-      nameOnCard: "",
-      cardNumber: "",
-      expirationDate: "",
-      cvv: "",
-      isDefault: false,
-    },
-    validationSchema: Yup.object({
-      nameOnCard: Yup.string().required(t("Required")),
-      cardNumber: Yup.string()
-        .required(t("Required"))
-        .matches(/^\d{13,19}$/, t("Invalid card number")),
-      expirationDate: Yup.string()
-        .required(t("Required"))
-        .matches(/^\d{4}-\d{2}$/, t("Invalid expiration date")),
-      cvv: Yup.string()
-        .required(t("Required"))
-        .matches(/^\d{3,4}$/, t("Invalid CVV")),
-    }),
-    onSubmit: async (values, { resetForm }) => {
-      try {
-        const [expYear, expMonth] = values.expirationDate.split("-");
-        const last4 = values.cardNumber.slice(-4);
-        const brand = detectCardBrand(values.cardNumber);
+  useEffect(() => {
+    if (!isOpen || !token) return;
+    const controller = new AbortController();
+    setClientSecret("");
+    setIsInitializing(true);
 
-        const body = {
-          type: "CARD",
-          is_default: values.isDefault,
-          attributes: [
-            { key: "name", value: values.nameOnCard },
-            { key: "last4", value: last4 },
-            { key: "brand", value: brand },
-            { key: "exp_month", value: expMonth },
-            { key: "exp_year", value: expYear },
-          ],
-        };
+    fetch(`${RootRoute}/api/subscriptions/subscriber/create-setup-intent`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      signal: controller.signal,
+    })
+      .then(async (response) => {
+        const result = await response.json();
+        if (!response.ok || !result?.data?.clientSecret) {
+          throw new Error(result?.message || t("Failed to initialize secure checkout."));
+        }
+        setClientSecret(result.data.clientSecret);
+      })
+      .catch((error) => {
+        if (error.name !== "AbortError") {
+          setApiResponse({ isOpen: true, status: "error", message: error.message || t("Failed to initialize secure checkout.") });
+        }
+      })
+      .finally(() => setIsInitializing(false));
 
-        await createPaymentMethod(body).unwrap();
-        resetForm();
-        setApiResponse({ isOpen: true, status: "success", message: t("Payment method added successfully") });
-        onClose();
-      } catch (error) {
-        setApiResponse({
-          isOpen: true,
-          status: "error",
-          message: error?.data?.message || t("Failed to add payment method"),
-        });
-      }
-    },
-  });
+    return () => controller.abort();
+  }, [isOpen, token, t]);
 
   return (
     <>
       <Modal
         isOpen={isOpen}
         onClose={onClose}
-        isBtns={true}
-        btnApplyTitle={isLoading ? t("Saving...") : t("Save")}
-        onClick={formik.handleSubmit}
-        className={"lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12 p-4"}
+        isBtns={false}
+        className="lg:w-5/12 md:w-8/12 w-11/12 p-0"
         title={t("Add New Payment Method")}
       >
-        <div className="px-1">
-          <div className="flex flex-col gap-4">
-            <InputAndLabel
-              title={t("Name on Card")}
-              name="nameOnCard"
-              value={formik.values.nameOnCard}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              placeholder={t("Enter Name on Card...")}
-              error={
-                formik.touched.nameOnCard && formik.errors.nameOnCard
-                  ? formik.errors.nameOnCard
-                  : ""
-              }
-              isRequired={true}
+        {isInitializing && <div className="h-32 animate-pulse rounded-xl bg-status-bg" />}
+        {!isInitializing && clientSecret && (
+          <Elements
+            stripe={getStripe()}
+            options={{ clientSecret, appearance: { theme: "stripe", variables: { colorPrimary: "#0066FF" } } }}
+          >
+            <SecureCardForm
+              onClose={onClose}
+              onResult={(status, message) => setApiResponse({ isOpen: true, status, message })}
             />
-
-            <InputAndLabel
-              title={t("Card Number")}
-              name="cardNumber"
-              value={formik.values.cardNumber}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              placeholder={t("Enter Card Number...")}
-              error={
-                formik.touched.cardNumber && formik.errors.cardNumber
-                  ? formik.errors.cardNumber
-                  : ""
-              }
-              isRequired={true}
-            />
-
-            <div className="flex items-start gap-4 justify-between">
-              <div className="w-full md:w-1/2">
-                <MonthInput
-                  title={t("Expiration Date")}
-                  name="expirationDate"
-                  value={formik.values.expirationDate}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  placeholder={t("Enter Expiration Date...")}
-                  error={
-                    formik.touched.expirationDate && formik.errors.expirationDate
-                      ? formik.errors.expirationDate
-                      : ""
-                  }
-                  isRequired={true}
-                />
-              </div>
-
-              <div className="w-full md:w-1/2">
-                <InputAndLabel
-                  title={t("CVV")}
-                  name="cvv"
-                  value={formik.values.cvv}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  placeholder={t("Enter CVV...")}
-                  error={
-                    formik.touched.cvv && formik.errors.cvv
-                      ? formik.errors.cvv
-                      : ""
-                  }
-                  isRequired={true}
-                />
-              </div>
-            </div>
-
-            <div className="flex gap-2 items-start">
-              <input
-                type="checkbox"
-                className="mt-1"
-                checked={formik.values.isDefault}
-                onChange={(e) => formik.setFieldValue("isDefault", e.target.checked)}
-              />
-              <div className="flex flex-col gap-0">
-                <span className="text-sm text-gray-700 dark:text-gray-200">
-                  {t("Save this method as default")}
-                </span>
-                <span className="text-sm text-gray-500 dark:text-gray-400">
-                  {t("It will save your payment method as the default option.")}
-                </span>
-              </div>
-            </div>
-
-          </div>
-        </div>
+          </Elements>
+        )}
       </Modal>
 
       <ApiResponseAlert

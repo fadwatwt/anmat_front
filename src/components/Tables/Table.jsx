@@ -1,7 +1,7 @@
 import { getToken } from "@/utils/tokenStorage";
 
 import PropTypes from "prop-types";
-import { isValidElement, useState, useRef } from "react";
+import { Children, isValidElement, useState, useRef } from "react";
 import { createPortal } from "react-dom";
 import {
     MdOutlineKeyboardArrowLeft,
@@ -292,6 +292,23 @@ function Table({
     const startIndex = (currentPage - 1) * rowsPerPage;
     // Page slice over the filtered set; each item carries its original index.
     const currentItems = filtered.slice(startIndex, startIndex + rowsPerPage);
+    const isRTL = i18n?.language === "ar";
+    const isEmpty = filtered.length === 0;
+
+    // A row has actions only when customActions returns real content.
+    // Some pages return an empty <div/> when the user has no permission —
+    // in that case the 3-dots button must be hidden entirely.
+    const hasRowActions = (rowActions) => {
+        if (!rowActions) return false;
+        if (Array.isArray(rowActions)) return rowActions.some(hasRowActions);
+        if (!isValidElement(rowActions)) return true;
+        const kids = Children.toArray(rowActions.props?.children).filter((c) => {
+            if (c === null || c === undefined || c === false) return false;
+            if (typeof c === "string") return c.trim() !== "";
+            return true;
+        });
+        return kids.length > 0;
+    };
 
     const escapeCsv = (value) => {
         const text = String(value ?? "").replace(/"/g, '""');
@@ -588,28 +605,50 @@ function Table({
             )}
 
             <div className={"flex flex-col gap-5 justify-center bg-surface w-full text-cell-primary"}>
-                <div className="w-full overflow-x-auto">
+                {isEmpty ? (
+                    <div className="flex flex-col items-center justify-center gap-3 py-14 px-6 text-center">
+                        <div className="w-14 h-14 rounded-2xl bg-status-bg border border-status-border flex items-center justify-center text-2xl" aria-hidden="true">
+                            📭
+                        </div>
+                        <p className="text-table-title font-semibold">{t("No results found")}</p>
+                        <p className="text-sm text-cell-secondary max-w-sm">
+                            {normalizedQuery || activeStatus
+                                ? t("Try adjusting your search or filters.")
+                                : t("There is no data to display yet.")}
+                        </p>
+                        {(normalizedQuery || activeStatus) && (
+                            <button
+                                type="button"
+                                onClick={() => { setSearchQuery(""); setInternalStatus(""); setCurrentPage(1); }}
+                                className="mt-1 px-4 py-2 text-sm font-semibold rounded-xl border border-status-border hover:bg-status-bg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-base"
+                            >
+                                {t("Clear search and filters")}
+                            </button>
+                        )}
+                    </div>
+                ) : (
+                <>
+                <div className="w-full overflow-x-auto custom-scroll">
                     <table className={"relative table-auto w-full " + className} style={{ borderSpacing: "0 1px" }}>
                         <thead>
                             <tr className="bg-status-bg">
                                 {isCheckInput && (
-                                    <th className="px-1 pt-1 w-5 text-sm rounded-tl-lg rounded-bl-lg">
+                                    <th className="px-3 py-3 w-10 text-sm rounded-s-lg">
                                         <input
                                             className="checkbox-custom"
                                             type="checkbox"
                                             checked={isAllSelected}
                                             onChange={handleHeaderCheckboxChange}
+                                            aria-label={t("Select all")}
                                         />
                                     </th>
                                 )}
                                 {headers?.map((header, index) => (
                                     header && <th
                                         key={index}
-                                        className="p-2 md:p-4 text-start text-sm font-bold text-cell-primary whitespace-nowrap"
+                                        className={`p-2 md:p-4 text-start text-sm font-bold text-cell-primary whitespace-nowrap ${index === headers.length - 1 ? "rounded-e-lg" : ""}`}
                                         style={{
                                             width: header.width || "auto",
-                                            borderTopRightRadius: index === headers.length - 1 ? "8px" : "0px",
-                                            borderBottomRightRadius: index === headers.length - 1 ? "8px" : "0px",
                                         }}
                                     >
                                         {typeof header.label === "string" ? t(header.label) : header.label}
@@ -636,19 +675,20 @@ function Table({
                                         }}
                                     >
                                         {isCheckInput && (
-                                            <td className="px- py-6 text-sm text-center" style={{ borderBottomLeftRadius: "8px" }}>
+                                            <td className="px-3 py-3 text-sm text-center">
                                                 <input
                                                     className={"checkbox-custom"}
                                                     type="checkbox"
                                                     checked={selectedRows.includes(actualRowIndex)}
                                                     onChange={() => handleRowCheckboxChange(actualRowIndex)}
+                                                    aria-label={t("Select row")}
                                                 />
                                             </td>
                                         )}
                                         {row.map((cell, cellIndex) => (
                                             cell && <td
                                                 key={cellIndex}
-                                                className={"text-sm text-start whitespace-nowrap text-cell-primary " + (classNameCell ? classNameCell : "px-4 py-4 md:py-6")}
+                                                className={"text-sm text-start text-cell-primary min-w-[100px] " + (classNameCell ? classNameCell : "px-4 py-3")}
                                                 style={{ borderBottomRightRadius: cellIndex === row.length - 1 ? "8px" : "" }}
                                             >
                                                 {cell}
@@ -656,13 +696,17 @@ function Table({
                                         ))}
                                         {(isActions || customActions) && (() => {
                                             const rowActions = typeof customActions === "function" ? customActions(actualRowIndex) : customActions;
-                                            if (!isActions && !rowActions) return null;
+                                            if (!isActions && !hasRowActions(rowActions)) return null;
                                             return (
-                                                <td className={"dropdown-container px-2 py-4 text-sm md:py-6"}>
-                                                    <PiDotsThreeVerticalBold
-                                                        className="cursor-pointer"
+                                                <td className={"dropdown-container px-2 py-3 text-sm"}>
+                                                    <button
+                                                        type="button"
+                                                        aria-label={t("Row actions")}
                                                         onClick={(e) => handleDropdownToggle(actualRowIndex, e)}
-                                                    />
+                                                        className="p-1.5 rounded-lg text-cell-secondary hover:bg-status-bg hover:text-cell-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-base"
+                                                    >
+                                                        <PiDotsThreeVerticalBold className="pointer-events-none" />
+                                                    </button>
                                                     {dropdownOpen === actualRowIndex && createPortal(
                                                         <div
                                                             onClick={() => setDropdownOpen(null)}
@@ -699,14 +743,18 @@ function Table({
                     </table>
                 </div>
 
-                <div className={"pagination flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t"}>
-                    <p className={"text-sm order-2 sm:order-1"}>
+                <div className={"pagination flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-status-border"}>
+                    <p className={"text-sm text-cell-secondary order-2 sm:order-1"}>
                         {t("Page")} {currentPage} {t("of")} {totalPages}
                     </p>
                     <div className={"flex flex-wrap gap-3 sm:gap-5 items-center justify-center order-1 sm:order-2"}>
-                        <div className="flex gap-2 items-center">
-                            <MdOutlineKeyboardDoubleArrowLeft onClick={() => handlePageChange(1)} className="cursor-pointer text-cell-secondary hover:text-primary-base transition-colors" />
-                            <MdOutlineKeyboardArrowLeft onClick={() => handlePageChange(currentPage - 1)} className="cursor-pointer text-cell-secondary hover:text-primary-base transition-colors" />
+                        <div className="flex gap-1 items-center" role="group" aria-label={t("Pagination")}>
+                            <button type="button" onClick={() => handlePageChange(1)} disabled={currentPage === 1} aria-label={t("First page")} className="p-1.5 rounded-lg text-cell-secondary hover:text-primary-base hover:bg-status-bg transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-base">
+                                {isRTL ? <MdOutlineKeyboardDoubleArrowRight size={20} /> : <MdOutlineKeyboardDoubleArrowLeft size={20} />}
+                            </button>
+                            <button type="button" onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} aria-label={t("Previous page")} className="p-1.5 rounded-lg text-cell-secondary hover:text-primary-base hover:bg-status-bg transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-base">
+                                {isRTL ? <MdOutlineKeyboardArrowRight size={20} /> : <MdOutlineKeyboardArrowLeft size={20} />}
+                            </button>
                         </div>
                         <div className={"flex pages-numbers gap-1 text-sm"}>
                             {Array.from({ length: totalPages }).map((_, index) => {
@@ -726,9 +774,13 @@ function Table({
                                 );
                             })}
                         </div>
-                        <div className="flex gap-2 items-center">
-                            <MdOutlineKeyboardArrowRight onClick={() => handlePageChange(currentPage + 1)} className="cursor-pointer text-cell-secondary hover:text-primary-base transition-colors" />
-                            <MdOutlineKeyboardDoubleArrowRight onClick={() => handlePageChange(totalPages)} className="cursor-pointer text-cell-secondary hover:text-primary-base transition-colors" />
+                        <div className="flex gap-1 items-center">
+                            <button type="button" onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} aria-label={t("Next page")} className="p-1.5 rounded-lg text-cell-secondary hover:text-primary-base hover:bg-status-bg transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-base">
+                                {isRTL ? <MdOutlineKeyboardArrowLeft size={20} /> : <MdOutlineKeyboardArrowRight size={20} />}
+                            </button>
+                            <button type="button" onClick={() => handlePageChange(totalPages)} disabled={currentPage === totalPages} aria-label={t("Last page")} className="p-1.5 rounded-lg text-cell-secondary hover:text-primary-base hover:bg-status-bg transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-base">
+                                {isRTL ? <MdOutlineKeyboardDoubleArrowLeft size={20} /> : <MdOutlineKeyboardDoubleArrowRight size={20} />}
+                            </button>
                         </div>
                     </div>
                     <div className={"flex rounded-lg border border-status-border text-cell-secondary px-2 py-1 items-center order-3"}>
@@ -741,6 +793,8 @@ function Table({
                         </select>
                     </div>
                 </div>
+                </>
+                )}
             </div>
         </div >
     );

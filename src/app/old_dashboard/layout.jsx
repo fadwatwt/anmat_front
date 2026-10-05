@@ -23,7 +23,6 @@ const MainLayout = ({ children }) => {
 
     useDarkMode();
 
-    console.log("Render MainLayout");
 
 
     const toggleSlidebarOpen = () => setSlidebarOpen(!isSlidebarOpen);

@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import PropTypes from "prop-types";
@@ -194,7 +194,7 @@ function EditPlanModal({ isOpen, onClose, plan }) {
       className={"lg:w-5/12 md:w-8/12 sm:w-10/12 w-11/12"}
       title={t("Edit Plan")}
     >
-      <div className="flex flex-col gap-4 max-h-[70vh] overflow-y-auto custom-scrollbar">
+      <div className="flex flex-col gap-4">
         {/* Warning Banner */}
         <div className="mx-4 p-3 bg-blue-50 border border-blue-100 rounded-xl flex items-start gap-3 dark:bg-blue-900/20 dark:border-blue-800">
             <RiInformationLine size={20} className="text-blue-500 shrink-0 mt-0.5" />

@@ -180,7 +180,7 @@ const MessageInput = ({ onSendMessage, onTyping, editMessageData, onCancelEdit, 
           type="button"
           title={t("Attach file")}
           onClick={() => fileInputRef.current?.click()}
-          className={`p-2 transition-colors rounded-full ${selectedFile ? 'text-primary-500 dark:text-primary-400 bg-primary-50 dark:bg-primary-950/20' : 'text-sub-500 hover:bg-weak-100'}`}
+          className={`p-2 transition-colors rounded-full ${selectedFile ? 'text-menu-active-text bg-menu-active-bg' : 'text-sub-500 hover:bg-weak-100'}`}
         >
           <Paperclip size={20} />
         </button>}

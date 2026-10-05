@@ -8,6 +8,7 @@ import Table from "@/components/Tables/Table";
 import EmployeeRequests from "@/app/(dashboard)/dashboard/_components/employee/EmployeeRequests";
 import { useGetEmployeeTaskStatisticsStatusQuery, useGetEmployeeTasksQuery } from "@/redux/tasks/employeeTasksApi";
 import { useGetEmployeeDashboardLogsQuery } from "@/redux/activity-logs/activityLogsApi";
+import { useGetEmployeeAnalyticsQuery } from "@/redux/analytics/analyticsApi";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
@@ -19,6 +20,8 @@ const EmployeeDashboard = () => {
     const { data: statsData } = useGetEmployeeTaskStatisticsStatusQuery();
     const { data: tasks = [], isLoading: isTasksLoading } = useGetEmployeeTasksQuery();
     const { data: logsData, isLoading: isLogsLoading } = useGetEmployeeDashboardLogsQuery({ limit: 10 });
+    const { data: analyticsResponse } = useGetEmployeeAnalyticsQuery({ section: "tasks" });
+    const analyticsData = analyticsResponse?.data || analyticsResponse || {};
 
     const statusColorMap = {
         open: "#375DFB", // Blue
@@ -66,6 +69,10 @@ const EmployeeDashboard = () => {
                 src={task.assignee?.imageProfile || `https://ui-avatars.com/api/?name=${encodeURIComponent(task.assignee?.name || "U")}`}
                 loading="lazy"
                 alt="assignee"
+                onError={(event) => {
+                    event.currentTarget.onerror = null;
+                    event.currentTarget.src = "/images/userProfile.png";
+                }}
                 className="w-6 h-6 rounded-full border-2 border-status-border"
             />
         </div>,
@@ -86,7 +93,7 @@ const EmployeeDashboard = () => {
                         <TasksSummaryChart data={chartData} />
                     </div>
                     <div className="w-full md:w-1/2">
-                        <TasksPerformanceChart />
+                        <TasksPerformanceChart monthlyData={analyticsData.tasksPerformanceMonthly || []} />
                     </div>
                 </div>
                 <div className="flex flex-col md:flex-row items-stretch gap-4 justify-between w-full">
