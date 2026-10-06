@@ -1,5 +1,6 @@
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import { buildStyledAnalyticsXlsx } from './styledAnalyticsXlsx';
 
 const HEADERS = ['Section', 'Card', 'Label', 'Value 1', 'Value 2'];
 
@@ -63,14 +64,8 @@ export const exportCsv = (headers, rows, fileName = 'report') => {
   downloadBlob(new Blob([csv], { type: 'text/csv;charset=utf-8;' }), `${fileName}.csv`);
 };
 
-export const exportXlsx = async (headers, rows, fileName = 'report') => {
-  const XLSX = await import('xlsx');
-  const data = [headers, ...rows];
-  const ws = XLSX.utils.aoa_to_sheet(data);
-  ws['!cols'] = headers.map(() => ({ wch: 25 }));
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-  const buffer = XLSX.write(wb, { type: 'array', bookType: 'xlsx' });
+export const exportXlsx = async (headers, rows, fileName = 'report', locale = 'ar') => {
+  const buffer = buildStyledAnalyticsXlsx(rows, fileName, new Date(), locale);
   downloadBlob(new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), `${fileName}.xlsx`);
 };
 

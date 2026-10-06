@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
@@ -41,7 +41,6 @@ AssigneeAvatar.propTypes = {
 // Dynamic imports
 const Table = dynamic(() => import("@/components/Tables/Table"), { ssr: false });
 const ActivityLogs = dynamic(() => import("@/components/ActivityLogs"), { ssr: false });
-const Alert = dynamic(() => import("@/components/Alerts/Alert"), { ssr: false });
 import Page from "@/components/Page";
 import AnalyticsCard from "../../analytics/_components/AnalyticsCard";
 import DynamicDoughnut from "../../analytics/_components/charts/SummaryDoughnut.";
@@ -53,18 +52,48 @@ import { useGetSubscriberTaskStatisticsStatusQuery } from "@/redux/tasks/subscri
 import { useGetSubscriberProjectsQuery } from "@/redux/projects/subscriberProjectsApi";
 import { useGetOrganizationLogsQuery } from "@/redux/activity-logs/activityLogsApi";
 import { useGetSubscriberAnalyticsQuery } from "@/redux/analytics/analyticsApi";
+import { format } from "date-fns";
+import { getDateLocale } from "@/lib/dateLocale";
+import {
+  RiAlarmWarningLine,
+  RiCheckboxCircleLine,
+  RiFolderChartLine,
+  RiPlayCircleLine,
+} from "@remixicon/react";
+import DashboardErrorBanner from "./DashboardErrorBanner";
+
+function SummaryCard({ title, value, icon: Icon, color }) {
+  return (
+    <div className="bg-surface p-5 rounded-[24px] border border-status-border shadow-sm flex items-center justify-between">
+      <div className="flex flex-col gap-1">
+        <span className="text-sm font-medium text-cell-secondary">{title}</span>
+        <span className="text-2xl font-bold text-table-title">{value}</span>
+      </div>
+      <div className={`p-3 rounded-2xl ${color} bg-opacity-10 dark:bg-opacity-20`}>
+        <Icon size={24} className={color.replace("bg-", "text-")} />
+      </div>
+    </div>
+  );
+}
+
+SummaryCard.propTypes = {
+  title: PropTypes.string.isRequired,
+  value: PropTypes.number.isRequired,
+  icon: PropTypes.elementType.isRequired,
+  color: PropTypes.string.isRequired,
+};
 
 const CompanyManagerDashboard = () => {
   const { t } = useTranslation();
   const router = useRouter();
-  const [isConfirmApprovalAlert, setIsConfirmApprovalAlert] = useState(false);
 
-  const { data: statsData, isLoading: isStatsLoading } = useGetSubscriberTaskStatisticsStatusQuery();
-  const { data: projects = [], isLoading: isProjectsLoading } = useGetSubscriberProjectsQuery();
-  const { data: departments = [], isLoading: isDepartmentsLoading } = useGetDepartmentsQuery();
-  const { data: analyticsData, isLoading: isAnalyticsLoading } = useGetSubscriberAnalyticsQuery({});
+  const { data: statsData, isLoading: isStatsLoading, isError: isStatsError, refetch: refetchStats } = useGetSubscriberTaskStatisticsStatusQuery();
+  const { data: projects = [], isLoading: isProjectsLoading, isError: isProjectsError, refetch: refetchProjects } = useGetSubscriberProjectsQuery();
+  const { data: departments = [], isLoading: isDepartmentsLoading, isError: isDepartmentsError, refetch: refetchDepartments } = useGetDepartmentsQuery();
+  const { data: analyticsData, isLoading: isAnalyticsLoading, isError: isAnalyticsError, refetch: refetchAnalytics } = useGetSubscriberAnalyticsQuery({});
 
   const isPageLoading = isStatsLoading || isProjectsLoading || isDepartmentsLoading;
+  const hasLoadError = isStatsError || isProjectsError || isDepartmentsError || isAnalyticsError;
 
   const statusColorMap = {
     active: "#375DFB", // Blue
@@ -137,15 +166,18 @@ const CompanyManagerDashboard = () => {
     name: dept.name,
     rate: parseFloat(((dept.overall_rating ?? dept.rate ?? 0)).toFixed(2))
   }));
+  const taskStatusCounts = statsData?.data?.status_counts || {};
+  const completedTasks = ["completed", "done", "completed_before_due_date", "late_completed"]
+    .reduce((total, status) => total + (Number(taskStatusCounts[status]) || 0), 0);
+  const overdueTasks = Number(taskStatusCounts.overdue) || 0;
+  const activeProjects = projects.filter(project => ["active", "in_progress", "in-progress", "open"].includes(project.status)).length;
 
-  useEffect(() => {
-    // const storedTheme = typeof window !== "undefined" && localStorage.getItem("theme");
-    // if (storedTheme) setTheme(storedTheme);
-  }, []);
-
-  const handelConfirmApprovalAlert = useCallback(() => {
-    setIsConfirmApprovalAlert((prev) => !prev);
-  }, []);
+  const retryDashboard = () => {
+    if (isStatsError) refetchStats();
+    if (isProjectsError) refetchProjects();
+    if (isDepartmentsError) refetchDepartments();
+    if (isAnalyticsError) refetchAnalytics();
+  };
 
   const { data: orgLogsData, isLoading: isLogsLoading } = useGetOrganizationLogsQuery({ limit: 10 });
   const rawLogs = orgLogsData?.data || [];
@@ -189,13 +221,22 @@ const CompanyManagerDashboard = () => {
           <span className="text-cell-secondary text-xs italic">{t("No Assignees")}</span>
         )}
       </div>,
-      project.due_date ? new Date(project.due_date).toLocaleDateString() : t("No Date"),
+      project.due_date ? format(new Date(project.due_date), "dd MMM, yyyy", { locale: getDateLocale() }) : t("No Date"),
     ];
   });
 
   return (
     <Page isTitle={false}>
       <ProcessingOverlay isOpen={isPageLoading} message={t("Loading Dashboard...")} />
+      {hasLoadError && <DashboardErrorBanner onRetry={retryDashboard} />}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 w-full">
+        <SummaryCard title={t("Total Projects")} value={projects.length} icon={RiFolderChartLine} color="bg-blue-500" />
+        <SummaryCard title={t("Active Projects")} value={activeProjects} icon={RiPlayCircleLine} color="bg-purple-500" />
+        <SummaryCard title={t("Completed Tasks")} value={completedTasks} icon={RiCheckboxCircleLine} color="bg-green-500" />
+        <SummaryCard title={t("Overdue Tasks")} value={overdueTasks} icon={RiAlarmWarningLine} color="bg-red-500" />
+      </div>
+
       <div className="flex flex-col md:flex-row items-stretch gap-4 justify-between w-full">
         {/* Tasks Summary Card */}
         <div data-tour="tasks-summary" className="w-full md:w-1/2">
@@ -242,6 +283,11 @@ const CompanyManagerDashboard = () => {
             classContainer={"h-full"}
             hideSearchInput={true}
             showStatusFilter={true}
+            isLoading={isProjectsLoading}
+            onRowClick={(index) => {
+              const projectId = projects[index]?._id;
+              if (projectId) router.push(`/projects/${projectId}/details`);
+            }}
             toolbarCustomContent={
               <button onClick={() => router.push("/projects")} className="bg-status-bg text-cell-secondary hover:bg-gray-50 px-4 py-2 dark:text-gray-400 text-sm flex items-center gap-2 rounded-lg border border-status-border dark:border-gray-600">
                 {t("See All")}
@@ -265,18 +311,6 @@ const CompanyManagerDashboard = () => {
       <div data-tour="requests" className="">
         <EmployeeRequests />
       </div>
-
-      <Alert
-        title={t("Confirm Approval")}
-        message={t("Are you sure you want to approve this leave request for [Employee Name]? This action cannot be undone.")}
-        isOpen={isConfirmApprovalAlert}
-        onClose={handelConfirmApprovalAlert}
-        type={"warning"}
-        isBtns={"true"}
-        onSubmit={() => { }}
-        titleSubmitBtn={t("Approve")}
-        titleCancelBtn={t("Cancel")}
-      />
     </Page>
   );
 };

@@ -49,7 +49,7 @@ const sliceMonthly = (arr, timeRange) => {
 };
 
 function CompanyManagerAnalytics() {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     // --- Global filters (triggers API) ---
     const [sectionFilter, setSectionFilter] = useState("");
@@ -95,7 +95,7 @@ function CompanyManagerAnalytics() {
         if (format === 'csv') {
             exportCsv(headers, rows, fileName);
         } else if (format === 'xlsx') {
-            await exportXlsx(headers, rows, fileName);
+            await exportXlsx(headers, rows, fileName, i18n.resolvedLanguage || i18n.language);
         } else if (format === 'pdf') {
             const sections = contentRef.current?.querySelectorAll(':scope > section');
             if (sections?.length) {

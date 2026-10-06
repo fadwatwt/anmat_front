@@ -18,6 +18,7 @@ import { useGetOrganizationsQuery } from "@/redux/organizations/organizationsApi
 import { useGetAdminAnalyticsQuery } from "@/redux/analytics/analyticsApi";
 import { statusCell } from "@/components/StatusCell";
 import { usePermission } from "@/Hooks/usePermission";
+import DashboardErrorBanner from "./DashboardErrorBanner";
 import {
     RiBuilding2Line,
     RiProjector2Line,
@@ -73,16 +74,16 @@ const AdminDashboard = () => {
     const canViewSubscribers = usePermission('admin.subscribers.list');
     const canViewIndustries = usePermission('admin.industries.list');
 
-    const { data: adminStats, isLoading: statsLoading } = useGetAdminAnalyticsQuery({ locale: i18n.language }, {
+    const { data: adminStats, isLoading: statsLoading, isError: statsError, refetch: refetchStats } = useGetAdminAnalyticsQuery({ locale: i18n.language }, {
         skip: !canViewAnalytics,
     });
-    const { data: subscriptions, isLoading: subsLoading } = useGetSubscriptionsBasicDetailsQuery(undefined, {
+    const { data: subscriptions, isLoading: subsLoading, isError: subsError, refetch: refetchSubscriptions } = useGetSubscriptionsBasicDetailsQuery(undefined, {
         skip: !canViewSubscribers,
     });
-    const { data: industriesResponse } = useGetIndustriesQuery(i18n.language, {
+    const { data: industriesResponse, isError: industriesError, refetch: refetchIndustries } = useGetIndustriesQuery(i18n.language, {
         skip: !canViewIndustries,
     });
-    const { data: organizations, isLoading: orgsLoading } = useGetOrganizationsQuery(
+    const { data: organizations, isLoading: orgsLoading, isError: orgsError, refetch: refetchOrganizations } = useGetOrganizationsQuery(
         industryId ? { industry_id: industryId } : {},
         { skip: !canViewSubscribers }
     );
@@ -96,6 +97,13 @@ const AdminDashboard = () => {
     }, [industriesResponse, t]);
 
     const stats = adminStats?.data || adminStats || {};
+    const hasLoadError = statsError || subsError || industriesError || orgsError;
+    const retryDashboard = () => {
+        if (statsError) refetchStats();
+        if (subsError) refetchSubscriptions();
+        if (industriesError) refetchIndustries();
+        if (orgsError) refetchOrganizations();
+    };
 
     const subsHeaders = [
         { label: t("Subscriber"), width: "180px" },
@@ -155,6 +163,8 @@ const AdminDashboard = () => {
                 <h1 className="text-2xl font-bold text-table-title">{t("Dashboard Overview")}</h1>
                 <p className="text-sm text-cell-secondary">{t("Welcome back, here's what's happening with the system today.")}</p>
             </div>
+
+            {hasLoadError && <DashboardErrorBanner onRetry={retryDashboard} />}
 
             {/* Analytics section */}
             {canViewAnalytics && (
@@ -257,15 +267,21 @@ const AdminDashboard = () => {
                                     organizations.slice(0, 25).map((org, index) => (
                                         <div key={org._id || index} className="flex gap-4 items-center p-3 hover:bg-status-bg rounded-2xl transition-all group border border-transparent hover:border-status-border">
                                             <div className="w-12 h-12 rounded-2xl overflow-hidden bg-surface border border-status-border flex-shrink-0 group-hover:scale-105 transition-transform">
-                                                <img
-                                                    src={org.logo || `https://ui-avatars.com/api/?name=${org.name}&background=random`}
-                                                    alt={org.name}
-                                                    onError={(event) => {
-                                                        event.currentTarget.onerror = null;
-                                                        event.currentTarget.src = "/images/userProfile.png";
-                                                    }}
-                                                    className="w-full h-full object-cover"
-                                                />
+                                                {org.logo ? (
+                                                    <img
+                                                        src={org.logo}
+                                                        alt={org.name || t("Company")}
+                                                        onError={(event) => {
+                                                            event.currentTarget.onerror = null;
+                                                            event.currentTarget.src = "/images/userProfile.png";
+                                                        }}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300 font-bold">
+                                                        {(org.name || "?").trim().charAt(0).toUpperCase()}
+                                                    </div>
+                                                )}
                                             </div>
                                             <div className="flex flex-col flex-1 overflow-hidden">
                                                 <span className="text-sm font-bold text-table-title truncate" title={org.name}>

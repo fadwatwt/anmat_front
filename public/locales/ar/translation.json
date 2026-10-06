@@ -3193,5 +3193,8 @@
   "العربية": "العربية",
   "My Appointments": "مواعيدي",
   "No data available": "لا توجد بيانات متاحة",
-  "Data will appear here when activity is recorded": "ستظهر البيانات هنا عند تسجيل نشاط"
+  "Data will appear here when activity is recorded": "ستظهر البيانات هنا عند تسجيل نشاط",
+  "Total Projects": "إجمالي المشاريع",
+  "Overdue Tasks": "المهام المتأخرة",
+  "Some dashboard data could not be loaded": "تعذر تحميل بعض بيانات لوحة التحكم"
 }

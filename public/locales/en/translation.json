@@ -2634,5 +2634,10 @@
   "Kanban View": "Kanban View",
   "My Appointments": "My Appointments",
   "No data available": "No data available",
-  "Data will appear here when activity is recorded": "Data will appear here when activity is recorded"
+  "Data will appear here when activity is recorded": "Data will appear here when activity is recorded",
+  "Total Tasks": "Total Tasks",
+  "Total Projects": "Total Projects",
+  "Active Projects": "Active Projects",
+  "Overdue Tasks": "Overdue Tasks",
+  "Some dashboard data could not be loaded": "Some dashboard data could not be loaded"
 }

@@ -40,7 +40,7 @@ const toDoughnutData = (records, palette) => {
 };
 
 const EmployeeAnalytics = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     const [timeRange, setTimeRange] = useState("6m");
     const [sectionFilter, setSectionFilter] = useState("");
@@ -69,7 +69,7 @@ const EmployeeAnalytics = () => {
         if (format === 'csv') {
             exportCsv(headers, rows, fileName);
         } else if (format === 'xlsx') {
-            await exportXlsx(headers, rows, fileName);
+            await exportXlsx(headers, rows, fileName, i18n.resolvedLanguage || i18n.language);
         } else if (format === 'pdf') {
             const children = contentRef.current ? Array.from(contentRef.current.children) : [];
             if (children.length) {
