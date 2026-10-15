@@ -6,6 +6,7 @@ import { IoSendSharp } from "react-icons/io5";
 import { MdClose } from "react-icons/md";
 import { ImSpinner2 } from "react-icons/im"; // Loader spinner
 import {useTranslation} from "react-i18next";
+import PropTypes from "prop-types";
 
 function CommentInput({ onSend, isLoading, initialValue = "", onCancel }) {
     const [message, setMessage] = useState(initialValue);
@@ -23,11 +24,15 @@ function CommentInput({ onSend, isLoading, initialValue = "", onCancel }) {
         // Hook for an upload pipeline; no user feedback needed at selection time.
     };
 
-    const handleSend = () => {
+    const handleSend = async () => {
         if (message.trim() && onSend) {
-            onSend(message);
-            if (!initialValue) {
-                setMessage("");
+            try {
+                await onSend(message);
+                if (!initialValue) {
+                    setMessage("");
+                }
+            } catch {
+                // The parent shows the API error; retain the message for retry.
             }
         }
     };
@@ -109,5 +114,12 @@ function CommentInput({ onSend, isLoading, initialValue = "", onCancel }) {
         </div>
     );
 }
+
+CommentInput.propTypes = {
+    onSend: PropTypes.func,
+    isLoading: PropTypes.bool,
+    initialValue: PropTypes.string,
+    onCancel: PropTypes.func,
+};
 
 export default CommentInput;

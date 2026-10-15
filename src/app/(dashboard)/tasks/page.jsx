@@ -81,6 +81,15 @@ function TasksPage() {
   };
 
   const handleKanbanStatusChange = async (taskId, newStatus) => {
+    if (!isEmployee && !canEditTask) {
+      setApiResponse({
+        isOpen: true,
+        status: "error",
+        message: t("You don't have permission to perform this action."),
+      });
+      return;
+    }
+
     try {
       if (isEmployee) {
         await updateTaskStatus({ id: taskId, status: newStatus }).unwrap();
@@ -144,9 +153,12 @@ function TasksPage() {
     { label: "", width: "40px" },
   ], [isEmployee, t]);
 
-  const handleCreateTask = () => router.push("/tasks/create");
+  const handleCreateTask = () => {
+    if (canCreateTask) router.push("/tasks/create");
+  };
 
   const handleDeleteConfirmation = (task) => {
+    if (!canDeleteTask) return;
     setTaskToDelete(task);
     setIsOpenDeleteAlert(true);
   };
@@ -155,6 +167,16 @@ function TasksPage() {
     if (!confirmed) {
       setIsOpenDeleteAlert(false);
       setTaskToDelete(null);
+      return;
+    }
+    if (!canDeleteTask) {
+      setIsOpenDeleteAlert(false);
+      setTaskToDelete(null);
+      setApiResponse({
+        isOpen: true,
+        status: "error",
+        message: t("You don't have permission to perform this action."),
+      });
       return;
     }
     if (taskToDelete) {

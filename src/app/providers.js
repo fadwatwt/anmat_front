@@ -1,5 +1,6 @@
 "use client"
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { I18nextProvider } from 'react-i18next'
 import i18n from '../../public/lib/i18n'
 import PropTypes from "prop-types";
@@ -33,39 +34,55 @@ export const ProcessingContext = createContext();
 export const useTheme = () => useContext(ThemeContext);
 export const useProcessing = () => useContext(ProcessingContext);
 
+const applyThemeToDocument = (selectedTheme) => {
+    const root = window.document.documentElement;
+    const actualTheme = selectedTheme === "system"
+        ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+        : selectedTheme;
+
+    root.classList.toggle("dark", actualTheme === "dark");
+    root.classList.toggle("light", actualTheme !== "dark");
+};
+
 const ThemeProvider = ({ children }) => {
-    const [theme, setTheme] = useState("light");
+    const [theme, setThemeState] = useState("light");
 
     useEffect(() => {
-        setTheme(localStorage.getItem("theme") || "light");
+        setThemeState(localStorage.getItem("theme") || "light");
     }, []);
+
+    const setTheme = useCallback((nextTheme) => {
+        const requestedTheme = typeof nextTheme === "function" ? nextTheme(theme) : nextTheme;
+        if (!["light", "dark", "system"].includes(requestedTheme) || requestedTheme === theme) return;
+
+        const commitTheme = () => {
+            applyThemeToDocument(requestedTheme);
+            flushSync(() => setThemeState(requestedTheme));
+        };
+        const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
+        if (document.startViewTransition && !reduceMotion) {
+            document.startViewTransition(commitTheme);
+            return;
+        }
+
+        const root = document.documentElement;
+        if (!reduceMotion) root.classList.add("theme-transition");
+        commitTheme();
+        if (!reduceMotion) {
+            window.setTimeout(() => root.classList.remove("theme-transition"), 400);
+        }
+    }, [theme]);
 
     useEffect(() => {
         if (typeof window === "undefined") return;
 
-        const root = window.document.documentElement;
-
-        const applyTheme = (t) => {
-            let actualTheme = t;
-            if (t === "system") {
-                actualTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-            }
-
-            if (actualTheme === "dark") {
-                root.classList.add("dark");
-                root.classList.remove("light");
-            } else {
-                root.classList.add("light");
-                root.classList.remove("dark");
-            }
-        };
-
-        applyTheme(theme);
+        applyThemeToDocument(theme);
         localStorage.setItem("theme", theme);
 
         if (theme === "system") {
             const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-            const handleChange = () => applyTheme("system");
+            const handleChange = () => applyThemeToDocument("system");
             mediaQuery.addEventListener("change", handleChange);
             return () => mediaQuery.removeEventListener("change", handleChange);
         }

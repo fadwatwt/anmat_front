@@ -6,15 +6,13 @@ import useDropdown from "@/Hooks/useDropdown.js";
 import ActionsBtns from "@/components/ActionsBtns.jsx";
 import { useState } from "react";
 import AddMember from "./AddMember.jsx";
-import CreateTeamModal from "@/app/(dashboard)/projects/_modal/CreateTeamModal.jsx";
 import InitialsAvatar from "@/components/InitialsAvatar.jsx";
 
 
-function ProjectMembers({ teams = [], members = [], title = "Project Members", canAddMember = true, canDeleteMember = true }) {
+function ProjectMembers({ teams = [], members = [], title = "Project Members", canAddMember = true, canDeleteMember = true, onAddMember, onRemoveMember, isUpdating = false }) {
     const { t } = useTranslation()
     const [dropdownOpen, setDropdownOpen] = useDropdown();
     const [addMemberModal, setAddMemberModal] = useState({ isOpen: false, teamIndex: null });
-    const [createTeamModal, setCreateTeamModal] = useState(false);
 
     const getBadge = (rule) => {
         switch (rule) {
@@ -42,7 +40,7 @@ function ProjectMembers({ teams = [], members = [], title = "Project Members", c
         const key = `${keyPrefix}-${index}`;
         const hasImage = member.imageProfile || member.avatar;
         return (
-            <div key={index} className={"flex justify-between items-center"}>
+            <div key={index} className="flex justify-between items-center rounded-2xl border border-transparent p-2 hover:border-status-border hover:bg-status-bg transition-colors">
                 <div className={"flex gap-3 items-center"}>
                     {hasImage ? (
                         <div className={"w-10 h-10"}>
@@ -63,9 +61,9 @@ function ProjectMembers({ teams = [], members = [], title = "Project Members", c
                     </div>
                 </div>
                 <div className="relative cursor-pointer flex-1 flex justify-end dropdown-container"
-                    onClick={() => canDeleteMember && handleDropdownToggle(key)}>
-                    {canDeleteMember && <PiDotsThreeVerticalBold />}
-                    {dropdownOpen === key && <ActionsBtns className={"mt-5"} isEditBtn={false} handleDelete={() => { }} />}
+                    onClick={() => canDeleteMember && onRemoveMember && handleDropdownToggle(key)}>
+                    {canDeleteMember && onRemoveMember && <PiDotsThreeVerticalBold />}
+                    {dropdownOpen === key && onRemoveMember && <ActionsBtns className="!z-50 top-full end-0" isEditBtn={false} handleDelete={() => onRemoveMember(member)} />}
                 </div>
             </div>
         );
@@ -73,23 +71,21 @@ function ProjectMembers({ teams = [], members = [], title = "Project Members", c
 
     return (
         <>
-            <div className={"flex flex-col w-full p-4 rounded-2xl items-start gap-4 bg-surface shadow-sm"}>
+            <section className="flex flex-col w-full p-4 sm:p-5 rounded-[24px] items-start gap-4 bg-surface border border-status-border shadow-sm">
                 <div className="flex justify-between items-center w-full">
-                    <p className={"text-lg text-table-title"}>{t(title)}</p>
-                    {
-                        false && (
-                              <div className="w-fit">
-                        <BtnAddOutline onClick={() => setCreateTeamModal(true)} title={"Create a team"} />
-                    </div>
-                        )
-                    }
+                    <h2 className="text-lg font-bold text-table-title">{t(title)}</h2>
                 </div>
 
-                <div className={"flex flex-col gap-6 w-full "}>
+                <div className="flex flex-col gap-3 w-full">
+                    {members.length === 0 && teams.length === 0 && (
+                        <div className="rounded-2xl border border-dashed border-status-border py-7 text-center text-sm text-cell-secondary">
+                            {t("No members yet")}
+                        </div>
+                    )}
                     {members.length > 0 ? (
                         <div className="flex flex-col gap-3 w-full pl-2">
                             {members.map((member, index) => renderMember(member, index, "member"))}
-                            {canAddMember && <BtnAddOutline onClick={() => handleAddMember(null)} title={"Add a member"} />}
+                            {canAddMember && onAddMember && <BtnAddOutline onClick={() => handleAddMember(null)} title={"Add a member"} disabled={isUpdating} />}
                         </div>
                     ) : (
                         teams.map((team, teamIndex) => (
@@ -97,21 +93,21 @@ function ProjectMembers({ teams = [], members = [], title = "Project Members", c
                                 <p className="text-md font-bold text-cell-primary">{team.name}</p>
                                 <div className="flex flex-col gap-3 w-full pl-2">
                                     {team.members.map((member, memberIndex) => renderMember(member, memberIndex, teamIndex))}
-                                    {canAddMember && <BtnAddOutline onClick={() => handleAddMember(teamIndex)} title={"Add a member"} />}
+                                    {canAddMember && onAddMember && <BtnAddOutline onClick={() => handleAddMember(teamIndex)} title={"Add a member"} disabled={isUpdating} />}
                                 </div>
                             </div>
                         ))
                     )}
                 </div>
-            </div>
+            </section>
 
-            <AddMember
+            {onAddMember && <AddMember
                 isOpen={addMemberModal.isOpen}
                 onClose={handleCloseAddMember}
-                teamName={addMemberModal.teamIndex !== null && teams[addMemberModal.teamIndex] ? teams[addMemberModal.teamIndex].name : null}
-            />
-            <CreateTeamModal isOpen={createTeamModal} onClose={() => setCreateTeamModal(false)} />
-
+                onSubmit={onAddMember}
+                excludedIds={members.map(member => member.user_id || member._id).filter(Boolean)}
+                isSubmitting={isUpdating}
+            />}
         </>
     );
 }
@@ -121,7 +117,10 @@ ProjectMembers.propTypes = {
     members: PropTypes.array,
     title: PropTypes.string,
     canAddMember: PropTypes.bool,
-    canDeleteMember: PropTypes.bool
+    canDeleteMember: PropTypes.bool,
+    onAddMember: PropTypes.func,
+    onRemoveMember: PropTypes.func,
+    isUpdating: PropTypes.bool,
 }
 
 export default ProjectMembers;

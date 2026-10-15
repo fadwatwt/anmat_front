@@ -2,6 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Smooth cross-fade between light and dark themes. */
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation-duration: 350ms;
+    animation-timing-function: ease-in-out;
+}
+
+/* Fallback for browsers that do not support the View Transitions API. */
+html.theme-transition,
+html.theme-transition *,
+html.theme-transition *::before,
+html.theme-transition *::after {
+    transition-property: background-color, color, border-color, fill, stroke, box-shadow !important;
+    transition-duration: 350ms !important;
+    transition-timing-function: ease-in-out !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+        animation: none;
+    }
+}
+
 :root {
     --bg-main: #F6F8FA;
     --bg-surface: #FFFFFF;

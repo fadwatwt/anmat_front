@@ -22,16 +22,18 @@ test.describe('Admin dashboard', () => {
   for (const { path, title } of ADMIN_PAGES) {
     test(`page "${path}" renders without fatal errors`, async ({ page }) => {
       const watch = collectPageErrors(page, {
-        pageErrorsOnly: true,
-        ignore: [/favicon/i, /net::ERR/i, /Failed to load resource/i, /Socket/i, /socket\.io/i, /WebSocket/i],
+        pageErrorsOnly: false,
+        ignore: [/favicon/i],
       });
 
       await page.goto(path);
       await expect(page).toHaveURL(new RegExp(`${path.replace('/', '\\/')}$|\\?`), { timeout: 30000 });
       await waitForStablePage(page);
 
-      // لا نتحقق من نص العنوان لأنه مترجم (عربي/إنجليزي)، نكتفي بتأكيد أن الصفحة معروضة
       await expect(page.locator('main')).toBeVisible();
+      await expect(page.locator('main')).not.toHaveText(/^\s*$/);
+      await expect(page.locator('main [role="alert"]')).toHaveCount(0);
+      await expect(page.locator('main .animate-spin')).toHaveCount(0, { timeout: 45000 });
 
       watch.stop();
       expect(watch.errors, `fatal errors on ${path}:\n${watch.errors.join('\n')}`).toEqual([]);
@@ -64,3 +66,4 @@ test.describe('Admin dashboard', () => {
     }
   });
 });
+

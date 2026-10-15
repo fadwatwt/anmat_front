@@ -9,6 +9,11 @@ import { useGetSubscriberTaskDetailsQuery, useUpdateSubscriberTaskMutation } fro
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
 import { useProcessing } from "@/app/providers";
+import PermissionGuard from "@/components/PermissionGuard";
+import RecordPageState from "@/app/(dashboard)/_components/RecordPageState";
+import UnsavedChangesGuard from "@/app/(dashboard)/_components/UnsavedChangesGuard";
+import { createTaskValidationSchema } from "@/app/(dashboard)/projects/_components/CreateProjectForm/workItemValidation";
+import PropTypes from "prop-types";
 
 function EditTask({ params }) {
     const { t } = useTranslation();
@@ -17,7 +22,7 @@ function EditTask({ params }) {
     const slug = resolvedParams?.slug;
     const taskId = slug?.includes("-") ? slug.split("-")[0] : slug;
 
-    const { data: taskData, isLoading: isFetching, isError } = useGetSubscriberTaskDetailsQuery(taskId, {
+    const { data: taskData, isLoading: isFetching, isError, error, refetch } = useGetSubscriberTaskDetailsQuery(taskId, {
         skip: !taskId
     });
     const [updateTask, { isLoading: isUpdating }] = useUpdateSubscriberTaskMutation();
@@ -97,7 +102,7 @@ function EditTask({ params }) {
                 comments: [],
             };
 
-            const response = await updateTask(payload).unwrap();
+            await updateTask(payload).unwrap();
             setApiResponse({
                 isOpen: true,
                 status: "success",
@@ -123,37 +128,46 @@ function EditTask({ params }) {
 
     if (isFetching) {
         return (
-            <Page title={t("Edit Task")} isBreadcrumbs={true} breadcrumbs={breadcrumbItems}>
-                <div className="flex items-center justify-center h-64">
-                    <p className="text-cell-secondary">{t("Loading task data...")}</p>
-                </div>
-            </Page>
+            <PermissionGuard permission="tasks.update">
+                <Page title={t("Edit Task")} isBreadcrumbs={true} breadcrumbs={breadcrumbItems}>
+                    <RecordPageState loading />
+                </Page>
+            </PermissionGuard>
         );
     }
 
     if (isError || !taskData || !initialValues) {
         return (
-            <Page title={t("Edit Task")} isBreadcrumbs={true} breadcrumbs={breadcrumbItems}>
-                <div className="flex items-center justify-center h-64 text-red-500 text-center">
-                    <p>{t("Failed to load task data. Please try again later.")}</p>
-                </div>
-            </Page>
+            <PermissionGuard permission="tasks.update">
+                <Page title={t("Edit Task")} isBreadcrumbs={true} breadcrumbs={breadcrumbItems}>
+                    <RecordPageState
+                        notFound={error?.status === 404 || error?.originalStatus === 404}
+                        onRetry={refetch}
+                        onBack={() => router.push("/tasks")}
+                    />
+                </Page>
+            </PermissionGuard>
         );
     }
 
     return (
+        <PermissionGuard permission="tasks.update">
         <Page title={t("Edit Task")} isBreadcrumbs={true} breadcrumbs={breadcrumbItems}>
             <div className={"max-w-4xl flex flex-col gap-4 w-full mx-auto bg-surface border border-status-border p-5 rounded-2xl"}>
-                <Formik initialValues={initialValues} onSubmit={onSubmit} enableReinitialize>
-                    {({ values, handleChange, setFieldValue }) => (
+                <Formik initialValues={initialValues} validationSchema={createTaskValidationSchema(t)} onSubmit={onSubmit} enableReinitialize>
+                    {({ values, handleChange, handleBlur, setFieldValue, errors, touched, dirty }) => (
                         <Form className="flex flex-col gap-4">
+                            <UnsavedChangesGuard />
                             <CreateTaskForm
                                 type="task"
                                 values={values}
                                 handleChange={handleChange}
+                                handleBlur={handleBlur}
                                 setFieldValue={setFieldValue}
+                                errors={errors}
+                                touched={touched}
                             />
-                            <div className={"flex justify-between items-center mt-4"}>
+                            <div className={"flex flex-col-reverse sm:flex-row justify-between items-stretch sm:items-center gap-3 mt-4"}>
                                 <div className="flex gap-4">
                                     <button
                                         type="submit"
@@ -165,7 +179,9 @@ function EditTask({ params }) {
                                 </div>
                                 <button
                                     type="button"
-                                    onClick={() => router.back()}
+                                    onClick={() => {
+                                        if (!dirty || window.confirm(t("You have unsaved changes. Are you sure you want to leave?"))) router.back();
+                                    }}
                                     className="bg-status-bg hover:bg-status-bg border border-status-border text-cell-secondary font-medium min-w-[140px] p-[10px] rounded-[10px] transition-colors"
                                 >
                                     {t("Back")}
@@ -182,6 +198,7 @@ function EditTask({ params }) {
                 onConfirm={handleConfirmUpdate}
                 title={t("Confirm Task Update")}
                 message={t("Are you sure you want to update this task?")}
+                isSubmitting={isUpdating}
             />
 
             <ApiResponseAlert
@@ -191,8 +208,13 @@ function EditTask({ params }) {
                 onClose={handleCloseAlert}
             />
         </Page>
+        </PermissionGuard>
     );
 }
+
+EditTask.propTypes = {
+    params: PropTypes.any.isRequired,
+};
 
 export default EditTask;
 

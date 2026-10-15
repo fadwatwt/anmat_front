@@ -28,7 +28,7 @@ import ChangePasswordModal from "@/app/(dashboard)/profile/_components/modals/Ch
 import Table from "@/components/Tables/Table";
 import { statusCell } from "@/components/StatusCell";
 import CheckAlert from "@/components/Alerts/CheckِِAlert";
-import { useGetSubscriberQuery } from "@/redux/subscribers/subscribersApi";
+import { useGetSubscriberQuery, useToggleSubscriberActivationMutation } from "@/redux/subscribers/subscribersApi";
 import { useGetSubscriptionsQuery, useUpdateSubscriptionStatusMutation } from "@/redux/subscriptions/subscriptionsApi";
 import { format, differenceInDays } from "date-fns";
 import { getDateLocale } from "@/lib/dateLocale";
@@ -53,7 +53,8 @@ function AdminProfile() {
     const [isEditAdminProfileModal, setIsEditAdminProfileModal] = useState(false);
     const [isChangePasswordModal, setIsChangePasswordModal] = useState(false);
     const { slug } = useParams();
-    const { data: subscriber, isLoading, error } = useGetSubscriberQuery(slug);
+    const { data: subscriber, isLoading, error, refetch: refetchSubscriber } = useGetSubscriberQuery(slug);
+    const [toggleSubscriberActivation, { isLoading: isUpdatingAccount }] = useToggleSubscriberActivationMutation();
     const { data: subscriptions, isLoading: isSubsLoading } = useGetSubscriptionsQuery({ subscriber_id: slug });
     const [updateSubscriptionStatus, { isLoading: isUpdatingStatus }] = useUpdateSubscriptionStatusMutation();
     const [updateExtraFeatures, { isLoading: isUpdatingFeatures }] = useUpdateExtraFeaturesMutation();
@@ -111,6 +112,7 @@ function AdminProfile() {
     const [apiResponse, setApiResponse] = useState({ status: "", message: "" });
     const [pendingSubscription, setPendingSubscription] = useState(null);
     const [targetStatus, setTargetStatus] = useState("");
+    const [isAccountStatusChange, setIsAccountStatusChange] = useState(false);
 
     const statusOptions = [
         { id: 'active', value: 'active', name: t('Active') },
@@ -132,15 +134,32 @@ function AdminProfile() {
     }
 
     const handleStatusChange = (subscription, newStatus) => {
+        setIsAccountStatusChange(false);
         setPendingSubscription(subscription);
         setTargetStatus(newStatus);
         setIsApprovalOpen(true);
     }
 
+    const handleAccountStatusChange = () => {
+        setPendingSubscription(null);
+        setTargetStatus(subscriber?.is_active ? "inactive" : "active");
+        setIsAccountStatusChange(true);
+        setIsApprovalOpen(true);
+    };
+
     const confirmUpdateStatus = async () => {
-        if (!pendingSubscription || !targetStatus) return;
+        if (!targetStatus || (!isAccountStatusChange && !pendingSubscription)) return;
 
         try {
+            if (isAccountStatusChange) {
+                const result = await toggleSubscriberActivation(slug).unwrap();
+                await refetchSubscriber();
+                setApiResponse({
+                    status: "success",
+                    message: result.message || t("Subscriber status updated successfully")
+                });
+                return;
+            }
             const result = await updateSubscriptionStatus({ id: pendingSubscription._id, status: targetStatus }).unwrap();
             setApiResponse({
                 status: "success",
@@ -149,12 +168,13 @@ function AdminProfile() {
         } catch (err) {
             setApiResponse({
                 status: "error",
-                message: err.data?.message || t("Failed to update subscription status")
+                message: err.data?.message || t(isAccountStatusChange ? "Failed to update subscriber status" : "Failed to update subscription status")
             });
         } finally {
             setIsResponseOpen(true);
             setPendingSubscription(null);
             setTargetStatus("");
+            setIsAccountStatusChange(false);
         }
     }
 
@@ -434,7 +454,8 @@ function AdminProfile() {
                                 </button>
                                 <button
                                     className={`px-4 py-2 rounded-lg border ${subscriber?.is_active ? 'border-red-500 text-red-500 hover:bg-red-50' : 'border-green-500 text-green-500 hover:bg-green-50'} transition-colors text-sm font-medium`}
-                                    onClick={() => handleStatusChange(null, subscriber?.is_active ? 'inactive' : 'active')}
+                                    onClick={handleAccountStatusChange}
+                                    disabled={isUpdatingAccount}
                                 >
                                     {subscriber?.is_active ? t("Deactivate Account") : t("Activate Account")}
                                 </button>

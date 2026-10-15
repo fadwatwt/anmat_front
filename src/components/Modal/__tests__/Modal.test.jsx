@@ -1,9 +1,11 @@
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import Modal from '../Modal';
 
+let mockAlertOpen = false;
+
 jest.mock('@/store/alertStore', () => ({
-  useIsAlertOpen: () => false,
+  useIsAlertOpen: () => mockAlertOpen,
 }));
 
 jest.mock('../../Form/DefaultButton', () => {
@@ -13,6 +15,26 @@ jest.mock('../../Form/DefaultButton', () => {
 });
 
 describe('Modal', () => {
+  it('traps focus, closes on Escape, and restores the opener', () => {
+    const opener = document.createElement('button');
+    document.body.appendChild(opener);
+    opener.focus();
+    const onClose = jest.fn();
+    const { unmount, rerender } = render(<Modal isOpen onClose={onClose}><button>First</button><button>Last</button></Modal>);
+    expect(screen.getByText('First')).toHaveFocus();
+    screen.getByText('Last').focus();
+    fireEvent.keyDown(document, { key: 'Tab' });
+    expect(screen.getByText('First')).toHaveFocus();
+    fireEvent.keyDown(document, { key: 'Tab', shiftKey: true });
+    expect(screen.getByText('Last')).toHaveFocus();
+    rerender(<Modal isOpen onClose={() => onClose()}><button>First</button><button>Last</button></Modal>);
+    expect(screen.getByText('Last')).toHaveFocus();
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(onClose).toHaveBeenCalledTimes(1);
+    unmount();
+    expect(opener).toHaveFocus();
+    opener.remove();
+  });
   it('returns null when isOpen is false', () => {
     const { container } = render(<Modal isOpen={false}><p>Content</p></Modal>);
     expect(container.firstChild).toBeNull();
@@ -62,11 +84,9 @@ describe('Modal', () => {
   });
 
   it('hides modal when alert is open', () => {
-    jest.mock('@/store/alertStore', () => ({
-      useIsAlertOpen: () => true,
-    }));
-
-    const { container } = render(<Modal isOpen={true}><p>Content</p></Modal>);
-    expect(container.firstChild.className).toContain('hidden');
+    mockAlertOpen = true;
+    render(<Modal isOpen={true}><p>Content</p></Modal>);
+    expect(screen.getByRole('dialog')).toHaveClass('hidden');
+    mockAlertOpen = false;
   });
 });

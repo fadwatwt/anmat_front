@@ -19,7 +19,7 @@ import { usePermission } from "@/Hooks/usePermission.js";
 import PropTypes from "prop-types";
 
 const ChatDetailsModal = ({ activeChat, onClose }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const currentUser = useSelector(selectUser);
   // Subscribers bypass via wildcard; employees need the explicit chats.export grant.
   const canExportChat = usePermission("chats.export");
@@ -107,13 +107,20 @@ const ChatDetailsModal = ({ activeChat, onClose }) => {
     }
     try {
       const token = getToken();
-      const response = await fetch(`${RootRoute}/api/chats/${activeChat._id}/export`, {
+      const params = new URLSearchParams({
+        locale: i18n.resolvedLanguage || i18n.language || "ar",
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || "Asia/Hebron",
+      });
+      const response = await fetch(`${RootRoute}/api/chats/${activeChat._id}/export?${params}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) throw new Error(`Export failed with status ${response.status}`);
 
       const disposition = response.headers.get("content-disposition") || "";
-      const filename = disposition.match(/filename="?([^";]+)"?/i)?.[1] || "chat-export.zip";
+      const encodedFilename = disposition.match(/filename\*=UTF-8''([^;]+)/i)?.[1];
+      const filename = encodedFilename
+        ? decodeURIComponent(encodedFilename)
+        : disposition.match(/filename="?([^";]+)"?/i)?.[1] || "chat-export.zip";
       const objectUrl = URL.createObjectURL(await response.blob());
       const link = document.createElement("a");
       link.href = objectUrl;

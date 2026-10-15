@@ -98,8 +98,7 @@ const drawingXml = (charts) => `<?xml version="1.0" encoding="UTF-8" standalone=
 const contentTypesXml = (sheets) => `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/><Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/><Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/>${sheets.map((_, i) => `<Override PartName="/xl/worksheets/sheet${i + 1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join('')}${sheets.flatMap((sheet, sheetIndex) => (sheet.charts || []).map((_, chartIndex) => `<Override PartName="/xl/charts/chart${sheetIndex + 1}_${chartIndex + 1}.xml" ContentType="application/vnd.openxmlformats-officedocument.drawingml.chart+xml"/>`)).join('')}${sheets.map((sheet, index) => sheet.charts?.length ? `<Override PartName="/xl/drawings/drawing${index + 1}.xml" ContentType="application/vnd.openxmlformats-officedocument.drawing+xml"/>` : '').join('')}</Types>`;
 
-export const buildStyledAnalyticsXlsx = (flatRows, fileName, exportedAt = new Date(), locale = 'ar') => {
-  const sheets = buildAnalyticsSheets(flatRows, fileName, exportedAt, locale);
+const packageSheets = (sheets, fileName, exportedAt) => {
   const workbookSheets = sheets.map((sheet, index) => `<sheet name="${xml(sheet.name)}" sheetId="${index + 1}" r:id="rId${index + 1}"/>`).join('');
   const workbookRels = sheets.map((_, index) => `<Relationship Id="rId${index + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${index + 1}.xml"/>`).join('');
   const styleRelId = sheets.length + 1;
@@ -124,4 +123,53 @@ export const buildStyledAnalyticsXlsx = (flatRows, fileName, exportedAt = new Da
     }
   });
   return zipSync(files, { level: 6 });
+};
+
+export const buildStyledAnalyticsXlsx = (flatRows, fileName, exportedAt = new Date(), locale = 'ar') => {
+  const sheets = buildAnalyticsSheets(flatRows, fileName, exportedAt, locale);
+  return packageSheets(sheets, fileName, exportedAt);
+};
+
+const tableValue = (value) => {
+  if (typeof value !== 'string') return value;
+  const text = value.trim();
+  if (/^-?(?:0|[1-9]\d*)(?:\.\d+)?%$/.test(text)) return Number.parseFloat(text) / 100;
+  if (/^-?(?:0|[1-9]\d*)(?:\.\d+)?$/.test(text)) return Number(text);
+  return text;
+};
+
+export const buildStyledTableXlsx = (headers, dataRows, fileName = 'table', locale = 'ar', exportedAt = new Date()) => {
+  const rtl = String(locale || 'ar').toLowerCase().startsWith('ar');
+  const cleanHeaders = (headers || []).map((value) => String(value ?? ''));
+  const cleanRows = (dataRows || []).map((row) => cleanHeaders.map((_, index) => tableValue(row?.[index] ?? '')));
+  const percentCells = [];
+  (dataRows || []).forEach((row, rowIndex) => cleanHeaders.forEach((_, columnIndex) => {
+    if (typeof row?.[columnIndex] === 'string' && /%$/.test(row[columnIndex].trim())) {
+      percentCells.push(`${columnName(columnIndex)}${rowIndex + 5}`);
+    }
+  }));
+  const rawTitle = String(fileName || 'table').replace(/[-_]+/g, ' ').trim();
+  const subject = rawTitle
+    .replace(/^جدول\s+/i, '')
+    .replace(/\s+table$/i, '')
+    .trim();
+  const title = rtl
+    ? `جدول ${subject || 'البيانات'}`
+    : `${subject ? subject.charAt(0).toUpperCase() + subject.slice(1) : 'Data'} table`;
+  const rows = [
+    [title || (rtl ? 'تقرير البيانات' : 'Data report')],
+    [`${rtl ? 'تاريخ التصدير' : 'Exported on'}: ${exportedAt.toISOString().slice(0, 10)}`],
+    [],
+    cleanHeaders,
+    ...cleanRows,
+  ];
+  const widths = cleanHeaders.map((header, columnIndex) => {
+    const longest = cleanRows.reduce((max, row) => Math.max(max, String(row[columnIndex] ?? '').length), header.length);
+    return Math.min(40, Math.max(14, longest + 3));
+  });
+  const sheet = {
+    name: rtl ? 'البيانات' : 'Data', rows, headerRows: [4], sectionRows: [], percentCells,
+    widths: widths.length ? widths : [24], freezeRow: 5, charts: [], rtl,
+  };
+  return packageSheets([sheet], fileName, exportedAt);
 };

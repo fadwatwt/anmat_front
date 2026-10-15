@@ -201,6 +201,10 @@ function Subscribers() {
         rows={rows}
         isFilter={true}
         showStatusFilter={true}
+        statusOptions={[
+          { id: "active", value: "active", name: t("Active") },
+          { id: "in-active", value: "in-active", name: t("Inactive") },
+        ]}
         showIndustryFilter={true}
         customActions={(actualRowIndex) => (
           <SubscriptionActions subscriber={subscribers?.[actualRowIndex]} />)

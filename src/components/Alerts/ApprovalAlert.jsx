@@ -14,6 +14,7 @@ function ApprovalAlert({
     confirmBtnText = "Confirm",
     cancelBtnText = "Cancel",
     type = "warning", // 'warning', 'danger', 'info'
+    isSubmitting = false,
 }) {
     const { t } = useTranslation();
     const open = useAlertStore((s) => s.open);
@@ -68,18 +69,22 @@ function ApprovalAlert({
             <div className="w-full pb-6 pt-4 flex px-6 items-center gap-3 border-t border-status-border">
                 <button
                     onClick={onClose}
+                    disabled={isSubmitting}
                     className="bg-surface text-sm border border-status-border text-cell-secondary h-11 flex-1 rounded-xl hover:bg-status-bg transition-all font-medium"
                 >
                     {t(cancelBtnText)}
                 </button>
                 <button
                     onClick={() => {
-                        onConfirm?.();
-                        onClose();
+                        if (!isSubmitting) {
+                            onConfirm?.();
+                            onClose();
+                        }
                     }}
-                    className={`${config.confirmBtnClass} text-sm font-semibold h-11 flex-1 rounded-xl transition-all shadow-sm`}
+                    disabled={isSubmitting}
+                    className={`${config.confirmBtnClass} text-sm font-semibold h-11 flex-1 rounded-xl transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
-                    {t(confirmBtnText)}
+                    {isSubmitting ? t("Processing...") : t(confirmBtnText)}
                 </button>
             </div>
         </Modal>
@@ -95,6 +100,7 @@ ApprovalAlert.propTypes = {
     confirmBtnText: PropTypes.string,
     cancelBtnText: PropTypes.string,
     type: PropTypes.oneOf(["warning", "danger", "info"]),
+    isSubmitting: PropTypes.bool,
 };
 
 export default ApprovalAlert;

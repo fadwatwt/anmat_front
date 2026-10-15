@@ -3,13 +3,13 @@ import PropTypes from "prop-types";
 import { BiSolidFilePdf } from "react-icons/bi";
 import { IoDocument, IoImage } from "react-icons/io5";
 import { PiVideoFill } from "react-icons/pi";
-import { RiDownload2Line, RiCloseLine } from "react-icons/ri";
+import { RiDownload2Line, RiCloseLine, RiAttachment2 } from "react-icons/ri";
 import { AiOutlineDelete } from "react-icons/ai";
 import { useTranslation } from "react-i18next";
 import { useRef, useState } from "react";
 import InputAndLabel from "@/components/Form/InputAndLabel.jsx";
 
-function AttachmentsList({ attachments = [], onUpload, onDelete, isUploading }) {
+function AttachmentsList({ attachments = [], onUpload, onDelete, isUploading, compact = false }) {
     const { t } = useTranslation();
     const inputFileRef = useRef(null);
     const [selectedFile, setSelectedFile] = useState(null);
@@ -42,11 +42,15 @@ function AttachmentsList({ attachments = [], onUpload, onDelete, isUploading }) 
         }
     };
 
-    const confirmUpload = () => {
+    const confirmUpload = async () => {
         if (selectedFile && onUpload) {
-            onUpload(selectedFile, description);
-            setSelectedFile(null);
-            setDescription("");
+            try {
+                await onUpload(selectedFile, description);
+                setSelectedFile(null);
+                setDescription("");
+            } catch {
+                // The parent shows the API error; retain the selection for retry.
+            }
         }
     };
 
@@ -70,12 +74,21 @@ function AttachmentsList({ attachments = [], onUpload, onDelete, isUploading }) 
     };
 
     return (
-        <div className={"flex flex-col w-full p-4 rounded-2xl items-start gap-3 bg-white dark:bg-gray-800"}>
-            <p className={"text-lg dark:text-gray-200"}>{t("Attachments")}</p>
+        <section className={`flex flex-col w-full items-start bg-surface border border-status-border shadow-sm ${compact ? "p-3 rounded-xl gap-3" : "p-4 sm:p-5 rounded-[24px] gap-4"}`}>
+            <div className="flex items-center justify-between w-full gap-3">
+                <h2 className={`${compact ? "text-base" : "text-lg"} font-bold text-table-title`}>{t("Attachments")}</h2>
+                <span className="inline-flex items-center justify-center min-w-7 h-7 px-2 rounded-full bg-badge-bg text-xs font-semibold text-cell-primary">{attachments.length}</span>
+            </div>
             <div className={"flex flex-col gap-3 w-full"}>
+                {attachments.length === 0 && !selectedFile && (
+                    <div className={`flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-status-border text-center text-cell-secondary ${compact ? "py-3" : "py-7"}`}>
+                        <RiAttachment2 size={28} className="opacity-50" />
+                        <p className="text-sm">{t("No attachments yet")}</p>
+                    </div>
+                )}
                 {attachments?.map((attachment, index) => (
-                    <div key={attachment._id || index} className={"flex justify-between items-center"}>
-                        <div className={"flex gap-3 items-center"}>
+                    <div key={attachment._id || index} className="flex justify-between items-center gap-3 rounded-2xl border border-status-border p-3 hover:bg-status-bg transition-colors">
+                        <div className="flex gap-3 items-center min-w-0">
                             <div className={"p-1 bg-gray-50 dark:bg-gray-900 rounded-full"}>
                                 {getFileIcons(attachment.mime_type || attachment.type)}
                             </div>
@@ -96,17 +109,13 @@ function AttachmentsList({ attachments = [], onUpload, onDelete, isUploading }) 
                             </div>
                         </div>
                         <div className={"flex gap-2"}>
-                            <RiDownload2Line
-                                className={"text-primary-base dark:text-primary-200 cursor-pointer"}
-                                size={20}
-                                onClick={() => handleDownload(attachment.url, attachment.original_name)}
-                            />
+                            <button type="button" aria-label={t("Download")} onClick={() => handleDownload(attachment.url, attachment.original_name)} className="rounded-lg p-1.5 text-primary-base hover:bg-badge-bg transition-colors">
+                                <RiDownload2Line size={18} />
+                            </button>
                             {onDelete && (
-                                <AiOutlineDelete
-                                    className={"text-red-500 cursor-pointer hover:opacity-80 transition-opacity"}
-                                    size={20}
-                                    onClick={() => onDelete(attachment._id)}
-                                />
+                                <button type="button" aria-label={t("Delete")} onClick={() => onDelete(attachment._id)} className="rounded-lg p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors">
+                                    <AiOutlineDelete size={18} />
+                                </button>
                             )}
                         </div>
                     </div>
@@ -157,7 +166,7 @@ function AttachmentsList({ attachments = [], onUpload, onDelete, isUploading }) 
                     onChange={handleFileChange}
                 />
             </div>
-        </div>
+        </section>
     );
 }
 
@@ -165,7 +174,8 @@ AttachmentsList.propTypes = {
     attachments: PropTypes.array,
     onUpload: PropTypes.func,
     onDelete: PropTypes.func,
-    isUploading: PropTypes.bool
+    isUploading: PropTypes.bool,
+    compact: PropTypes.bool,
 };
 
 export default AttachmentsList;

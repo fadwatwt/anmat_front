@@ -9,14 +9,9 @@ import { selectUser } from "@/redux/auth/authSlice";
 import { usePermission, useHasAnyPermission } from "@/Hooks/usePermission";
 import { useTranslation } from "react-i18next";
 import { useGetSubscriberOrganizationQuery } from "@/redux/organizations/organizationsApi";
-import CreateTeamModal from "@/app/(dashboard)/projects/_modal/CreateTeamModal";
 import { translateDate } from "@/functions/Days.js";
-import { RiArrowDownSLine, RiFlag2Line, RiStackLine, RiGroupFill } from "react-icons/ri";
-import { FaStar } from "react-icons/fa";
-import { useEvaluateSubscriberTaskStageMutation, useEvaluateSubscriberTaskMutation, useUploadSubscriberTaskAttachmentMutation, useDeleteSubscriberTaskAttachmentMutation } from "@/redux/tasks/subscriberTasksApi";
-import { useUploadEmployeeTaskAttachmentMutation, useDeleteEmployeeTaskAttachmentMutation } from "@/redux/tasks/employeeTasksApi";
-import AttachmentsList from "./AttachmentsList";
-import TaskLogsViewer from "./TaskLogsViewer";
+import { RiArrowDownSLine, RiFlag2Line, RiStackLine } from "react-icons/ri";
+import { useEvaluateSubscriberTaskStageMutation, useEvaluateSubscriberTaskMutation } from "@/redux/tasks/subscriberTasksApi";
 
 // Evaluation Modal components
 import Modal from "@/components/Modal/Modal";
@@ -87,12 +82,6 @@ function StageRatingModal({ stage, task, onClose, onSubmit }) {
     const handleRatingChange = (key, value) => {
         setRatings(prev => ({ ...prev, [key]: value }));
     };
-
-    const avgScore = useMemo(() => {
-        const values = Object.values(ratings);
-        const sum = values.reduce((acc, curr) => acc + curr, 0);
-        return sum / (values.length || 1);
-    }, [ratings]);
 
     const handleSubmit = () => {
         const values = Object.values(ratings);
@@ -171,54 +160,18 @@ StageRatingModal.propTypes = {
 };
 
 
-function TasksList({ tasks = [], isAssignedDate = false, isEmployeeView = false, onStatusChange, onEvaluateStage, showStagesCount = true }) {
+function TasksList({ tasks = [], isAssignedDate = false, isEmployeeView = false, onStatusChange, onEvaluateStage, showStagesCount = true, showAssignees = true }) {
     const [selectedTask, setSelectedTask] = useState(null);
     const [activeStatusId, setActiveStatusId] = useState(null);
     const [expandedTaskId, setExpandedTaskId] = useState(null);
     const [alertConfig, setAlertConfig] = useState({ isOpen: false, status: "", message: "" });
-    const [teamModalTaskId, setTeamModalTaskId] = useState(null);
-
     const { t } = useTranslation()
     const user = useSelector(selectUser);
-    const canDeleteAttachments = usePermission("attachments.delete");
     const canEvaluate = usePermission("tasks.evaluate");
-    const canManageTeam = usePermission("tasks.manage_participants");
     const canUpdateTasks = useHasAnyPermission(["tasks.update", "tasks.track_all", "tasks.track_department"]);
 
     const [evaluateStage] = useEvaluateSubscriberTaskStageMutation();
     const [evaluateTask] = useEvaluateSubscriberTaskMutation();
-    const [uploadSubscriberTaskAttachment, { isLoading: isSubUploading }] = useUploadSubscriberTaskAttachmentMutation();
-    const [uploadEmployeeTaskAttachment, { isLoading: isEmpUploading }] = useUploadEmployeeTaskAttachmentMutation();
-    const [deleteSubscriberTaskAttachment] = useDeleteSubscriberTaskAttachmentMutation();
-    const [deleteEmployeeTaskAttachment] = useDeleteEmployeeTaskAttachmentMutation();
-
-    const isUploading = isSubUploading || isEmpUploading;
-
-    const handleTaskUploadAttachment = async (taskId, file) => {
-        try {
-            const formData = new FormData();
-            formData.append('file', file);
-            if (!isEmployeeView) {
-                await uploadSubscriberTaskAttachment({ taskId, formData }).unwrap();
-            } else {
-                await uploadEmployeeTaskAttachment({ taskId, formData }).unwrap();
-            }
-        } catch (error) {
-            console.error("Failed to upload task attachment: ", error);
-        }
-    };
-
-    const handleTaskDeleteAttachment = async (taskId, attachmentId) => {
-        try {
-            if (!isEmployeeView) {
-                await deleteSubscriberTaskAttachment({ taskId, attachmentId }).unwrap();
-            } else {
-                await deleteEmployeeTaskAttachment({ taskId, attachmentId }).unwrap();
-            }
-        } catch (error) {
-            console.error("Failed to delete task attachment: ", error);
-        }
-    };
 
     const statusOptions = [
         { id: "open", name: "Open" },
@@ -365,21 +318,14 @@ function TasksList({ tasks = [], isAssignedDate = false, isEmployeeView = false,
                         </div>
 
                         <div className="flex flex-wrap justify-between items-center gap-2">
-                            <div className={"members flex gap-2 items-center"}>
-                                <p className={"text-cell-secondary text-xs"}>{t("Assigned to")}:</p>
-                                <MembersListXLine members={task.members} maxVisible={3} />
-                            </div>
+                            {showAssignees && task.members?.length > 0 && (
+                                <div className={"members flex gap-2 items-center"}>
+                                    <p className={"text-cell-secondary text-xs"}>{t("Assigned to")}:</p>
+                                    <MembersListXLine members={task.members} maxVisible={3} />
+                                </div>
+                            )}
 
                             <div className="flex gap-4 items-center">
-                                {(canManageTeam && false) && (
-                                    <button
-                                        onClick={() => setTeamModalTaskId(task._id)}
-                                        className="flex items-center gap-1 text-xs font-medium text-primary-base dark:text-primary-200 border border-primary-base rounded-md px-2 py-0.5 hover:bg-primary-base dark:hover:bg-primary-200 hover:text-white dark:hover:text-black transition-colors"
-                                    >
-                                        <RiGroupFill size={12} />
-                                        <span>{t("Team")}</span>
-                                    </button>
-                                )}
                                 {showStagesCount && (
                                 <button
                                     onClick={() => setExpandedTaskId(expandedTaskId === task._id ? null : task._id)}
@@ -451,15 +397,6 @@ function TasksList({ tasks = [], isAssignedDate = false, isEmployeeView = false,
                 />
             )}
 
-            {/* Team Modal */}
-            {teamModalTaskId && (
-                <CreateTeamModal
-                    isOpen={!!teamModalTaskId}
-                    onClose={() => setTeamModalTaskId(null)}
-                    taskId={teamModalTaskId}
-                />
-            )}
-
             <ApiResponseAlert
                 isOpen={alertConfig.isOpen}
                 status={alertConfig.status}
@@ -476,7 +413,8 @@ TasksList.propTypes = {
     isEmployeeView: PropTypes.bool,
     onStatusChange: PropTypes.func,
     onEvaluateStage: PropTypes.func,
-    showStagesCount: PropTypes.bool
+    showStagesCount: PropTypes.bool,
+    showAssignees: PropTypes.bool
 }
 
 export default TasksList;

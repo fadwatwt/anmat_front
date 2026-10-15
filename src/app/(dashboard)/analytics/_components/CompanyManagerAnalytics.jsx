@@ -1,7 +1,5 @@
 "use client";
-import { useState, useMemo, useRef, useEffect } from "react";
-import { ImSpinner2 } from "react-icons/im";
-import { RiDownloadLine } from '@remixicon/react';
+import { useState, useMemo, useRef } from "react";
 import Page from "@/components/Page.jsx";
 import AnalyticsCard from './AnalyticsCard';
 
@@ -25,6 +23,9 @@ import {
     CHART_TYPE_OPTIONS,
 } from './filterOptions';
 import { formatSubscriberAnalytics, exportAsPdf, exportCsv, exportXlsx } from './exportHelpers';
+import AnalyticsExportMenu from './AnalyticsExportMenu';
+import AnalyticsPageSkeleton from './AnalyticsPageSkeleton';
+import usePersistedAnalyticsFilter from './usePersistedAnalyticsFilter';
 
 const SUMMARY_COLORS = ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#0EA5E9', '#EC4899'];
 const RATING_COLORS = { 'High Rating': '#10B981', 'Medium Rating': '#FBBF24', 'Low Rating': '#EF4444', 'No Ratings': '#9CA3AF' };
@@ -52,8 +53,8 @@ function CompanyManagerAnalytics() {
     const { t, i18n } = useTranslation();
 
     // --- Global filters (triggers API) ---
-    const [sectionFilter, setSectionFilter] = useState("");
-    const [chartTypeFilter, setChartTypeFilter] = useState("");
+    const [sectionFilter, setSectionFilter] = usePersistedAnalyticsFilter("analytics:subscriber:section");
+    const [chartTypeFilter, setChartTypeFilter] = usePersistedAnalyticsFilter("analytics:subscriber:chart");
 
     // --- Per-card time range (client-side only, instant) ---
     const [tasksPerfTimeRange, setTasksPerfTimeRange] = useState("6m");
@@ -73,24 +74,9 @@ function CompanyManagerAnalytics() {
     const [performanceSort, setPerformanceSort] = useState("");
 
     // --- Export ---
-    const [showExportMenu, setShowExportMenu] = useState(false);
-    const exportRef = useRef(null);
     const contentRef = useRef(null);
 
-    useEffect(() => {
-        const handleClickOutside = (e) => {
-            if (exportRef.current && !exportRef.current.contains(e.target)) {
-                setShowExportMenu(false);
-            }
-        };
-        if (showExportMenu) {
-            document.addEventListener('mousedown', handleClickOutside);
-        }
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, [showExportMenu]);
-
     const handleExport = async (format) => {
-        setShowExportMenu(false);
         const { headers, rows, fileName } = formatSubscriberAnalytics(data);
         if (format === 'csv') {
             exportCsv(headers, rows, fileName);
@@ -105,56 +91,54 @@ function CompanyManagerAnalytics() {
     };
 
     // --- Main API call (defaults) ---
-    const mainFilters = useMemo(() => ({
-        section: sectionFilter || undefined,
-    }), [sectionFilter]);
+    const mainFilters = useMemo(() => ({}), []);
     const { data: analyticsData, isLoading, error } = useGetSubscriberAnalyticsQuery(mainFilters);
 
     // --- Per-card entity API calls (only when filter is set) ---
     const tasksSummaryFilters = useMemo(() => ({
         ...(tasksSummaryEmployee ? { employeeId: tasksSummaryEmployee } : {}),
     }), [tasksSummaryEmployee]);
-    const { data: tasksSummaryApiData, isFetching: tasksSummaryFetching } = useGetSubscriberAnalyticsQuery(tasksSummaryFilters);
+    const { data: tasksSummaryApiData, isFetching: tasksSummaryFetching } = useGetSubscriberAnalyticsQuery(tasksSummaryFilters, { skip: !tasksSummaryEmployee });
 
     const attFilters = useMemo(() => ({
         ...(attendanceEmployee ? { employeeId: attendanceEmployee } : {}),
     }), [attendanceEmployee]);
-    const { data: attApiData, isFetching: attFetching } = useGetSubscriberAnalyticsQuery(attFilters);
+    const { data: attApiData, isFetching: attFetching } = useGetSubscriberAnalyticsQuery(attFilters, { skip: !attendanceEmployee });
 
     const perfFilters = useMemo(() => ({
         ...(performanceEmployee ? { employeeId: performanceEmployee } : {}),
     }), [performanceEmployee]);
-    const { data: perfApiData, isFetching: perfFetching } = useGetSubscriberAnalyticsQuery(perfFilters);
+    const { data: perfApiData, isFetching: perfFetching } = useGetSubscriberAnalyticsQuery(perfFilters, { skip: !performanceEmployee });
 
     const accompFilters = useMemo(() => ({
         ...(accomplishmentEmployee ? { employeeId: accomplishmentEmployee } : {}),
     }), [accomplishmentEmployee]);
-    const { data: accompApiData, isFetching: accompFetching } = useGetSubscriberAnalyticsQuery(accompFilters);
+    const { data: accompApiData, isFetching: accompFetching } = useGetSubscriberAnalyticsQuery(accompFilters, { skip: !accomplishmentEmployee });
 
     const adherFilters = useMemo(() => ({
         ...(adherenceEmployee ? { employeeId: adherenceEmployee } : {}),
     }), [adherenceEmployee]);
-    const { data: adherApiData, isFetching: adherFetching } = useGetSubscriberAnalyticsQuery(adherFilters);
+    const { data: adherApiData, isFetching: adherFetching } = useGetSubscriberAnalyticsQuery(adherFilters, { skip: !adherenceEmployee });
 
     const delayFilters = useMemo(() => ({
         ...(delayEmployee ? { employeeId: delayEmployee } : {}),
     }), [delayEmployee]);
-    const { data: delayApiData, isFetching: delayFetching } = useGetSubscriberAnalyticsQuery(delayFilters);
+    const { data: delayApiData, isFetching: delayFetching } = useGetSubscriberAnalyticsQuery(delayFilters, { skip: !delayEmployee });
 
     const tasksRatingFilters = useMemo(() => ({
         ...(tasksRatingDepartment ? { departmentId: tasksRatingDepartment } : {}),
     }), [tasksRatingDepartment]);
-    const { data: tasksRatingApiData, isFetching: tasksRatingFetching } = useGetSubscriberAnalyticsQuery(tasksRatingFilters);
+    const { data: tasksRatingApiData, isFetching: tasksRatingFetching } = useGetSubscriberAnalyticsQuery(tasksRatingFilters, { skip: !tasksRatingDepartment });
 
     const deptAdhFilters = useMemo(() => ({
         ...(deptAdherenceDepartment ? { departmentId: deptAdherenceDepartment } : {}),
     }), [deptAdherenceDepartment]);
-    const { data: deptAdhApiData, isFetching: deptAdhFetching } = useGetSubscriberAnalyticsQuery(deptAdhFilters);
+    const { data: deptAdhApiData, isFetching: deptAdhFetching } = useGetSubscriberAnalyticsQuery(deptAdhFilters, { skip: !deptAdherenceDepartment });
 
     const deptPerfFilters = useMemo(() => ({
         ...(deptPerformanceDepartment ? { departmentId: deptPerformanceDepartment } : {}),
     }), [deptPerformanceDepartment]);
-    const { data: deptPerfApiData, isFetching: deptPerfFetching } = useGetSubscriberAnalyticsQuery(deptPerfFilters);
+    const { data: deptPerfApiData, isFetching: deptPerfFetching } = useGetSubscriberAnalyticsQuery(deptPerfFilters, { skip: !deptPerformanceDepartment });
 
     // --- Options ---
     const { data: employeesData } = useGetEmployeesQuery();
@@ -208,7 +192,7 @@ function CompanyManagerAnalytics() {
         return emps;
     }, [data.topEmployees, performanceSort]);
 
-    if (isLoading) return <div className="text-center py-20"><div className="flex items-center justify-center w-full p-4"><ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} /></div></div>;
+    if (isLoading) return <AnalyticsPageSkeleton />;
     if (error) return <div className="p-8 text-red-500 text-center">{t("Error loading analytics data.")}</div>;
 
     // --- Prepare chart data from respective sources ---
@@ -238,28 +222,13 @@ function CompanyManagerAnalytics() {
 
     return (
         <Page className={"p-0"}>
-                <div className="p-8 bg-surface min-h-screen space-y-9" ref={contentRef}>
+                <div className="p-4 sm:p-6 lg:p-8 bg-surface min-h-screen space-y-9" ref={contentRef}>
 
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
                     <h1 className="text-2xl font-bold text-page-title">{t("All Analytics Overview")}</h1>
-                    <div className="flex gap-3">
-                        <div className="relative" ref={exportRef}>
-                            <button
-                                onClick={() => setShowExportMenu(!showExportMenu)}
-                                className="flex items-center gap-2 bg-primary-base text-white rounded-xl px-4 py-2 text-sm shadow-sm font-medium hover:opacity-90"
-                            >
-                                <RiDownloadLine className="size-4" />
-                                {t("Export")}
-                            </button>
-                            {showExportMenu && (
-                                <div className="absolute right-0 mt-1.5 bg-surface border border-status-border rounded-lg shadow-lg z-50 min-w-[140px]">
-                                    <button onClick={() => handleExport('csv')} className="block w-full text-left px-4 py-2.5 text-sm hover:bg-status-bg text-cell-secondary">{t("CSV")}</button>
-                                    <button onClick={() => handleExport('xlsx')} className="block w-full text-left px-4 py-2.5 text-sm hover:bg-status-bg text-cell-secondary">{t("Excel (XLSX)")}</button>
-                                    <button onClick={() => handleExport('pdf')} className="block w-full text-left px-4 py-2.5 text-sm hover:bg-status-bg text-cell-secondary">{t("PDF")}</button>
-                                </div>
-                            )}
-                        </div>
+                    <div className="flex flex-wrap gap-2 justify-center md:justify-end">
+                        <AnalyticsExportMenu onExport={handleExport} />
                         <div className="relative flex items-center">
                             <select className="appearance-none bg-status-bg border border-status-border rounded-xl px-4 py-2 text-sm shadow-sm outline-none text-cell-secondary font-medium cursor-pointer pr-9" value={chartTypeFilter} onChange={(e) => setChartTypeFilter(e.target.value)}>
                                 {CHART_TYPE_OPTIONS.map((opt) => (<option key={opt.value} value={opt.value}>{t(opt.label)}</option>))}

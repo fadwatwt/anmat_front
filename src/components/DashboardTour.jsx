@@ -102,15 +102,25 @@ export default function DashboardTour() {
   const [isOpen, setIsOpen] = useState(false);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [targetRect, setTargetRect] = useState(null);
   const [tooltipPosition, setTooltipPosition] = useState({ top: -9999, left: -9999 });
   const [effectivePosition, setEffectivePosition] = useState("bottom");
   const tooltipRef = useRef(null);
   const posTimerRef = useRef(null);
 
-  const currentStep = tourSteps[currentStepIndex];
-  const isLastStep = currentStepIndex === tourSteps.length - 1;
+  const visibleSteps = isMobile ? tourSteps.filter((step) => step.id !== "sidebar" && !step.id.startsWith("menu-")) : tourSteps;
+  const currentStep = visibleSteps[Math.min(currentStepIndex, visibleSteps.length - 1)];
+  const isLastStep = currentStepIndex >= visibleSteps.length - 1;
   const isFirstStep = currentStepIndex === 0;
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 767px)");
+    const update = () => { setIsMobile(media.matches); setCurrentStepIndex(0); };
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
 
   // All coordinates are viewport-based (position: fixed) — no scroll offsets.
   const updatePosition = useCallback(() => {
@@ -174,7 +184,7 @@ export default function DashboardTour() {
 
     setTooltipPosition({ top, left });
     setEffectivePosition(pos);
-    setTargetRect({ top: rect.top, left: rect.left, width: rect.width, height: rect.height });
+    setTargetRect({ top: rect.top, left: rect.left, bottom: rect.bottom, right: rect.right, width: rect.width, height: rect.height });
   }, [currentStep, isOpen]);
 
   // Initialize tour for new subscribers — فقط على /dashboard حتى لا يشرح لوحة أخرى
@@ -239,7 +249,7 @@ export default function DashboardTour() {
   useEffect(() => () => clearHighlights(), []);
 
   const goToStep = (index) => {
-    if (index >= 0 && index < tourSteps.length) setCurrentStepIndex(index);
+    if (index >= 0 && index < visibleSteps.length) setCurrentStepIndex(index);
   };
 
   const handleNext = () => (isLastStep ? completeTour() : goToStep(currentStepIndex + 1));
@@ -362,7 +372,7 @@ export default function DashboardTour() {
           </div>
 
           <div className="flex items-center justify-center gap-1.5 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-            {tourSteps.map((s, i) => (
+            {visibleSteps.map((s, i) => (
               <button
                 key={s.id}
                 onClick={() => goToStep(i)}

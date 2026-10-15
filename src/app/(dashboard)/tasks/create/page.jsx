@@ -9,6 +9,8 @@ import { useCreateSubscriberTaskMutation } from "@/redux/tasks/subscriberTasksAp
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
 import { useProcessing } from "@/app/providers";
+import PermissionGuard from "@/components/PermissionGuard";
+import { createTaskValidationSchema } from "@/app/(dashboard)/projects/_components/CreateProjectForm/workItemValidation";
 
 function CreateTask() {
     const { t } = useTranslation();
@@ -71,7 +73,7 @@ function CreateTask() {
                 })),
             };
 
-            const response = await createTask(payload).unwrap();
+            await createTask(payload).unwrap();
             setApiResponse({
                 isOpen: true,
                 status: "success",
@@ -96,18 +98,22 @@ function CreateTask() {
     };
 
     return (
+        <PermissionGuard permission="tasks.create">
         <Page title={t("Create a Task")} isBreadcrumbs={true} breadcrumbs={breadcrumbItems}>
             <div className={"max-w-4xl flex flex-col gap-4 w-full mx-auto bg-surface border border-status-border p-5 rounded-2xl"}>
-                <Formik initialValues={initialValues} onSubmit={onSubmit}>
-                    {({ values, handleChange, setFieldValue }) => (
+                <Formik initialValues={initialValues} validationSchema={createTaskValidationSchema(t)} onSubmit={onSubmit}>
+                    {({ values, handleChange, handleBlur, setFieldValue, errors, touched }) => (
                         <Form className="flex flex-col gap-4">
                             <CreateTaskForm
                                 type="task"
                                 values={values}
                                 handleChange={handleChange}
+                                handleBlur={handleBlur}
                                 setFieldValue={setFieldValue}
+                                errors={errors}
+                                touched={touched}
                             />
-                            <div className={"flex justify-between items-center mt-4"}>
+                            <div className={"flex flex-col-reverse sm:flex-row justify-between items-stretch sm:items-center gap-3 mt-4"}>
                                 <div className="flex gap-4">
                                     <button
                                         type="submit"
@@ -136,6 +142,7 @@ function CreateTask() {
                 onConfirm={handleConfirmCreate}
                 title={t("Confirm Task Creation")}
                 message={t("Are you sure you want to create this task?")}
+                isSubmitting={isLoading}
             />
 
             <ApiResponseAlert
@@ -145,6 +152,7 @@ function CreateTask() {
                 onClose={handleCloseAlert}
             />
         </Page>
+        </PermissionGuard>
     );
 }
 

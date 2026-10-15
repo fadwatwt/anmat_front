@@ -1,10 +1,9 @@
-import { useState } from "react";
 import TaskMainInfo from "./SubComponents/TaskMainInfo.jsx";
 import TaskStage from "./SubComponents/TaskStage.jsx";
 import { useTranslation } from "react-i18next";
 import PropTypes from "prop-types";
 
-function CreateTaskForm({ task, type = "project", values, handleChange, setFieldValue, lockedProjectId, lockedProjectName, hideProjectSelect = false }) {
+function CreateTaskForm({ task, type = "project", values, handleChange, handleBlur, setFieldValue, errors, touched, lockedProjectId, lockedProjectName, hideProjectSelect = false }) {
   const { t } = useTranslation();
 
   const handleAddStage = () => {
@@ -28,6 +27,9 @@ function CreateTaskForm({ task, type = "project", values, handleChange, setField
         values={values}
         handleChange={handleChange}
         setFieldValue={setFieldValue}
+        handleBlur={handleBlur}
+        errors={errors}
+        touched={touched}
         lockedProjectId={lockedProjectId}
         lockedProjectName={lockedProjectName}
         hideProjectSelect={hideProjectSelect}
@@ -64,7 +66,10 @@ CreateTaskForm.propTypes = {
   type: PropTypes.string,
   values: PropTypes.object,
   handleChange: PropTypes.func,
+  handleBlur: PropTypes.func,
   setFieldValue: PropTypes.func,
+  errors: PropTypes.object,
+  touched: PropTypes.object,
   lockedProjectId: PropTypes.string,
   lockedProjectName: PropTypes.string,
   hideProjectSelect: PropTypes.bool,

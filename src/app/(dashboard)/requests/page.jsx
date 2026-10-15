@@ -26,8 +26,8 @@ function EmployeeRequestsPage() {
     const canUpdateRequest = usePermission("employee_requests.update");
 
     // API Hooks
-    const { data: requestsData, isLoading } = useGetEmployeeAuthRequestsQuery();
-    const [cancelRequest] = useCancelEmployeeRequestMutation();
+    const { data: requestsData, isLoading, isError, refetch } = useGetEmployeeAuthRequestsQuery();
+    const [cancelRequest, { isLoading: isCancelling }] = useCancelEmployeeRequestMutation();
 
     // Alert states
     const [alertConfig, setAlertConfig] = useState({
@@ -46,7 +46,9 @@ function EmployeeRequestsPage() {
     };
 
     const handleCancel = (index) => {
+        if (!canUpdateRequest) return;
         const request = currentData[index];
+        if (!request || request.status !== "open") return;
         setAlertConfig({
             isOpen: true,
             type: "approval",
@@ -85,6 +87,8 @@ function EmployeeRequestsPage() {
             return [...commonHeaders, { label: t("Vacation Date"), width: "15%" }, { label: t("Reason"), width: "35%" }, { label: t("Status"), width: "15%" }, { label: "", width: "5%" }];
         } else if (activeTab === "SALARY_ADVANCE") {
             return [...commonHeaders, { label: t("Advance By"), width: "15%" }, { label: t("Old Salary"), width: "15%" }, { label: t("Reason"), width: "30%" }, { label: t("Status"), width: "15%" }, { label: "", width: "5%" }];
+        } else if (activeTab === "SHORT_LEAVE") {
+            return [...commonHeaders, { label: t("Leave Date") }, { label: t("From Time") }, { label: t("To Time") }, { label: t("Reason") }, { label: t("Status") }];
         } else { // WORK_DELAY
             return [...commonHeaders, { label: t("Work Due At"), width: "20%" }, { label: t("Reason"), width: "35%" }, { label: t("Status"), width: "15%" }, { label: "", width: "5%" }];
         }
@@ -111,6 +115,13 @@ function EmployeeRequestsPage() {
                 <div key={req._id + "_old_salary"} className="text-cell-secondary">{req.old_salary_amount || t("N/A")}</div>,
                 <div key={req._id + "_reason"} className="text-cell-secondary truncate max-w-[250px]">{req.reason || t("N/A")}</div>
             ];
+        } else if (activeTab === "SHORT_LEAVE") {
+            specificCells = [
+                <span key={req._id + "_date"} dir="ltr">{req.leave_date || t("N/A")}</span>,
+                <span key={req._id + "_from"} dir="ltr">{req.leave_start_time || t("N/A")}</span>,
+                <span key={req._id + "_to"} dir="ltr">{req.leave_end_time || t("N/A")}</span>,
+                <div key={req._id + "_reason"} className="text-cell-secondary truncate max-w-[250px]">{req.reason || t("N/A")}</div>
+            ];
         } else { // WORK_DELAY
             specificCells = [
                 <div key={req._id + "_due"} className="text-cell-primary">
@@ -123,7 +134,7 @@ function EmployeeRequestsPage() {
         return [
             ...commonCells,
             ...specificCells,
-            StatusCell(req.status),
+            StatusCell(req.status === "open" && activeTab === "SHORT_LEAVE" ? "Under Review" : req.status),
         ];
     });
 
@@ -155,12 +166,12 @@ function EmployeeRequestsPage() {
 
     const headerActions = (
         <div className="flex flex-wrap gap-5 items-center justify-between w-full md:w-auto">
-            <div className="flex bg-status-bg rounded-2xl p-1.5 border border-status-border/50">
+            <div className="flex max-w-full overflow-x-auto bg-status-bg rounded-2xl p-1.5 border border-status-border/50 custom-scroll">
                 {Object.keys(labels).map(tab => (
                     <button
                         key={tab}
                         onClick={() => handleTabChange(tab)}
-                        className={`px-6 py-2 text-sm font-semibold rounded-xl transition-all duration-300 ${activeTab === tab ? "bg-surface shadow-md text-primary-base border border-status-border" : "text-cell-secondary hover:text-cell-primary hover:bg-status-bg/50"}`}
+                        className={`flex-shrink-0 whitespace-nowrap px-4 sm:px-6 py-2 text-sm font-semibold rounded-xl transition-all duration-300 ${activeTab === tab ? "bg-surface shadow-md text-primary-base border border-status-border" : "text-cell-secondary hover:text-cell-primary hover:bg-status-bg/50"}`}
                     >
                         {labels[tab]}
                     </button>
@@ -193,10 +204,21 @@ function EmployeeRequestsPage() {
 
     return (
         <Page title={t("My Requests")}>
+            {isError && (
+                <div role="alert" className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
+                    <span className="text-sm font-medium">{t("Your requests could not be loaded")}</span>
+                    <button type="button" onClick={refetch} className="self-start sm:self-auto rounded-xl border border-current px-4 py-2 text-sm font-semibold">
+                        {t("Try Again")}
+                    </button>
+                </div>
+            )}
             <Table
                 title={t("Requests History")}
                 headers={getHeaders()}
                 rows={rows}
+                showStatusFilter={true}
+                rowStatusValues={currentData.map((request) => request.status)}
+                statusOptions={["open", "accepted", "rejected", "cancelled"].map((value) => ({ id: value, value, name: t(value.charAt(0).toUpperCase() + value.slice(1)) }))}
                 isActions={false}
                 customActions={customActions}
                 headerActions={headerActions}
@@ -218,6 +240,7 @@ function EmployeeRequestsPage() {
                     message={alertConfig.message}
                     confirmBtnText={t("Confirm")}
                     cancelBtnText={t("Back")}
+                    isSubmitting={isCancelling}
                 />
             ) : (
                 <ApiResponseAlert

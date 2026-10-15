@@ -7,7 +7,6 @@ import CommentInput from "@/components/CommentInput.jsx";
 import ProjectMembers from "@/app/(dashboard)/projects/[slug]/_components/ProjectMembers.jsx";
 import AttachmentsList from "@/app/(dashboard)/projects/[slug]/_components/AttachmentsList.jsx";
 import ActivityLogs from "@/components/ActivityLogs.jsx";
-import TimeLine from "@/components/TimeLine/TimeLine.jsx";
 import { useTranslation } from "react-i18next";
 import InfoCard from "@/app/(dashboard)/_components/InfoCard.jsx";
 import { useState, useMemo, use } from "react";
@@ -17,14 +16,15 @@ import { filterOptions } from "@/functions/FactoryData.jsx";
 import { useGetTaskLogsQuery } from "@/redux/activity-logs/activityLogsApi";
 import { useGetSubscriberTaskDetailsQuery, useAddSubscriberTaskCommentMutation, useDeleteSubscriberTaskCommentMutation, useEditSubscriberTaskCommentMutation, useEvaluateSubscriberTaskStageMutation, useEvaluateSubscriberTaskMutation, useUploadSubscriberTaskAttachmentMutation, useDeleteSubscriberTaskAttachmentMutation } from "@/redux/tasks/subscriberTasksApi";
 import { useGetEmployeeTaskDetailsQuery, useAddEmployeeTaskCommentMutation, useDeleteEmployeeTaskCommentMutation, useEditEmployeeTaskCommentMutation, useUploadEmployeeTaskAttachmentMutation, useDeleteEmployeeTaskAttachmentMutation } from "@/redux/tasks/employeeTasksApi";
-import useAuthStore from '@/store/authStore.js';
 import { useSelector } from 'react-redux';
 import { selectUser } from '@/redux/auth/authSlice.js';
 import { usePermission } from '@/Hooks/usePermission';
-import CreateTeamModal from "@/app/(dashboard)/projects/_modal/CreateTeamModal";
-import { RiGroupFill } from "react-icons/ri";
 import StarRating from "@/components/StarRating";
 import EvaluationDetailsModal from "@/components/Modal/EvaluationDetailsModal";
+import RecordPageState from "@/app/(dashboard)/_components/RecordPageState";
+import PropTypes from "prop-types";
+import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
+import { getApiErrorMessage } from "@/functions/apiErrorMessage";
 
 function TaskDetailsPage({ params }) {
     const { t } = useTranslation();
@@ -39,8 +39,8 @@ function TaskDetailsPage({ params }) {
     const currentUserId = user?._id;
 
     const useGetDetails = authUserType === "Subscriber" ? useGetSubscriberTaskDetailsQuery : useGetEmployeeTaskDetailsQuery;
-    const { data: task, isLoading, isError } = useGetDetails(taskId, {
-        skip: !taskId
+    const { data: task, isLoading, isError, error, refetch } = useGetDetails(taskId, {
+        skip: !taskId || !authUserType
     });
 
     const { data: taskLogsData, isLoading: isLogsLoading } = useGetTaskLogsQuery(
@@ -62,6 +62,11 @@ function TaskDetailsPage({ params }) {
     const [uploadEmployeeAttachment, { isLoading: isEmpUploading }] = useUploadEmployeeTaskAttachmentMutation();
     const [deleteSubscriberAttachment] = useDeleteSubscriberTaskAttachmentMutation();
     const [deleteEmployeeAttachment] = useDeleteEmployeeTaskAttachmentMutation();
+    const [operationResponse, setOperationResponse] = useState({ isOpen: false, status: "", message: "" });
+
+    const showOperationResponse = (status, message) => {
+        setOperationResponse({ isOpen: true, status, message });
+    };
 
     const [loadingComments, setLoadingComments] = useState({});
 
@@ -80,8 +85,10 @@ function TaskDetailsPage({ params }) {
             } else {
                 await uploadEmployeeAttachment({ taskId, formData }).unwrap();
             }
+            showOperationResponse("success", t("Attachment uploaded successfully"));
         } catch (error) {
-            console.error("Failed to upload attachment: ", error);
+            showOperationResponse("error", getApiErrorMessage(error, t("Failed to upload attachment")));
+            throw error;
         }
     };
 
@@ -92,8 +99,9 @@ function TaskDetailsPage({ params }) {
             } else {
                 await deleteEmployeeAttachment({ taskId, attachmentId }).unwrap();
             }
+            showOperationResponse("success", t("Attachment deleted successfully"));
         } catch (error) {
-            console.error("Failed to delete attachment: ", error);
+            showOperationResponse("error", getApiErrorMessage(error, t("Failed to delete attachment")));
         }
     };
 
@@ -104,8 +112,10 @@ function TaskDetailsPage({ params }) {
             } else {
                 await addEmployeeComment({ taskId, text }).unwrap();
             }
+            showOperationResponse("success", t("Comment added successfully"));
         } catch (error) {
-            console.error("Failed to add comment: ", error);
+            showOperationResponse("error", getApiErrorMessage(error, t("Failed to add comment")));
+            throw error;
         }
     };
 
@@ -117,8 +127,9 @@ function TaskDetailsPage({ params }) {
             } else {
                 await deleteEmployeeComment({ taskId, commentId }).unwrap();
             }
+            showOperationResponse("success", t("Comment deleted successfully"));
         } catch (error) {
-            console.error("Failed to delete comment: ", error);
+            showOperationResponse("error", getApiErrorMessage(error, t("Failed to delete comment")));
         } finally {
             setLoadingComments((prev) => ({ ...prev, [commentId]: null }));
         }
@@ -132,8 +143,10 @@ function TaskDetailsPage({ params }) {
             } else {
                 await editEmployeeComment({ taskId, commentId, text }).unwrap();
             }
+            showOperationResponse("success", t("Comment updated successfully"));
         } catch (error) {
-            console.error("Failed to edit comment: ", error);
+            showOperationResponse("error", getApiErrorMessage(error, t("Failed to update comment")));
+            throw error;
         } finally {
             setLoadingComments((prev) => ({ ...prev, [commentId]: null }));
         }
@@ -164,9 +177,10 @@ function TaskDetailsPage({ params }) {
                         data: evaluationPayload
                     }).unwrap();
                 }
+                showOperationResponse("success", t("Evaluation submitted successfully"));
             }
         } catch (error) {
-            console.error("Failed to evaluate stage: ", error);
+            showOperationResponse("error", getApiErrorMessage(error, t("Failed to submit evaluation")));
         }
     };
 
@@ -201,7 +215,7 @@ function TaskDetailsPage({ params }) {
 
         if (filterBy === "all") return stages;
         return filterAndSortTasks(stages, filterBy, true);
-    }, [task?.stages, filterBy]);
+    }, [task?.stages, filterBy, taskId, t]);
 
     const infoCardData = useMemo(() => {
         if (!task) return null;
@@ -227,9 +241,8 @@ function TaskDetailsPage({ params }) {
 
     const canDeleteAttachments = usePermission("attachments.delete");
     const canUploadAttachments = usePermission("attachments.upload");
-    const canManageTeam = usePermission("tasks.manage_participants");
     const canComment = usePermission("tasks.comment");
-    const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
+    const canEditTask = usePermission("tasks.update");
     const [isEvalDetailsOpen, setIsEvalDetailsOpen] = useState(false);
 
     const taskAvgRating = useMemo(() => {
@@ -241,9 +254,7 @@ function TaskDetailsPage({ params }) {
     if (isLoading) {
         return (
             <Page title={t("Task Details")} isBreadcrumbs={true} breadcrumbs={breadcrumbItems}>
-                <div className="flex items-center justify-center h-64">
-                    <p className="text-cell-secondary">{t("Loading task details...")}</p>
-                </div>
+                <RecordPageState loading />
             </Page>
         );
     }
@@ -251,48 +262,52 @@ function TaskDetailsPage({ params }) {
     if (isError || !task) {
         return (
             <Page title={t("Task Details")} isBreadcrumbs={true} breadcrumbs={breadcrumbItems}>
-                <div className="flex items-center justify-center h-64 text-red-500 text-center">
-                    <p>{t("Failed to load task details. Please try again later.")}</p>
-                </div>
+                <RecordPageState
+                    notFound={error?.status === 404 || error?.originalStatus === 404}
+                    onRetry={refetch}
+                    onBack={() => router.push("/tasks")}
+                />
             </Page>
         );
     }
 
     return (
         <>
-            {(canManageTeam && false) && (
-                <CreateTeamModal
-                    isOpen={isTeamModalOpen}
-                    onClose={() => setIsTeamModalOpen(false)}
-                    taskId={taskId}
-                />
-            )}
-            <Page title={t("Task Details")} isBreadcrumbs={true} breadcrumbs={breadcrumbItems}>
-                <div className={"w-full flex items-start gap-8 flex-col md:flex-row h-full"}>
-                    <div className={"flex flex-col gap-6 md:w-[60%] w-full "}>
-                        <InfoCard type={"task"} data={infoCardData} handelEditAction={handleEditPageNavigation} />
-                        <div className={"p-4 bg-surface rounded-2xl w-full flex flex-col gap-3 h-96"}>
-                            <div className={"title-header pb-3 w-full flex items-center justify-between "}>
-                                <p className={"text-lg"}>{t("Task Stages")} </p>
+            <Page title={t("Task Details")} isBreadcrumbs={true} breadcrumbs={breadcrumbItems} className="gap-5">
+                <div className="w-full grid grid-cols-1 xl:grid-cols-[minmax(0,1.7fr)_minmax(300px,1fr)] gap-5 xl:gap-6 items-start">
+                    <main className="min-w-0 flex flex-col gap-5">
+                        <InfoCard type={"task"} data={infoCardData} handelEditAction={canEditTask ? handleEditPageNavigation : undefined} />
+                        <section className="p-4 sm:p-5 bg-surface rounded-[24px] border border-status-border shadow-sm w-full flex flex-col gap-4 min-h-72">
+                            <div className="title-header pb-3 w-full flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-status-border">
+                                <div>
+                                    <h2 className="text-lg font-bold text-table-title">{t("Task Stages")}</h2>
+                                    <p className="text-xs text-cell-secondary mt-1">{mappedStages.length} {t("Stages")}</p>
+                                </div>
                                 <SelectWithoutLabel
                                     title={t("Filter by")}
                                     options={filterOptions}
                                     onChange={(val) => setFilterBy(val)}
-                                    className={"w-[120px] h-[36px]"}
+                                    className="w-full sm:w-[150px] h-[40px]"
                                 />
                             </div>
-                            <TasksList isAssignedDate={true} tasks={mappedStages} onEvaluateStage={handleEvaluateStage} showStagesCount={false} />
-                        </div>
+                            <TasksList
+                                isAssignedDate={true}
+                                tasks={mappedStages}
+                                onEvaluateStage={handleEvaluateStage}
+                                showStagesCount={false}
+                                showAssignees={false}
+                            />
+                        </section>
                         {taskAvgRating > 0 && (
-                            <div className="p-4 bg-surface rounded-2xl w-full flex items-center justify-between">
-                                <p className="text-lg">{t("Evaluation")}</p>
+                            <div className="p-4 sm:p-5 bg-surface rounded-[24px] border border-status-border shadow-sm w-full flex items-center justify-between gap-3">
+                                <h2 className="text-lg font-bold text-table-title">{t("Evaluation")}</h2>
                                 <StarRating rating={taskAvgRating} onClickRate={() => setIsEvalDetailsOpen(true)} />
                             </div>
                         )}
-                        {canComment && <div className={"bg-surface rounded-2xl w-full flex flex-col gap-3"}>
-                            <div className={"p-4 flex flex-col gap-3"}>
+                        {canComment && <section className="bg-surface rounded-[24px] border border-status-border shadow-sm w-full flex flex-col gap-3 overflow-hidden">
+                            <div className="p-4 sm:p-5 flex flex-col gap-3">
                                 <div className={"title-header w-full flex items-center justify-between"}>
-                                    <p className={"text-lg "}>{t("Comments")}</p>
+                                    <h2 className="text-lg font-bold text-table-title">{t("Comments")}</h2>
                                 </div>
                                 <TaskComments 
                                     comments={task.comments || []} 
@@ -304,36 +319,26 @@ function TaskDetailsPage({ params }) {
                                 />
                             </div>
                             <CommentInput onSend={handleAddComment} isLoading={isAddingComment} />
-                        </div>}
-                    </div>
-                    <div className={"flex-1 flex flex-col gap-6"}>
+                        </section>}
+                    </main>
+                    <aside className="min-w-0 flex flex-col gap-5 xl:sticky xl:top-5">
                         <div className="flex flex-col gap-3">
-                            <ProjectMembers members={assigneeMember} title={t("Assignee Employee")} canAddMember={canManageTeam} canDeleteMember={canManageTeam} />
-                            {(canManageTeam && false) && (
-                                <button
-                                    onClick={() => setIsTeamModalOpen(true)}
-                                    className="flex items-center gap-2 px-4 py-2 bg-primary-base text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity w-fit"
-                                >
-                                    <RiGroupFill size={16} />
-                                    {t("Manage Team")}
-                                </button>
-                            )}
+                            <ProjectMembers members={assigneeMember} title={t("Assignee Employee")} canAddMember={false} canDeleteMember={false} />
                         </div>
                         {/* Hiding components not yet linked to backend data */}
-                        {true && <AttachmentsList
+                        <AttachmentsList
                             attachments={task.attachments || []}
                             onUpload={canUploadAttachments ? handleUploadAttachment : null}
                             onDelete={canDeleteAttachments ? handleDeleteAttachment : null}
                             isUploading={isUploadingAttachment}
-                        />}
+                        />
                         <ActivityLogs
                             activityLogs={taskActivityLogs}
                             isRawLogs={true}
                             isLoading={isLogsLoading}
                             className={"h-72"}
                         />
-                        {false && <TimeLine />}
-                    </div>
+                    </aside>
                 </div>
             </Page>
             <EvaluationDetailsModal
@@ -341,8 +346,18 @@ function TaskDetailsPage({ params }) {
                 onClose={() => setIsEvalDetailsOpen(false)}
                 ratings={task.ratings}
             />
+            <ApiResponseAlert
+                isOpen={operationResponse.isOpen}
+                status={operationResponse.status}
+                message={operationResponse.message}
+                onClose={() => setOperationResponse(prev => ({ ...prev, isOpen: false }))}
+            />
         </>
     );
 }
+
+TaskDetailsPage.propTypes = {
+    params: PropTypes.any.isRequired,
+};
 
 export default TaskDetailsPage;

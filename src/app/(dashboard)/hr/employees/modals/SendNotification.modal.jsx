@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import ElementsSelect from "@/components/Form/ElementsSelect";
 import Modal from "@/components/Modal/Modal";
 import InputAndLabel from "@/components/Form/InputAndLabel";
@@ -94,6 +95,10 @@ function SendNotificationModal({ isOpen, onClose, employeeData, departmentData }
             setApiResponse({ isOpen: true, status: "error", message: t("Please enter a message") });
             return;
         }
+        if (!departmentData && selectedEmployeeIds.length === 0) {
+            setApiResponse({ isOpen: true, status: "error", message: t("Please select at least one employee") });
+            return;
+        }
 
         // Determine target
         let target = "all_employees";
@@ -113,7 +118,7 @@ function SendNotificationModal({ isOpen, onClose, employeeData, departmentData }
         }
 
         try {
-            await sendNotification({
+            const response = await sendNotification({
                 notification_type_id: selectedTypeId,
                 title: title.trim(),
                 message: message.trim(),
@@ -122,7 +127,17 @@ function SendNotificationModal({ isOpen, onClose, employeeData, departmentData }
                 employee_ids,
             }).unwrap();
 
-            setApiResponse({ isOpen: true, status: "success", message: t("Notification sent successfully") });
+            const sentCount = response?.data?.sent;
+            const failedCount = response?.data?.failed || 0;
+            setApiResponse({
+                isOpen: true,
+                status: failedCount > 0 ? "warning" : "success",
+                message: failedCount > 0
+                    ? t("notifications.send_summary", { sent: sentCount || 0, failed: failedCount })
+                    : (sentCount
+                        ? `${t("Notification sent successfully")} (${sentCount})`
+                        : t("Notification sent successfully"))
+            });
         } catch (error) {
             setApiResponse({
                 isOpen: true,
@@ -149,7 +164,7 @@ function SendNotificationModal({ isOpen, onClose, employeeData, departmentData }
             isOpen={isOpen}
             onClose={handleClose}
             isBtns={true}
-            isHideCancel={true}
+            isHideCancel={false}
             btnApplyTitle={t("Send")}
             onClick={handleSend}
             isLoading={isLoading}
@@ -252,3 +267,16 @@ function SendNotificationModal({ isOpen, onClose, employeeData, departmentData }
 }
 
 export default SendNotificationModal;
+
+SendNotificationModal.propTypes = {
+    isOpen: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
+    employeeData: PropTypes.shape({
+        user_id: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+        user: PropTypes.shape({ name: PropTypes.string }),
+    }),
+    departmentData: PropTypes.shape({
+        _id: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+        name: PropTypes.string,
+    }),
+};

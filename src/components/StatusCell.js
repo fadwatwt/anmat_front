@@ -140,6 +140,11 @@ const statusConfig = {
         icon: <RiInformationLine size={15} className="text-yellow-700 dark:text-yellow-400" />,
         textColor: "text-yellow-700 dark:text-yellow-400",
     },
+    "under-review": {
+        bgColor: "bg-yellow-50 dark:bg-yellow-900/20",
+        icon: <RiTimeLine size={15} className="text-yellow-700 dark:text-yellow-400" />,
+        textColor: "text-yellow-700 dark:text-yellow-400",
+    },
     "in-progress": {
         bgColor: "bg-blue-50 dark:bg-blue-900/20",
         icon: <RiTimeLine size={15} className="text-blue-700 dark:text-blue-400" />,
@@ -161,7 +166,7 @@ const statusCell = (status, _id) => {
     };
 
     return (
-        <div key={`${_id}_status`} className="px-2 py-1">
+        <div key={`${_id}_status`} data-status={statusKey} className="px-2 py-1">
             <div
                 key={`status-${status}`}
                 className={`flex items-center justify-center gap-1 ${config.bgColor ? config.bgColor : "bg-status-bg"} border border-status-border px-1 py-1 rounded-md`}

@@ -61,7 +61,7 @@ const Header = React.memo(({ taggleSlidebarOpen, toggleSlidebarOpen, className }
     >
       <button
         onClick={handleMenuClick}
-        className="inline-flex items-center justify-center p-2.5 h-10 w-10 text-cell-secondary rounded-xl md:hidden hover:bg-status-bg focus-visible:outline-none focus:ring-2 focus:ring-primary-base"
+        className="inline-flex shrink-0 items-center justify-center p-2 h-9 w-9 text-cell-secondary rounded-xl md:hidden hover:bg-status-bg focus-visible:outline-none focus:ring-2 focus:ring-primary-base"
         aria-label={t("Open menu")}
       >
         <HiOutlineMenuAlt2 size={20} />
@@ -70,7 +70,7 @@ const Header = React.memo(({ taggleSlidebarOpen, toggleSlidebarOpen, className }
         <SearchInput />
       </div>
       <div className={"flex gap-2 sm:gap-4 items-center"}>
-        <div className={"icons flex gap-1.5 sm:gap-2 items-center relative w-auto justify-end"}>
+        <div className={"icons flex gap-0.5 sm:gap-2 items-center relative w-auto justify-end"}>
           <button
             onClick={toggleTheme}
             className="p-2.5 rounded-xl text-cell-secondary hover:bg-status-bg transition-colors border border-transparent hover:border-status-border"
@@ -81,7 +81,7 @@ const Header = React.memo(({ taggleSlidebarOpen, toggleSlidebarOpen, className }
           </button>
           <button
             onClick={toggleLanguage}
-            className="px-3 py-2 rounded-xl text-cell-secondary hover:bg-status-bg transition-colors text-sm font-semibold border border-status-border min-w-[64px]"
+            className="px-2 sm:px-3 py-2 rounded-xl text-cell-secondary hover:bg-status-bg transition-colors text-xs sm:text-sm font-semibold border border-status-border min-w-[52px] sm:min-w-[64px]"
             title={i18n.language === "ar" ? t("Switch to English") : t("التبديل إلى العربية")}
             aria-label={i18n.language === "ar" ? t("Switch to English") : t("التبديل إلى العربية")}
           >

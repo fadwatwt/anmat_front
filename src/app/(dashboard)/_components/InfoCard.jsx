@@ -1,7 +1,6 @@
 "use client";
 import Status from "@/app/(dashboard)/projects/_components/TableInfo/Status.jsx";
 import { PiDotsThreeVerticalBold } from "react-icons/pi";
-import ReadMore from "@/components/ReadMore.jsx";
 import ProjectProgress from "@/app/(dashboard)/projects/[slug]/_components/ProjectProgress.jsx";
 import { FaTasks } from "react-icons/fa";
 import { FaCircleCheck } from "react-icons/fa6";
@@ -13,108 +12,94 @@ import { translateDate } from "@/functions/Days.js";
 import ActionsBtns from "@/components/ActionsBtns.jsx";
 import useDropdown from "@/Hooks/useDropdown.js";
 import StarRating from "@/components/StarRating.jsx";
+import { RiBriefcase4Line, RiTaskLine } from "@remixicon/react";
 
 function InfoCard({ type, data, handelEditAction, rate, onRate }) {
     const { t } = useTranslation();
     const [dropdownOpen, setDropdownOpen] = useDropdown();
 
-    const name = data?.name || data?.title || (type === "project" ? "Project Omega" : "Taking a good look at the current website design.");
+    const name = data?.name || data?.title || t("Untitled");
 
-    const description = data?.description || (type === "project" ?
-        "The website could really use a makeover to make it more user-friendly and visually appealing. We want to go for a fresh, modern look that keeps up with the latest design trends. The new design should make it super easy to navigate and read" :
-        "Revamp the website to enhance user-friendliness and visual appeal. Aim for a sleek, contemporary design that aligns with current trends. The updated layout should prioritize easy navigation and readability.");
-
-    const stages = data?.stages || (type === "project" ? [
-        "Taking a good look at the current website design.",
-        "Working with the UI/UX team to sketch out some wireframes and mockups.",
-        "Tweaking the design based on what everyone thinks.",
-        "Putting the final design changes into action with HTML, CSS, and JavaScript.",
-        "Testing the site on various devices and browsers."
-    ] : [
-        "Assess the current website design thoroughly.",
-        "Collaborate with the UI/UX team to create detailed wireframes and mockups.",
-        "Refine the design based on team feedback.",
-        "Implement the final design changes using HTML, CSS, and JavaScript.",
-        "Conduct testing across multiple devices and browsers."
-    ]);
+    const description = data?.description || t("No description available");
 
     const status = data?.status || "Active";
-
-    const stagesTitle = type === "project" ? "Key Tasks" : "Task Steps";
 
     const handleDropdownToggle = () => {
         setDropdownOpen((prev) => !prev);  // Toggle the dropdown state
     };
 
     return (
-        <div className={"flex flex-col p-4 w-full bg-surface rounded-2xl gap-3"}>
-            <div className={"title-header re w-full flex justify-between items-center flex-wrap gap-2"}>
-                <div className={"flex gap-2 items-center flex-wrap"}>
-                    <p className={"text-xl text-table-title"}>{name}</p>
+        <section className={`relative flex flex-col w-full bg-surface rounded-[24px] border border-status-border shadow-sm ${dropdownOpen ? "z-40" : "z-0"}`}>
+            <div className="absolute inset-x-0 top-0 h-1 rounded-t-[24px] bg-gradient-to-r from-primary-base via-blue-400 to-cyan-400" />
+            <div className="flex flex-col gap-5 p-4 sm:p-6">
+            <div className={"title-header w-full flex justify-between items-start gap-3"}>
+                <div className={"min-w-0 flex gap-3 items-start"}>
+                    <div className="hidden sm:flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary-base/10 text-primary-base dark:bg-primary-base/20">
+                        {type === "project" ? <RiBriefcase4Line size={23} /> : <RiTaskLine size={23} />}
+                    </div>
+                    <div className="min-w-0 flex flex-col gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
+                    <h1 className={"text-xl sm:text-2xl font-bold text-table-title break-words"}>{name}</h1>
                     <Status type={status} title={status} />
                     {rate !== undefined && (
                         <StarRating rating={rate} onClickRate={onRate} />
                     )}
+                    </div>
                     <span className={"inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-badge-bg text-cell-primary text-xs font-medium border border-status-border"}>
                         <HiOutlineBuildingOffice2 className={"text-primary-base"} size={14} />
                         {data?.department || t("No Department")}
                     </span>
+                    </div>
                 </div>
-                <div className="relative cursor-pointer dropdown-container" onClick={handleDropdownToggle}>
-                    <PiDotsThreeVerticalBold />
-                    {dropdownOpen && <ActionsBtns className={"mt-5"} isDeleteBtn={false} handleEdit={handelEditAction} />}
-                </div>
+                {handelEditAction && <div className="relative shrink-0 dropdown-container">
+                    <button
+                        type="button"
+                        aria-label={t("Actions")}
+                        aria-expanded={Boolean(dropdownOpen)}
+                        className="cursor-pointer rounded-xl p-2 text-cell-secondary hover:bg-status-bg transition-colors"
+                        onClick={handleDropdownToggle}
+                    >
+                        <PiDotsThreeVerticalBold size={20} />
+                    </button>
+                    {dropdownOpen && <ActionsBtns className="!z-[100] !mt-2 top-full end-0" isDeleteBtn={false} handleEdit={handelEditAction} />}
+                </div>}
             </div>
 
-            <div className={"description flex flex-col gap-1 items-start"}>
-                <p className={"text-sm text-cell-primary"}>{t("Description")}:</p>
-                <p className={"text-xs text-cell-secondary text-start"}>{description}</p>
+            <div className={"description flex flex-col gap-1.5 items-start rounded-2xl bg-status-bg/70 border border-status-border p-4"}>
+                <p className={"text-xs font-semibold uppercase tracking-wide text-cell-secondary"}>{t("Description")}</p>
+                <p className={"text-sm leading-6 text-cell-primary text-start break-words"}>{description}</p>
             </div>
 
             {type === "project" && (
-                <ProjectProgress lastUpdate={data?.lastUpdate || "2025-01-12T08:00:00"} progress={data?.progress ?? 0} />
+                <ProjectProgress lastUpdate={data?.lastUpdate} progress={data?.progress ?? 0} />
             )}
 
-            <div className={"flex p-4 h-full rounded-xl bg-status-bg border border-status-border justify-between"}>
+            <div className={"grid grid-cols-1 min-[420px]:grid-cols-2 xl:grid-cols-4 gap-3"}>
                 <IconWithTitleAndNumber title={"All Tasks"} icon={<FaTasks className={"text-primary-400 dark:text-primary-base"} />} text={String(data?.totalTasks ?? 0)} />
-                <div className="line w-[1px] bg-status-border"></div>
                 <IconWithTitleAndNumber title={"Completed Tasks"} icon={<FaCircleCheck className={"text-green-600 dark:text-green-400"} />} text={String(data?.completedTasks ?? 0)} />
-                <div className="line w-[1px] bg-status-border"></div>
-                <IconWithTitleAndNumber title={"Assigned Date"} icon={<HiOutlineCalendarDateRange className={"text-cyan-600"} />} date={data?.assignedDate || "2025-03-16T14:30:00"} />
-                <div className="line w-[1px] bg-status-border"></div>
-                <IconWithTitleAndNumber title={"Due Date"} icon={<HiOutlineCalendarDateRange />} date={data?.dueDate || "2025-01-15T14:30:00"} />
+                <IconWithTitleAndNumber title={"Assigned Date"} icon={<HiOutlineCalendarDateRange className={"text-cyan-600"} />} date={data?.assignedDate} text={!data?.assignedDate ? t("N/A") : undefined} />
+                <IconWithTitleAndNumber title={"Due Date"} icon={<HiOutlineCalendarDateRange />} date={data?.dueDate} text={!data?.dueDate ? t("N/A") : undefined} />
             </div>
-        </div>
+            </div>
+        </section>
     );
 }
 
 function IconWithTitleAndNumber({ title, icon, text, date }) {
     const { t } = useTranslation();
     return (
-        <div className={"flex gap-3 items-center"}>
-            <div className={"p-[6px] rounded-full bg-badge-bg"}>
+        <div className={"flex min-w-0 gap-3 items-center rounded-2xl border border-status-border bg-surface p-3"}>
+            <div className={"shrink-0 p-2 rounded-xl bg-badge-bg text-primary-base"}>
                 {icon && React.cloneElement(icon)}
             </div>
             <div className={"flex flex-col items-start"}>
                 <p className={"text-cell-secondary text-xs"}>{t(title)}</p>
-                {text && <p className={"text-sm text-cell-primary"}>{text}</p>}
-                {date && <p className={"text-sm text-cell-primary"}>{translateDate(date)}</p>}
+                {text && <p className={"text-sm font-semibold text-cell-primary"}>{text}</p>}
+                {date && <p className={"text-sm font-semibold text-cell-primary whitespace-nowrap"}>{translateDate(date)}</p>}
             </div>
         </div>
     );
 }
-
-function TaskOrStage({ stage }) {
-    return (
-        <div className="list-key-tasks flex flex-col items-start">
-            <p className="text-xs text-soft-400 dark:text-soft-200 text-start">{stage}</p>
-        </div>
-    );
-}
-
-TaskOrStage.propTypes = {
-    stage: PropTypes.string.isRequired,
-};
 
 InfoCard.propTypes = {
     type: PropTypes.oneOf(["project", "task"]).isRequired,

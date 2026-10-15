@@ -5,8 +5,9 @@ import { useGetDepartmentsQuery } from "@/redux/departments/departmentsApi";
 import { useGetSubscriberRolesQuery } from "@/redux/roles/subscriberRolesApi";
 import MultiSelect from "@/components/Form/MultiSelect";
 import { useMemo } from "react";
+import PropTypes from "prop-types";
 
-function WorkAndRatingInfoForm({ formData, updateFormData, isEdit = false }) {
+function WorkAndRatingInfoForm({ formData, updateFormData, errors = {} }) {
     const { t } = useTranslation();
 
     const { data: departmentsData, isLoading: isDeptsLoading } = useGetDepartmentsQuery();
@@ -93,6 +94,7 @@ function WorkAndRatingInfoForm({ formData, updateFormData, isEdit = false }) {
                         isRequired={true}
                         placeholder={t("1200")}
                         value={formData.employee_detail.salary}
+                        error={errors.salary}
                         onChange={(e) => updateFormData("salary", e.target.value === '' ? '' : Number(e.target.value), true)}
                     />
                     <ElementsSelect
@@ -102,6 +104,7 @@ function WorkAndRatingInfoForm({ formData, updateFormData, isEdit = false }) {
                         onChange={(val) => updateFormData("shift_type", val[0]?.id || "HOURS", true)}
                         name="shift_type"
                         classNameContainer={"w-full"}
+                        error={errors.shift_type}
                     />
                     
                     {formData.employee_detail.shift_type === "HOURS" ? (
@@ -111,6 +114,7 @@ function WorkAndRatingInfoForm({ formData, updateFormData, isEdit = false }) {
                             isRequired={true}
                             placeholder={t("8")}
                             value={formData.employee_detail.work_hours}
+                            error={errors.work_hours}
                             onChange={(e) => updateFormData("work_hours", e.target.value === '' ? '' : Number(e.target.value), true)}
                         />
                     ) : (
@@ -120,6 +124,7 @@ function WorkAndRatingInfoForm({ formData, updateFormData, isEdit = false }) {
                                 title={t("Shift Start Time")}
                                 isRequired={true}
                                 value={formData.employee_detail.shift_start_time}
+                                error={errors.shift_start_time}
                                 onChange={(e) => updateFormData("shift_start_time", e.target.value, true)}
                             />
                             <InputAndLabel
@@ -127,6 +132,7 @@ function WorkAndRatingInfoForm({ formData, updateFormData, isEdit = false }) {
                                 title={t("Shift End Time")}
                                 isRequired={true}
                                 value={formData.employee_detail.shift_end_time}
+                                error={errors.shift_end_time}
                                 onChange={(e) => updateFormData("shift_end_time", e.target.value, true)}
                             />
                         </>
@@ -138,6 +144,7 @@ function WorkAndRatingInfoForm({ formData, updateFormData, isEdit = false }) {
                         isRequired={true}
                         placeholder={t("14")}
                         value={formData.employee_detail.yearly_day_offs}
+                        error={errors.yearly_day_offs}
                         onChange={(e) => updateFormData("yearly_day_offs", e.target.value === '' ? '' : Number(e.target.value), true)}
                     />
                     <ElementsSelect
@@ -156,6 +163,7 @@ function WorkAndRatingInfoForm({ formData, updateFormData, isEdit = false }) {
                         isRequired={false}
                         placeholder={t("Leave empty for unlimited")}
                         value={formData.employee_detail.storage_quota === null ? "" : formData.employee_detail.storage_quota}
+                        error={errors.storage_quota}
                         onChange={(e) => updateFormData("storage_quota", e.target.value === '' ? '' : Number(e.target.value), true)}
                     />
                 </div>
@@ -163,5 +171,25 @@ function WorkAndRatingInfoForm({ formData, updateFormData, isEdit = false }) {
         </div>
     );
 }
+
+WorkAndRatingInfoForm.propTypes = {
+    formData: PropTypes.shape({
+        employee_detail: PropTypes.shape({
+            department_id: PropTypes.string,
+            position_id: PropTypes.string,
+            roles_ids: PropTypes.arrayOf(PropTypes.string),
+            salary: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+            shift_type: PropTypes.string,
+            work_hours: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+            shift_start_time: PropTypes.string,
+            shift_end_time: PropTypes.string,
+            yearly_day_offs: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+            weekend_days: PropTypes.arrayOf(PropTypes.string),
+            storage_quota: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        }).isRequired,
+    }).isRequired,
+    updateFormData: PropTypes.func.isRequired,
+    errors: PropTypes.object,
+};
 
 export default WorkAndRatingInfoForm;

@@ -11,6 +11,7 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
+  { ignores: ['.next/**', 'out/**', 'dist/**', 'coverage/**', 'playwright-report/**', 'test-results/**', 'e2e/reports/**'] },
   ...compat.extends("next/core-web-vitals"),
   {
     languageOptions: {
@@ -19,6 +20,10 @@ const eslintConfig = [
         ...globals.browser,
       },
     },
+  },
+  {
+    files: ['**/*.test.{js,jsx}', '**/__tests__/**/*.{js,jsx}', 'jest.setup.js'],
+    languageOptions: { globals: globals.jest },
   },
 ];
 

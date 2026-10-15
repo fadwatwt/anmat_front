@@ -120,6 +120,7 @@ const permissionTranslations = {
   "chats.cross_department_scope": { en: "Cross-Department Chat Scope", ar: "نطاق المحادثة بين الأقسام" },
   "chats.manage_participants": { en: "Manage Chat Participants", ar: "إدارة المشاركين في المحادثة" },
   "chats.export": { en: "Export Chat History", ar: "تصدير سجل المحادثة" },
+  "chats.upload": { en: "Upload Chat Attachments", ar: "رفع مرفقات المحادثة" },
   "chats.manage_settings": { en: "Manage Chat Settings", ar: "إدارة إعدادات المحادثة" },
   "chats.call": { en: "Make Voice/Video Calls", ar: "إجراء مكالمات صوتية/فيديو" },
 

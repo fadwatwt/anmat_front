@@ -5,6 +5,7 @@ import MessageInput from '../MessageInput';
 
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key) => key }) }));
 jest.mock('emoji-picker-react', () => () => null);
+jest.mock('@/Hooks/usePermission', () => ({ usePermission: () => true }));
 jest.mock('lucide-react', () => ({
   Send: () => null,
   Paperclip: () => null,

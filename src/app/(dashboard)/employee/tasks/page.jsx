@@ -209,6 +209,15 @@ function MyTasksPage() {
                 isCheckInput={false}
                 customActions={customActions}
                 showStatusFilter={true}
+                statusOptions={[
+                  { id: "open", value: "open", name: t("Open") },
+                  { id: "pending", value: "pending", name: t("Pending") },
+                  { id: "in-progress", value: "in-progress", name: t("In Progress") },
+                  { id: "completed", value: "completed", name: t("Completed") },
+                  { id: "done", value: "done", name: t("Done") },
+                  { id: "rejected", value: "rejected", name: t("Rejected") },
+                  { id: "cancelled", value: "cancelled", name: t("Cancelled") },
+                ]}
                 isActions={false}
               />
             )}

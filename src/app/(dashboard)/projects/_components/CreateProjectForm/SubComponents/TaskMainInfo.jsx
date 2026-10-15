@@ -10,7 +10,7 @@ import { useGetSubscriberProjectsQuery } from "@/redux/projects/subscriberProjec
 import TagInput from "@/components/Form/TagInput";
 import { defaultPhoto } from "@/Root.Route";
 
-function TaskMainInfo({ task, type = "project", values, handleChange, setFieldValue, lockedProjectId, lockedProjectName, hideProjectSelect = false }) {
+function TaskMainInfo({ type = "project", values, handleChange, handleBlur, setFieldValue, errors = {}, touched = {}, lockedProjectId, lockedProjectName, hideProjectSelect = false }) {
   const { t } = useTranslation();
 
   // Fetch real employees
@@ -119,6 +119,7 @@ function TaskMainInfo({ task, type = "project", values, handleChange, setFieldVa
             name="project_id"
             placeholder={isLoadingProjects ? t("Loading...") : t("Select Project...")}
             isRequired
+            error={touched.project_id ? errors.project_id : undefined}
           />
         )
       )}
@@ -132,6 +133,8 @@ function TaskMainInfo({ task, type = "project", values, handleChange, setFieldVa
         title={type === "project" ? t("Project Name") : t("Task Title")}
         placeholder={type === "project" ? t("Project Name") : t("Task Title")}
         isRequired
+        onBlur={handleBlur}
+        error={touched[type === "project" ? "name" : "title"] ? errors[type === "project" ? "name" : "title"] : undefined}
       />
 
       {/* Description */}
@@ -141,6 +144,7 @@ function TaskMainInfo({ task, type = "project", values, handleChange, setFieldVa
         name="description"
         title={t("Description")}
         placeholder={t("Add a description")}
+        onBlur={handleBlur}
       />
 
       <div className={"grid grid-cols-1 md:grid-cols-2 gap-4"}>
@@ -152,7 +156,7 @@ function TaskMainInfo({ task, type = "project", values, handleChange, setFieldVa
           value={getSingleValue(values?.department_id, optionsDepartment)}
           onChange={(val) => handleSelectChange("department_id", val)}
           name="department_id"
-          placeholder={t("Select Department...")}
+          placeholder={isLoadingDepartments ? t("Loading...") : t("Select Department...")}
         />
 
         {/* Priority (only for Task) */}
@@ -192,6 +196,7 @@ function TaskMainInfo({ task, type = "project", values, handleChange, setFieldVa
           name="assignee_id"
           placeholder={t("Select Assignee...")}
           isRequired
+          error={touched.assignee_id ? errors.assignee_id : undefined}
         />
       ) : (
         <TagInput
@@ -213,6 +218,8 @@ function TaskMainInfo({ task, type = "project", values, handleChange, setFieldVa
           name="start_date"
           title={t("Start Date")}
           placeholder={t("DD / MM / YYYY")}
+          onBlur={handleBlur}
+          error={touched.start_date ? errors.start_date : undefined}
         />
         <DateInput
           value={values?.due_date || ""}
@@ -220,6 +227,8 @@ function TaskMainInfo({ task, type = "project", values, handleChange, setFieldVa
           name="due_date"
           title={t("Due Date")}
           placeholder={t("DD / MM / YYYY")}
+          onBlur={handleBlur}
+          error={touched.due_date ? errors.due_date : undefined}
         />
       </div>
 
@@ -232,6 +241,8 @@ function TaskMainInfo({ task, type = "project", values, handleChange, setFieldVa
               name="started_in"
               title={t("Started at")}
               placeholder={t("DD / MM / YYYY")}
+              onBlur={handleBlur}
+              error={touched.started_in ? errors.started_in : undefined}
             />
             <DateInput
               value={values?.finished_in || ""}
@@ -239,6 +250,8 @@ function TaskMainInfo({ task, type = "project", values, handleChange, setFieldVa
               name="finished_in"
               title={t("Finished at")}
               placeholder={t("DD / MM / YYYY")}
+              onBlur={handleBlur}
+              error={touched.finished_in ? errors.finished_in : undefined}
             />
           </div>
         ) : (
@@ -248,6 +261,8 @@ function TaskMainInfo({ task, type = "project", values, handleChange, setFieldVa
             name="end_date"
             title={t("End Date")}
             placeholder={t("DD / MM / YYYY")}
+            onBlur={handleBlur}
+            error={touched.end_date ? errors.end_date : undefined}
           />
         )}
       </div>
@@ -274,6 +289,8 @@ function TaskMainInfo({ task, type = "project", values, handleChange, setFieldVa
           placeholder="0"
           min="0"
           max="100"
+          onBlur={handleBlur}
+          error={touched.progress ? errors.progress : undefined}
         />
       </div>
 
@@ -298,11 +315,13 @@ function TaskMainInfo({ task, type = "project", values, handleChange, setFieldVa
 }
 
 TaskMainInfo.propTypes = {
-  task: PropTypes.object,
   type: PropTypes.string,
   values: PropTypes.object,
   handleChange: PropTypes.func,
+  handleBlur: PropTypes.func,
   setFieldValue: PropTypes.func,
+  errors: PropTypes.object,
+  touched: PropTypes.object,
   lockedProjectId: PropTypes.string,
   lockedProjectName: PropTypes.string,
   hideProjectSelect: PropTypes.bool,

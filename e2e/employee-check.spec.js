@@ -70,7 +70,7 @@ async function waitForContent(page) {
   // انتظار زوال السبينر الرئيسي إن وُجد
   const spinner = page.locator('main .animate-spin').first();
   if (await spinner.count()) {
-    await spinner.waitFor({ state: 'detached', timeout: 45000 }).catch(() => {});
+    await spinner.waitFor({ state: 'detached', timeout: 45000 });
   }
   await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
   await page.waitForTimeout(1200);
@@ -178,16 +178,8 @@ test.describe('Employee dashboard check', () => {
   for (const { route, name } of PAGES) {
     test(`screen ${route} renders without fatal errors`, async ({ page }) => {
       const watch = collectPageErrors(page, {
-        pageErrorsOnly: true,
-        ignore: [
-          /favicon/i,
-          /net::ERR/i,
-          /Failed to load resource/i,
-          /Socket/i,
-          /socket\.io/i,
-          /WebSocket/i,
-          /api\.anmaat\.com/i,
-        ],
+        pageErrorsOnly: false,
+        ignore: [/favicon/i],
       });
 
       await page.goto(route);
@@ -196,6 +188,10 @@ test.describe('Employee dashboard check', () => {
 
       const broken = await collectBrokenImages(page);
       const overflow = await detectHorizontalOverflow(page);
+      await expect(page.locator('main')).not.toHaveText(/^\s*$/);
+      await expect(page.locator('main [role="alert"]')).toHaveCount(0);
+      expect(broken, `broken images on ${route}`).toEqual([]);
+      expect(overflow, `horizontal overflow on ${route}`).toBe(false);
 
       await page.screenshot({
         path: pathModule.join(SHOT_DIR, `${name}.png`),
@@ -222,8 +218,8 @@ test.describe('Employee dashboard check', () => {
   for (const route of MODAL_PAGES) {
     test(`modal on ${route} opens and renders content`, async ({ page }) => {
       const watch = collectPageErrors(page, {
-        pageErrorsOnly: true,
-        ignore: [/favicon/i, /net::ERR/i, /Socket/i, /socket\.io/i, /WebSocket/i, /api\.anmaat\.com/i],
+        pageErrorsOnly: false,
+        ignore: [/favicon/i],
       });
 
       await page.goto(route);
@@ -257,3 +253,4 @@ test.describe('Employee dashboard check', () => {
     fs.writeFileSync(REPORT_PATH, JSON.stringify(results, null, 2));
   });
 });
+

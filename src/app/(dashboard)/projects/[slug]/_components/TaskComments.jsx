@@ -2,7 +2,6 @@ import { ImSpinner2 } from "react-icons/im";
 import PropTypes from "prop-types";
 import { useState } from "react";
 import 'dayjs/locale/ar';
-import {translateTime} from "@/functions/Days.js";
 import { RiDeleteBinLine, RiEdit2Line } from "react-icons/ri";
 import CommentInput from "@/components/CommentInput";
 import { useTranslation } from "react-i18next";
@@ -78,8 +77,8 @@ function TaskComments({comments, currentUserId, authUserType, onDeleteComment, o
                                 <CommentInput 
                                     initialValue={comment.text}
                                     onCancel={() => setEditingCommentId(null)}
-                                    onSend={(newText) => {
-                                        onEditComment(comment._id, newText);
+                                    onSend={async (newText) => {
+                                        await onEditComment(comment._id, newText);
                                         setEditingCommentId(null);
                                     }}
                                     isLoading={loadingComments[comment._id] === 'editing'}
@@ -126,7 +125,12 @@ function TaskComments({comments, currentUserId, authUserType, onDeleteComment, o
 }
 
 TaskComments.propTypes = {
-    comments: PropTypes.array.isRequired
+    comments: PropTypes.array.isRequired,
+    currentUserId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    authUserType: PropTypes.string,
+    onDeleteComment: PropTypes.func.isRequired,
+    onEditComment: PropTypes.func.isRequired,
+    loadingComments: PropTypes.object,
 }
 
 export default TaskComments;

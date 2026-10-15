@@ -1,16 +1,11 @@
 "use client";
-import { ImSpinner2 } from "react-icons/im";
-
 import dynamic from "next/dynamic";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { selectUserType } from "@/redux/auth/authSlice";
+import DashboardSkeleton from "./_components/DashboardSkeleton";
 
-const DashboardLoading = () => (
-  <div className="flex items-center justify-center w-full p-4">
-    <ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} />
-  </div>
-);
+const DashboardLoading = () => <DashboardSkeleton />;
 
 // Keep the component types stable across Redux and query updates. Creating a
 // dynamic component during render remounts the dashboard on every update.
@@ -31,11 +26,15 @@ const DashboardPage = () => {
   const authUserType = useSelector(selectUserType);
   const { t } = useTranslation();
 
+  if (!authUserType) return <DashboardSkeleton />;
+
   return (
     authUserType === "Admin" ? <AdminDashboard /> :
     authUserType === "Subscriber" ? <SubscriberDashboard /> :
     authUserType === "Employee" ? <EmployeeDashboard /> :
-    <div>{t("Unknown User Type")}</div>
+    <div role="alert" className="m-4 rounded-2xl border border-status-border bg-surface p-8 text-center text-cell-secondary">
+      {t("Unknown User Type")}
+    </div>
   );
 };
 

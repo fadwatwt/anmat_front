@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import { ar } from 'date-fns/locale';
 import Table from '@/components/Tables/Table';
 import { useSelector } from 'react-redux';
+import { useRouter } from 'next/navigation';
 import { selectUserType } from '@/redux/auth/authSlice';
 import { useGetEmployeeRequestsQuery } from '@/redux/employees/employeeRequestsApi';
 import { useGetEmployeeAuthRequestsQuery, useCancelEmployeeRequestMutation } from '@/redux/employees/employeeAuthRequestsApi';
@@ -19,9 +20,10 @@ import ProcessingOverlay from '@/components/Feedback/ProcessingOverlay';
 
 export default function EmployeeRequests() {
   const { t, i18n } = useTranslation();
+  const router = useRouter();
   const dateLocale = i18n.language === 'ar' ? ar : undefined;
   const authUserType = useSelector(selectUserType);
-  const [activeTab, setActiveTab] = useState("DAY_OFF"); // "DAY_OFF", "SALARY_ADVANCE", "WORK_DELAY"
+  const [activeTab, setActiveTab] = useState("DAY_OFF");
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [cancelAlert, setCancelAlert] = useState({ isOpen: false, requestId: null });
@@ -29,12 +31,18 @@ export default function EmployeeRequests() {
 
   const isEmployee = authUserType === 'Employee';
 
-  const { data: subscriberRequests = [], isLoading: isSubscriberLoading } = useGetEmployeeRequestsQuery(undefined, { skip: isEmployee });
-  const { data: employeeRequests = [], isLoading: isEmployeeLoading } = useGetEmployeeAuthRequestsQuery(undefined, { skip: !isEmployee });
+  const { data: subscriberRequests = [], isLoading: isSubscriberLoading, isError: isSubscriberError, refetch: refetchSubscriberRequests } = useGetEmployeeRequestsQuery(undefined, { skip: isEmployee });
+  const { data: employeeRequests = [], isLoading: isEmployeeLoading, isError: isEmployeeError, refetch: refetchEmployeeRequests } = useGetEmployeeAuthRequestsQuery(undefined, { skip: !isEmployee });
   const [cancelRequest, { isLoading: isCancelling }] = useCancelEmployeeRequestMutation();
 
   const requests = isEmployee ? employeeRequests : subscriberRequests;
   const isLoading = isEmployee ? isEmployeeLoading : isSubscriberLoading;
+  const hasLoadError = isEmployee ? isEmployeeError : isSubscriberError;
+
+  const retryRequests = () => {
+    if (isEmployee) refetchEmployeeRequests();
+    else refetchSubscriberRequests();
+  };
 
   const handleCancelClick = (requestId) => {
     setCancelAlert({ isOpen: true, requestId });
@@ -84,6 +92,15 @@ export default function EmployeeRequests() {
         ...commonHeaders,
         { label: t('Advance By'), width: '15%' },
         { label: t('Old Salary'), width: '15%' },
+        { label: t('Status'), width: '10%' },
+        { label: '', width: '5%' },
+      ].filter(Boolean);
+    } else if (activeTab === "SHORT_LEAVE") {
+      return [
+        ...commonHeaders,
+        { label: t('Leave Date'), width: '15%' },
+        { label: t('From Time'), width: '10%' },
+        { label: t('To Time'), width: '10%' },
         { label: t('Status'), width: '10%' },
         { label: '', width: '5%' },
       ].filter(Boolean);
@@ -159,6 +176,18 @@ export default function EmployeeRequests() {
         <span key={`advance-${index}`} className="text-cell-secondary text-sm">{request.advance_salary_by || "N/A"}</span>,
         <span key={`old_salary-${index}`} className="text-cell-secondary text-sm">{request.old_salary_amount || "N/A"}</span>
       ];
+    } else if (activeTab === "SHORT_LEAVE") {
+      specificCells = [
+        <span key={`leave-date-${index}`} className="text-cell-secondary text-sm whitespace-nowrap">
+          {request.leave_date ? format(new Date(request.leave_date), "dd MMM, yyyy", { locale: dateLocale }) : "N/A"}
+        </span>,
+        <span key={`leave-start-${index}`} dir="ltr" className="text-cell-secondary text-sm whitespace-nowrap">
+          {request.leave_start_time || "N/A"}
+        </span>,
+        <span key={`leave-end-${index}`} dir="ltr" className="text-cell-secondary text-sm whitespace-nowrap">
+          {request.leave_end_time || "N/A"}
+        </span>
+      ];
     } else {
       specificCells = [
         <span key={`due-${index}`} className="text-cell-secondary text-sm">
@@ -173,20 +202,21 @@ export default function EmployeeRequests() {
     return [
       ...commonCells,
       ...specificCells,
-      statusCell(request.status, request._id),
+      statusCell(request.status === "open" && activeTab === "SHORT_LEAVE" ? "Under Review" : request.status, request._id),
     ].filter(Boolean);
   });
   const headerActions = (
-    <div className="flex bg-status-bg border border-status-border rounded-lg p-1">
+    <div className="flex max-w-full overflow-x-auto bg-status-bg border border-status-border rounded-lg p-1 custom-scroll">
       {[
         { id: "DAY_OFF", label: t("Leave Requests") },
+        { id: "SHORT_LEAVE", label: t("Short Leave Requests") },
         { id: "SALARY_ADVANCE", label: t("Financial Requests") },
         { id: "WORK_DELAY", label: t("Delay Requests") }
       ].map(tab => (
         <button
           key={tab.id}
           onClick={() => setActiveTab(tab.id)}
-          className={`px-4 py-1 text-sm rounded-md transition-colors ${activeTab === tab.id ? "bg-white dark:bg-gray-700 shadow-sm text-primary-600 font-medium" : "text-cell-secondary hover:text-table-title"}`}
+          className={`flex-shrink-0 whitespace-nowrap px-3 sm:px-4 py-1 text-sm rounded-md transition-colors ${activeTab === tab.id ? "bg-white dark:bg-gray-700 shadow-sm text-primary-600 font-medium" : "text-cell-secondary hover:text-table-title"}`}
         >
           {tab.label}
         </button>
@@ -196,20 +226,34 @@ export default function EmployeeRequests() {
 
   return (
     <>
-      <ProcessingOverlay isOpen={isLoading || isCancelling} message="Processing Requests..." />
+      <ProcessingOverlay isOpen={isLoading || isCancelling} message={t("Processing Requests...")} />
+      {hasLoadError && (
+        <div role="alert" className="mb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
+          <span className="text-sm font-medium">{t("Employee requests could not be loaded")}</span>
+          <button type="button" onClick={retryRequests} className="self-start sm:self-auto rounded-xl border border-current px-4 py-2 text-sm font-semibold">
+            {t("Try Again")}
+          </button>
+        </div>
+      )}
       <Table
         title={t("Employee Requests")}
         headers={getHeaders()}
         hideSearchInput={true}
         rows={rows}
+        rowStatusValues={filteredData.map((request) => request.status)}
         isActions={false}
         customActions={customActions}
         isCheckInput={false}
         showStatusFilter={true}
+        statusOptions={["open", "accepted", "rejected", "cancelled"].map((value) => ({ id: value, value, name: t(value.charAt(0).toUpperCase() + value.slice(1)) }))}
         isLoading={isLoading}
         headerActions={headerActions}
         toolbarCustomContent={
-          <button className="bg-status-bg text-cell-secondary hover:bg-gray-50 px-4 py-2 text-sm items-baseline p-2 gap-2 rounded-lg border border-status-border dark:border-gray-600">
+          <button
+            type="button"
+            onClick={() => router.push(isEmployee ? "/requests" : "/hr/requests")}
+            className="bg-status-bg text-cell-secondary hover:bg-gray-50 px-4 py-2 text-sm items-baseline p-2 gap-2 rounded-lg border border-status-border dark:border-gray-600"
+          >
             {t("See All")}
           </button>
         }

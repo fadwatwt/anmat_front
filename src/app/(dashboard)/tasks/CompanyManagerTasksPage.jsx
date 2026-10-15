@@ -8,7 +8,6 @@ import dynamic from "next/dynamic";
 import { fetchTasks, deleteTask } from "@/redux/tasks/tasksAPI";
 import Page from "@/components/Page.jsx";
 import Table from "@/components/Tables/Table.jsx";
-import EmployeeProjectStates from "@/app/(dashboard)/_components/EmployeeStates";
 import useAuthStore from '@/store/authStore.js';
 import { usePermission } from "@/Hooks/usePermission";
 import { convertToSlug } from "@/functions/AnotherFunctions";
@@ -22,10 +21,7 @@ const NameAndDescription = dynamic(() => import("@/app/(dashboard)/projects/_com
 const AccountDetails = dynamic(() => import("@/app/(dashboard)/projects/_components/TableInfo/AccountDetails"), { ssr: false });
 const Priority = dynamic(() => import("@/app/(dashboard)/projects/_components/TableInfo/Priority"), { ssr: false });
 const Status = dynamic(() => import("@/app/(dashboard)/projects/_components/TableInfo/Status"), { ssr: false });
-const MembersListXLine = dynamic(() => import("@/app/(dashboard)/projects/[slug]/_components/MembersListXLine"), { ssr: false });
-const TimeLine = dynamic(() => import("@/components/TimeLine/TimeLine"), { ssr: false });
 const Alert = dynamic(() => import("@/components/Alerts/Alert"), { ssr: false });
-const StatusCell = dynamic(() => import("@/components/StatusCell"), { ssr: false });
 
 import { tasksRows } from "@/functions/FactoryData.jsx";
 
@@ -65,13 +61,21 @@ function CompanyManagerTasksPage() {
         { label: "", width: "50px" },
     ];
 
-    const handleCreateTask = () => router.push("/tasks/create");
+    const handleCreateTask = () => {
+        if (canCreateTask) router.push("/tasks/create");
+    };
 
     const handleDeleteConfirmation = (task) => {
+        if (!canDeleteTask) return;
         setTaskToDelete(task);
         setIsOpenDeleteAlert(true);
     };
     const handleDeleteTask = async () => {
+        if (!canDeleteTask) {
+            setIsOpenDeleteAlert(false);
+            setTaskToDelete(null);
+            return;
+        }
         if (taskToDelete) {
             try {
                 await dispatch(deleteTask(taskToDelete._id)).unwrap();

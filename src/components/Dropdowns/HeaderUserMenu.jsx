@@ -78,10 +78,15 @@ const HeaderUserMenu = () => {
 
     return (
         <div className="relative" ref={menuRef}>
-            <div
+            <button
+                type="button"
+                aria-label={t("Profile")}
+                aria-expanded={isMenuOpen}
+                onClick={() => setIsMenuOpen((open) => !open)}
+                onKeyDown={(event) => { if (event.key === "Escape") setIsMenuOpen(false); }}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
-                className={`flex box-border rounded-lg border-2 dark:border-gray-700 md:py-0.5 md:px-1 px-0.5 py-0.5 items-center gap-1 cursor-pointer space-x-2 p-2 ${isMenuOpen
+                className={`flex box-border rounded-lg border-2 dark:border-gray-700 md:py-0.5 md:px-1 px-0.5 py-0.5 items-center gap-1 cursor-pointer ${isMenuOpen
                     ? "bg-blue-100 text-blue-500 dark:bg-blue-900 dark:text-blue-300"
                     : "bg-gray-100 dark:bg-gray-900"
                     }`}
@@ -93,13 +98,13 @@ const HeaderUserMenu = () => {
                     {user?.name || t("N/A")}
                 </p>
                 <MdOutlineKeyboardArrowDown />
-            </div>
+            </button>
 
             {isMenuOpen && (
                 <div
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
-                    className={`absolute right-0 mt-2 w-[200px] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50`}
+                    className={`absolute end-0 mt-2 w-[200px] max-w-[calc(100vw-24px)] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50`}
                 >
                     <Link
                         href="/profile"

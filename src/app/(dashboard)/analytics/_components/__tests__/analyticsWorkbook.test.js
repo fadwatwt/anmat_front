@@ -1,7 +1,7 @@
 import * as XLSX from 'xlsx';
 import { describe, expect, it } from '@jest/globals';
 import { buildAnalyticsWorkbook } from '../analyticsWorkbook';
-import { buildStyledAnalyticsXlsx } from '../styledAnalyticsXlsx';
+import { buildStyledAnalyticsXlsx, buildStyledTableXlsx } from '../styledAnalyticsXlsx';
 import { strFromU8, unzipSync } from 'fflate';
 
 describe('buildAnalyticsWorkbook', () => {
@@ -79,5 +79,22 @@ describe('buildAnalyticsWorkbook', () => {
     expect(XLSX.utils.sheet_to_json(workbook.Sheets.Summary, { header: 1 })).toContainEqual(['Total tasks', 8]);
     expect(summaryXml).not.toContain('rightToLeft="1"');
     expect(stylesXml).toContain('horizontal="left"');
+  });
+
+  it('applies the styled bilingual model to regular system tables', () => {
+    const english = buildStyledTableXlsx(['Name', 'Completion'], [['Project A', '75%']], 'projects-table', 'en', new Date('2026-10-07T00:00:00Z'));
+    const arabic = buildStyledTableXlsx(['الاسم', 'الإنجاز'], [['المشروع أ', '75%']], 'جدول-المشاريع', 'ar', new Date('2026-10-07T00:00:00Z'));
+    const englishBook = XLSX.read(english, { type: 'array' });
+    const arabicBook = XLSX.read(arabic, { type: 'array' });
+    const englishFiles = unzipSync(english);
+    const arabicFiles = unzipSync(arabic);
+
+    expect(englishBook.SheetNames).toEqual(['Data']);
+    expect(arabicBook.SheetNames).toEqual(['البيانات']);
+    expect(arabicBook.Sheets['البيانات'].A1.v).toBe('جدول المشاريع');
+    expect(englishBook.Sheets.Data.A1.v).toBe('Projects table');
+    expect(strFromU8(englishFiles['xl/worksheets/sheet1.xml'])).not.toContain('rightToLeft="1"');
+    expect(strFromU8(arabicFiles['xl/worksheets/sheet1.xml'])).toContain('rightToLeft="1"');
+    expect(englishBook.Sheets.Data.B5.v).toBeCloseTo(0.75);
   });
 });

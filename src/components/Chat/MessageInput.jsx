@@ -4,10 +4,12 @@ import { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import EmojiPicker from "emoji-picker-react";
 import { useUploadFileMutation } from "@/redux/conversations/conversationsAPI";
+import { usePermission } from "@/Hooks/usePermission";
 import { Send, Paperclip, Smile, Edit3, X, BarChart2, FileIcon, ImageIcon } from "lucide-react";
 
 const MessageInput = ({ onSendMessage, onTyping, editMessageData, onCancelEdit, onEditMessage, onOpenPoll, activeChatId }) => {
   const { t } = useTranslation();
+  const canUpload = usePermission("chats.upload");
   const [message, setMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -53,6 +55,7 @@ const MessageInput = ({ onSendMessage, onTyping, editMessageData, onCancelEdit, 
   }, [activeChatId]);
 
   const handleFileSelect = (e) => {
+    if (!canUpload) return;
     const file = e.target.files[0];
     if (file) {
       setSelectedFile(file);
@@ -72,6 +75,7 @@ const MessageInput = ({ onSendMessage, onTyping, editMessageData, onCancelEdit, 
     try {
       let attachmentUrl = "";
       if (selectedFile && !editMessageData) {
+        if (!canUpload) throw new Error('Missing chats.upload permission');
         if (uploadedAttachmentRef.current?.file === selectedFile) {
           attachmentUrl = uploadedAttachmentRef.current.url;
         } else {
@@ -176,7 +180,7 @@ const MessageInput = ({ onSendMessage, onTyping, editMessageData, onCancelEdit, 
         >
           <BarChart2 size={20} />
         </button>
-        {!editMessageData && <button
+        {canUpload && !editMessageData && <button
           type="button"
           title={t("Attach file")}
           onClick={() => fileInputRef.current?.click()}

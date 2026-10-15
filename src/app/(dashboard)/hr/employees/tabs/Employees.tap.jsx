@@ -1,11 +1,9 @@
-import { useEffect, useState, useMemo } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import Table from "../../../../../components/Tables/Table.jsx";
 import EditAnEmployeeModal from "@/app/(dashboard)/hr/_modals/EditAnEmployeeModal.jsx";
 import AccountDetails from "@/app/(dashboard)/projects/_components/TableInfo/AccountDetails.jsx";
-import Rating from "../../Rating.jsx";
-import Alert from "../../../../../components/Alerts/Alert.jsx";
 import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import {
@@ -30,9 +28,10 @@ import { useProcessing } from "@/app/providers";
 import { RiCheckboxCircleFill, RiFileCopyLine, RiTimerLine, RiUserReceived2Line, RiCheckLine } from "@remixicon/react";
 import { usePermission } from "@/Hooks/usePermission";
 import BulkDeleteButton from "@/components/Tables/BulkDeleteButton.jsx";
+import EmployeeOnboardingModal from "@/app/(dashboard)/hr/employees/modals/EmployeeOnboardingModal.jsx";
 
 function EmployeesTap() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const { showProcessing, hideProcessing } = useProcessing();
   const dispatch = useDispatch();
@@ -49,11 +48,12 @@ function EmployeesTap() {
   const [deleteEmployee] = useDeleteEmployeeMutation();
   const [deleteManyEmployees] = useDeleteManyEmployeesMutation();
   const [toggleActivity] = useToggleEmployeeActivityMutation();
-  const [unassignEmployees, { isLoading: isUnassigning }] = useUnassignEmployeesFromDepartmentMutation();
+  const [unassignEmployees] = useUnassignEmployeesFromDepartmentMutation();
 
   const [isOpenEditModal, setIsOpenEditModal] = useState(false);
   const [isOpenCreateModal, setIsOpenCreateModal] = useState(false);
   const [isOpenInviteModal, setIsOpenInviteModal] = useState(false);
+  const [isOpenOnboardingModal, setIsOpenOnboardingModal] = useState(false);
   const [isOpenSendNotifyModal, setIsOpenSendNotifyModal] = useState(false);
   const [isOpenAssignDeptModal, setIsOpenAssignDeptModal] = useState(false);
 
@@ -80,7 +80,7 @@ function EmployeesTap() {
   // Copy invitation link feedback
   const [copyApiResponse, setCopyApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
-  const [searchTerm, setSearchTerm] = useState("");
+  const hasEmployeeActions = canUpdateEmployee || canDeleteEmployee || canSendNotification || canInitiateChat;
 
   const headers = [
     { label: t("Employees"), width: "200px" },
@@ -89,21 +89,15 @@ function EmployeesTap() {
     { label: t("Salary"), width: "100px" },
     { label: t("Rating"), width: "120px" },
     { label: t("Registration"), width: "150px" },
-    { label: t("Status"), width: "100px" },
-    { label: "", width: "50px" },
+    { label: t("Status"), width: "110px" },
+    ...(hasEmployeeActions ? [{ label: "", width: "50px" }] : []),
   ];
 
-  const filteredEmployees = useMemo(() => {
-    if (!searchTerm) return employees;
-    return employees.filter((employee) =>
-      (employee.user?.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (employee.user?.email || "").toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [employees, searchTerm]);
+  const filteredEmployees = employees;
 
-  const EmployeeActions = ({ actualRowIndex }) => {
-    const { t, i18n } = useTranslation();
+  const getEmployeeActions = (actualRowIndex) => {
     const employee = filteredEmployees[actualRowIndex];
+    if (!employee) return null;
     const hasDepartment = !!(employee?.department || employee?.department_id);
 
     const statesActions = [];
@@ -173,11 +167,13 @@ function EmployeesTap() {
         onClick: () => handleDeleteEmployee(employee),
       });
     }
+    if (statesActions.length === 0) return null;
+
     return (
       <StatusActions states={statesActions} className={`${i18n.language === "ar" ? "left-0" : "right-0"
         }`} />
     );
-  }
+  };
 
   const EmployeeRowTable = (employeesToShow) => {
     return employeesToShow?.map((employee, index) => {
@@ -242,8 +238,8 @@ function EmployeesTap() {
             </div>
           )}
         </div>,
-        <div key={`status-${index}`}>
-          <span className={`px-3 py-1 rounded-full text-xs font-medium ${userData.is_active
+        <div key={`status-${index}`} className="whitespace-nowrap">
+          <span className={`inline-flex items-center whitespace-nowrap px-3 py-1 rounded-full text-xs font-medium ${userData.is_active
             ? "bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400"
             : "bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400"
             }`}>
@@ -453,9 +449,7 @@ function EmployeesTap() {
             title="Employees"
             headers={headers}
             isActions={false}
-            customActions={(actualRowIndex) => (
-              <EmployeeActions actualRowIndex={actualRowIndex} />
-            )}
+            customActions={getEmployeeActions}
             rows={EmployeeRowTable(employees)}
             onSelectionChange={handleSelectionChange}
             headerActions={
@@ -475,16 +469,9 @@ function EmployeesTap() {
                 )}
                 {canCreateEmployee && (
                   <button
-                    onClick={() => setIsOpenInviteModal(true)}
-                    className="border border-status-border px-4 py-2 rounded-lg text-sm font-medium">
-                    {t("Invite Employee")}
-                  </button>
-                )}
-                {canCreateEmployee && (
-                  <button
-                    onClick={() => setIsOpenCreateModal(true)}
+                    onClick={() => setIsOpenOnboardingModal(true)}
                     className="bg-[#375DFB] text-white px-4 py-2 rounded-lg text-sm font-medium">
-                    {t("Add New Employee")}
+                    {t("Add Employee")}
                   </button>
                 )}
               </div>
@@ -494,6 +481,13 @@ function EmployeesTap() {
       </div>
 
       {/* 2. استدعاء المودالات وتمرير الحالات والدوال */}
+      <EmployeeOnboardingModal
+        isOpen={isOpenOnboardingModal}
+        onClose={() => setIsOpenOnboardingModal(false)}
+        onDirectCreate={() => setIsOpenCreateModal(true)}
+        onInvite={() => setIsOpenInviteModal(true)}
+      />
+
       <CreateEmployeeModal
         isOpen={isOpenCreateModal}
         onClose={() => setIsOpenCreateModal(false)}

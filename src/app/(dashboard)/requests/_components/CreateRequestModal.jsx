@@ -15,12 +15,16 @@ import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
 import { useSelector } from "react-redux";
 import { selectUserId } from "@/redux/auth/authSlice";
 import { useProcessing } from "@/app/providers";
+import FileUpload from "@/components/Form/FileUpload";
+import { useUploadRequestAttachmentMutation } from "@/redux/employees/employeeRequestsApi";
 
 function CreateRequestModal({ isOpen, onClose }) {
     const { t } = useTranslation();
     const { showProcessing, hideProcessing } = useProcessing();
     const userId = useSelector(selectUserId);
     const [createRequest, { isLoading }] = useCreateEmployeeRequestMutation();
+    const [uploadRequestAttachment] = useUploadRequestAttachmentMutation();
+    const [attachment, setAttachment] = useState(null);
     const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
     const [alertConfig, setAlertConfig] = useState({
         isOpen: false,
@@ -37,6 +41,7 @@ function CreateRequestModal({ isOpen, onClose }) {
     ];
 
     const formik = useFormik({
+        validateOnMount: true,
         initialValues: {
             type: "",
             reason: "",
@@ -116,6 +121,10 @@ function CreateRequestModal({ isOpen, onClose }) {
                 message: t("Are you sure you want to submit this request?"),
                 onConfirm: async () => {
                     try {
+                        if (!userId) {
+                            setApiResponse({ isOpen: true, status: "error", message: t("Your account information is not ready. Please try again.") });
+                            return;
+                        }
                         const payload = {
                             employee_id: userId,
                             type: values.type,
@@ -138,7 +147,14 @@ function CreateRequestModal({ isOpen, onClose }) {
                         }
 
                         showProcessing(t("Submitting request..."));
-                        await createRequest(payload).unwrap();
+                        const createdResponse = await createRequest(payload).unwrap();
+                        const createdRequest = createdResponse?.data || createdResponse;
+                        const requestId = createdRequest?._id || createdRequest?.id;
+                        if (attachment && requestId) {
+                            const formData = new FormData();
+                            formData.append("file", attachment);
+                            await uploadRequestAttachment({ id: requestId, formData }).unwrap();
+                        }
                         hideProcessing();
                         setApiResponse({
                             isOpen: true,
@@ -146,6 +162,7 @@ function CreateRequestModal({ isOpen, onClose }) {
                             message: t("Request submitted successfully"),
                         });
                         formik.resetForm();
+                        setAttachment(null);
                         setTimeout(() => {
                             onClose();
                         }, 1500);
@@ -164,6 +181,14 @@ function CreateRequestModal({ isOpen, onClose }) {
         },
     });
 
+    const handleCloseModal = () => {
+        if (isLoading) return;
+        formik.resetForm();
+        setAttachment(null);
+        setAlertConfig(prev => ({ ...prev, isOpen: false }));
+        onClose();
+    };
+
     const handleTypeChange = (selection) => {
         formik.setFieldValue("type", selection[0]?.id || "");
     };
@@ -172,7 +197,7 @@ function CreateRequestModal({ isOpen, onClose }) {
         <>
             <Modal
                 isOpen={isOpen}
-                onClose={onClose}
+                onClose={handleCloseModal}
                 title={t("Create New Request")}
                 className="lg:w-[40%] md:w-[60%] w-[90%]"
                 isBtns={false}
@@ -180,7 +205,8 @@ function CreateRequestModal({ isOpen, onClose }) {
                     <div className="flex gap-4 justify-end w-full px-6 pb-6">
                         <button
                             type="button"
-                            onClick={onClose}
+                            onClick={handleCloseModal}
+                            disabled={isLoading}
                             className="px-8 py-2.5 rounded-xl border-2 border-status-border text-cell-secondary hover:bg-status-bg hover:text-cell-primary transition-all font-semibold"
                         >
                             {t("Cancel")}
@@ -312,6 +338,11 @@ function CreateRequestModal({ isOpen, onClose }) {
                         isRequired
                     />
 
+                    <div className="flex flex-col gap-2">
+                        <span className="text-sm font-medium text-cell-primary">{t("Attachments")} ({t("Optional")})</span>
+                        <FileUpload onFileChange={setAttachment} />
+                    </div>
+
                     <TextAreaWithLabel
                         title={t("Comment")}
                         name="comment"
@@ -338,6 +369,7 @@ function CreateRequestModal({ isOpen, onClose }) {
                 message={alertConfig.message}
                 confirmBtnText={t("Confirm")}
                 cancelBtnText={t("Cancel")}
+                isSubmitting={isLoading}
             />
         </>
     );

@@ -23,11 +23,11 @@ import SelectWithoutLabel from "../Form/SelectWithoutLabel.jsx";
 import useDropdown from "@/Hooks/useDropdown.js";
 import {
     departments,
-    defaultStatusOptions,
 } from "@/functions/FactoryData.jsx";
 import DateInput from "@/components/Form/DateInput.jsx";
 import { usePermission } from "@/Hooks/usePermission.js";
 import { downloadExport } from "@/services/exportService.js";
+import { buildStyledTableXlsx } from "@/app/(dashboard)/analytics/_components/styledAnalyticsXlsx.js";
 
 // Capability required to see/use the data export button anywhere in the app.
 export const EXPORT_PERMISSION = "reports.export";
@@ -54,6 +54,7 @@ function Table({
     showListOfDepartments = false,
     showStatusFilter = false,
     statusOptions = [],
+    rowStatusValues,
     selectedStatus,
     onStatusChange,
     showDatePicker = false,
@@ -73,13 +74,15 @@ function Table({
     onExport,
     exportFileName,
     onSelectionChange,
+    defaultRowsPerPage = 5,
+    hidePagination = false,
 }) {
     const { t, i18n } = useTranslation();
     // Only users granted the export capability may see/use the export button.
     const canExport = usePermission(EXPORT_PERMISSION);
     const [selectedRows, setSelectedRows] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [rowsPerPage, setRowsPerPage] = useState(defaultRowsPerPage);
     const [dropdownOpen, setDropdownOpen] = useDropdown();
     const [dropdownPosition, setDropdownPosition] = useState({});
     const [searchQuery, setSearchQuery] = useState("");
@@ -200,7 +203,7 @@ function Table({
         if (isStatusControlled || !showStatusFilter || !activeStatus || activeStatus === "all") {
             return [];
         }
-        const options = statusOptions.length ? statusOptions : defaultStatusOptions;
+        const options = statusOptions;
         const matched = options.find(
             (opt) => String(opt._id ?? opt.id ?? opt.value) === String(activeStatus)
         );
@@ -213,15 +216,19 @@ function Table({
 
     const filtered = rows
         .map((row, originalIndex) => ({ row, originalIndex }))
-        .filter(({ row }) => {
+        .filter(({ row, originalIndex }) => {
             const text = rowText(row);
             if (normalizedQuery && !text.includes(normalizedQuery)) {
                 return false;
             }
             // Status filtering happens here only in uncontrolled mode
             // (controlled parents filter their own data).
-            if (statusMatchTerms.length && !statusMatchTerms.some((term) => text.includes(term))) {
-                return false;
+            if (statusMatchTerms.length) {
+                const statusCell = row.find((cell) => isValidElement(cell) && cell.props['data-status'] !== undefined);
+                const value = rowStatusValues?.[originalIndex] ?? statusCell?.props['data-status'];
+                if (value !== undefined) return String(value) === String(activeStatus);
+                // Legacy tables without structured statuses compare whole cells only.
+                return row.some((cell) => statusMatchTerms.includes(extractText(cell).trim().toLowerCase()));
             }
             return true;
         });
@@ -302,6 +309,11 @@ function Table({
         if (!rowActions) return false;
         if (Array.isArray(rowActions)) return rowActions.some(hasRowActions);
         if (!isValidElement(rowActions)) return true;
+        // Dropdown action components (such as StatusActions) expose their
+        // menu entries through a `states` prop rather than React children.
+        if (Array.isArray(rowActions.props?.states)) {
+            return rowActions.props.states.length > 0;
+        }
         const kids = Children.toArray(rowActions.props?.children).filter((c) => {
             if (c === null || c === undefined || c === false) return false;
             if (typeof c === "string") return c.trim() !== "";
@@ -329,7 +341,8 @@ function Table({
             .toLowerCase()
             .replace(/[^\p{L}\p{N}]+/gu, "-")
             .replace(/^-+|-+$/g, "");
-        return slug ? `${slug}-table` : "table";
+        if (!slug) return isRTL ? "جدول" : "table";
+        return isRTL ? `جدول-${slug}` : `${slug}-table`;
     };
 
     const getRowsToExport = () =>
@@ -369,6 +382,24 @@ function Table({
         );
         const token = typeof window !== "undefined" ? getToken() : "";
         try {
+            if (format === "xlsx") {
+                const buffer = buildStyledTableXlsx(
+                    headerLabels,
+                    plainRows,
+                    resolveFileName(),
+                    i18n?.resolvedLanguage || i18n?.language || "ar"
+                );
+                const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = `${resolveFileName()}.xlsx`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                return;
+            }
             await downloadExport(
                 { headers: headerLabels, rows: plainRows, format, fileName: resolveFileName() },
                 token
@@ -497,16 +528,16 @@ function Table({
                         )}
                         {showIndustryFilter && (
                             <SelectWithoutLabel
-                                options={industryOptions.length ? industryOptions : defaultStatusOptions}
+                                options={industryOptions}
                                 value={selectedIndustry}
                                 onChange={onIndustryChange}
                                 placeholder={t("Industry")}
                                 className="w-fit"
                             />
                         )}
-                        {showStatusFilter && (
+                        {showStatusFilter && statusOptions.length > 0 && (
                             <SelectWithoutLabel
-                                options={statusOptions.length ? statusOptions : defaultStatusOptions}
+                                options={[{ id: "all", name: t("All") }, ...statusOptions.filter((option) => (option.id ?? option.value ?? option._id) !== "all")]}
                                 value={activeStatus}
                                 onChange={(selectedValue) => {
                                     setCurrentPage(1);
@@ -743,7 +774,7 @@ function Table({
                     </table>
                 </div>
 
-                <div className={"pagination flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-status-border"}>
+                {!hidePagination && <div className={"pagination flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-status-border"}>
                     <p className={"text-sm text-cell-secondary order-2 sm:order-1"}>
                         {t("Page")} {currentPage} {t("of")} {totalPages}
                     </p>
@@ -792,7 +823,7 @@ function Table({
                             ))}
                         </select>
                     </div>
-                </div>
+                </div>}
                 </>
                 )}
             </div>
@@ -822,6 +853,7 @@ Table.propTypes = {
     showListOfDepartments: PropTypes.bool,
     showStatusFilter: PropTypes.bool,
     statusOptions: PropTypes.array,
+    rowStatusValues: PropTypes.array,
     selectedStatus: PropTypes.string,
     onStatusChange: PropTypes.func,
     showDatePicker: PropTypes.bool,
@@ -842,6 +874,8 @@ Table.propTypes = {
     onExport: PropTypes.func,
     exportFileName: PropTypes.string,
     onSelectionChange: PropTypes.func,
+    defaultRowsPerPage: PropTypes.number,
+    hidePagination: PropTypes.bool,
 };
 
 export default Table;

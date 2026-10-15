@@ -7,7 +7,8 @@ import { statusCell as StatusCell } from "@/components/StatusCell";
 import {
     useGetEmployeeRequestsQuery,
     useDeleteEmployeeRequestMutation,
-    useUpdateEmployeeRequestStatusMutation
+    useUpdateEmployeeRequestStatusMutation,
+    useRestoreEmployeeRequestMutation
 } from "@/redux/employees/employeeRequestsApi";
 import { useGetDepartmentsQuery } from "@/redux/departments/departmentsApi";
 import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
@@ -15,7 +16,8 @@ import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import ElementsSelect from "@/components/Form/ElementsSelect.jsx";
 import { format } from "date-fns";
 import { getDateLocale } from "@/lib/dateLocale";
-import { RiFilter2Line, RiCalendarEventLine, RiCheckboxCircleFill, RiCloseCircleFill } from "@remixicon/react";
+import { RiFilter2Line, RiCalendarEventLine, RiCheckboxCircleFill, RiCloseCircleFill, RiDownload2Line } from "@remixicon/react";
+import { countRequestsByType, buildRequestsCsv, downloadCsvFile } from "./requestsExport.js";
 
 function RequestsTab() {
     const { t } = useTranslation();
@@ -26,15 +28,19 @@ function RequestsTab() {
     const [departmentFilter, setDepartmentFilter] = useState(null);
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
     const [selectedRequest, setSelectedRequest] = useState(null);
+    const [showArchived, setShowArchived] = useState(false);
+    const [requestedStatus, setRequestedStatus] = useState(null);
 
     // API Hooks
     const { data: departmentsData } = useGetDepartmentsQuery();
     const { data: requestsData, isLoading } = useGetEmployeeRequestsQuery({
         status: statusFilter?.id,
-        department_id: departmentFilter?.id
+        department_id: departmentFilter?.id,
+        archived: showArchived || undefined
     });
     const [deleteRequest] = useDeleteEmployeeRequestMutation();
     const [updateRequestStatus, { isLoading: isUpdating }] = useUpdateEmployeeRequestStatusMutation();
+    const [restoreRequest] = useRestoreEmployeeRequestMutation();
 
     // Alert states
     const [alertConfig, setAlertConfig] = useState({
@@ -47,6 +53,13 @@ function RequestsTab() {
     });
 
     const currentData = requestsData?.filter(req => req.type === activeTab) || [];
+    const typeCounts = countRequestsByType(requestsData);
+
+    const handleExportCsv = () => {
+        const csv = buildRequestsCsv(requestsData || []);
+        const date = new Date().toISOString().slice(0, 10);
+        downloadCsvFile(`employee-requests-${date}.csv`, csv);
+    };
 
     const handleTabChange = (tabId) => {
         setActiveTab(tabId);
@@ -84,30 +97,9 @@ function RequestsTab() {
     const handleReject = (index) => {
         const request = currentData[index];
         if (!request) return;
-        setAlertConfig({
-            isOpen: true,
-            type: "approval",
-            title: t("Reject Request"),
-            message: t("Are you sure you want to reject this request?"),
-            onConfirm: async () => {
-                try {
-                    await updateRequestStatus({ id: request.id, status: "rejected", comment: "" }).unwrap();
-                    setAlertConfig({
-                        isOpen: true,
-                        type: "response",
-                        status: "success",
-                        message: t("Request rejected successfully")
-                    });
-                } catch (error) {
-                    setAlertConfig({
-                        isOpen: true,
-                        type: "response",
-                        status: "error",
-                        message: error?.data?.message || t("Failed to reject request")
-                    });
-                }
-            }
-        });
+        setSelectedRequest(request);
+        setRequestedStatus("rejected");
+        setIsUpdateModalOpen(true);
     };
 
     const handleDelete = (index) => {
@@ -115,8 +107,8 @@ function RequestsTab() {
         setAlertConfig({
             isOpen: true,
             type: "approval",
-            title: t("Delete Request"),
-            message: t("Are you sure you want to delete this request? This action cannot be undone."),
+            title: t("Archive Request"),
+            message: t("Are you sure you want to archive this request?"),
             onConfirm: async () => {
                 try {
                     await deleteRequest(request.id).unwrap();
@@ -124,14 +116,14 @@ function RequestsTab() {
                         isOpen: true,
                         type: "response",
                         status: "success",
-                        message: t("Request deleted successfully")
+                        message: t("Request archived successfully")
                     });
                 } catch (error) {
                     setAlertConfig({
                         isOpen: true,
                         type: "response",
                         status: "error",
-                        message: error?.data?.message || t("Failed to delete request")
+                        message: error?.data?.message || t("Failed to archive request")
                     });
                 }
             }
@@ -140,6 +132,7 @@ function RequestsTab() {
 
     const handleEdit = (index) => {
         setSelectedRequest(currentData[index]);
+        setRequestedStatus(null);
         setIsUpdateModalOpen(true);
     };
 
@@ -279,7 +272,14 @@ function RequestsTab() {
 
         return (
             <div className="flex flex-col bg-surface shadow-xl rounded-xl border border-status-border min-w-40 overflow-hidden py-1">
-                {showViewUpdate && (
+                {showArchived ? (
+                    <button
+                        onClick={() => restoreRequest(request.id || request._id).unwrap()}
+                        className="w-full px-4 py-2 text-sm text-left text-green-600 hover:bg-status-bg transition-colors"
+                    >
+                        {t("Restore")}
+                    </button>
+                ) : showViewUpdate && (
                     <button
                         onClick={() => handleEdit(rowIndex)}
                         className="w-full px-4 py-2 text-sm text-cell-primary flex gap-3 items-center text-left hover:bg-status-bg transition-colors"
@@ -287,12 +287,12 @@ function RequestsTab() {
                         {isLocked || !canUpdate ? t("View Details") : t("Update Status")}
                     </button>
                 )}
-                {canDelete && (
+                {canDelete && !showArchived && (
                     <button
                         onClick={() => handleDelete(rowIndex)}
                         className="w-full px-4 py-2 text-sm text-left flex items-center text-red-500 gap-3 hover:bg-status-bg transition-colors"
                     >
-                        {t("Delete")}
+                        {t("Archive")}
                     </button>
                 )}
             </div>
@@ -302,18 +302,38 @@ function RequestsTab() {
     const headerActions = (
         <div className="flex flex-col md:flex-row gap-4 items-center">
              <div className="flex bg-status-bg rounded-xl p-1 border border-status-border shadow-inner">
-                {Object.keys(labels).map(tab => (
-                    <button
-                        key={tab}
-                        onClick={() => handleTabChange(tab)}
-                        className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all transform active:scale-95 ${activeTab === tab 
-                            ? "bg-surface shadow-sm text-primary-500 border border-status-border" 
-                            : "text-cell-secondary hover:text-cell-primary"}`}
-                    >
-                        {t(labels[tab]).toUpperCase()}
-                    </button>
-                ))}
-            </div>
+                 {Object.keys(labels).map(tab => (
+                     <button
+                         key={tab}
+                         onClick={() => handleTabChange(tab)}
+                         className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all transform active:scale-95 flex items-center gap-1.5 ${activeTab === tab 
+                             ? "bg-surface shadow-sm text-primary-500 border border-status-border" 
+                             : "text-cell-secondary hover:text-cell-primary"}`}
+                     >
+                         {t(labels[tab]).toUpperCase()}
+                         <span className={`inline-flex items-center justify-center min-w-5 h-5 px-1 rounded-full text-[10px] ${activeTab === tab ? "bg-primary-500 text-white" : "bg-badge-bg text-cell-secondary"}`}>
+                             {typeCounts[tab] || 0}
+                         </span>
+                     </button>
+                 ))}
+             </div>
+             
+             <button
+                 type="button"
+                 onClick={handleExportCsv}
+                 disabled={!requestsData?.length}
+                 className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-status-border bg-surface text-xs font-bold text-cell-secondary hover:text-cell-primary disabled:opacity-40 transition-colors"
+             >
+                 <RiDownload2Line size={15} />
+                 {t("Export CSV")}
+             </button>
+             <button
+                 type="button"
+                 onClick={() => setShowArchived((value) => !value)}
+                 className={`px-3 py-2 rounded-xl border text-xs font-bold transition-colors ${showArchived ? "bg-primary-500 text-white border-primary-500" : "bg-surface text-cell-secondary border-status-border"}`}
+             >
+                 {showArchived ? t("Active Requests") : t("Archived Requests")}
+             </button>
             
             <div className="flex items-center gap-2 bg-surface border border-status-border p-1 rounded-xl shadow-sm">
                 <div className="flex items-center gap-1 px-2 border-r border-status-border">
@@ -359,6 +379,8 @@ function RequestsTab() {
                 isOpen={isUpdateModalOpen}
                 onClose={() => setIsUpdateModalOpen(false)}
                 request={selectedRequest}
+                initialStatus={requestedStatus}
+                readOnly={!canUpdate || ["accepted", "rejected", "cancelled"].includes(selectedRequest?.status)}
             />
 
             {alertConfig.type === "approval" ? (

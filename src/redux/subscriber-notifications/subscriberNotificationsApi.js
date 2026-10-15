@@ -23,9 +23,19 @@ export const subscriberNotificationsApi = apiSlice.injectEndpoints({
 
         // Subscriber views all sent notifications
         getSentSubscriberNotifications: builder.query({
-            query: ({ page = 1, limit = 20, employeeId } = {}) => ({
-                url: `/api/subscriber-notifications/sent?page=${page}&limit=${limit}${employeeId ? `&employee_id=${employeeId}` : ""}`,
+            query: ({ page = 1, limit = 20, employeeId, status, typeId, search, startDate, endDate } = {}) => ({
+                url: `/api/subscriber-notifications/sent`,
                 method: "GET",
+                params: {
+                    page,
+                    limit,
+                    ...(employeeId ? { employee_id: employeeId } : {}),
+                    ...(status ? { status } : {}),
+                    ...(typeId ? { type_id: typeId } : {}),
+                    ...(search ? { search } : {}),
+                    ...(startDate ? { start_date: startDate } : {}),
+                    ...(endDate ? { end_date: endDate } : {}),
+                },
             }),
             providesTags: ["SubscriberNotifications"],
         }),
@@ -47,6 +57,13 @@ export const subscriberNotificationsApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["SubscriberNotifications"],
         }),
+        retrySubscriberNotification: builder.mutation({
+            query: (id) => ({
+                url: `/api/subscriber-notifications/${id}/retry`,
+                method: "POST",
+            }),
+            invalidatesTags: ["SubscriberNotifications"],
+        }),
     }),
 });
 
@@ -54,6 +71,8 @@ export const {
     useGetSubscriberNotificationTypesQuery,
     useSendSubscriberNotificationMutation,
     useGetSentSubscriberNotificationsQuery,
+    useLazyGetSentSubscriberNotificationsQuery,
     useGetMySubscriberNotificationsQuery,
     useMarkSubscriberNotificationAsReadMutation,
+    useRetrySubscriberNotificationMutation,
 } = subscriberNotificationsApi;

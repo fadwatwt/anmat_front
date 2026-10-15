@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { capitalize } from "@/functions/AnotherFunctions";
 import { RiCloseCircleFill, RiCloseCircleLine } from "@remixicon/react";
 
-function Status({ type }) {
+function Status({ type, title }) {
   const { t } = useTranslation();
 
   const statusStyles = {
@@ -78,7 +78,7 @@ function Status({ type }) {
 
   const normalizedType = type?.toLowerCase() || "inactive";
   const status = statusStyles[normalizedType] || statusStyles.inactive; // Default to "Inactive"
-  const label = { "in-progress": "In Progress", "in progress": "In Progress" }[normalizedType] || capitalize(type);
+  const label = title || { "in-progress": "In Progress", "in progress": "In Progress" }[normalizedType] || capitalize(type);
 
   return (
     <div
@@ -107,6 +107,7 @@ Status.propTypes = {
     "Delivered",
     "Read",
   ]).isRequired,
+  title: PropTypes.string,
 };
 
 export default Status;

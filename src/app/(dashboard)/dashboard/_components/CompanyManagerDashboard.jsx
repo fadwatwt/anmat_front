@@ -91,9 +91,10 @@ const CompanyManagerDashboard = () => {
   const { data: projects = [], isLoading: isProjectsLoading, isError: isProjectsError, refetch: refetchProjects } = useGetSubscriberProjectsQuery();
   const { data: departments = [], isLoading: isDepartmentsLoading, isError: isDepartmentsError, refetch: refetchDepartments } = useGetDepartmentsQuery();
   const { data: analyticsData, isLoading: isAnalyticsLoading, isError: isAnalyticsError, refetch: refetchAnalytics } = useGetSubscriberAnalyticsQuery({});
+  const { data: orgLogsData, isLoading: isLogsLoading, isError: isLogsError, refetch: refetchLogs } = useGetOrganizationLogsQuery({ limit: 10 });
 
   const isPageLoading = isStatsLoading || isProjectsLoading || isDepartmentsLoading;
-  const hasLoadError = isStatsError || isProjectsError || isDepartmentsError || isAnalyticsError;
+  const hasLoadError = isStatsError || isProjectsError || isDepartmentsError || isAnalyticsError || isLogsError;
 
   const statusColorMap = {
     active: "#375DFB", // Blue
@@ -177,9 +178,9 @@ const CompanyManagerDashboard = () => {
     if (isProjectsError) refetchProjects();
     if (isDepartmentsError) refetchDepartments();
     if (isAnalyticsError) refetchAnalytics();
+    if (isLogsError) refetchLogs();
   };
 
-  const { data: orgLogsData, isLoading: isLogsLoading } = useGetOrganizationLogsQuery({ limit: 10 });
   const rawLogs = orgLogsData?.data || [];
 
   const headers = [
@@ -283,6 +284,8 @@ const CompanyManagerDashboard = () => {
             classContainer={"h-full"}
             hideSearchInput={true}
             showStatusFilter={true}
+            rowStatusValues={projects.map((project) => project.status)}
+            statusOptions={["open", "in-progress", "completed", "done", "rejected", "cancelled"].map((value) => ({ id: value, value, name: t(value === "in-progress" ? "In Progress" : value.charAt(0).toUpperCase() + value.slice(1)) }))}
             isLoading={isProjectsLoading}
             onRowClick={(index) => {
               const projectId = projects[index]?._id;

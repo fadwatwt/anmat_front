@@ -1,4 +1,5 @@
 import PropTypes from "prop-types";
+import { useState } from "react";
 import InitialsAvatar from "@/components/InitialsAvatar";
 import { useTranslation } from "react-i18next";
 
@@ -15,11 +16,13 @@ function resolveUserImageUrl(user) {
 function UserChatAvatar({ user, size = "40px", fontSize = "text-sm", className = "" }) {
   const { t } = useTranslation();
   const imageUrl = resolveUserImageUrl(user);
+  const [failedUrl, setFailedUrl] = useState(null);
 
-  if (imageUrl) {
+  if (imageUrl && imageUrl !== failedUrl) {
     return (
       <img
         src={imageUrl}
+        onError={() => setFailedUrl(imageUrl)}
         alt={user?.name || t("User")}
         className={`rounded-full object-cover border border-gray-200 dark:border-gray-700 shrink-0 ${className}`}
         style={{ width: size, height: size, minWidth: size, minHeight: size }}

@@ -44,13 +44,27 @@ function collectPageErrors(page, { ignore = [], pageErrorsOnly = false } = {}) {
   const onPageError = (err) => {
     if (!isIgnored(err.message)) errors.push(`pageerror: ${err.message}`);
   };
+  const onResponse = (response) => {
+    if (!pageErrorsOnly && response.url().includes('/api/') && response.status() >= 400 && !isIgnored(response.url())) {
+      errors.push(`http ${response.status()}: ${response.url()}`);
+    }
+  };
+  const onRequestFailed = (request) => {
+    if (!pageErrorsOnly && request.url().includes('/api/') && !isIgnored(request.url()) && request.failure()?.errorText !== 'net::ERR_ABORTED') {
+      errors.push(`requestfailed: ${request.url()} ${request.failure()?.errorText}`);
+    }
+  };
   page.on('console', onConsole);
   page.on('pageerror', onPageError);
+  page.on('response', onResponse);
+  page.on('requestfailed', onRequestFailed);
   return {
     errors,
     stop() {
       page.off('console', onConsole);
       page.off('pageerror', onPageError);
+      page.off('response', onResponse);
+      page.off('requestfailed', onRequestFailed);
     },
   };
 }

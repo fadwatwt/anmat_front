@@ -1,18 +1,70 @@
+"use client";
+
 import PropTypes from "prop-types";
 import { IoClose } from "react-icons/io5";
 import { useTranslation } from "react-i18next";
 import DefaultButton from "../Form/DefaultButton.jsx";
 import { useIsAlertOpen } from "@/store/alertStore";
+import { createPortal } from "react-dom";
+import { useEffect, useRef } from "react";
 
 const Modal = ({ isOpen, onClose, children, title, className, isHideCancel, isBtns, customBtns, classNameOpacity, btnApplyTitle, onClick, classNameBtns, disabled, bypassAlertHide }) => {
     const { t } = useTranslation()
     const isAlertOpen = useIsAlertOpen();
-    if (!isOpen) return null;
-    return (
+    const dialogRef = useRef(null);
+    const onCloseRef = useRef(onClose);
+    onCloseRef.current = onClose;
+
+    useEffect(() => {
+        if (!isOpen || (isAlertOpen && !bypassAlertHide)) return undefined;
+        const previouslyFocused = document.activeElement;
+        const dialog = dialogRef.current;
+        const focusableSelector = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+        const focusable = () => Array.from(dialog?.querySelectorAll(focusableSelector) || []);
+        (focusable()[0] || dialog)?.focus();
+
+        const handleKeyDown = (event) => {
+            if (event.key === "Escape") {
+                event.preventDefault();
+                onCloseRef.current?.();
+                return;
+            }
+            if (event.key !== "Tab") return;
+            const elements = focusable();
+            if (elements.length === 0) {
+                event.preventDefault();
+                dialog?.focus();
+                return;
+            }
+            const first = elements[0];
+            const last = elements[elements.length - 1];
+            if (!dialog?.contains(document.activeElement) || document.activeElement === dialog) {
+                event.preventDefault();
+                (event.shiftKey ? last : first).focus();
+            } else if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first.focus();
+            }
+        };
+
+        document.addEventListener("keydown", handleKeyDown);
+        return () => {
+            document.removeEventListener("keydown", handleKeyDown);
+            previouslyFocused?.focus?.();
+        };
+    }, [isOpen, isAlertOpen, bypassAlertHide]);
+
+    if (!isOpen || typeof document === "undefined") return null;
+    return createPortal(
         <div
             role="dialog"
             aria-modal="true"
             aria-label={title ? t(title) : undefined}
+            ref={dialogRef}
+            tabIndex={-1}
             className={`fixed inset-0 bg-black/40 dark:bg-black/70 backdrop-blur-sm flex items-center overflow-hidden justify-center z-[100] p-4 animate-scale-in ${classNameOpacity ? classNameOpacity : ""} ${isAlertOpen && !bypassAlertHide ? "hidden" : ""}`}
             onClick={onClose}
         >
@@ -58,7 +110,8 @@ const Modal = ({ isOpen, onClose, children, title, className, isHideCancel, isBt
                     }
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };
 Modal.propTypes = {

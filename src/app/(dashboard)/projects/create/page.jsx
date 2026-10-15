@@ -1,5 +1,5 @@
 "use client"
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import Page from "@/components/Page.jsx";
 import ProjectInfoForm from "@/app/(dashboard)/projects/_components/CreateProjectForm/ProjectInfoForm.jsx";
 import CreateTaskForm from "@/app/(dashboard)/projects/_components/CreateProjectForm/CreateTaskForm.jsx";
@@ -14,6 +14,8 @@ import { useProcessing } from "@/app/providers";
 import { Formik, Form } from 'formik';
 import { FaCheckCircle, FaProjectDiagram } from 'react-icons/fa';
 import { translateDate } from "@/functions/Days";
+import PermissionGuard from "@/components/PermissionGuard";
+import { createProjectValidationSchema, createTaskValidationSchema } from "@/app/(dashboard)/projects/_components/CreateProjectForm/workItemValidation";
 
 function CreateProjectPage() {
     const router = useRouter();
@@ -23,7 +25,7 @@ function CreateProjectPage() {
     const { t } = useTranslation();
     const { showProcessing, hideProcessing } = useProcessing();
     
-    const { data: templateDetails, isLoading: isLoadingTemplate } = useGetProjectTemplateDetailsQuery(templateId, { skip: !templateId });
+    const { data: templateDetails } = useGetProjectTemplateDetailsQuery(templateId, { skip: !templateId });
     const template = templateDetails;
 
     const [createProject, { isLoading: isCreatingProject }] = useCreateSubscriberProjectMutation();
@@ -63,12 +65,6 @@ function CreateProjectPage() {
         status: template?.status || "open",
         progress: template?.progress?.toString() || "0"
     }), [template, t]);
-
-    useEffect(() => {
-        if (template) {
-            console.log("Template Loaded for Project Creation:", template);
-        }
-    }, [template]);
 
     // Task initial values - uses project's department as default
     const getTaskInitialValues = () => ({
@@ -175,7 +171,7 @@ function CreateProjectPage() {
             };
 
             showProcessing(t("Creating task..."));
-            const response = await createTask(payload).unwrap();
+            await createTask(payload).unwrap();
             hideProcessing();
             setTaskCount(prev => prev + 1);
             setShowTaskForm(false); // Hide form after successful creation
@@ -215,11 +211,8 @@ function CreateProjectPage() {
         setShowTaskForm(true);
     };
 
-    const handleSkipTasks = () => {
-        router.push("/projects");
-    };
-
     return (
+        <PermissionGuard permission="projects.create">
         <Page title={t("Create a project")} isBreadcrumbs={true} breadcrumbs={breadcrumbItems}>
             <div className={"max-w-4xl w-full mx-auto flex flex-col gap-6"}>
                 {/* Project Details Header (shown after project creation) */}
@@ -268,17 +261,21 @@ function CreateProjectPage() {
                     {!isProjectCreated && (
                         <Formik 
                             initialValues={projectInitialValues} 
+                            validationSchema={createProjectValidationSchema(t)}
                             onSubmit={handleProjectSubmit}
                             enableReinitialize={true}
                         >
-                            {({ values, handleChange, setFieldValue }) => (
+                            {({ values, handleChange, handleBlur, setFieldValue, errors, touched }) => (
                                 <Form className="flex flex-col gap-4">
                                     <ProjectInfoForm
                                         values={values}
                                         handleChange={handleChange}
+                                        handleBlur={handleBlur}
                                         setFieldValue={setFieldValue}
+                                        errors={errors}
+                                        touched={touched}
                                     />
-                                    <div className="flex justify-between items-center mt-4">
+                                    <div className="flex flex-col-reverse sm:flex-row justify-between items-stretch sm:items-center gap-3 mt-4">
                                         <button
                                             type="submit"
                                             disabled={isCreatingProject || isCreatingFromTemplate}
@@ -331,10 +328,11 @@ function CreateProjectPage() {
                     {isProjectCreated && showTaskForm && (
                         <Formik
                             initialValues={getTaskInitialValues()}
+                            validationSchema={createTaskValidationSchema(t)}
                             onSubmit={handleTaskSubmit}
                             enableReinitialize
                         >
-                            {({ values, handleChange, setFieldValue }) => (
+                            {({ values, handleChange, handleBlur, setFieldValue, errors, touched }) => (
                                 <Form className="flex flex-col gap-4">
                                     <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4">
                                         <h3 className="text-lg font-semibold dark:text-gray-200">
@@ -345,12 +343,15 @@ function CreateProjectPage() {
                                         type="task"
                                         values={values}
                                         handleChange={handleChange}
+                                        handleBlur={handleBlur}
                                         setFieldValue={setFieldValue}
+                                        errors={errors}
+                                        touched={touched}
                                         lockedProjectId={createdProject?._id || createdProject?.id}
                                         lockedProjectName={createdProject?.name}
                                     />
-                                    <div className="flex justify-between items-center mt-4">
-                                        <div className="flex gap-3">
+                                    <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center mt-4">
+                                        <div className="flex flex-col sm:flex-row gap-3">
                                             <button
                                                 type="submit"
                                                 disabled={isCreatingTask}
@@ -389,6 +390,7 @@ function CreateProjectPage() {
                 message={pendingAction === 'project'
                     ? t("Are you sure you want to create this project?")
                     : t("Are you sure you want to create this task?")}
+                isSubmitting={isCreatingProject || isCreatingFromTemplate || isCreatingTask}
             />
 
             <ApiResponseAlert
@@ -398,6 +400,7 @@ function CreateProjectPage() {
                 onClose={handleCloseAlert}
             />
         </Page>
+        </PermissionGuard>
     );
 }
 

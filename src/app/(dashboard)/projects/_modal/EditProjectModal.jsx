@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import StepsComponent from "@/app/(dashboard)/projects/_components/CreateProjectForm/StepsComponent.jsx";
 import ProjectInfoForm from "@/app/(dashboard)/projects/_components/CreateProjectForm/ProjectInfoForm.jsx";
 import CreateTaskForm from "@/app/(dashboard)/projects/_components/CreateProjectForm/CreateTaskForm.jsx";
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useUpdateSubscriberProjectMutation, useUploadSubscriberProjectAttachmentMutation } from "@/redux/projects/subscriberProjectsApi";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
@@ -80,7 +80,7 @@ function EditProjectModal({ isOpen, onClose, project }) {
       }
 
       showProcessing(t("Updating project..."));
-      const response = await updateProject({ id: project?._id || project?.id, data: payload }).unwrap();
+      await updateProject({ id: project?._id || project?.id, data: payload }).unwrap();
       hideProcessing();
       setApiResponse({
         isOpen: true,
@@ -104,6 +104,14 @@ function EditProjectModal({ isOpen, onClose, project }) {
   const handleSave = () => {
     if (formikRef.current) {
       formikRef.current.submitForm();
+    }
+  };
+
+  const handleRequestClose = () => {
+    if (isLoading) return;
+    const hasUnsavedChanges = Boolean(formikRef.current?.dirty);
+    if (!hasUnsavedChanges || window.confirm(t("You have unsaved changes. Are you sure you want to leave?"))) {
+      onClose();
     }
   };
 
@@ -136,7 +144,7 @@ function EditProjectModal({ isOpen, onClose, project }) {
       <Modal
         className="lg:w-4/12 md:w-10/12 sm:w-8/12 w-11/12"
         isOpen={isOpen}
-        onClose={onClose}
+        onClose={handleRequestClose}
         customBtns={
           <CustomBtnEditProjectModal
             currentStep={currentStep}
@@ -177,6 +185,7 @@ function EditProjectModal({ isOpen, onClose, project }) {
         onConfirm={() => handleConfirmUpdate()}
         title={t("Confirm Project Update")}
         message={t("Are you sure you want to update this project's information?")}
+        isSubmitting={isLoading}
       />
 
       <EvaluationModal

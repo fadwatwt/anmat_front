@@ -1,5 +1,4 @@
 "use client";
-import { useParams } from 'next/navigation';
 import Table from "@/components/Tables/Table.jsx";
 import Page from "@/components/Page.jsx";
 import Status from "@/app/(dashboard)/projects/_components/TableInfo/Status.jsx";
@@ -46,6 +45,9 @@ import dayjs from 'dayjs';
 import ContentCard from "@/components/containers/ContentCard";
 
 import { usePermission } from "@/Hooks/usePermission";
+import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
+import NotificationDetailsModal from "@/app/(dashboard)/notifications/_components/modals/NotificationDetails.modal";
+import ViewRequestModal from "@/app/(dashboard)/hr/employees/modals/ViewRequestModal";
 
 function EmployeeProfile() {
 
@@ -61,15 +63,6 @@ function EmployeeProfile() {
     const canCreateLeave = usePermission("leaves.create"); // Or check for list if it exists
     const canCreateRequest = usePermission("employee_requests.create");
     // Employees can always view their own salary on the profile page
-    const canViewSalary = true;
-
-    const tabsList = [
-        { title: "Notifications" },
-        ...(canCreateLeave ? [{ title: "Leave" }] : []),
-        ...(canCreateRequest ? [{ title: "Delay" }] : []),
-        { title: "Financial" },
-    ];
-
     const { data: requests = [], isLoading: isLoadingRequests } = useGetEmployeeAuthRequestsQuery();
     const [cancelRequest] = useCancelEmployeeRequestMutation();
 
@@ -78,12 +71,24 @@ function EmployeeProfile() {
         limit: 10
     });
     const notifications = notificationsData?.data?.data || [];
+    const notificationsCount = notificationsData?.data?.pagination?.total ?? notifications.length;
     const [markAsRead] = useMarkSubscriberNotificationAsReadMutation();
+
+    const tabsList = [
+        { title: "Notifications", count: notificationsCount },
+        ...(canCreateLeave ? [{ title: "Leave", count: requests.filter(req => req.type === "DAY_OFF").length }] : []),
+        ...(canCreateLeave ? [{ title: "Short Leaves", count: requests.filter(req => req.type === "SHORT_LEAVE").length }] : []),
+        ...(canCreateRequest ? [{ title: "Delay", count: requests.filter(req => req.type === "WORK_DELAY").length }] : []),
+        { title: "Financial", count: requests.filter(req => req.type === "SALARY_ADVANCE").length },
+    ];
 
     const [activeTab, setActiveTab] = useState("Notifications");
     const [isAddRequestModal, setIsAddRequestModal] = useState(false);
     const [isEditProfileModal, setIsEditProfileModal] = useState(false);
     const [isChangePasswordModal, setIsChangePasswordModal] = useState(false);
+    const [requestToCancel, setRequestToCancel] = useState(null);
+    const [selectedNotification, setSelectedNotification] = useState(null);
+    const [selectedRequest, setSelectedRequest] = useState(null);
 
     const [updateProfile, { isLoading: isUpdatingProfile }] = useUpdateEmployeeDetailMutation();
 
@@ -97,13 +102,15 @@ function EmployeeProfile() {
         return dayjs().diff(dayjs(dob), 'year');
     };
 
-    const handleDeleteRequest = async (id) => {
-        if (window.confirm(t("Are you sure you want to cancel this request?"))) {
-            try {
-                await cancelRequest(id).unwrap();
-            } catch (err) {
-                console.error("Failed to cancel request:", err);
-            }
+    const handleDeleteRequest = (id) => setRequestToCancel(id);
+
+    const confirmCancelRequest = async () => {
+        if (!requestToCancel) return;
+        try {
+            await cancelRequest(requestToCancel).unwrap();
+            setRequestToCancel(null);
+        } catch (err) {
+            console.error("Failed to cancel request:", err);
         }
     };
 
@@ -117,7 +124,7 @@ function EmployeeProfile() {
                     <Status type={req.status} title={req.status} />
                     <span className="text-[10px] text-cell-secondary">{req.vacation_date ? translateDate(req.vacation_date) : "-"}</span>
                 </div>,
-                req.status === 'pending' ? (
+                req.status === 'open' ? (
                     <button
                         key={`del-${req._id}`}
                         onClick={() => handleDeleteRequest(req._id)}
@@ -139,7 +146,7 @@ function EmployeeProfile() {
                     <Status type={req.status} title={req.status} />
                     <span className="text-[10px] text-cell-secondary">{req.work_due_at ? translateDate(req.work_due_at) : "-"}</span>
                 </div>,
-                req.status === 'pending' ? (
+                req.status === 'open' ? (
                     <button
                         key={`del-${req._id}`}
                         onClick={() => handleDeleteRequest(req._id)}
@@ -161,7 +168,7 @@ function EmployeeProfile() {
                     <Status type={req.status} title={req.status} />
                     <span className="text-[10px] text-cell-secondary">{req.advance_salary_by || "-"}</span>
                 </div>,
-                req.status === 'pending' ? (
+                req.status === 'open' ? (
                     <button
                         key={`del-${req._id}`}
                         onClick={() => handleDeleteRequest(req._id)}
@@ -170,6 +177,32 @@ function EmployeeProfile() {
                         <RiDeleteBin7Line size={18} />
                     </button>
                 ) : null
+            ]);
+    };
+
+    const getShortLeaveRows = () => {
+        return requests
+            .filter(req => req.type === "SHORT_LEAVE")
+            .map(req => [
+                req.created_at ? translateDate(req.created_at) : "-",
+                <span key={`date-${req._id}`}>{req.leave_date ? translateDate(req.leave_date) : "-"}</span>,
+                <span key={`from-${req._id}`} dir="ltr">{req.leave_start_time || "-"}</span>,
+                <span key={`to-${req._id}`} dir="ltr">{req.leave_end_time || "-"}</span>,
+                <Status key={`status-${req._id}`} type={req.status} title={req.status === "open" ? t("Under Review") : t(req.status)} />,
+                <div key={`actions-${req._id}`} className="flex items-center gap-2">
+                    <button onClick={() => setSelectedRequest(req)} className="px-3 py-1.5 rounded-lg border border-primary-200 text-primary-base text-xs font-medium">
+                        {t("View Details")}
+                    </button>
+                {req.status === "open" && (
+                    <button
+                        onClick={() => handleDeleteRequest(req._id)}
+                        className="p-1 text-red-500 hover:bg-red-50 rounded dark:hover:bg-red-900/20"
+                        aria-label={t("Cancel")}
+                    >
+                        <RiDeleteBin7Line size={18} />
+                    </button>
+                )}
+                </div>
             ]);
     };
 
@@ -215,6 +248,8 @@ function EmployeeProfile() {
                         isCheckInput={false}
                         isTitle={false}
                         isLoading={isLoadingNotifications}
+                        onRowClick={(index) => setSelectedNotification(notifications[index])}
+                        defaultRowsPerPage={10}
                     />
                 );
             case "Leave":
@@ -227,6 +262,19 @@ function EmployeeProfile() {
                         isCheckInput={false}
                         isTitle={false}
                         isLoading={isLoadingRequests}
+                    />
+                );
+            case "Short Leaves":
+                return (
+                    <Table
+                        classContainer={"max-w-full"}
+                        headers={[{ label: t("Request Date") }, { label: t("Leave Date") }, { label: t("From Time") }, { label: t("To Time") }, { label: t("Status") }, { label: t("Actions") }]}
+                        rows={getShortLeaveRows()}
+                        isActions={false}
+                        isCheckInput={false}
+                        isTitle={false}
+                        isLoading={isLoadingRequests}
+                        defaultRowsPerPage={10}
                     />
                 );
             case "Delay":
@@ -262,8 +310,8 @@ function EmployeeProfile() {
     const tasksRows = employeeDetail.ratings?.map(rating => [
         rating.details || "-",
         rating.created_at ? translateDate(rating.created_at) : "-",
-        <Rating value={rating.score || 0} />,
-        <p className={"text-wrap text-cell-secondary"}>{rating.comment || "-"}</p>
+        <Rating key={`rating-${rating._id || rating.created_at}`} value={rating.score || 0} />,
+        <p key={`comment-${rating._id || rating.created_at}`} className={"text-wrap text-cell-secondary"}>{rating.comment || "-"}</p>
     ]) || [];
 
     return (
@@ -418,7 +466,7 @@ function EmployeeProfile() {
                                 <p className={"text-lg text-cell-primary font-bold"}>{t("Requests")}</p>
                             </div>
                             <div className={"w-full flex flex-col gap-4"}>
-                                <div className={"flex w-full md:w-1/3"}>
+                                <div className={"flex w-full"}>
                                     <TabsOutContent tabs={tabsList} activeTab={activeTab} onTabChange={(title) => setActiveTab(title)} />
                                 </div>
                                 <div className={"w-full"}>
@@ -446,6 +494,27 @@ function EmployeeProfile() {
             <AddRequestModal isOpen={isAddRequestModal} onClose={() => setIsAddRequestModal(false)} onClick={() => { }} />
             <EditProfileModal isOpen={isEditProfileModal} onClose={() => setIsEditProfileModal(false)} user={user} updateProfile={updateProfile} isLoading={isUpdatingProfile} />
             <ChangePasswordModal isOpen={isChangePasswordModal} onClose={() => setIsChangePasswordModal(false)} />
+            <ApprovalAlert
+                isOpen={Boolean(requestToCancel)}
+                onClose={() => setRequestToCancel(null)}
+                onConfirm={confirmCancelRequest}
+                title={t("Cancel Request")}
+                message={t("Are you sure you want to cancel this request?")}
+                confirmBtnText={t("Confirm")}
+                cancelBtnText={t("Cancel")}
+            />
+            <NotificationDetailsModal
+                isOpen={Boolean(selectedNotification)}
+                onClose={() => setSelectedNotification(null)}
+                notification={selectedNotification}
+                onMarkAsRead={(id) => markAsRead(id || selectedNotification?._id)}
+            />
+            <ViewRequestModal
+                isOpen={Boolean(selectedRequest)}
+                onClose={() => setSelectedRequest(null)}
+                request={selectedRequest}
+                readOnly={true}
+            />
         </Page>
     );
 }

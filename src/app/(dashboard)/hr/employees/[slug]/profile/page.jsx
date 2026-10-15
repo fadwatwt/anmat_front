@@ -15,7 +15,7 @@ import {
 } from "@remixicon/react";
 import { useGetEmployeeProfileQuery, useUpdateEmployeeMutation } from '@/redux/employees/employeesApi';
 import { useGetSubscriberOrganizationQuery } from '@/redux/organizations/organizationsApi';
-import { RiMore2Fill, RiStarLine, RiEditLine } from "@remixicon/react";
+import { RiMore2Fill, RiEditLine } from "@remixicon/react";
 import { translateDate } from '@/functions/Days';
 import { useState } from "react";
 import ContentCard from "@/components/containers/ContentCard";
@@ -34,6 +34,9 @@ import { useGetSentSubscriberNotificationsQuery } from "@/redux/subscriber-notif
 import SendNotificationModal from "@/app/(dashboard)/hr/employees/modals/SendNotification.modal";
 import { usePermission } from "@/Hooks/usePermission";
 import EmployeeDocumentsCard from "@/app/(dashboard)/hr/employees/components/EmployeeDocumentsCard";
+import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
+import NotificationDetailsModal from "@/app/(dashboard)/notifications/_components/modals/NotificationDetails.modal";
+import ViewRequestModal from "@/app/(dashboard)/hr/employees/modals/ViewRequestModal";
 
 // Map icon name strings from backend to actual icon components
 const ICON_MAP = {
@@ -55,7 +58,11 @@ function SingleEmployeeProfile() {
     const { data: employee, isLoading, error } = useGetEmployeeProfileQuery(employeeId);
     const { data: orgData } = useGetSubscriberOrganizationQuery();
     const [updateEmployee] = useUpdateEmployeeMutation();
-    const { data: requests = [], isLoading: isLoadingRequests } = useGetEmployeeRequestsQuery({ employee_id: employeeId });
+    const employeeUserId = employee?.user_id || employee?.user?._id;
+    const { data: requests = [], isLoading: isLoadingRequests } = useGetEmployeeRequestsQuery(
+        { employee_id: employeeUserId },
+        { skip: !employeeUserId }
+    );
     const [deleteRequest] = useDeleteEmployeeRequestMutation();
 
     const { data: notificationsData, isLoading: isLoadingNotifications } = useGetSentSubscriberNotificationsQuery({
@@ -64,13 +71,15 @@ function SingleEmployeeProfile() {
         limit: 10
     }, { skip: !employeeId });
     const notifications = notificationsData?.data?.data || [];
+    const notificationsCount = notificationsData?.data?.pagination?.total ?? notifications.length;
 
     const { data: employeeLogsData } = useGetEmployeeLogsQuery({ employeeId: employeeId, limit: 10 }, { skip: !employeeId });
     const activityLogs = employeeLogsData?.data || [];
 
     const [isOpenSendNotifyModal, setIsOpenSendNotifyModal] = useState(false);
-    const [isUpdating, setIsUpdating] = useState(false);
     const [isEditRatingModalOpen, setIsEditRatingModalOpen] = useState(false);
+    const [requestToDelete, setRequestToDelete] = useState(null);
+    const [selectedNotification, setSelectedNotification] = useState(null);
 
     const canTrackAllLeaves = usePermission("leaves.track_all");
     const canTrackDeptLeaves = usePermission("leaves.track_department");
@@ -81,43 +90,29 @@ function SingleEmployeeProfile() {
     const canTrackAllSalary = usePermission("salary_transactions.track_all");
     const canTrackDeptSalary = usePermission("salary_transactions.track_department");
     const canViewSalary = canTrackAllSalary || canTrackDeptSalary;
+    const canDeleteRequests = usePermission("employee_requests.delete");
+    const canSendNotification = usePermission("notifications.create");
+    const canUpdateRequests = usePermission("employee_requests.update");
 
     const tabsList = [
-        { title: "Notifications" },
-        ...(canViewLeaves ? [{ title: "Leave" }] : []),
-        ...(canViewRequests ? [{ title: "Delay" }] : []),
-        ...(canViewSalary ? [{ title: "Financial" }] : []),
+        { title: "Notifications", count: notificationsCount },
+        ...(canViewLeaves ? [{ title: "Leave", count: requests.filter(req => req.type === "DAY_OFF").length }] : []),
+        ...(canViewLeaves ? [{ title: "Short Leaves", count: requests.filter(req => req.type === "SHORT_LEAVE").length }] : []),
+        ...(canViewRequests ? [{ title: "Delay", count: requests.filter(req => req.type === "WORK_DELAY").length }] : []),
+        ...(canViewSalary ? [{ title: "Financial", count: requests.filter(req => req.type === "SALARY_ADVANCE").length }] : []),
     ];
 
     const [activeTab, setActiveTab] = useState("Notifications");
-
-    const handleUpdateRating = async (rating) => {
-        try {
-            setIsUpdating(true);
-            await updateEmployee({
-                id: employeeId,
-                employee_details: {
-                    manual_rating: rating
-                }
-            }).unwrap();
-        } catch (error) {
-            console.error("Failed to update rating:", error);
-        } finally {
-            setIsUpdating(false);
-        }
-    };
+    const [selectedRequest, setSelectedRequest] = useState(null);
 
     const handleUpdateFullRating = async (data) => {
         try {
-            setIsUpdating(true);
             await updateEmployee({
                 id: employeeId,
                 employee_details: data
             }).unwrap();
         } catch (error) {
             console.error("Failed to update rating:", error);
-        } finally {
-            setIsUpdating(false);
         }
     };
 
@@ -131,13 +126,15 @@ function SingleEmployeeProfile() {
         return (bytes / (1024 * 1024)).toFixed(2) + " MB";
     };
 
-    const handleDeleteRequest = async (id) => {
-        if (window.confirm(t("Are you sure you want to delete this request?"))) {
-            try {
-                await deleteRequest(id).unwrap();
-            } catch (err) {
-                console.error("Failed to delete request:", err);
-            }
+    const handleDeleteRequest = (id) => setRequestToDelete(id);
+
+    const confirmDeleteRequest = async () => {
+        if (!requestToDelete) return;
+        try {
+            await deleteRequest(requestToDelete).unwrap();
+            setRequestToDelete(null);
+        } catch (err) {
+            console.error("Failed to delete request:", err);
         }
     };
 
@@ -151,13 +148,38 @@ function SingleEmployeeProfile() {
                     <Status type={req.status} title={req.status} />
                     <span className="text-[10px] text-cell-secondary">{req.vacation_date ? translateDate(req.vacation_date) : "-"}</span>
                 </div>,
-                <button
+                canDeleteRequests ? <button
                     key={`del-${req._id}`}
                     onClick={() => handleDeleteRequest(req._id)}
                     className="p-1 text-red-500 hover:bg-red-50 rounded dark:hover:bg-red-900/20"
                 >
                     <RiDeleteBin7Line size={18} />
-                </button>
+                </button> : null
+            ]);
+    };
+
+    const getShortLeaveRows = () => {
+        return requests
+            .filter(req => req.type === "SHORT_LEAVE")
+            .map(req => [
+                req.created_at ? translateDate(req.created_at) : "-",
+                <span key={`date-${req._id}`} className="text-cell-primary">{req.leave_date ? translateDate(req.leave_date) : "-"}</span>,
+                <span key={`from-${req._id}`} dir="ltr" className="text-cell-primary">{req.leave_start_time || "-"}</span>,
+                <span key={`to-${req._id}`} dir="ltr" className="text-cell-primary">{req.leave_end_time || "-"}</span>,
+                <Status key={`status-${req._id}`} type={req.status} title={req.status === "open" ? t("Under Review") : t(req.status)} />,
+                <div key={`actions-${req._id}`} className="flex items-center gap-2">
+                    <button
+                        onClick={() => setSelectedRequest(req)}
+                        className="px-3 py-1.5 rounded-lg border border-primary-200 text-primary-base text-xs font-medium hover:bg-primary-50"
+                    >
+                        {t("View Details")}
+                    </button>
+                    {canDeleteRequests && (
+                        <button onClick={() => handleDeleteRequest(req._id)} className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg" aria-label={t("Archive")}>
+                            <RiDeleteBin7Line size={18} />
+                        </button>
+                    )}
+                </div>
             ]);
     };
 
@@ -171,13 +193,13 @@ function SingleEmployeeProfile() {
                     <Status type={req.status} title={req.status} />
                     <span className="text-[10px] text-cell-secondary">{req.work_due_at ? translateDate(req.work_due_at) : "-"}</span>
                 </div>,
-                <button
+                canDeleteRequests ? <button
                     key={`del-${req._id}`}
                     onClick={() => handleDeleteRequest(req._id)}
                     className="p-1 text-red-500 hover:bg-red-50 rounded dark:hover:bg-red-900/20"
                 >
                     <RiDeleteBin7Line size={18} />
-                </button>
+                </button> : null
             ]);
     };
 
@@ -191,13 +213,13 @@ function SingleEmployeeProfile() {
                     <Status type={req.status} title={req.status} />
                     <span className="text-[10px] text-cell-secondary">{req.advance_salary_by || "-"}</span>
                 </div>,
-                <button
+                canDeleteRequests ? <button
                     key={`del-${req._id}`}
                     onClick={() => handleDeleteRequest(req._id)}
                     className="p-1 text-red-500 hover:bg-red-50 rounded dark:hover:bg-red-900/20"
                 >
                     <RiDeleteBin7Line size={18} />
-                </button>
+                </button> : null
             ]);
     };
 
@@ -213,7 +235,7 @@ function SingleEmployeeProfile() {
                     <span className={`p-1.5 rounded-full ${colorClass}`}>
                         {Icon}
                     </span>
-                    <span className="font-medium text-sm text-cell-primary">{type.name || t("Notification")}</span>
+                    <span className="font-medium text-sm text-cell-primary">{type.name ? t(type.name) : t("Notification")}</span>
                 </div>,
                 <div key={`info-${notif._id}`} className="flex flex-col max-w-xs">
                     <span className="font-semibold text-cell-primary text-sm truncate" title={notif.title}>{notif.title}</span>
@@ -241,6 +263,8 @@ function SingleEmployeeProfile() {
                         isCheckInput={false}
                         isTitle={false}
                         isLoading={isLoadingNotifications}
+                        onRowClick={(index) => setSelectedNotification(notifications[index])}
+                        defaultRowsPerPage={10}
                     />
                 );
             case "Leave":
@@ -258,6 +282,27 @@ function SingleEmployeeProfile() {
                         isCheckInput={false}
                         isTitle={false}
                         isLoading={isLoadingRequests}
+                        defaultRowsPerPage={10}
+                    />
+                );
+            case "Short Leaves":
+                return (
+                    <Table
+                        classContainer={"max-w-full"}
+                        headers={[
+                            { label: t("Request Date") },
+                            { label: t("Leave Date") },
+                            { label: t("From Time") },
+                            { label: t("To Time") },
+                            { label: t("Status") },
+                            { label: t("Actions") }
+                        ]}
+                        rows={getShortLeaveRows()}
+                        isActions={false}
+                        isCheckInput={false}
+                        isTitle={false}
+                        isLoading={isLoadingRequests}
+                        defaultRowsPerPage={10}
                     />
                 );
             case "Delay":
@@ -315,8 +360,8 @@ function SingleEmployeeProfile() {
     const tasksRows = employee.ratings?.map(rating => [
         rating.details || "-",
         rating.created_at ? translateDate(rating.created_at) : "-",
-        <Rating value={rating.score || 0} />,
-        <p className={"text-wrap text-cell-secondary"}>{rating.comment || "-"}</p>
+        <Rating key={`rating-${rating._id || rating.created_at}`} value={rating.score || 0} />,
+        <p key={`comment-${rating._id || rating.created_at}`} className={"text-wrap text-cell-secondary"}>{rating.comment || "-"}</p>
     ]) || [];
 
     return (
@@ -509,16 +554,16 @@ function SingleEmployeeProfile() {
                         <div className={"bg-surface rounded-2xl p-4 gap-6 flex flex-col items-center w-full"}>
                             <div className={"flex justify-between items-center w-full"}>
                                 <p className={"text-lg text-cell-primary font-bold"}>{t("Requests & Notifications")}</p>
-                                <button
+                                {canSendNotification && <button
                                     onClick={() => setIsOpenSendNotifyModal(true)}
                                     className="bg-primary-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors flex items-center gap-2"
                                 >
                                     <RiNotification4Line size={18} />
                                     {t("Send Notification")}
-                                </button>
+                                </button>}
                             </div>
                             <div className={"w-full flex flex-col gap-4"}>
-                                <div className={"flex w-full md:w-1/3"}>
+                                <div className={"flex w-full"}>
                                     <TabsOutContent tabs={tabsList} activeTab={activeTab} onTabChange={(title) => setActiveTab(title)} />
                                 </div>
                                 <div className={"w-full"}>
@@ -560,6 +605,27 @@ function SingleEmployeeProfile() {
                     isOpen={isOpenSendNotifyModal}
                     onClose={() => setIsOpenSendNotifyModal(false)}
                     employeeData={employee}
+                />
+
+                <ApprovalAlert
+                    isOpen={Boolean(requestToDelete)}
+                    onClose={() => setRequestToDelete(null)}
+                    onConfirm={confirmDeleteRequest}
+                    title={t("Archive Request")}
+                    message={t("Are you sure you want to archive this request?")}
+                    confirmBtnText={t("Archive")}
+                    cancelBtnText={t("Cancel")}
+                />
+                <NotificationDetailsModal
+                    isOpen={Boolean(selectedNotification)}
+                    onClose={() => setSelectedNotification(null)}
+                    notification={selectedNotification}
+                />
+                <ViewRequestModal
+                    isOpen={Boolean(selectedRequest)}
+                    onClose={() => setSelectedRequest(null)}
+                    request={selectedRequest}
+                    readOnly={!canUpdateRequests || ["accepted", "rejected", "cancelled"].includes(selectedRequest?.status)}
                 />
             </div>
         </Page>

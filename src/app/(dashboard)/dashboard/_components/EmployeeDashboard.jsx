@@ -22,6 +22,7 @@ import {
     RiTaskLine,
 } from "@remixicon/react";
 import DashboardErrorBanner from "./DashboardErrorBanner";
+import { usePermission } from "@/Hooks/usePermission";
 
 const SummaryCard = ({ title, value, icon: Icon, color }) => (
     <div className="bg-surface p-5 rounded-[24px] border border-status-border shadow-sm flex items-center justify-between">
@@ -45,10 +46,14 @@ SummaryCard.propTypes = {
 const EmployeeDashboard = () => {
     const { t } = useTranslation();
     const router = useRouter();
-    const { data: statsData, isError: isStatsError, refetch: refetchStats } = useGetEmployeeTaskStatisticsStatusQuery();
+    const canViewAnalytics = usePermission("analytics.view");
+    const { data: statsData, isLoading: isStatsLoading, isError: isStatsError, refetch: refetchStats } = useGetEmployeeTaskStatisticsStatusQuery();
     const { data: tasks = [], isLoading: isTasksLoading, isError: isTasksError, refetch: refetchTasks } = useGetEmployeeTasksQuery();
     const { data: logsData, isLoading: isLogsLoading, isError: isLogsError, refetch: refetchLogs } = useGetEmployeeDashboardLogsQuery({ limit: 10 });
-    const { data: analyticsResponse, isError: isAnalyticsError, refetch: refetchAnalytics } = useGetEmployeeAnalyticsQuery({ section: "tasks" });
+    const { data: analyticsResponse, isLoading: isAnalyticsLoading, isError: isAnalyticsError, refetch: refetchAnalytics } = useGetEmployeeAnalyticsQuery(
+        { section: "tasks" },
+        { skip: !canViewAnalytics },
+    );
     const analyticsData = analyticsResponse?.data || analyticsResponse || {};
     const statusCounts = statsData?.data?.status_counts || {};
     const getCount = (...statuses) => statuses.reduce((sum, status) => sum + (Number(statusCounts[status]) || 0), 0);
@@ -56,12 +61,12 @@ const EmployeeDashboard = () => {
     const inProgressTasks = getCount("in_progress", "in-progress", "pending", "open");
     const completedTasks = getCount("completed", "done", "completed_before_due_date", "late_completed");
     const overdueTasks = getCount("overdue");
-    const hasLoadError = isStatsError || isTasksError || isLogsError || isAnalyticsError;
+    const hasLoadError = isStatsError || isTasksError || isLogsError || (canViewAnalytics && isAnalyticsError);
     const retryDashboard = () => {
         if (isStatsError) refetchStats();
         if (isTasksError) refetchTasks();
         if (isLogsError) refetchLogs();
-        if (isAnalyticsError) refetchAnalytics();
+        if (canViewAnalytics && isAnalyticsError) refetchAnalytics();
     };
 
     const statusColorMap = {
@@ -83,7 +88,7 @@ const EmployeeDashboard = () => {
 
     const chartData = statsData?.data ? {
         total: statsData.data.total,
-        records: Object.entries(statsData.data.status_counts).map(([status, count], index) => ({
+        records: Object.entries(statusCounts).map(([status, count], index) => ({
             title: t(status.replace(/[-_]+/g, ' ').replace(/\b\w/g, c => c.toUpperCase())),
             value: count,
             color: getStatusColor(status, index),
@@ -132,19 +137,27 @@ const EmployeeDashboard = () => {
             {/* Companies Analytics */}
             <div className="flex flex-col items-start justify-start gap-4">
                 {hasLoadError && <DashboardErrorBanner onRetry={retryDashboard} />}
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 w-full">
-                    <SummaryCard title={t("Total Tasks")} value={totalTasks} icon={RiTaskLine} color="bg-blue-500" />
-                    <SummaryCard title={t("In Progress")} value={inProgressTasks} icon={RiLoader4Line} color="bg-orange-500" />
-                    <SummaryCard title={t("Completed")} value={completedTasks} icon={RiCheckboxCircleLine} color="bg-green-500" />
-                    <SummaryCard title={t("Overdue")} value={overdueTasks} icon={RiAlarmWarningLine} color="bg-red-500" />
-                </div>
+                {isStatsLoading ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 w-full">
+                        {[1, 2, 3, 4].map(item => <div key={item} className="h-28 animate-pulse rounded-[24px] bg-status-bg border border-status-border" />)}
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 w-full">
+                        <SummaryCard title={t("Total Tasks")} value={totalTasks} icon={RiTaskLine} color="bg-blue-500" />
+                        <SummaryCard title={t("In Progress")} value={inProgressTasks} icon={RiLoader4Line} color="bg-orange-500" />
+                        <SummaryCard title={t("Completed")} value={completedTasks} icon={RiCheckboxCircleLine} color="bg-green-500" />
+                        <SummaryCard title={t("Overdue")} value={overdueTasks} icon={RiAlarmWarningLine} color="bg-red-500" />
+                    </div>
+                )}
                 <div className="flex flex-col md:flex-row items-stretch gap-4 justify-between w-full">
                     <div className="w-full md:w-1/2">
-                        <TasksSummaryChart data={chartData} />
+                        {isStatsLoading ? <div className="h-72 animate-pulse rounded-[24px] bg-status-bg border border-status-border" /> : <TasksSummaryChart data={chartData} />}
                     </div>
-                    <div className="w-full md:w-1/2">
-                        <TasksPerformanceChart monthlyData={analyticsData.tasksPerformanceMonthly || []} />
-                    </div>
+                    {canViewAnalytics && (
+                        <div className="w-full md:w-1/2">
+                            {isAnalyticsLoading ? <div className="h-72 animate-pulse rounded-[24px] bg-status-bg border border-status-border" /> : <TasksPerformanceChart monthlyData={analyticsData.tasksPerformanceMonthly || []} />}
+                        </div>
+                    )}
                 </div>
                 <div className="flex flex-col md:flex-row items-stretch gap-4 justify-between w-full">
                     <Table

@@ -1,7 +1,5 @@
 "use client"
-import { useState, useMemo, useRef, useEffect } from "react";
-import { ImSpinner2 } from "react-icons/im";
-import { RiDownloadLine } from '@remixicon/react';
+import { useState, useMemo, useRef } from "react";
 
 import Page from "@/components/Page";
 import IndustriesChart from "@/app/(dashboard)/analytics/_components/admin/charts/IndustriesChart";
@@ -21,32 +19,20 @@ import {
     CHART_TYPE_OPTIONS,
 } from './filterOptions';
 import { formatAdminAnalytics, exportAsPdf, exportCsv, exportXlsx } from './exportHelpers';
+import AnalyticsExportMenu from './AnalyticsExportMenu';
+import AnalyticsPageSkeleton from './AnalyticsPageSkeleton';
+import usePersistedAnalyticsFilter from './usePersistedAnalyticsFilter';
 
 const AdminAnalytics = () => {
     const { t, i18n } = useTranslation();
 
-    const [sectionFilter, setSectionFilter] = useState("");
-    const [chartTypeFilter, setChartTypeFilter] = useState("");
+    const [sectionFilter, setSectionFilter] = usePersistedAnalyticsFilter("analytics:admin:section");
+    const [chartTypeFilter, setChartTypeFilter] = usePersistedAnalyticsFilter("analytics:admin:chart");
 
     // --- Export ---
-    const [showExportMenu, setShowExportMenu] = useState(false);
-    const exportRef = useRef(null);
     const contentRef = useRef(null);
 
-    useEffect(() => {
-        const handleClickOutside = (e) => {
-            if (exportRef.current && !exportRef.current.contains(e.target)) {
-                setShowExportMenu(false);
-            }
-        };
-        if (showExportMenu) {
-            document.addEventListener('mousedown', handleClickOutside);
-        }
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, [showExportMenu]);
-
     const handleExport = async (format) => {
-        setShowExportMenu(false);
         const { headers, rows, fileName } = formatAdminAnalytics(data);
         if (format === 'csv') {
             exportCsv(headers, rows, fileName);
@@ -64,16 +50,15 @@ const AdminAnalytics = () => {
 
     const filters = useMemo(() => ({
         ...dateRange,
-        section: sectionFilter || undefined,
         locale: i18n.language,
-    }), [dateRange, sectionFilter, i18n.language]);
+    }), [dateRange, i18n.language]);
 
     const { data: adminData, isLoading, error } = useGetAdminAnalyticsQuery(filters);
 
     const showSection = (section) => !sectionFilter || sectionFilter === section;
     const isChartTypeVisible = (type) => !chartTypeFilter || chartTypeFilter === type;
 
-    if (isLoading) return <div className="text-center py-20"> <div className="flex items-center justify-center w-full p-4"><ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} /></div> </div>;
+    if (isLoading) return <AnalyticsPageSkeleton />;
     if (error) return <div className="p-8 text-red-500 text-center">{t("Error loading admin analytics.")}</div>;
 
     const data = adminData?.data || {};
@@ -83,23 +68,8 @@ const AdminAnalytics = () => {
             title={t("All Analytics Overview")}
             isBtn={false}
             otherHeaderActions={
-                <div className="flex gap-3 items-center">
-                    <div className="relative" ref={exportRef}>
-                        <button
-                            onClick={() => setShowExportMenu(!showExportMenu)}
-                            className="flex items-center gap-2 bg-primary-base text-white rounded-xl px-4 py-2 text-sm shadow-sm font-medium hover:opacity-90"
-                        >
-                            <RiDownloadLine className="size-4" />
-                            {t("Export")}
-                        </button>
-                        {showExportMenu && (
-                            <div className="absolute right-0 mt-1.5 bg-surface border border-status-border rounded-lg shadow-lg z-50 min-w-[140px]">
-                                <button onClick={() => handleExport('csv')} className="block w-full text-left px-4 py-2.5 text-sm hover:bg-status-bg text-cell-secondary">{t("CSV")}</button>
-                                <button onClick={() => handleExport('xlsx')} className="block w-full text-left px-4 py-2.5 text-sm hover:bg-status-bg text-cell-secondary">{t("Excel (XLSX)")}</button>
-                                <button onClick={() => handleExport('pdf')} className="block w-full text-left px-4 py-2.5 text-sm hover:bg-status-bg text-cell-secondary">{t("PDF")}</button>
-                            </div>
-                        )}
-                    </div>
+                <div className="flex flex-wrap gap-2 items-center justify-end">
+                    <AnalyticsExportMenu onExport={handleExport} />
                     <div className="relative flex items-center">
                         <select
                             className="appearance-none bg-status-bg border border-status-border rounded-xl px-4 py-2 text-sm shadow-sm outline-none text-cell-secondary font-medium cursor-pointer pr-9"

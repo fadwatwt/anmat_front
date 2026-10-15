@@ -19,6 +19,7 @@ function ElementsSelect({
     isRemoveBtn = true,
     dropDownClassName,
     renderOption,
+    error,
 }) {
     const [selectedOptions, setSelectedOptions] = useState(() => {
         if (Array.isArray(defaultValue)) return defaultValue;
@@ -162,7 +163,7 @@ function ElementsSelect({
                         calculateDropdownPosition();
                     }}
                     ref={selectTriggerRef}
-                    className="flex items-center gap-2 min-h-[40px] bg-status-bg border border-status-border rounded-[10px] p-[10px] box-border text-xs cursor-pointer focus-within:ring-2 focus-within:ring-primary-500 dark:focus-within:border-primary-500 dark:focus-within:ring-primary-500 transition-colors"
+                    className={`flex items-center gap-2 min-h-[40px] bg-status-bg border rounded-[10px] p-[10px] box-border text-xs cursor-pointer focus-within:ring-2 focus-within:ring-primary-500 dark:focus-within:ring-primary-500 transition-colors ${error ? "border-red-500" : "border-status-border dark:focus-within:border-primary-500"}`}
                 >
                     <div className="flex-1 flex gap-1 overflow-x-auto whitespace-nowrap overflow-y-hidden custom-scrollbar">
                         {selectedOptions.length > 0 ? (
@@ -202,6 +203,7 @@ function ElementsSelect({
                     </div>
                     <IoIosArrowDown className="text-cell-secondary shrink-0" size={16} />
                 </div>
+                {error && <p role="alert" className="text-red-500 text-xs mt-1">{error}</p>}
 
                 {isDropdownOpen &&
                     createPortal(
@@ -257,6 +259,7 @@ ElementsSelect.propTypes = {
     isRemoveBtn: PropTypes.bool,
     dropDownClassName: PropTypes.string,
     renderOption: PropTypes.func,
+    error: PropTypes.string,
 };
 
 export default ElementsSelect;

@@ -1,7 +1,5 @@
 "use client"
-import { useState, useMemo, useRef, useEffect } from "react";
-import { ImSpinner2 } from "react-icons/im";
-import { RiDownloadLine } from '@remixicon/react';
+import { useState, useMemo, useRef } from "react";
 
 import Page from "@/components/Page";
 import ProjectsPerformanceChart from "@/app/(dashboard)/analytics/_components/employee/ProjectsPerformanceChart";
@@ -22,6 +20,9 @@ import {
     CHART_TYPE_OPTIONS,
 } from './filterOptions';
 import { formatEmployeeAnalytics, exportAsPdf, exportCsv, exportXlsx } from './exportHelpers';
+import AnalyticsExportMenu from './AnalyticsExportMenu';
+import AnalyticsPageSkeleton from './AnalyticsPageSkeleton';
+import usePersistedAnalyticsFilter from './usePersistedAnalyticsFilter';
 
 const SUMMARY_COLORS = ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#0EA5E9', '#EC4899'];
 const RATING_COLORS = { 'High Rating': '#375DFB', 'Medium Rating': '#FBBF24', 'Low Rating': '#EF4444', 'No Ratings': '#9CA3AF' };
@@ -43,28 +44,13 @@ const EmployeeAnalytics = () => {
     const { t, i18n } = useTranslation();
 
     const [timeRange, setTimeRange] = useState("6m");
-    const [sectionFilter, setSectionFilter] = useState("");
-    const [chartTypeFilter, setChartTypeFilter] = useState("");
+    const [sectionFilter, setSectionFilter] = usePersistedAnalyticsFilter("analytics:employee:section");
+    const [chartTypeFilter, setChartTypeFilter] = usePersistedAnalyticsFilter("analytics:employee:chart");
 
     // --- Export ---
-    const [showExportMenu, setShowExportMenu] = useState(false);
-    const exportRef = useRef(null);
     const contentRef = useRef(null);
 
-    useEffect(() => {
-        const handleClickOutside = (e) => {
-            if (exportRef.current && !exportRef.current.contains(e.target)) {
-                setShowExportMenu(false);
-            }
-        };
-        if (showExportMenu) {
-            document.addEventListener('mousedown', handleClickOutside);
-        }
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, [showExportMenu]);
-
     const handleExport = async (format) => {
-        setShowExportMenu(false);
         const { headers, rows, fileName } = formatEmployeeAnalytics(data);
         if (format === 'csv') {
             exportCsv(headers, rows, fileName);
@@ -82,8 +68,7 @@ const EmployeeAnalytics = () => {
 
     const filters = useMemo(() => ({
         ...dateRange,
-        section: sectionFilter || undefined,
-    }), [dateRange, sectionFilter]);
+    }), [dateRange]);
 
     const { data: employeeData, isLoading, error } = useGetEmployeeAnalyticsQuery(filters);
 
@@ -105,7 +90,7 @@ const EmployeeAnalytics = () => {
         [t]
     );
 
-    if (isLoading) return <div className="text-center py-20"> <div className="flex items-center justify-center w-full p-4"><ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} /></div> </div>;
+    if (isLoading) return <AnalyticsPageSkeleton />;
     if (error) return <div className="p-8 text-red-500 text-center">{t("Error loading employee analytics.")}</div>;
 
     const data = employeeData?.data || {};
@@ -119,40 +104,31 @@ const EmployeeAnalytics = () => {
             isBtn={false}
             otherHeaderActions={
                 <div className="flex flex-wrap lg:flex-nowrap gap-2 items-center justify-end">
-                    <div className="relative" ref={exportRef}>
-                        <button
-                            onClick={() => setShowExportMenu(!showExportMenu)}
-                            className="flex items-center gap-2 bg-primary-base text-white rounded-xl px-4 py-2 text-sm shadow-sm font-medium hover:opacity-90"
-                        >
-                            <RiDownloadLine className="size-4" />
-                            {t("Export")}
-                        </button>
-                        {showExportMenu && (
-                            <div className="absolute right-0 mt-1.5 bg-surface border border-status-border rounded-lg shadow-lg z-50 min-w-[140px]">
-                                <button onClick={() => handleExport('csv')} className="block w-full text-left px-4 py-2.5 text-sm hover:bg-status-bg text-cell-secondary">{t("CSV")}</button>
-                                <button onClick={() => handleExport('xlsx')} className="block w-full text-left px-4 py-2.5 text-sm hover:bg-status-bg text-cell-secondary">{t("Excel (XLSX)")}</button>
-                                <button onClick={() => handleExport('pdf')} className="block w-full text-left px-4 py-2.5 text-sm hover:bg-status-bg text-cell-secondary">{t("PDF")}</button>
-                            </div>
-                        )}
-                    </div>
+                    <AnalyticsExportMenu onExport={handleExport} />
                     <div className="relative">
                         <DefaultSelect
+                            key={`chart-${chartTypeFilter}`}
                             placeholder="charts"
                             options={chartOptions}
+                            value={chartOptions.filter((option) => option.id === chartTypeFilter)}
                             onChange={(selected) => setChartTypeFilter(selected[0]?.id || "")}
                         />
                     </div>
                     <div className="relative">
                         <DefaultSelect
+                            key={`section-${sectionFilter}`}
                             placeholder="sections"
                             options={sectionOptions}
+                            value={sectionOptions.filter((option) => option.id === sectionFilter)}
                             onChange={(selected) => setSectionFilter(selected[0]?.id || "")}
                         />
                     </div>
                     <div className="relative">
                         <DefaultSelect
+                            key={`time-${timeRange}`}
                             placeholder="time"
                             options={timeRangeSelectOptions}
+                            value={timeRangeSelectOptions.filter((option) => option.id === timeRange)}
                             onChange={(selected) => setTimeRange(selected[0]?.id || "6m")}
                             multi={false}
                         />

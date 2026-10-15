@@ -8,11 +8,9 @@ import TaskComments from "@/app/(dashboard)/projects/[slug]/_components/TaskComm
 import CommentInput from "@/components/CommentInput.jsx";
 import AttachmentsList from "@/app/(dashboard)/projects/[slug]/_components/AttachmentsList.jsx";
 import ActivityLogs from "@/components/ActivityLogs.jsx";
-import TimeLine from "@/components/TimeLine/TimeLine.jsx";
 import { useTranslation } from "react-i18next";
-import { getTimeDifference } from "@/functions/Days.js";
 import InfoCard from "@/app/(dashboard)/_components/InfoCard.jsx";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { filterAndSortTasks } from "@/functions/functionsForTasks.js";
 import EditProjectModal from "@/app/(dashboard)/projects/_modal/EditProjectModal.jsx";
 import { useParams } from "next/navigation";
@@ -20,13 +18,13 @@ import { useGetSubscriberProjectDetailsQuery, useAddSubscriberProjectCommentMuta
 import { useGetEmployeeProjectDetailsQuery, useAddEmployeeProjectCommentMutation, useDeleteEmployeeProjectCommentMutation, useEditEmployeeProjectCommentMutation, useUploadEmployeeProjectAttachmentMutation, useDeleteEmployeeProjectAttachmentMutation, useEvaluateEmployeeProjectMutation } from "@/redux/projects/employeeProjectsApi.js";
 import { useUpdateSubscriberTaskMutation } from "@/redux/tasks/subscriberTasksApi.js";
 import { useUpdateTaskStatusMutation } from "@/redux/tasks/employeeTasksApi.js";
-import useAuthStore from '@/store/authStore.js';
 import { useSelector } from 'react-redux';
 import { selectUser } from '@/redux/auth/authSlice.js';
 import { usePermission } from '@/Hooks/usePermission';
-import CreateTeamModal from "@/app/(dashboard)/projects/_modal/CreateTeamModal";
-import { RiGroupFill } from "react-icons/ri";
 import { useGetProjectLogsQuery } from "@/redux/activity-logs/activityLogsApi";
+import RecordPageState from "@/app/(dashboard)/_components/RecordPageState";
+import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
+import { getApiErrorMessage } from "@/functions/apiErrorMessage";
 
 function ProjectDetailsPage() {
     const { slug } = useParams();
@@ -36,7 +34,7 @@ function ProjectDetailsPage() {
     const currentUserId = user?._id;
 
     const useGetDetails = authUserType === "Subscriber" ? useGetSubscriberProjectDetailsQuery : useGetEmployeeProjectDetailsQuery;
-    const { data: project, isLoading, isError, error } = useGetDetails(slug);
+    const { data: project, isLoading, isError, error, refetch } = useGetDetails(slug, { skip: !slug || !authUserType });
 
     const { data: projectLogsData } = useGetProjectLogsQuery({ projectId: project?._id, limit: 10 }, { skip: !project?._id });
     const activityLogs = projectLogsData?.data || [];
@@ -51,7 +49,7 @@ function ProjectDetailsPage() {
     const [uploadEmployeeAttachment, { isLoading: isEmpUploading }] = useUploadEmployeeProjectAttachmentMutation();
     const [deleteSubscriberAttachment] = useDeleteSubscriberProjectAttachmentMutation();
     const [deleteEmployeeAttachment] = useDeleteEmployeeProjectAttachmentMutation();
-    const [updateSubscriberProject] = useUpdateSubscriberProjectMutation();
+    const [updateSubscriberProject, { isLoading: isUpdatingProject }] = useUpdateSubscriberProjectMutation();
     const [evaluateEmployeeProject] = useEvaluateEmployeeProjectMutation();
 
     const [updateSubscriberTaskStatus] = useUpdateSubscriberTaskMutation();
@@ -64,8 +62,9 @@ function ProjectDetailsPage() {
             } else {
                 await updateEmployeeTaskStatus({ id: taskId, status: newStatus }).unwrap();
             }
+            setAlertInfo({ isOpen: true, status: "success", message: t("Task status updated successfully") });
         } catch (error) {
-            console.error("Failed to update task status: ", error);
+            setAlertInfo({ isOpen: true, status: "error", message: getApiErrorMessage(error, t("Failed to update task status")) });
         }
     };
 
@@ -85,8 +84,10 @@ function ProjectDetailsPage() {
             } else {
                 await uploadEmployeeAttachment({ projectId: project._id, formData }).unwrap();
             }
+            setAlertInfo({ isOpen: true, status: "success", message: t("Attachment uploaded successfully") });
         } catch (error) {
-            console.error("Failed to upload attachment: ", error);
+            setAlertInfo({ isOpen: true, status: "error", message: getApiErrorMessage(error, t("Failed to upload attachment")) });
+            throw error;
         }
     };
 
@@ -97,8 +98,9 @@ function ProjectDetailsPage() {
             } else {
                 await deleteEmployeeAttachment({ projectId: project._id, attachmentId }).unwrap();
             }
+            setAlertInfo({ isOpen: true, status: "success", message: t("Attachment deleted successfully") });
         } catch (error) {
-            console.error("Failed to delete attachment: ", error);
+            setAlertInfo({ isOpen: true, status: "error", message: getApiErrorMessage(error, t("Failed to delete attachment")) });
         }
     };
 
@@ -109,8 +111,10 @@ function ProjectDetailsPage() {
             } else {
                 await addEmployeeComment({ projectId: project._id, text }).unwrap();
             }
+            setAlertInfo({ isOpen: true, status: "success", message: t("Comment added successfully") });
         } catch (error) {
-            console.error("Failed to add comment: ", error);
+            setAlertInfo({ isOpen: true, status: "error", message: getApiErrorMessage(error, t("Failed to add comment")) });
+            throw error;
         }
     };
 
@@ -122,8 +126,9 @@ function ProjectDetailsPage() {
             } else {
                 await deleteEmployeeComment({ projectId: project._id, commentId }).unwrap();
             }
+            setAlertInfo({ isOpen: true, status: "success", message: t("Comment deleted successfully") });
         } catch (error) {
-            console.error("Failed to delete comment: ", error);
+            setAlertInfo({ isOpen: true, status: "error", message: getApiErrorMessage(error, t("Failed to delete comment")) });
         } finally {
             setLoadingComments((prev) => ({ ...prev, [commentId]: null }));
         }
@@ -137,8 +142,10 @@ function ProjectDetailsPage() {
             } else {
                 await editEmployeeComment({ projectId: project._id, commentId, text }).unwrap();
             }
+            setAlertInfo({ isOpen: true, status: "success", message: t("Comment updated successfully") });
         } catch (error) {
-            console.error("Failed to edit comment: ", error);
+            setAlertInfo({ isOpen: true, status: "error", message: getApiErrorMessage(error, t("Failed to update comment")) });
+            throw error;
         } finally {
             setLoadingComments((prev) => ({ ...prev, [commentId]: null }));
         }
@@ -146,13 +153,43 @@ function ProjectDetailsPage() {
 
     const [isOpenEditModal, setIsOpenEditModal] = useState(false);
     const [filterTasks, setFilterTasks] = useState([]);
-    const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
+    const [alertInfo, setAlertInfo] = useState({ isOpen: false, status: "", message: "" });
 
     const canDeleteAttachments = usePermission("attachments.delete");
+    const canUploadAttachments = usePermission("attachments.upload");
     const canEvaluate = usePermission("projects.evaluate");
+    const canEditProject = usePermission("projects.update");
+    const canComment = usePermission("projects.comment");
     const canManageTeam = usePermission("tasks.manage_participants");
 
-    const mappedTasks = project?.tasks?.map(task => {
+    const getProjectAssigneeIds = () => (project?.assignees_ids || project?.assignees || [])
+        .map(member => typeof member === "string" ? member : (member.user_id || member._id))
+        .filter(Boolean)
+        .map(String);
+
+    const handleAddProjectMember = async (employeeId) => {
+        try {
+            const assigneesIds = [...new Set([...getProjectAssigneeIds(), String(employeeId)])];
+            await updateSubscriberProject({ id: project._id, data: { assignees_ids: assigneesIds } }).unwrap();
+            setAlertInfo({ isOpen: true, status: "success", message: t("Member added successfully") });
+        } catch (error) {
+            setAlertInfo({ isOpen: true, status: "error", message: getApiErrorMessage(error, t("Failed to add member")) });
+            throw error;
+        }
+    };
+
+    const handleRemoveProjectMember = async (member) => {
+        try {
+            const memberId = String(member.user_id || member._id);
+            const assigneesIds = getProjectAssigneeIds().filter(id => id !== memberId);
+            await updateSubscriberProject({ id: project._id, data: { assignees_ids: assigneesIds } }).unwrap();
+            setAlertInfo({ isOpen: true, status: "success", message: t("Member removed successfully") });
+        } catch (error) {
+            setAlertInfo({ isOpen: true, status: "error", message: getApiErrorMessage(error, t("Failed to remove member")) });
+        }
+    };
+
+    const mappedTasks = useMemo(() => project?.tasks?.map(task => {
         const assignee = project.assignees?.find(m => m._id === task.assignee_id);
         return {
             ...task,
@@ -166,21 +203,29 @@ function ProjectDetailsPage() {
             dueDate: task.due_date,
             rate: task.rate || 0,
         };
-    }) || [];
+    }) || [], [project?.tasks, project?.assignees]);
 
     useEffect(() => {
         if (mappedTasks.length > 0) {
             setFilterTasks(mappedTasks);
         }
-    }, [project?.tasks, project?.assignees]);
+    }, [mappedTasks]);
 
     const breadcrumbItems = [
         { title: t('Projects'), path: '/projects' },
         { title: project?.name || t('Project Details'), path: '' }
     ];
 
-    if (isLoading) return <div className="flex items-center justify-center h-screen">{t("Loading...")}</div>;
-    if (isError) return <div className="flex items-center justify-center h-screen text-red-500">{error?.data?.message || t("Error loading project details")}</div>;
+    if (isLoading) return <Page title={t("Project Details")}><RecordPageState loading /></Page>;
+    if (isError || !project) return (
+        <Page title={t("Project Details")}>
+            <RecordPageState
+                notFound={error?.status === 404 || error?.originalStatus === 404}
+                onRetry={refetch}
+                onBack={() => window.history.back()}
+            />
+        </Page>
+    );
 
     const projectInfoData = {
         name: project.name,
@@ -207,16 +252,16 @@ function ProjectDetailsPage() {
                 message: t('Project evaluated successfully'),
             });
         } catch (error) {
-            console.error("Failed to evaluate project: ", error);
             setAlertInfo({
                 isOpen: true,
                 status: 'error',
-                message: error?.data?.message || t('Failed to evaluate project'),
+                message: getApiErrorMessage(error, t('Failed to evaluate project')),
             });
         }
     };
 
     const projectMembers = project.assignees?.map(member => ({
+        ...member,
         name: member.name,
         imageProfile: member.imageProfile || member.avatar,
         email: member.email,
@@ -255,20 +300,23 @@ function ProjectDetailsPage() {
     }
 
     return (
-        <Page title={t("Project Details")} isBreadcrumbs={true} breadcrumbs={breadcrumbItems}>
-            <div className={"w-full flex items-start  gap-8 flex-col md:flex-row"}>
-                <div className={"flex flex-col gap-6 md:w-[60%] w-full "}>
+        <Page title={t("Project Details")} isBreadcrumbs={true} breadcrumbs={breadcrumbItems} className="gap-5">
+            <div className="w-full grid grid-cols-1 xl:grid-cols-[minmax(0,1.7fr)_minmax(300px,1fr)] gap-5 xl:gap-6 items-start">
+                <main className="min-w-0 flex flex-col gap-5">
                     <InfoCard 
                         type={"project"} 
                         data={projectInfoData} 
-                        handelEditAction={handelEditModal} 
+                        handelEditAction={canEditProject ? handelEditModal : undefined}
                         rate={project.overall_rating || 0}
                         onRate={canEvaluate ? handleEvaluateProject : null}
                     />
-                    <div className={"p-4 bg-surface rounded-2xl w-full flex flex-col gap-3"}>
-                        <div className={"title-header pb-3 w-full flex items-center justify-between "}>
-                            <p className={"text-lg text-table-title"}>{t("Project Tasks")} </p>
-                            <SelectWithoutLabel onChange={handelChangeFilterTask} options={filterOptions} title={"Filter by"} className={"w-[120px] h-[36px]"} />
+                    <section className="p-4 sm:p-5 bg-surface rounded-[24px] border border-status-border shadow-sm w-full flex flex-col gap-4">
+                        <div className="title-header pb-3 w-full flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-status-border">
+                            <div>
+                                <h2 className="text-lg font-bold text-table-title">{t("Project Tasks")}</h2>
+                                <p className="text-xs text-cell-secondary mt-1">{tasks.length} {t("Tasks")}</p>
+                            </div>
+                            <SelectWithoutLabel onChange={handelChangeFilterTask} options={filterOptions} title={"Filter by"} className="w-full sm:w-[150px] h-[40px]" />
                         </div>
                         <TasksList 
                             tasks={filterTasks} 
@@ -276,11 +324,11 @@ function ProjectDetailsPage() {
                             isEmployeeView={true} 
                             onStatusChange={handleStatusChange} 
                         />
-                    </div>
-                    {true && <div className={"bg-surface rounded-2xl w-full flex flex-col gap-3"}>
-                        <div className={"p-4 flex flex-col gap-3"}>
+                    </section>
+                    {canComment && <section className="bg-surface rounded-[24px] border border-status-border shadow-sm w-full flex flex-col gap-3 overflow-hidden">
+                        <div className="p-4 sm:p-5 flex flex-col gap-3">
                             <div className={"title-header w-full flex items-center justify-between"}>
-                                <p className={"text-lg text-table-title"}>{t("Comments")}</p>
+                                <h2 className="text-lg font-bold text-table-title">{t("Comments")}</h2>
                             </div>
                             <TaskComments
                                 comments={comments}
@@ -292,40 +340,37 @@ function ProjectDetailsPage() {
                             />
                         </div>
                         <CommentInput onSend={handleAddComment} isLoading={isAddingComment} />
-                    </div>}
-                </div>
-                <div className={"flex-1 flex flex-col gap-6"}>
+                    </section>}
+                </main>
+                <aside className="min-w-0 flex flex-col gap-5 xl:sticky xl:top-5">
                     <div className="flex flex-col gap-3">
-                        {true && <ProjectMembers members={projectMembers} canAddMember={canManageTeam} canDeleteMember={canManageTeam} />}
-                        {(canManageTeam && false) && (
-                            <button
-                                onClick={() => setIsTeamModalOpen(true)}
-                                className="flex items-center gap-2 px-4 py-2 bg-primary-base dark:bg-primary-200 text-white dark:text-black rounded-xl text-sm font-medium hover:opacity-90 transition-opacity w-fit"
-                            >
-                                <RiGroupFill size={16} />
-                                {t("Manage Team")}
-                            </button>
-                        )}
+                        <ProjectMembers
+                            members={projectMembers}
+                            canAddMember={authUserType === "Subscriber" && canManageTeam}
+                            canDeleteMember={authUserType === "Subscriber" && canManageTeam}
+                            onAddMember={authUserType === "Subscriber" && canManageTeam ? handleAddProjectMember : undefined}
+                            onRemoveMember={authUserType === "Subscriber" && canManageTeam ? handleRemoveProjectMember : undefined}
+                            isUpdating={isUpdatingProject}
+                        />
                     </div>
                     {/* Hiding components not yet linked to backend data */}
-                    {true && <AttachmentsList
+                    <AttachmentsList
                         attachments={attachments}
-                        onUpload={handleUploadAttachment}
+                        onUpload={canUploadAttachments ? handleUploadAttachment : null}
                         onDelete={canDeleteAttachments ? handleDeleteAttachment : null}
                         isUploading={isUploadingAttachment}
-                    />}
-                    {true && <ActivityLogs activityLogs={activityLogs} isRawLogs={true} className={"h-72"} />}
-                    {false && <TimeLine />}
-                </div>
+                    />
+                    <ActivityLogs activityLogs={activityLogs} isRawLogs={true} className={"h-72"} />
+                </aside>
 
             </div>
             <EditProjectModal project={project} isOpen={isOpenEditModal} onClose={handelEditModal} />
-            {(canManageTeam && false) && (
-                <CreateTeamModal
-                    isOpen={isTeamModalOpen}
-                    onClose={() => setIsTeamModalOpen(false)}
-                />
-            )}
+            <ApiResponseAlert
+                isOpen={alertInfo.isOpen}
+                status={alertInfo.status}
+                message={alertInfo.message}
+                onClose={() => setAlertInfo(prev => ({ ...prev, isOpen: false }))}
+            />
         </Page>
     );
 }

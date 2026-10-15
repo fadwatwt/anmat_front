@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
 
 import { useTranslation } from "react-i18next";
 
-function EmployeeInfoForm({ formData, updateFormData, isEdit = false }) {
+function EmployeeInfoForm({ formData, updateFormData, errors = {}, isEdit = false }) {
     const { t, i18n } = useTranslation();
     const isArabic = i18n.language?.startsWith("ar");
 
@@ -42,6 +42,7 @@ function EmployeeInfoForm({ formData, updateFormData, isEdit = false }) {
                     isRequired={true}
                     placeholder={t("Enter full name")}
                     value={formData.name}
+                    error={errors.name}
                     onChange={(e) => updateFormData("name", e.target.value)}
                 />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -52,6 +53,7 @@ function EmployeeInfoForm({ formData, updateFormData, isEdit = false }) {
                         disabled={isEdit}
                         placeholder={t("Enter email")}
                         value={formData.email}
+                        error={errors.email}
                         onChange={(e) => updateFormData("email", e.target.value)}
                     />
                     <InputAndLabel
@@ -60,6 +62,7 @@ function EmployeeInfoForm({ formData, updateFormData, isEdit = false }) {
                         isRequired={true}
                         placeholder={t("+123456789")}
                         value={formData.phone}
+                        error={errors.phone}
                         onChange={(e) => updateFormData("phone", e.target.value)}
                     />
                 </div>
@@ -71,6 +74,7 @@ function EmployeeInfoForm({ formData, updateFormData, isEdit = false }) {
                             isRequired={true}
                             placeholder={t("Enter password")}
                             value={formData.password}
+                            error={errors.password}
                             onChange={(e) => updateFormData("password", e.target.value)}
                         />
                         <InputAndLabel
@@ -79,6 +83,7 @@ function EmployeeInfoForm({ formData, updateFormData, isEdit = false }) {
                             isRequired={true}
                             placeholder={t("Confirm password")}
                             value={formData.password_confirmation}
+                            error={errors.password_confirmation}
                             onChange={(e) => updateFormData("password_confirmation", e.target.value)}
                         />
                     </div>
@@ -87,6 +92,7 @@ function EmployeeInfoForm({ formData, updateFormData, isEdit = false }) {
                     title={t("Date of Birth")}
                     isRequired={true}
                     value={formData.employee_detail.date_of_birth}
+                    error={errors.date_of_birth}
                     onChange={(e) => updateFormData("date_of_birth", e.target.value, true)}
                 />
             </div>
@@ -139,6 +145,7 @@ EmployeeInfoForm.propTypes = {
     }).isRequired,
     updateFormData: PropTypes.func.isRequired,
     isEdit: PropTypes.bool,
+    errors: PropTypes.object,
 };
 
 export default EmployeeInfoForm;

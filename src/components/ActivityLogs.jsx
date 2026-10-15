@@ -101,10 +101,10 @@ export const mapBackendLogToFrontend = (log, t) => {
     else if (action.includes("logout")) type = "logout";
     else if (action.includes("employee") || action.includes("user")) type = "user";
 
-    if (action.includes("attachment")) type = "uploaded";
+    if (action.includes("attachment") && action.includes("uploaded")) type = "uploaded";
     if (action.includes("done") || action.includes("completed")) type = "check";
 
-    const actor = log.meta?.actor_name || log.actor_type || t("System");
+    const actor = log.meta?.actor_name || t(log.actor_type || "System");
     const targetName = log.meta?.title || log.meta?.name || "";
     const target = targetName || (log.target_type && log.target_type !== "Task" ? log.target_type : "");
     const project = log.meta?.project_name ? ` ${t("in project")} ${log.meta.project_name}` : "";
