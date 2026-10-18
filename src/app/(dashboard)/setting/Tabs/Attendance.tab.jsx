@@ -63,7 +63,7 @@ function AttendanceTab() {
 
     return (
         <div className={"flex  w-full justify-center "}>
-            <div className={"md:p-5 p-4 rounded-2xl bg-white dark:bg-gray-800 lg:w-[39%]"}>
+            <div className={"md:p-5 p-4 rounded-2xl bg-surface border border-status-border lg:w-[39%]"}>
                 <div className={"w-full md:py-2 flex flex-col gap-6"}>
                     <div className={"flex flex-col gap-6"}>
                         <div className={"flex flex-col text-start gap-1"}>

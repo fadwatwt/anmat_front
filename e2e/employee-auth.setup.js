@@ -15,6 +15,7 @@ const EMPLOYEE = {
 test('employee session is stored', async ({ page }) => {
   const response = await page.request.post(`${BACKEND_URL}/api/user/auth/login`, {
     data: { email: EMPLOYEE.email, password: EMPLOYEE.password },
+    timeout: 60000,
   });
   if (!response.ok()) {
     throw new Error(`Employee login API failed: ${response.status()} ${await response.text()}`);
@@ -27,6 +28,9 @@ test('employee session is stored', async ({ page }) => {
   await page.addInitScript((tok) => {
     window.localStorage.setItem('token', tok);
   }, token);
+  await page.context().addCookies([{
+    name: 'token', value: token, url: process.env.FRONTEND_URL || 'http://localhost:3001', sameSite: 'Lax',
+  }]);
 
   await page.goto('/dashboard');
   await expect(page).toHaveURL(/\/dashboard/, { timeout: 60000 });

@@ -179,5 +179,5 @@ export const useNotifications = (userId) => {
                 console.log('🔴 SSE Connection closed and cleaned up');
             }
         };
-    }, [userId]);
+    }, [userId, dispatch]);
 };

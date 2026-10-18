@@ -79,8 +79,8 @@ function RegionalPreferences() {
         <div className={"w-full md:py-2 flex flex-col gap-5"}>
             <div className={"flex flex-col gap-4"}>
                 <div className={"flex flex-col text-start gap-1"}>
-                    <p className={"dark:text-gray-200"}>{t("Regional Preferences")}</p>
-                    <p className={"text-sm dark:text-gray-200"}>{t("Select your preferences for your region")}</p>
+                    <p className={"text-cell-primary"}>{t("Regional Preferences")}</p>
+                    <p className={"text-sm text-cell-secondary"}>{t("Select your preferences for your region")}</p>
                 </div>
                 <div className={"flex flex-col gap-2"}>
                     <ElementsSelect
@@ -114,8 +114,8 @@ function RegionalPreferences() {
                 </div>
             </div>
             <div className={"flex gap-2"}>
-                <DefaultButton type={'button'} title={t("Cancel")} className={"font-medium dark:text-gray-200"} />
-                <DefaultButton type={'button'} disabled={isUpdating || !canEdit} onClick={handleApplyChanges} title={canEdit ? t("Apply Changes") : t("You do not have permission")} className={canEdit ? "bg-primary-500 font-medium dark:bg-primary-200 dark:text-black text-white" : "bg-gray-300 font-medium text-gray-500 cursor-not-allowed"} />
+                <DefaultButton type={'button'} title={t("Cancel")} className={"font-medium text-cell-primary"} />
+                <DefaultButton type={'button'} disabled={isUpdating || !canEdit} onClick={handleApplyChanges} title={canEdit ? t("Apply Changes") : t("You do not have permission")} className={canEdit ? "bg-primary-base font-medium text-white" : "bg-status-bg font-medium text-cell-secondary cursor-not-allowed"} />
             </div>
             <ApiResponseAlert
                 isOpen={apiResponse.isOpen}

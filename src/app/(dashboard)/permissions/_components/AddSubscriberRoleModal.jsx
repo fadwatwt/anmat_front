@@ -24,6 +24,10 @@ import { selectSocialMediaGrants } from "@/redux/auth/authSlice";
 const hasSocialMediaAccess = (grants) =>
     Array.isArray(grants) && grants.includes("twitter");
 
+const isSocialMediaPermission = (name) =>
+    String(name || "").startsWith("social_media_") ||
+    String(name || "").startsWith("twitter_");
+
 function AddSubscriberRoleModal({ isOpen, onClose }) {
     const { t } = useTranslation();
     const socialMediaGrants = useSelector(selectSocialMediaGrants);
@@ -48,7 +52,7 @@ function AddSubscriberRoleModal({ isOpen, onClose }) {
             ?.filter(
                 (permission) =>
                     socialAllowed ||
-                    !String(permission.name || "").startsWith("social_media_"),
+                    !isSocialMediaPermission(permission.name),
             )
             .map((permission) => ({
                 id: permission._id,

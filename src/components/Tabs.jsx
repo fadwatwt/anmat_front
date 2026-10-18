@@ -31,7 +31,7 @@ function Tabs({ tabs, setActiveTitleTab, activeTab: controlledActiveTab, onTabCh
     return (
         <div className="w-full flex flex-col gap-4">
             {/* Tabs navigation */}
-            <div className="tabs-nav flex tab-content overflow-x-auto gap-6 max-w-full  border-b border-gray-200 dark:border-gray-700">
+            <div className="tabs-nav flex tab-content overflow-x-auto gap-6 max-w-full border-b border-status-border">
                 {tabs.map(({ title, icon: Icon }, index) => (
                     <div
                         key={title}
@@ -39,8 +39,8 @@ function Tabs({ tabs, setActiveTitleTab, activeTab: controlledActiveTab, onTabCh
                             }`}
                         onClick={() => handleTabClick(index, title)}
                     >
-                        {Icon && <Icon size={20} className={activeTabTitle === title ? "text-primary-500 dark:text-primary-200" : "text-gray-600 dark:dark:text-gray-400"} />}
-                        <p className={` text-sm whitespace-nowrap ${activeTabTitle === title ? "text-black dark:text-gray-200" : "text-gray-700 dark:text-gray-400"}`}>{t(title)}</p>
+                        {Icon && <Icon size={20} className={activeTabTitle === title ? "text-primary-base" : "text-cell-secondary"} />}
+                        <p className={`text-sm whitespace-nowrap ${activeTabTitle === title ? "text-cell-primary" : "text-cell-secondary"}`}>{t(title)}</p>
                     </div>
                 ))}
             </div>

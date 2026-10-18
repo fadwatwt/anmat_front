@@ -152,9 +152,25 @@ const Providers = ({ children }) => {
         const cookieLang = document.cookie.match(/(?:^|;\s*)i18next=([^;]+)/)?.[1];
         const preferredLang = storedLang || cookieLang || navigator.language;
         const nextLang = preferredLang?.toLowerCase().startsWith("ar") ? "ar" : "en";
-        if (nextLang !== i18n.language) i18n.changeLanguage(nextLang);
+        // Let React finish hydrating the server-rendered English shell before
+        // restoring the saved browser language. Changing i18n synchronously in
+        // this effect can update client text while hydration is still walking
+        // the page, which produces a mismatch for returning Arabic users.
+        const restoreLanguage = () => {
+            if (nextLang !== i18n.language) i18n.changeLanguage(nextLang);
+        };
+        const languageIdleCallback = window.requestIdleCallback
+            ? window.requestIdleCallback(restoreLanguage, { timeout: 2000 })
+            : null;
+        const languageTimer = languageIdleCallback === null
+            ? window.setTimeout(restoreLanguage, 500)
+            : null;
 
-        return () => i18n.off("languageChanged", handleLanguageChanged);
+        return () => {
+            if (languageTimer !== null) window.clearTimeout(languageTimer);
+            if (languageIdleCallback !== null) window.cancelIdleCallback(languageIdleCallback);
+            i18n.off("languageChanged", handleLanguageChanged);
+        };
     }, []);
 
     return (

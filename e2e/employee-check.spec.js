@@ -72,7 +72,6 @@ async function waitForContent(page) {
   if (await spinner.count()) {
     await spinner.waitFor({ state: 'detached', timeout: 45000 });
   }
-  await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
   await page.waitForTimeout(1200);
 }
 

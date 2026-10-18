@@ -21,6 +21,7 @@ import Link from "next/link";
 import { useGetPublicSubscriptionPlansQuery } from "@/redux/plans/subscriptionPlansApi";
 import { useTranslation } from "react-i18next";
 import { getPlanFeatureTitle, getPlanFeatureValue } from "@/functions/planFeatures";
+import PublicAiAssistant from "@/components/PublicAiAssistant";
 
 function Desktop2Page() {
   const { i18n, t } = useTranslation();
@@ -728,6 +729,7 @@ function Desktop2Page() {
           </div>
         </div>
       </div>
+      <PublicAiAssistant />
     </div>
   );
 }

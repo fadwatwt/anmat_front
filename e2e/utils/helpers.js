@@ -27,6 +27,12 @@ async function authenticateViaStorage(page, { email = ADMIN.email, password = AD
     },
     [token, FRONTEND_URL],
   );
+  await page.context().addCookies([{
+    name: 'token',
+    value: token,
+    url: FRONTEND_URL,
+    sameSite: 'Lax',
+  }]);
   return token;
 }
 
@@ -73,7 +79,17 @@ function collectPageErrors(page, { ignore = [], pageErrorsOnly = false } = {}) {
  * انتظار استقرار الصفحة بعد تحميل البيانات (Skeleton -> محتوى)
  */
 async function waitForStablePage(page) {
-  await page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+  // Dashboards keep SSE/WebSocket connections open, so `networkidle` never
+  // becomes a reliable readiness signal. Wait for usable UI state instead.
+  await page.waitForLoadState('domcontentloaded');
+  const main = page.locator('main');
+  if (await main.count()) {
+    await main.first().waitFor({ state: 'visible', timeout: 60000 });
+    const blockingSpinner = main.locator('.animate-spin').first();
+    if (await blockingSpinner.count()) {
+      await blockingSpinner.waitFor({ state: 'detached', timeout: 45000 });
+    }
+  }
 }
 
 module.exports = { loginViaApi, authenticateViaStorage, collectPageErrors, waitForStablePage };

@@ -16,19 +16,19 @@ client.interceptors.request.use((config) => {
 });
 
 export const aiService = {
-  sendMessage: ({ message, conversation_id, attachment_urls, model } = {}) =>
+  sendMessage: ({ message, conversation_id, attachment_urls, model, mode } = {}) =>
     client
-      .post("/chat", { message, conversation_id, attachment_urls, model })
+      .post("/chat", { message, conversation_id, attachment_urls, model, mode })
       .then((r) => r.data?.data),
 
   confirmAction: (pending_action_id) =>
     client
-      .post("/confirm", { pending_action_id })
+      .post("/pending-actions/confirm", { pending_action_id })
       .then((r) => r.data?.data),
 
   cancelAction: (pending_action_id) =>
     client
-      .post("/cancel", { pending_action_id })
+      .post("/pending-actions/cancel", { pending_action_id })
       .then((r) => r.data?.data),
 
   listConversations: () =>

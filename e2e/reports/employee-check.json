@@ -1,13 +1,172 @@
 {
-  "pages": [],
+  "pages": [
+    {
+      "route": "/dashboard",
+      "ok": true,
+      "jsErrors": [],
+      "brokenImages": [],
+      "horizontalOverflow": false,
+      "screenshot": "dashboard.png"
+    },
+    {
+      "route": "/employee/projects",
+      "ok": true,
+      "jsErrors": [],
+      "brokenImages": [],
+      "horizontalOverflow": false,
+      "screenshot": "employee_projects.png"
+    },
+    {
+      "route": "/employee/tasks",
+      "ok": true,
+      "jsErrors": [],
+      "brokenImages": [],
+      "horizontalOverflow": false,
+      "screenshot": "employee_tasks.png"
+    },
+    {
+      "route": "/appointments",
+      "ok": true,
+      "jsErrors": [],
+      "brokenImages": [],
+      "horizontalOverflow": false,
+      "screenshot": "my_agenda_appointments.png"
+    },
+    {
+      "route": "/attendance",
+      "ok": true,
+      "jsErrors": [],
+      "brokenImages": [],
+      "horizontalOverflow": false,
+      "screenshot": "attendance.png"
+    },
+    {
+      "route": "/salary",
+      "ok": true,
+      "jsErrors": [],
+      "brokenImages": [],
+      "horizontalOverflow": false,
+      "screenshot": "salary.png"
+    },
+    {
+      "route": "/leaves",
+      "ok": true,
+      "jsErrors": [],
+      "brokenImages": [],
+      "horizontalOverflow": false,
+      "screenshot": "short_leave_requests.png"
+    },
+    {
+      "route": "/requests",
+      "ok": true,
+      "jsErrors": [],
+      "brokenImages": [],
+      "horizontalOverflow": false,
+      "screenshot": "requests.png"
+    },
+    {
+      "route": "/conversations",
+      "ok": true,
+      "jsErrors": [],
+      "brokenImages": [],
+      "horizontalOverflow": false,
+      "screenshot": "conversations.png"
+    },
+    {
+      "route": "/ai",
+      "ok": true,
+      "jsErrors": [],
+      "brokenImages": [],
+      "horizontalOverflow": false,
+      "screenshot": "ai.png"
+    },
+    {
+      "route": "/notifications",
+      "ok": true,
+      "jsErrors": [],
+      "brokenImages": [],
+      "horizontalOverflow": false,
+      "screenshot": "notifications.png"
+    },
+    {
+      "route": "/setting",
+      "ok": true,
+      "jsErrors": [],
+      "brokenImages": [],
+      "horizontalOverflow": false,
+      "screenshot": "setting.png"
+    },
+    {
+      "route": "/profile",
+      "ok": true,
+      "jsErrors": [],
+      "brokenImages": [],
+      "horizontalOverflow": false,
+      "screenshot": "profile.png"
+    }
+  ],
   "modals": [
+    {
+      "route": "/attendance",
+      "opened": false,
+      "screenshot": null,
+      "jsErrors": []
+    },
+    {
+      "route": "/leaves",
+      "opened": true,
+      "screenshot": "modal__leaves.png",
+      "jsErrors": [],
+      "modalContentCount": 11
+    },
+    {
+      "route": "/requests",
+      "opened": false,
+      "screenshot": null,
+      "jsErrors": []
+    },
     {
       "route": "/salary",
       "opened": false,
       "screenshot": null,
       "jsErrors": []
+    },
+    {
+      "route": "/employee/projects",
+      "opened": false,
+      "screenshot": null,
+      "jsErrors": []
+    },
+    {
+      "route": "/employee/tasks",
+      "opened": false,
+      "screenshot": null,
+      "jsErrors": []
+    },
+    {
+      "route": "/conversations",
+      "opened": false,
+      "screenshot": null,
+      "jsErrors": []
+    },
+    {
+      "route": "/notifications",
+      "opened": false,
+      "screenshot": null,
+      "jsErrors": []
+    },
+    {
+      "route": "/setting",
+      "opened": false,
+      "screenshot": null,
+      "jsErrors": []
     }
   ],
-  "shell": {},
+  "shell": {
+    "header": true,
+    "sidebar": true,
+    "floatingBtn": false,
+    "menuCount": 8
+  },
   "errors": []
 }

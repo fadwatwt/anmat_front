@@ -19,10 +19,14 @@ import CheckAlert from "@/components/Alerts/CheckِِAlert";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import { useGetAdminRolesQuery, useDeleteAdminRoleMutation } from "@/redux/roles/adminRolesAPI";
 import { getPermissionLabel } from "@/config/permissionTranslations";
+import { usePermission } from "@/Hooks/usePermission";
 
 
 function PermissionsPage() {
     const { t } = useTranslation();
+    const canCreateRole = usePermission("admin.admin_roles.create");
+    const canUpdateRole = usePermission("admin.admin_roles.update");
+    const canDeleteRole = usePermission("admin.admin_roles.delete");
     const headers = [
         { label: t("Role Name"), width: "200px" },
         { label: t("Permissions"), width: "400px" },
@@ -101,18 +105,17 @@ function PermissionsPage() {
 
     const SubscriptionActions = ({ actualRowIndex }) => {
         const { t, i18n } = useTranslation();
-        const statesActions = [
-            {
+        const statesActions = [];
+        if (canUpdateRole) statesActions.push({
                 text: t("Sync Permissions"), icon: <RiEditLine className="text-primary-400" />, onClick: () => {
                     openSyncPermissionsModal(actualRowIndex);
                 },
-            },
-            {
+            });
+        if (canDeleteRole) statesActions.push({
                 text: t("Delete"), icon: <RiDeleteBin7Line className="text-red-500" />, onClick: () => {
                     openDeleteRoleAlert(actualRowIndex);
                 },
-            }
-        ]
+            });
         return (
             <StatusActions states={statesActions} className={`${i18n.language === "ar" ? "left-0" : "right-0"
                 }`} />
@@ -210,7 +213,7 @@ function PermissionsPage() {
     }
 
     return (
-        <Page title={"Roles"} isBtn={true} btnTitle={"Add Role"} btnOnClick={toggleAddRoleModal} >
+        <Page title={"Roles"} isBtn={canCreateRole} btnTitle={"Add Role"} btnOnClick={toggleAddRoleModal} >
             <div className={"flex flex-col gap-6"}>
                 <div className="flex flex-col gap-2 h-full">
                     <Table className="custom-class" title={"All Roles"}

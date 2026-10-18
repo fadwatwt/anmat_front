@@ -94,6 +94,8 @@ const permissionTranslations = {
   "roles.update": { en: "Update Role", ar: "تعديل دور" },
   "roles.delete": { en: "Delete Role", ar: "حذف دور" },
   "roles.view": { en: "View Role", ar: "عرض دور" },
+  "roles.assign": { en: "Assign Role", ar: "إسناد دور" },
+  "roles.unassign": { en: "Unassign Role", ar: "سحب دور" },
 
   // ── Employee Details ──
   "employee_details.list": { en: "List Employees", ar: "عرض الموظفين" },
@@ -110,7 +112,12 @@ const permissionTranslations = {
 
   // ── Notifications ──
   "notifications.list": { en: "View Notifications", ar: "عرض الإشعارات" },
+  "notifications.create": { en: "Create Notification", ar: "إرسال إشعار" },
   "notifications.delete": { en: "Delete Notification", ar: "حذف إشعار" },
+
+  // ── Attachments ──
+  "attachments.upload": { en: "Upload Attachments", ar: "رفع المرفقات" },
+  "attachments.delete": { en: "Delete Attachments", ar: "حذف المرفقات" },
 
   // ── Analytics ──
   "analytics.view": { en: "View Analytics", ar: "عرض التحليلات" },
@@ -252,6 +259,14 @@ const permissionTranslations = {
   "admin.money_receiving_methods.update": { en: "Update Money Receiving Method", ar: "تعديل طريقة استلام مبالغ" },
   "admin.money_receiving_methods.view": { en: "View Money Receiving Method", ar: "عرض طريقة استلام مبالغ" },
 };
+
+// Older databases used `social_media_*` while the current permissions use
+// `twitter_*`. Keep both names localized while historical roles are migrated.
+Object.entries(permissionTranslations).forEach(([key, translation]) => {
+  if (key.startsWith("twitter_")) {
+    permissionTranslations[key.replace("twitter_", "social_media_")] = translation;
+  }
+});
 
 /**
  * Returns the localized label for a permission.

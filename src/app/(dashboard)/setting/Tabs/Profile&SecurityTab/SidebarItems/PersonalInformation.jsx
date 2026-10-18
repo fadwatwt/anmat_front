@@ -174,6 +174,10 @@ function PersonalInformation() {
             <div className={"w-full flex justify-start items-start gap-4 "}>
                 <img className="rounded-full w-16 h-16 object-cover"
                     src={user?.avatar || (theme === "dark" ? "/images/userProfile.dark.png" : "/images/userProfile.png")}
+                    onError={(event) => {
+                        event.currentTarget.onerror = null;
+                        event.currentTarget.src = theme === "dark" ? "/images/userProfile.dark.png" : "/images/userProfile.png";
+                    }}
                     alt="user-profile-image" />
                 <div className={"flex flex-col gap-2 items-start"}>
                     <div className={"flex flex-col items-start gap-1"}>

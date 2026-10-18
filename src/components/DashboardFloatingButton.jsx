@@ -12,20 +12,6 @@ import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { useRouter } from "next/navigation";
 import { initSocket } from "@/services/socketService";
 
-function detectLanguage(text) {
-  const arabicChars = text.match(/[\u0600-\u06FF]/g);
-  return arabicChars && arabicChars.length > 0 ? "ar" : "en";
-}
-
-const HUMAN_KEYWORDS_AR = ["موظف", "دعم فني", "بشري", "شخص", "تحدث مع", "كلم", "ممثل", "خدمة العملاء", "استشارة"];
-const HUMAN_KEYWORDS_EN = ["human", "agent", "staff", "support agent", "real person", "talk to", "speak with", "customer service", "representative"];
-
-function wantsHuman(message, lang) {
-  const lower = message.toLowerCase();
-  const keywords = lang === "ar" ? HUMAN_KEYWORDS_AR : HUMAN_KEYWORDS_EN;
-  return keywords.some((kw) => lower.includes(kw));
-}
-
 const QUICK_ACTIONS_AR = ["لدي مشكلة تقنية", "كيف أستخدم ميزة؟", "مشكلة في الاشتراك أو الدفع", "متابعة تذكرة"];
 const QUICK_ACTIONS_EN = ["I have a technical issue", "How do I use a feature?", "Subscription or payment issue", "Track a ticket"];
 const SUPPORT_ACTION_AR = "التحدث مع الدعم الفني";
@@ -49,18 +35,18 @@ function loadHistory(userId) {
 function saveHistory(userId, list) {
   try { sessionStorage.setItem(HISTORY_KEY + userId, JSON.stringify(list)); } catch (e) { void e; }
 }
-function formatTime(ts) {
+function formatTime(ts, t) {
   if (!ts) return "";
   const d = new Date(ts);
   const now = new Date();
   const diff = now - d;
   const min = Math.floor(diff / 60000);
-  if (min < 1) return "الآن";
-  if (min < 60) return `${min}د`;
+  if (min < 1) return t("Now");
+  if (min < 60) return t("{{count}}m", { count: min });
   const hr = Math.floor(min / 60);
-  if (hr < 24) return `${hr}س`;
+  if (hr < 24) return t("{{count}}h", { count: hr });
   const day = Math.floor(hr / 24);
-  if (day < 7) return `${day}ي`;
+  if (day < 7) return t("{{count}}d", { count: day });
   return `${d.getDate()}/${d.getMonth() + 1}`;
 }
 function formatMsgTime(ts) {
@@ -70,7 +56,7 @@ function formatMsgTime(ts) {
 }
 
 export default function DashboardFloatingButton() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const { user, token } = useSelector(selectAuth);
   const [createSupportTicket] = useCreateSupportTicketMutation();
@@ -176,8 +162,8 @@ export default function DashboardFloatingButton() {
 
   useEffect(() => {
     if (isOpen && !showHistory && !viewingHistory && !ticketId && !ticketClosed) {
-      const greetingAr = `مرحباً ${userName ? userName + " " : ""}! 👋 أنا مساعد أنماط الذكي. يمكنني مساعدتك في إدارة مهامك ومشاريعك والرد على استفساراتك. كيف أستطيع مساعدتك؟`;
-      const greetingEn = `Hello${userName ? " " + userName : ""}! 👋 I'm the Anmaat AI Assistant. I can help you with tasks, projects, and answer your questions. How can I help you?`;
+      const greetingAr = `مرحباً ${userName ? userName + " " : ""}! 👋 أنا مساعد الدعم لأنماط. أساعدك في استخدام النظام وحل المشاكل التقنية والاشتراكات والدفع. كيف أستطيع مساعدتك؟`;
+      const greetingEn = `Hello${userName ? " " + userName : ""}! 👋 I'm the Anmaat Support Assistant. I can help you with system usage, technical issues, subscriptions, and payments. How can I help you?`;
       const targetGreeting = isAr ? greetingAr : greetingEn;
       const currentLang = isAr ? "ar" : "en";
       if (messages.length === 0) {
@@ -420,19 +406,8 @@ export default function DashboardFloatingButton() {
   const handleSend = async (text) => {
     const trimmed = (text || input).trim();
     if (!trimmed || isLoading || !token) return;
-    const userLang = detectLanguage(trimmed);
     setMessages((prev) => [...prev, { role: "user", content: trimmed }]);
     setInput("");
-    if (wantsHuman(trimmed, userLang)) {
-      proposeEscalation(trimmed);
-      setMessages((prev) => [...prev, {
-        role: "assistant",
-        content: isAr
-          ? "يمكنني تصعيد المشكلة لفريق الدعم. راجع الملخص وأكّد الإرسال."
-          : "I can escalate this issue to the support team. Review the summary and confirm submission.",
-      }]);
-      return;
-    }
     setIsLoading(true);
     try {
       const res = await fetch(`${RootRoute}/api/ai/chat`, {
@@ -454,6 +429,14 @@ export default function DashboardFloatingButton() {
           setPendingActionId(pa._id);
           setPendingActionSummary(pa.summary);
           setMessages((prev) => [...prev, { role: "assistant", content: assistantMsg.content || pa.summary, hasPendingAction: true }]);
+        } else if (assistantMsg?.ui_payload?.escalation_intent) {
+          proposeEscalation(assistantMsg.ui_payload.escalation_intent);
+          setMessages((prev) => [...prev, {
+            role: "assistant",
+            content: isAr
+              ? "يمكنني تصعيد المشكلة لفريق الدعم. راجع الملخص وأكّد الإرسال."
+              : "I can escalate this issue to the support team. Review the summary and confirm submission.",
+          }]);
         } else {
           setMessages((prev) => [...prev, { role: "assistant", content: assistantMsg?.content || "" }]);
         }
@@ -626,7 +609,7 @@ export default function DashboardFloatingButton() {
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-[11px] text-cell-secondary">{(session.messages?.length || 0) + (session.supportMessages?.length || 0)} {isAr ? "رسالة" : "msgs"}</span>
-                          <span className="text-[11px] text-cell-secondary">{formatTime(session.timestamp)}</span>
+                          <span className="text-[11px] text-cell-secondary">{formatTime(session.timestamp, t)}</span>
                         </div>
                       </button>
                       <button

@@ -20,15 +20,24 @@ function SettingPage() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const tabsData = useMemo(() => {
-    const tabs = [
-      {
-        title: t("General Settings"),
-        content: <GeneralSettingsTab />,
-      },
+    const commonTabs = [
       {
         title: t("Notifications"),
         content: <NotificationsTab />,
       },
+      {
+        title: t("Privacy & Security"),
+        content: <ProfileSecurityTab />,
+      },
+    ];
+
+    if (user?.type === "Subscriber") {
+      return [
+        {
+          title: t("General Settings"),
+          content: <GeneralSettingsTab />,
+        },
+        commonTabs[0],
       {
         title: t("Attendance"),
         content: <AttendanceTab />,
@@ -41,19 +50,21 @@ function SettingPage() {
         title: t("Tasks"),
         content: <TasksTab />,
       },
-      {
-        title: t("Privacy & Security"),
-        content: <ProfileSecurityTab />,
-      },
-    ];
+        commonTabs[1],
+      ];
+    }
 
     if (user?.type === "Admin") {
-      tabs.push({
-        title: t("AI Assistant"),
-        content: <AiSettingsTab />,
-      });
+      return [
+        ...commonTabs,
+        {
+          title: t("AI Assistant"),
+          content: <AiSettingsTab />,
+        },
+      ];
     }
-    return tabs;
+
+    return commonTabs;
   }, [t, user?.type]);
 
   // Filter tabs by the search query (matches the translated tab title)
@@ -68,11 +79,11 @@ function SettingPage() {
   return (
     <>
       <div
-        className={"flex flex-col gap-2 justify-start dark:bg-gray-900 h-full"}
+        className={"flex flex-col gap-4 justify-start bg-main h-full"}
       >
         <div
           className={
-            "flex justify-between md:flex-row flex-col items-center bg-surface p-2 px-4"
+            "flex justify-between md:flex-row flex-col items-center bg-surface border border-status-border rounded-2xl p-2 px-4"
           }
         >
           <div className="title-page flex items-center gap-2 bg-none text-start w-full md:py-4 py-3 text-base sm:text-lg md:text-xl text-cell-secondary">
@@ -118,7 +129,7 @@ function SettingPage() {
           </div>
         </div>
 
-        <div className="md:px-10 px-5 box-border flex flex-col gap-4 pb-6">
+        <div className="box-border flex flex-col gap-4 pb-6">
           <p className="text-xs text-cell-secondary flex items-center gap-1.5 -mt-1">
             <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary-400" />
             {t('Changes are saved when you click "Apply Changes" or "Save" within each section.')}

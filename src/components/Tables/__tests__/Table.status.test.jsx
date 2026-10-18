@@ -29,4 +29,25 @@ describe('Table status filtering', () => {
     expect(screen.queryByText('Absent')).not.toBeInTheDocument();
     expect(screen.queryByText('Status', { selector: 'option' })).not.toBeInTheDocument();
   });
+
+  it('searches display text stored in nested component props', () => {
+    const AccountDetails = ({ account }) => <span>{account.name}</span>;
+    const departmentRows = [
+      [<AccountDetails key="engineering" account={{ name: 'Engineering' }} />, '8'],
+      [<AccountDetails key="finance" account={{ name: 'Finance' }} />, '3'],
+    ];
+
+    render(
+      <Table
+        headers={['Department', 'Employees']}
+        rows={departmentRows}
+        showExport={false}
+        isCheckInput={false}
+      />
+    );
+
+    fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'Engineering' } });
+    expect(screen.getByText('Engineering')).toBeInTheDocument();
+    expect(screen.queryByText('Finance')).not.toBeInTheDocument();
+  });
 });

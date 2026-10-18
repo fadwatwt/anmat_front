@@ -54,8 +54,8 @@ function ThemeOptions() {
     return (
         <div className={"flex flex-col gap-5 w-full py-2"}>
             <div className={"flex flex-col text-start gap-1"}>
-                <p className={"dark:text-gray-200"}>{t("Theme Options")}</p>
-                <p className={"text-sm dark:text-gray-200"}>{t("Select your preferences for your region")}</p>
+                <p className={"text-cell-primary"}>{t("Theme Options")}</p>
+                <p className={"text-sm text-cell-secondary"}>{t("Select your preferences for your region")}</p>
             </div>
             <div className={"flex flex-col gap-3"}>
                 <div className={"flex flex-col gap-3 py-2"}>

@@ -19,6 +19,14 @@ test.describe('Auth setup', () => {
       },
       [token],
     );
+    // The Next middleware checks the mirrored auth cookie before client-side
+    // storage is available. Keep the test session identical to a real login.
+    await page.context().addCookies([{
+      name: 'token',
+      value: token,
+      url: FRONTEND_URL,
+      sameSite: 'Lax',
+    }]);
 
     await page.goto(`${FRONTEND_URL}/dashboard`);
     await expect(page).toHaveURL(/\/dashboard/);

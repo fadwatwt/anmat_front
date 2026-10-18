@@ -33,13 +33,12 @@ const COLOR_MAP = {
     blue: "text-blue-500 bg-blue-50 dark:bg-blue-500/10",
 };
 import { useSelector } from 'react-redux';
-import { selectUser, selectUserId } from '@/redux/auth/authSlice';
+import { selectUser } from '@/redux/auth/authSlice';
 import {
     useGetEmployeeAuthRequestsQuery,
     useUpdateEmployeeDetailMutation,
     useCancelEmployeeRequestMutation
 } from '@/redux/employees/employeeAuthRequestsApi';
-import { useGetEmployeeProfileQuery } from '@/redux/employees/employeesApi';
 import { translateDate } from '@/functions/Days';
 import dayjs from 'dayjs';
 import ContentCard from "@/components/containers/ContentCard";
@@ -53,12 +52,10 @@ function EmployeeProfile() {
 
     const { t, i18n } = useTranslation()
     const user = useSelector(selectUser);
-    const userId = useSelector(selectUserId);
     const employeeDetail = user?.employee_detail || {};
 
-    const { data: freshProfile } = useGetEmployeeProfileQuery(userId, { skip: !userId });
-    const storageQuota = freshProfile?.storage_quota ?? employeeDetail.storage_quota;
-    const usedStorage = freshProfile?.used_storage ?? employeeDetail.used_storage;
+    const storageQuota = employeeDetail.storage_quota;
+    const usedStorage = employeeDetail.used_storage;
 
     const canCreateLeave = usePermission("leaves.create"); // Or check for list if it exists
     const canCreateRequest = usePermission("employee_requests.create");
@@ -329,6 +326,10 @@ function EmployeeProfile() {
                                 <div className={"flex justify-between items-center"}>
                                     <div className={"relative h-[72px] w-[72px]"}>
                                         <img className={"rounded-full h-[72px] w-[72px] max-w-full object-cover border-2 border-primary-500"}
+                                            onError={(event) => {
+                                                event.currentTarget.onerror = null;
+                                                event.currentTarget.src = "/images/userProfile.png";
+                                            }}
                                             src={user?.imageProfile || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || "U")}&background=random`} alt={"image-user"} />
                                         {user?.is_active && (
                                             <RiCheckboxCircleFill size="23" className="absolute top-0 right-0 bg-surface rounded-full text-cyan-500" />

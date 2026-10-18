@@ -69,21 +69,16 @@ function AiMessageContent({ text, className = "" }) {
               {children}
             </blockquote>
           ),
-          code: ({ children, inline, ...props }) =>
-            inline ? (
-              <code
-                className="bg-gray-100 dark:bg-gray-800 text-primary-600 dark:text-primary-400 px-1.5 py-0.5 rounded text-sm font-mono"
-                {...props}
-              >
-                {children}
-              </code>
-            ) : (
-              <pre className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 my-3 overflow-x-auto text-sm text-gray-900 dark:text-gray-200">
-                <code className="font-mono" {...props}>
-                  {children}
-                </code>
-              </pre>
-            ),
+          code: ({ children, node: _node, ...props }) => (
+            <code dir="ltr" style={{ unicodeBidi: "isolate" }} className="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono" {...props}>
+              {children}
+            </code>
+          ),
+          pre: ({ children, node: _node, ...props }) => (
+            <pre dir="ltr" className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 my-3 overflow-x-auto text-start text-sm text-gray-900 dark:text-gray-200" {...props}>
+              {children}
+            </pre>
+          ),
           table: ({ children, ...props }) => (
             <div className="overflow-x-auto my-3">
               <table className="min-w-full border-collapse border border-gray-200 dark:border-gray-700 text-sm" {...props}>

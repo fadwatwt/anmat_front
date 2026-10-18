@@ -9,6 +9,7 @@ import { useState } from "react";
 
 import { useGetPermissionsQuery } from "@/redux/permissions/subscriberPermissionsApi";
 import dayjs from "dayjs";
+import { getPermissionLabel } from "@/config/permissionTranslations";
 
 function PermissionsPage() {
     const { data: permissionsData, isLoading, error } = useGetPermissionsQuery();
@@ -24,7 +25,7 @@ function PermissionsPage() {
     const rows = (permissionsData || []).map(permission => [
         <div key="name" className="flex items-center justify-start gap-2">
             <span className=" text-cell-primary font-medium">
-                {permission.name}
+                {getPermissionLabel(permission.name, permission)}
             </span>
         </div>,
         <div key="action" className="flex items-center justify-start">

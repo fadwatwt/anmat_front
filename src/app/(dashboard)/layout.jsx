@@ -191,7 +191,7 @@ const MainLayout = ({ children }) => {
                 <div className="flex flex-col items-center gap-4 w-full max-w-sm px-6">
                     <div className="w-full h-32 bg-surface border border-status-border rounded-2xl animate-pulse" aria-hidden="true" />
                     <div className="w-full h-20 bg-surface border border-status-border rounded-2xl animate-pulse delay-75" aria-hidden="true" />
-                    <p className="text-cell-secondary font-medium mt-2">جارٍ التحميل… / Loading…</p>
+                    <p className="text-cell-secondary font-medium mt-2">{t("Loading...")}</p>
                 </div>
             </div>
         );

@@ -93,7 +93,7 @@ function TweeterTab() {
     const [isBulkDeleteOpen, setIsBulkDeleteOpen] = useState(false);
     const [apiResponse, setApiResponse] = useState({ isOpen: false, status: null, message: "" });
 
-    const { data: accountsResp, isLoading: accountsLoading, isFetching } = useGetTwitterAccountsQuery({});
+    const { data: accountsResp, isLoading: accountsLoading, isFetching, isError: accountsError, refetch: refetchAccounts } = useGetTwitterAccountsQuery({});
     const { data: quota, isLoading: quotaLoading } = useGetMySocialMediaQuotaQuery();
     const [deleteAccount, { isLoading: deleting }] = useDeleteTwitterAccountMutation();
     const [deleteAccounts, { isLoading: bulkDeleting }] = useDeleteTwitterAccountsMutation();
@@ -121,7 +121,7 @@ function TweeterTab() {
                     <span className="font-medium text-cell-primary">
                         {acc?.AccountDataInfo1?.FullName || acc.name}
                     </span>
-                    <span className="text-xs text-cell-secondary">@{acc.name}</span>
+                    <bdi dir="ltr" className="text-xs text-cell-secondary">@{acc.name}</bdi>
                 </div>,
                 acc?.Category?.name || "-",
                 <span
@@ -287,7 +287,12 @@ function TweeterTab() {
                         )}
                     </div>
 
-                    {accountsLoading ? (
+                    {accountsError ? (
+                        <div role="alert" className="w-full p-4 text-cell-secondary">
+                            <p>{t("Unable to load social media accounts. Please try again.")}</p>
+                            <button type="button" onClick={refetchAccounts} disabled={isFetching} className="mt-2 text-primary-500">{t("Retry")}</button>
+                        </div>
+                    ) : accountsLoading ? (
                         <div className="flex items-center justify-center w-full p-8">
                             <ImSpinner2 className="animate-spin text-primary-500" size={30} />
                         </div>

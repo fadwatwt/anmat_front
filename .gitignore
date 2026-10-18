@@ -16,6 +16,7 @@
 
 # next.js
 /.next/
+/.next-*/
 /out/
 
 # production
@@ -46,4 +47,5 @@ next-env.d.ts
 # playwright
 /playwright-report
 /test-results
+/audit-results
 /e2e/.auth

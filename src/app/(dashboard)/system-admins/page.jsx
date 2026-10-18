@@ -16,9 +16,11 @@ import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import { useUnassignRoleMutation } from "@/redux/roles/adminRolesAPI";
 import { RiAddCircleLine, RiCloseLine, RiNotification4Line } from "@remixicon/react";
 import SendAdminNotificationModal from "@/components/Modal/SendAdminNotificationModal";
+import { usePermission } from "@/Hooks/usePermission";
 
 function SystemAdminsPage() {
     const { t } = useTranslation();
+    const canManageAdminRoles = usePermission("admin.admin_roles.update");
     const { data: adminsResponse, isLoading } = useGetAdminsQuery();
     const adminsData = adminsResponse?.data || [];
 
@@ -62,12 +64,14 @@ function SystemAdminsPage() {
             {adminUser?.admin_system_roles?.map((element, index) => (
                 <span key={index} className={"py-1 px-2 rounded-lg bg-badge-bg text-badge-text flex items-center gap-1"}>
                     {element?.name}
-                    <button
-                        onClick={() => handleUnassignClick(adminUser, element)}
-                        className="hover:text-red-500 transition-colors"
-                    >
-                        <RiCloseLine size={14} />
-                    </button>
+                    {canManageAdminRoles && (
+                        <button
+                            onClick={() => handleUnassignClick(adminUser, element)}
+                            className="hover:text-red-500 transition-colors"
+                        >
+                            <RiCloseLine size={14} />
+                        </button>
+                    )}
                 </span>
             ))}</div>,
 
@@ -119,36 +123,19 @@ function SystemAdminsPage() {
 
     const AdminUserActions = ({ actualRowIndex, handelDeactivateAction }) => {
         const { t, i18n } = useTranslation();
-        const statesActions = [
-            {
+        const statesActions = [];
+        if (canManageAdminRoles) statesActions.push({
                 text: "Assign Role", icon: <RiAddCircleLine className="text-primary-400" />, onClick: () => {
                     setSelectedAdmin(adminsData[actualRowIndex]);
                     setIsAssignRoleModalOpen(true);
                 },
-            },
-            {
+            });
+        statesActions.push({
                 text: t("Send Notification"), icon: <RiNotification4Line className="text-primary-400" />, onClick: () => {
                     setNotifyTarget(adminsData[actualRowIndex]);
                     setIsNotifyModalOpen(true);
                 },
-            },
-            // {
-            //     text: "View", icon: <RiEyeLine className="text-primary-400" />, onClick: () => {
-            //         console.log(actualRowIndex)
-            //     }
-            // },
-            // {
-            //     text: "Edit", icon: <RiEditLine className="text-primary-400" />, onClick: () => {
-            //         console.log(actualRowIndex)
-            //     },
-            // },
-            // {
-            //     text: "Deactivate", icon: <RiCloseCircleLine className="text-red-500" />, onClick: () => {
-            //         console.log(actualRowIndex)
-            //         handelDeactivateAction()
-            //     },
-            // },
-        ]
+            });
         return (
             <StatusActions states={statesActions} className={`${i18n.language === "ar" ? "left-0" : "right-0"
                 }`} />

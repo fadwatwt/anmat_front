@@ -32,12 +32,12 @@ function ProfileSecurityTab() {
     return (
         <div className={"flex lg:gap-32 md:20 gap-10 w-full md:flex-row flex-col"}>
             <div className={"hidden md:block"}>
-                <div className={"bg-white dark:bg-gray-800 py-3 px-2 lg:w-64 w-48  flex flex-col gap-2 rounded-lg "}>
+                <div className={"bg-surface border border-status-border py-3 px-2 lg:w-64 w-48 flex flex-col gap-2 rounded-2xl"}>
                     <p className={"uppercase text-sm px-3 text-start dark:text-gray-200"}>{t("select menu")}</p>
                     <Sidebar activeItem={activeTab} onClick={handelChangeActiveTab} list={listSideBar}/>
                 </div>
             </div>
-            <div className={"md:p-5 p-2 rounded-2xl bg-white dark:bg-gray-800 lg:w-[39%]"}>
+            <div className={"md:p-5 p-3 rounded-2xl bg-surface border border-status-border lg:w-[39%]"}>
                 <div className={"md:hidden block"}>
                     <TabModal classNameItem={"justify-start mx-1 "} classNameContent={"h-[calc(100vh-25rem)]"} tabs={tabsData}/>
                 </div>

@@ -9,6 +9,7 @@ import Tabs from "@/components/Tabs.jsx";
 import Page from "../../../components/Page.jsx";
 import dynamic from "next/dynamic";
 import { useTranslation } from "react-i18next";
+import UnavailableIntegration from "./_Tabs/_components/UnavailableIntegration";
 
 const FacebookTab = dynamic(() => import("@/app/(dashboard)/social-media/_Tabs/Facebook.tab.jsx"), {
     loading: () => <div className="flex items-center justify-center w-full p-4"><ImSpinner2 className="animate-spin text-primary-base dark:text-primary-200" size={30} /></div>,
@@ -36,17 +37,17 @@ function SocialMediaPage() {
         {
             title: t("Instagram"),
             icon: IoLogoInstagram,
-            content: <div>{t("Instagram content goes here")}</div>,
+            content: <UnavailableIntegration platform="Instagram" />,
         },
         {
             title: t("Gmail"),
             icon: CgMail,
-            content: <div>{t("Gmail content goes here")}</div>,
+            content: <UnavailableIntegration platform="Gmail" />,
         },
         {
             title: t("Youtube"),
             icon: AiOutlineYoutube,
-            content: <div>{t("Youtube content goes here")}</div>,
+            content: <UnavailableIntegration platform="Youtube" />,
         },
     ];
 

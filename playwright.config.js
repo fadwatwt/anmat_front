@@ -80,7 +80,7 @@ module.exports = defineConfig({
     // 1) تسجيل الدخول مرة واحدة وحفظ الجلسة
     {
       name: 'setup',
-      testMatch: /auth\.setup\.js/,
+      testMatch: /(^|[\\/])auth\.setup\.js$/,
     },
     // 2) الصفحات العامة (دخول، هبوط) — بدون جلسة محفوظة
     {
@@ -90,6 +90,42 @@ module.exports = defineConfig({
         ...devices['Desktop Chrome'],
       },
     },
+    {
+      name: 'employee-setup',
+      testMatch: /(^|[\\/])employee-auth\.setup\.js$/,
+    },
+    {
+      name: 'chromium-employee',
+      testMatch: /(^|[\\/])employee-check\.spec\.js$/,
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: 'e2e/.auth/employee.json',
+      },
+      dependencies: ['employee-setup'],
+    },
+    {
+      name: 'subscriber-setup',
+      testMatch: /(^|[\\/])subscriber-auth\.setup\.js$/,
+    },
+    {
+      name: 'chromium-subscriber',
+      testMatch: /(^|[\\/])subscriber-check\.spec\.js$/,
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: 'e2e/.auth/subscriber.json',
+      },
+      dependencies: ['subscriber-setup'],
+    },
+    {
+      name: 'chromium-mobile',
+      testMatch: /(^|[\\/])mobile-smoke\.spec\.js$/,
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 390, height: 844 },
+        storageState: 'e2e/.auth/admin.json',
+      },
+      dependencies: ['setup'],
+    },
     // 3) الصفحات الداخلية (لوحة التحكم + البصرية) — بجلسة السوبر أدمن
     {
       name: 'chromium',
@@ -98,7 +134,7 @@ module.exports = defineConfig({
         storageState: 'e2e/.auth/admin.json',
       },
       dependencies: ['setup'],
-      testIgnore: /(login|landing|visual-public|auth\.setup)\.(spec|setup)\.js/,
+      testIgnore: /(login|landing|visual-public|employee-check|subscriber-check|mobile-smoke)\.spec\.js|(^|[\\/]).*auth\.setup\.js$/,
     },
   ],
 });

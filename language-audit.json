@@ -1,0 +1,29 @@
+{
+  "files": 632,
+  "missing": {
+    "ar": {},
+    "en": {}
+  },
+  "hardcoded": [
+    {
+      "text": "BUYR|",
+      "file": "src/app/(auth)/(account-setup)/payment/page.jsx",
+      "line": 148
+    },
+    {
+      "text": "BUYR|",
+      "file": "src/app/(auth)/account-setup/subscriber/plans/subscribe/page.jsx",
+      "line": 169
+    },
+    {
+      "text": "hr@domain.com",
+      "file": "src/app/mail-invitation/page.jsx",
+      "line": 52
+    },
+    {
+      "text": "أنماط | Anmaat",
+      "file": "src/components/Loading.jsx",
+      "line": 13
+    }
+  ]
+}
