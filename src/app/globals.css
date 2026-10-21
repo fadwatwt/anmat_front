@@ -52,6 +52,7 @@ html.theme-transition *::after {
     --text-cell-secondary: #757C8A;
     --status-bg: #F6F8FA;
     --status-border: #E2E4E9;
+    --support-chat-bg: #eef2f7;
 
     /* Specific mappings */
     --color-gray-f6f8fa: #F6F8FA;
@@ -83,6 +84,7 @@ html.dark {
     --text-cell-secondary: #CDD0D5;
     --status-bg: #20232D;
     --status-border: #31353F;
+    --support-chat-bg: #171a23;
 
     /* Specific mappings */
     --color-gray-f6f8fa: #161922;

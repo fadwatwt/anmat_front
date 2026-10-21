@@ -19,6 +19,9 @@ const SILENT_ENDPOINTS = new Set([
     "uploadAiFiles",
     "confirmPendingAction",
     "cancelPendingAction",
+    // Support chat has its own send-button spinner. Blocking the whole screen
+    // for each message makes the conversation feel like a form submission.
+    "addSupportTicketMessage",
 ]);
 
 const isMutationAction = (action) =>

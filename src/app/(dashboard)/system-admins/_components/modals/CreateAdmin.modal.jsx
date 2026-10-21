@@ -5,7 +5,7 @@ import InputAndLabel from "@/components/Form/InputAndLabel";
 import PasswordInput from "@/components/Form/PasswordInput";
 import TagInput from "@/components/Form/TagInput";
 import Switch2 from "@/components/Form/Switch2";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useCreateAdminMutation, useGetAdminRolesQuery } from "@/redux/system-admins/systemAdminsAPI";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import { useTranslation } from "react-i18next";
@@ -19,6 +19,7 @@ function CreateAdminModal({ isOpen, onClose, onShowSuccess }) {
         phone: "",
         password: "",
         confirmPassword: "",
+        roleTemplate: "anmaat-support-agent",
         rules: [],
         is_active: true
     });
@@ -27,8 +28,24 @@ function CreateAdminModal({ isOpen, onClose, onShowSuccess }) {
     const { data: rolesResponse } = useGetAdminRolesQuery();
     const suggestions = rolesResponse?.data?.map(role => ({
         id: role._id,
-        name: role.name
+        name: role.name,
+        templateKey: role.template_key,
     })) || [];
+
+    const selectTemplate = (templateKey) => {
+        const templateRole = suggestions.find((role) => role.templateKey === templateKey);
+        setFormData(prev => ({
+            ...prev,
+            roleTemplate: templateKey,
+            rules: templateRole ? [templateRole] : [],
+        }));
+    };
+
+    useEffect(() => {
+        if (formData.roleTemplate === "custom" || formData.rules.length > 0) return;
+        const selected = suggestions.find((role) => role.templateKey === formData.roleTemplate);
+        if (selected) setFormData(prev => ({ ...prev, rules: [selected] }));
+    }, [formData.roleTemplate, formData.rules.length, suggestions]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -36,12 +53,16 @@ function CreateAdminModal({ isOpen, onClose, onShowSuccess }) {
     };
 
     const handleRoleChange = (tags) => {
-        setFormData(prev => ({ ...prev, rules: tags }));
+        setFormData(prev => ({ ...prev, roleTemplate: "custom", rules: tags }));
     };
 
     const handleSubmit = async () => {
         if (formData.password !== formData.confirmPassword) {
             setApiResponse({ isOpen: true, status: "error", message: t("Passwords do not match!") });
+            return;
+        }
+        if (formData.rules.length === 0) {
+            setApiResponse({ isOpen: true, status: "error", message: t("Select at least one role.") });
             return;
         }
         try {
@@ -62,6 +83,7 @@ function CreateAdminModal({ isOpen, onClose, onShowSuccess }) {
                 phone: "",
                 password: "",
                 confirmPassword: "",
+                roleTemplate: "anmaat-support-agent",
                 rules: [],
                 is_active: true
             });
@@ -113,12 +135,36 @@ function CreateAdminModal({ isOpen, onClose, onShowSuccess }) {
                     value={formData.confirmPassword}
                     onChange={handleChange}
                 />
-                <TagInput
-                    suggestions={suggestions}
-                    title={t("Roles")}
-                    value={formData.rules}
-                    onChange={handleRoleChange}
-                />
+                <div>
+                    <p className="mb-2 text-sm font-medium text-cell-primary">{t("Account template")}</p>
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                        {[
+                            ["anmaat-support-agent", t("Support Agent"), t("Handles and responds to tickets without archive permission.")],
+                            ["anmaat-support-supervisor", t("Support Supervisor"), t("Includes ticket supervision and archive permission.")],
+                            ["custom", t("Custom roles"), t("Advanced setup using manually selected roles.")],
+                        ].map(([key, label, description]) => (
+                            <button
+                                key={key}
+                                type="button"
+                                onClick={() => key === "custom"
+                                    ? setFormData(prev => ({ ...prev, roleTemplate: "custom", rules: [] }))
+                                    : selectTemplate(key)}
+                                className={`rounded-xl border p-3 text-start transition-colors ${formData.roleTemplate === key ? "border-primary-500 bg-primary-50 dark:bg-primary-900/20" : "border-status-border bg-surface hover:border-primary-300"}`}
+                            >
+                                <span className="block text-sm font-semibold text-cell-primary">{label}</span>
+                                <span className="mt-1 block text-xs text-cell-secondary">{description}</span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+                {formData.roleTemplate === "custom" && (
+                    <TagInput
+                        suggestions={suggestions}
+                        title={t("Roles")}
+                        value={formData.rules}
+                        onChange={handleRoleChange}
+                    />
+                )}
 
                 <div className="flex items-center gap-2">
                     <span className="text-sm text-cell-primary">{t("Active Status")}</span>

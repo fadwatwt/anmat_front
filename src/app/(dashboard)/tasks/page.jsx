@@ -7,19 +7,28 @@ import dynamic from "next/dynamic";
 import Page from "@/components/Page.jsx";
 import Table from "@/components/Tables/Table.jsx";
 import { useSelector } from "react-redux";
-import { selectUserType, selectUserId } from "@/redux/auth/authSlice";
+import { selectUserType } from "@/redux/auth/authSlice";
 import { usePermission } from "@/Hooks/usePermission";
 import { taskDetailsPath } from "@/functions/AnotherFunctions";
 import { translateDate } from "@/functions/Days";
-import { RiEyeLine, RiDeleteBinLine, RiEditLine, RiCalendarCheckLine } from "react-icons/ri";
+import {
+  RiEyeLine,
+  RiDeleteBinLine,
+  RiEditLine,
+  RiCalendarCheckLine,
+} from "react-icons/ri";
 import StatusActions from "@/components/Dropdowns/StatusActions";
 import {
   useGetSubscriberTasksQuery,
   useDeleteSubscriberTaskMutation,
   useUpdateSubscriberTaskMutation,
-  useUploadSubscriberTaskAttachmentMutation
+  useUploadSubscriberTaskAttachmentMutation,
 } from "@/redux/tasks/subscriberTasksApi";
-import { useGetEmployeeTasksQuery, useUpdateTaskStatusMutation, useUploadEmployeeTaskAttachmentMutation } from "@/redux/tasks/employeeTasksApi";
+import {
+  useGetEmployeeTasksQuery,
+  useUpdateTaskStatusMutation,
+  useUploadEmployeeTaskAttachmentMutation,
+} from "@/redux/tasks/employeeTasksApi";
 import Modal from "@/components/Modal/Modal.jsx";
 import EvaluationModal from "@/components/Modal/EvaluationModal";
 import StarRating from "@/components/StarRating";
@@ -29,42 +38,64 @@ import ViewToggle from "./_components/ViewToggle";
 import KanbanBoard from "./_components/KanbanBoard";
 
 // ✅ Lazy-loaded components
-const NameAndDescription = dynamic(() => import("@/app/(dashboard)/projects/_components/TableInfo/NameAndDescription"), { ssr: false });
-const Priority = dynamic(() => import("@/app/(dashboard)/projects/_components/TableInfo/Priority"), { ssr: false });
-const Status = dynamic(() => import("@/app/(dashboard)/projects/_components/TableInfo/Status"), { ssr: false });
-const Alert = dynamic(() => import("@/components/Alerts/Alert"), { ssr: false });
-const ApiResponseAlert = dynamic(() => import("@/components/Alerts/ApiResponseAlert"), { ssr: false });
+const NameAndDescription = dynamic(
+  () =>
+    import("@/app/(dashboard)/projects/_components/TableInfo/NameAndDescription"),
+  { ssr: false },
+);
+const Priority = dynamic(
+  () => import("@/app/(dashboard)/projects/_components/TableInfo/Priority"),
+  { ssr: false },
+);
+const Status = dynamic(
+  () => import("@/app/(dashboard)/projects/_components/TableInfo/Status"),
+  { ssr: false },
+);
+const Alert = dynamic(() => import("@/components/Alerts/Alert"), {
+  ssr: false,
+});
+const ApiResponseAlert = dynamic(
+  () => import("@/components/Alerts/ApiResponseAlert"),
+  { ssr: false },
+);
 
 function TasksPage() {
   const { t } = useTranslation();
   const router = useRouter();
 
   const authUserType = useSelector(selectUserType);
-  const userId = useSelector(selectUserId);
   const isEmployee = authUserType === "Employee";
   const isSubscriber = authUserType === "Subscriber";
   const canCreateTask = usePermission("tasks.create");
   const canEditTask = usePermission("tasks.update");
   const canDeleteTask = usePermission("tasks.delete");
 
-  const { data: subscriberTasks = [], isLoading: isSubscriberLoading, isError: isSubscriberError } = useGetSubscriberTasksQuery(undefined, { skip: !isSubscriber });
-  const { data: rawEmployeeTasks = [], isLoading: isEmployeeLoading, isError: isEmployeeError } = useGetEmployeeTasksQuery(undefined, { skip: !isEmployee });
+  const {
+    data: subscriberTasks = [],
+    isLoading: isSubscriberLoading,
+    isError: isSubscriberError,
+  } = useGetSubscriberTasksQuery(undefined, { skip: !isSubscriber });
+  const {
+    data: rawEmployeeTasks = [],
+    isLoading: isEmployeeLoading,
+    isError: isEmployeeError,
+  } = useGetEmployeeTasksQuery(undefined, { skip: !isEmployee });
 
-  const employeeTasks = useMemo(() => {
-    return rawEmployeeTasks.filter((task) => {
-      const assigneeId = task.assignee_id || task.assignee?._id;
-      return assigneeId?.toString() === userId?.toString();
-    });
-  }, [rawEmployeeTasks, userId]);
-
-  const tasks = isEmployee ? employeeTasks : subscriberTasks;
-  const isLoading = authUserType ? (isEmployee ? isEmployeeLoading : isSubscriberLoading) : true;
+  // The employee API already applies the authorization scope and intentionally
+  // includes tasks from projects the employee manages or belongs to.
+  const tasks = isEmployee ? rawEmployeeTasks : subscriberTasks;
+  const isLoading = authUserType
+    ? isEmployee
+      ? isEmployeeLoading
+      : isSubscriberLoading
+    : true;
   const isError = isEmployee ? isEmployeeError : isSubscriberError;
 
   const [deleteSubscriberTask] = useDeleteSubscriberTaskMutation();
   const [updateTaskStatus] = useUpdateTaskStatusMutation();
   const [updateSubscriberTask] = useUpdateSubscriberTaskMutation();
-  const [uploadSubscriberAttachment] = useUploadSubscriberTaskAttachmentMutation();
+  const [uploadSubscriberAttachment] =
+    useUploadSubscriberTaskAttachmentMutation();
   const [uploadEmployeeAttachment] = useUploadEmployeeTaskAttachmentMutation();
   const { showProcessing, hideProcessing } = useProcessing();
 
@@ -111,13 +142,27 @@ function TasksPage() {
   const [isOpenStatusModal, setIsOpenStatusModal] = useState(false);
   const [taskToUpdateStatus, setTaskToUpdateStatus] = useState(null);
   const [isOpenEvaluationModal, setIsOpenEvaluationModal] = useState(false);
-  const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
+  const [apiResponse, setApiResponse] = useState({
+    isOpen: false,
+    status: "",
+    message: "",
+  });
   const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
   const [taskForAppointment, setTaskForAppointment] = useState(null);
 
-  const allStatuses = ['open', 'pending', 'in-progress', 'completed', 'done', 'rejected', 'cancelled'];
-  const restrictedStatuses = ['done', 'rejected', 'cancelled'];
-  const allowedStatuses = canEditTask ? allStatuses : allStatuses.filter((s) => !restrictedStatuses.includes(s));
+  const allStatuses = [
+    "open",
+    "pending",
+    "in-progress",
+    "completed",
+    "done",
+    "rejected",
+    "cancelled",
+  ];
+  const restrictedStatuses = ["done", "rejected", "cancelled"];
+  const allowedStatuses = canEditTask
+    ? allStatuses
+    : allStatuses.filter((s) => !restrictedStatuses.includes(s));
   const kanbanColumns = canEditTask ? undefined : allowedStatuses;
 
   // Options for the table's status filter (value matches the raw task status).
@@ -132,26 +177,30 @@ function TasksPage() {
       { value: "rejected", name: "Rejected" },
       { value: "cancelled", name: "Cancelled" },
     ],
-    []
+    [],
   );
 
-
   // Headers matching the design and important info
-  const headers = useMemo(() => [
-    { label: t("Tasks"), width: "220px" },
-    ...(!isEmployee ? [
-      { label: t("Project"), width: "110px" },
-      { label: t("Department"), width: "130px" },
-      { label: t("Assignee"), width: "130px" },
-      { label: t("Creator"), width: "130px" },
-    ] : []),
-    { label: t("Priority"), width: "90px" },
-    { label: t("Status"), width: "110px" },
-    { label: t("Progress"), width: "110px" },
-    { label: t("Rating"), width: "100px" },
-    { label: t("Due Date"), width: "100px" },
-    { label: "", width: "40px" },
-  ], [isEmployee, t]);
+  const headers = useMemo(
+    () => [
+      { label: t("Tasks"), width: "220px" },
+      ...(!isEmployee
+        ? [
+            { label: t("Project"), width: "110px" },
+            { label: t("Department"), width: "130px" },
+            { label: t("Assignee"), width: "130px" },
+            { label: t("Creator"), width: "130px" },
+          ]
+        : []),
+      { label: t("Priority"), width: "90px" },
+      { label: t("Status"), width: "110px" },
+      { label: t("Progress"), width: "110px" },
+      { label: t("Rating"), width: "100px" },
+      { label: t("Due Date"), width: "100px" },
+      { label: "", width: "40px" },
+    ],
+    [isEmployee, t],
+  );
 
   const handleCreateTask = () => {
     if (canCreateTask) router.push("/tasks/create");
@@ -208,7 +257,7 @@ function TasksPage() {
   };
 
   const handleStatusUpdate = async (status, evaluationPayload = null) => {
-    if (status === 'done' && !evaluationPayload) {
+    if (status === "done" && !evaluationPayload) {
       setIsOpenStatusModal(false);
       setIsOpenEvaluationModal(true);
       return;
@@ -242,10 +291,16 @@ function TasksPage() {
   const handleUploadFile = async (file) => {
     if (!taskToUpdateStatus?._id) return null;
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
     const res = isEmployee
-      ? await uploadEmployeeAttachment({ taskId: taskToUpdateStatus._id, formData }).unwrap()
-      : await uploadSubscriberAttachment({ taskId: taskToUpdateStatus._id, formData }).unwrap();
+      ? await uploadEmployeeAttachment({
+          taskId: taskToUpdateStatus._id,
+          formData,
+        }).unwrap()
+      : await uploadSubscriberAttachment({
+          taskId: taskToUpdateStatus._id,
+          formData,
+        }).unwrap();
     return res?.attachment || res?.data || null;
   };
 
@@ -275,7 +330,7 @@ function TasksPage() {
           text: t("Change Status"),
           icon: <RiEditLine size={16} className="text-primary-500" />,
           onClick: () => handleOpenStatusModal(task),
-        }
+        },
       );
     } else if (isEmployee) {
       actions.push({
@@ -302,9 +357,7 @@ function TasksPage() {
       },
     });
 
-    return (
-      <StatusActions states={actions} />
-    );
+    return <StatusActions states={actions} />;
   };
 
   const taskRowTable = useMemo(() => {
@@ -315,30 +368,58 @@ function TasksPage() {
         name={task.title}
         description={task.description}
       />,
-      ...(!isEmployee ? [
-        <p title={task.project?.name} key={`project-${task._id}`} className="text-sm text-cell-secondary truncate max-w-[100px]">
-          {task.project?.name || t("No Project")}
-        </p>,
-        <p title={task.department?.name} key={`dept-${task._id}`} className="text-sm text-cell-secondary truncate max-w-[120px]">
-          {task.department?.name || t("No Department")}
-        </p>,
-        <div key={`assignee-${task._id}`} className="flex items-center gap-1.5 max-w-[120px]" title={task.assignee?.name || t("Unassigned")}>
-          <img
-            className="w-7 h-7 rounded-full shrink-0 object-cover"
-            src={task.assignee?.imageProfile || `https://ui-avatars.com/api/?name=${encodeURIComponent(task.assignee?.name || "U")}&size=28`}
-            alt=""
-          />
-          <span className="text-xs text-cell-primary truncate">{task.assignee?.name || t("Unassigned")}</span>
-        </div>,
-        <div key={`creator-${task._id}`} className="flex items-center gap-1.5 max-w-[120px]" title={task.creator?.name || t("Unknown")}>
-          <img
-            className="w-7 h-7 rounded-full shrink-0 object-cover"
-            src={task.creator?.imageProfile || `https://ui-avatars.com/api/?name=${encodeURIComponent(task.creator?.name || "C")}&size=28`}
-            alt=""
-          />
-          <span className="text-xs text-cell-primary truncate">{task.creator?.name || t("Unknown")}</span>
-        </div>,
-      ] : []),
+      ...(!isEmployee
+        ? [
+            <p
+              title={task.project?.name}
+              key={`project-${task._id}`}
+              className="text-sm text-cell-secondary truncate max-w-[100px]"
+            >
+              {task.project?.name || t("No Project")}
+            </p>,
+            <p
+              title={task.department?.name}
+              key={`dept-${task._id}`}
+              className="text-sm text-cell-secondary truncate max-w-[120px]"
+            >
+              {task.department?.name || t("No Department")}
+            </p>,
+            <div
+              key={`assignee-${task._id}`}
+              className="flex items-center gap-1.5 max-w-[120px]"
+              title={task.assignee?.name || t("Unassigned")}
+            >
+              <img
+                className="w-7 h-7 rounded-full shrink-0 object-cover"
+                src={
+                  task.assignee?.imageProfile ||
+                  `https://ui-avatars.com/api/?name=${encodeURIComponent(task.assignee?.name || "U")}&size=28`
+                }
+                alt=""
+              />
+              <span className="text-xs text-cell-primary truncate">
+                {task.assignee?.name || t("Unassigned")}
+              </span>
+            </div>,
+            <div
+              key={`creator-${task._id}`}
+              className="flex items-center gap-1.5 max-w-[120px]"
+              title={task.creator?.name || t("Unknown")}
+            >
+              <img
+                className="w-7 h-7 rounded-full shrink-0 object-cover"
+                src={
+                  task.creator?.imageProfile ||
+                  `https://ui-avatars.com/api/?name=${encodeURIComponent(task.creator?.name || "C")}&size=28`
+                }
+                alt=""
+              />
+              <span className="text-xs text-cell-primary truncate">
+                {task.creator?.name || t("Unknown")}
+              </span>
+            </div>,
+          ]
+        : []),
       <Priority key={`priority-${task._id}`} type={task.priority} />,
       <Status key={`status-${task._id}`} type={task.status} />,
       <div key={`progress-${task._id}`} className="flex items-center gap-2">
@@ -348,7 +429,9 @@ function TasksPage() {
             style={{ width: `${task.progress || 0}%` }}
           ></div>
         </div>
-        <span className="text-xs font-medium text-cell-secondary">{task.progress || 0}%</span>
+        <span className="text-xs font-medium text-cell-secondary">
+          {task.progress || 0}%
+        </span>
       </div>,
       <div key={`rating-${task._id}`} className="flex items-center">
         {task.rate > 0 ? (
@@ -359,7 +442,10 @@ function TasksPage() {
           </span>
         )}
       </div>,
-      <p key={`due-date-${task._id}`} className="text-sm text-cell-secondary text-nowrap">
+      <p
+        key={`due-date-${task._id}`}
+        className="text-sm text-cell-secondary text-nowrap"
+      >
         {task.due_date ? translateDate(task.due_date) : "-"}
       </p>,
     ]);
@@ -379,8 +465,16 @@ function TasksPage() {
     <>
       <Page
         title={t("Tasks")}
-        {...(canCreateTask ? { isBtn: true, btnOnClick: handleCreateTask, btnTitle: t("Create a Task") } : {})}
-        otherHeaderActions={<ViewToggle activeView={activeView} onChange={handleViewChange} />}
+        {...(canCreateTask
+          ? {
+              isBtn: true,
+              btnOnClick: handleCreateTask,
+              btnTitle: t("Create a Task"),
+            }
+          : {})}
+        otherHeaderActions={
+          <ViewToggle activeView={activeView} onChange={handleViewChange} />
+        }
       >
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-2 h-full">
@@ -458,9 +552,11 @@ function TasksPage() {
           setIsOpenEvaluationModal(false);
           setTaskToUpdateStatus(null);
         }}
-        onSubmit={(payload) => handleStatusUpdate('done', payload)}
+        onSubmit={(payload) => handleStatusUpdate("done", payload)}
         type="task"
-        hasStages={taskToUpdateStatus?.stages && taskToUpdateStatus.stages.length > 0}
+        hasStages={
+          taskToUpdateStatus?.stages && taskToUpdateStatus.stages.length > 0
+        }
         isSubmitting={false}
         uploadFile={handleUploadFile}
       />

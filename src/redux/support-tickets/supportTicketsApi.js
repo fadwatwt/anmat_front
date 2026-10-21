@@ -3,11 +3,12 @@ import { apiSlice } from "../api/apiSlice";
 export const supportTicketsApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getSupportTickets: builder.query({
-            query: () => ({
+            query: (params = {}) => ({
                 url: "api/support-tickets",
                 method: "GET",
+                params,
             }),
-            providesTags: ["SupportTickets"],
+            providesTags: [{ type: "SupportTickets", id: "LIST" }],
         }),
         getSupportMetrics: builder.query({
             query: () => ({
@@ -15,7 +16,7 @@ export const supportTicketsApi = apiSlice.injectEndpoints({
                 method: "GET",
             }),
             transformResponse: (response) => response.data,
-            providesTags: ["SupportTickets"],
+            providesTags: [{ type: "SupportTickets", id: "METRICS" }],
         }),
         getSupportTicketDetails: builder.query({
             query: (id) => ({
@@ -30,7 +31,10 @@ export const supportTicketsApi = apiSlice.injectEndpoints({
                 method: "POST",
                 body: data,
             }),
-            invalidatesTags: ["SupportTickets"],
+            invalidatesTags: [
+                { type: "SupportTickets", id: "LIST" },
+                { type: "SupportTickets", id: "METRICS" },
+            ],
         }),
         updateSupportTicketStatus: builder.mutation({
             query: ({ id, ...changes }) => ({
@@ -38,7 +42,12 @@ export const supportTicketsApi = apiSlice.injectEndpoints({
                 method: "PATCH",
                 body: changes,
             }),
-            invalidatesTags: (result, error, { id }) => ["SupportTickets", { type: "SupportTickets", id }],
+            invalidatesTags: (result, error, { id }) => [
+                { type: "SupportTickets", id },
+                { type: "SupportTickets", id: "LIST" },
+                { type: "SupportTickets", id: "METRICS" },
+                { type: "SupportTicketEvents", id },
+            ],
         }),
         addSupportTicketMessage: builder.mutation({
             query: ({ id, data }) => ({
@@ -47,21 +56,36 @@ export const supportTicketsApi = apiSlice.injectEndpoints({
                 body: data,
                 formData: true,
             }),
-            invalidatesTags: (result, error, { id }) => ["SupportTickets", { type: "SupportTickets", id }],
+            invalidatesTags: (result, error, { id }) => [
+                { type: "SupportTicketMessages", id },
+                { type: "SupportTickets", id },
+                { type: "SupportTickets", id: "LIST" },
+                { type: "SupportTickets", id: "METRICS" },
+            ],
         }),
         getSupportTicketMessages: builder.query({
             query: (id) => ({
                 url: `api/support-tickets/${id}/messages`,
                 method: "GET",
             }),
-            providesTags: (result, error, id) => [{ type: "SupportTickets", id }],
+            providesTags: (result, error, id) => [{ type: "SupportTicketMessages", id }],
+        }),
+        getSupportTicketEvents: builder.query({
+            query: (id) => ({
+                url: `api/support-tickets/${id}/events`,
+                method: "GET",
+            }),
+            providesTags: (result, error, id) => [{ type: "SupportTicketEvents", id }],
         }),
         deleteSupportTicket: builder.mutation({
             query: (id) => ({
                 url: `api/support-tickets/${id}`,
                 method: "DELETE",
             }),
-            invalidatesTags: ["SupportTickets"],
+            invalidatesTags: [
+                { type: "SupportTickets", id: "LIST" },
+                { type: "SupportTickets", id: "METRICS" },
+            ],
         }),
     }),
 });
@@ -74,5 +98,6 @@ export const {
     useUpdateSupportTicketStatusMutation,
     useAddSupportTicketMessageMutation,
     useGetSupportTicketMessagesQuery,
+    useGetSupportTicketEventsQuery,
     useDeleteSupportTicketMutation,
 } = supportTicketsApi;

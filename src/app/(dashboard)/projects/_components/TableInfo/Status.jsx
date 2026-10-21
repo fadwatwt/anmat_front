@@ -30,6 +30,14 @@ function Status({ type, title }) {
       icon: <IoTime className="text-blue-500" />,
       border: "border-blue-300 dark:border-blue-500",
     },
+    "waiting-for-customer": {
+      icon: <IoTime className="text-amber-500" />,
+      border: "border-amber-300 dark:border-amber-500",
+    },
+    "on-hold": {
+      icon: <IoTime className="text-purple-500" />,
+      border: "border-purple-300 dark:border-purple-500",
+    },
     inactive: {
       icon: <TbForbidFilled className="text-cell-secondary" />,
       border: "border-status-border",
@@ -100,6 +108,8 @@ Status.propTypes = {
     "Pending",
     "In Progress",
     "In-Progress",
+    "waiting-for-customer",
+    "on-hold",
     "Completed",
     "Done",
     "Rejected",

@@ -39,7 +39,7 @@ function Desktop2Page() {
   return (
     <div
       className={
-        "flex h-screen flex-col w-full items-center overflow-y-auto overscroll-contain bg-status-bg"
+        "none-scroll flex h-screen flex-col w-full items-center overflow-y-auto overscroll-contain bg-status-bg"
       }
     >
       <div
@@ -675,49 +675,49 @@ function Desktop2Page() {
           </div>
         </div>
       </div>
-      <div className={"w-full bg-gray-900 dark:bg-black"}>
+      <div className={"w-full bg-surface dark:bg-black"}>
         <div className={"max-w-[87rem] mx-auto px-4 sm:px-7 py-12 sm:py-16"}>
           <div className={"grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8"}>
             <div className={"flex flex-col gap-4"}>
               <div className={"flex gap-2 items-center"}>
                 <img src="/images/LandingPage/logoBlue.png" alt={""} className={"w-8"} />
-                <p className={"text-white font-bold text-lg"}>{t("Anmaat")}</p>
+                <p className={"text-cell-primary dark:text-white font-bold text-lg"}>{t("Anmaat")}</p>
               </div>
-              <p className={"text-gray-300 text-sm leading-relaxed"}>
+              <p className={"text-cell-secondary dark:text-gray-300 text-sm leading-relaxed"}>
                 {t("All the tools you need for collaboration, analytics, and decision-making in one place.")}
               </p>
               <div className={"flex items-center gap-3 mt-2"}>
-                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className={"text-gray-300 hover:text-white transition-colors"}>
+                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className={"text-cell-secondary hover:text-primary-600 dark:text-gray-300 dark:hover:text-white transition-colors"}>
                   <RiFacebookCircleFill size={"22"} />
                 </a>
-                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className={"text-gray-300 hover:text-white transition-colors"}>
+                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className={"text-cell-secondary hover:text-primary-600 dark:text-gray-300 dark:hover:text-white transition-colors"}>
                   <RiLinkedinBoxFill size={"22"} />
                 </a>
-                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" aria-label="X" className={"text-gray-300 hover:text-white transition-colors"}>
+                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" aria-label="X" className={"text-cell-secondary hover:text-primary-600 dark:text-gray-300 dark:hover:text-white transition-colors"}>
                   <RiTwitterXLine size={"22"} />
                 </a>
               </div>
             </div>
             <div className={"flex flex-col gap-3"}>
-              <p className={"text-gray-100 font-semibold mb-2"}>{t("Product")}</p>
-              <button onClick={() => scrollToSection("features")} className={"text-gray-300 hover:text-white text-sm text-start transition-colors"}>{t("Features")}</button>
-              <button onClick={() => scrollToSection("pricing")} className={"text-gray-300 hover:text-white text-sm text-start transition-colors"}>{t("Pricing")}</button>
-              <Link href="/sign-in" className={"text-gray-300 hover:text-white text-sm transition-colors"}>{t("Login")}</Link>
-              <Link href="/register/subscriber/email" className={"text-gray-300 hover:text-white text-sm transition-colors"}>{t("Sign up")}</Link>
+              <p className={"text-cell-primary dark:text-gray-100 font-semibold mb-2"}>{t("Product")}</p>
+              <button onClick={() => scrollToSection("features")} className={"text-cell-secondary hover:text-primary-600 dark:text-gray-300 dark:hover:text-white text-sm text-start transition-colors"}>{t("Features")}</button>
+              <button onClick={() => scrollToSection("pricing")} className={"text-cell-secondary hover:text-primary-600 dark:text-gray-300 dark:hover:text-white text-sm text-start transition-colors"}>{t("Pricing")}</button>
+              <Link href="/sign-in" className={"text-cell-secondary hover:text-primary-600 dark:text-gray-300 dark:hover:text-white text-sm transition-colors"}>{t("Login")}</Link>
+              <Link href="/register/subscriber/email" className={"text-cell-secondary hover:text-primary-600 dark:text-gray-300 dark:hover:text-white text-sm transition-colors"}>{t("Sign up")}</Link>
             </div>
             <div className={"flex flex-col gap-3"}>
-              <p className={"text-gray-100 font-semibold mb-2"}>{t("Company")}</p>
-              <button onClick={() => scrollToSection("home")} className={"text-gray-300 hover:text-white text-sm text-start transition-colors"}>{t("About")}</button>
-              <button onClick={() => scrollToSection("faq")} className={"text-gray-300 hover:text-white text-sm text-start transition-colors"}>{t("FAQ")}</button>
+              <p className={"text-cell-primary dark:text-gray-100 font-semibold mb-2"}>{t("Company")}</p>
+              <button onClick={() => scrollToSection("home")} className={"text-cell-secondary hover:text-primary-600 dark:text-gray-300 dark:hover:text-white text-sm text-start transition-colors"}>{t("About")}</button>
+              <button onClick={() => scrollToSection("faq")} className={"text-cell-secondary hover:text-primary-600 dark:text-gray-300 dark:hover:text-white text-sm text-start transition-colors"}>{t("FAQ")}</button>
             </div>
             <div className={"flex flex-col gap-3"}>
-              <p className={"text-gray-100 font-semibold mb-2"}>{t("Support")}</p>
-              <a href="mailto:support@anmat.com" className={"text-gray-300 hover:text-white text-sm transition-colors"}>{t("Contact Us")}</a>
-              <a href="mailto:help@anmat.com" className={"text-gray-300 hover:text-white text-sm transition-colors"}>{t("Help Center")}</a>
+              <p className={"text-cell-primary dark:text-gray-100 font-semibold mb-2"}>{t("Support")}</p>
+              <a href="mailto:support@anmat.com" className={"text-cell-secondary hover:text-primary-600 dark:text-gray-300 dark:hover:text-white text-sm transition-colors"}>{t("Contact Us")}</a>
+              <a href="mailto:help@anmat.com" className={"text-cell-secondary hover:text-primary-600 dark:text-gray-300 dark:hover:text-white text-sm transition-colors"}>{t("Help Center")}</a>
             </div>
           </div>
         </div>
-        <div className={"border-t border-gray-600"}>
+        <div className={"border-t border-status-border dark:border-gray-600"}>
           <div className={"max-w-[87rem] mx-auto px-4 sm:px-7 py-6 flex flex-col sm:flex-row justify-between items-center gap-3"}>
             <p className={"text-cell-secondary text-sm"}>
               {t("© 2026 Anmaat. All rights reserved.")}

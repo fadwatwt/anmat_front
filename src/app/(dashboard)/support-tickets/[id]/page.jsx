@@ -7,6 +7,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import {
     useGetSupportTicketDetailsQuery,
     useGetSupportTicketMessagesQuery,
+    useGetSupportTicketEventsQuery,
     useAddSupportTicketMessageMutation,
     useUpdateSupportTicketStatusMutation,
     useDeleteSupportTicketMutation,
@@ -17,7 +18,7 @@ import { useSelector } from "react-redux";
 import { selectAuth, selectUser } from "@/redux/auth/authSlice";
 import { format } from "date-fns";
 import EmojiPicker from "emoji-picker-react";
-import { Send, Paperclip, Smile, X, FileIcon, ImageIcon } from "lucide-react";
+import { Send, Paperclip, Smile, X, FileIcon, ImageIcon, History, UserCheck } from "lucide-react";
 import { RootRoute } from "@/Root.Route";
 import Alert from "@/components/Alerts/Alert";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
@@ -38,7 +39,14 @@ function SupportTicketDetailsPage() {
     const [deleteTicket] = useDeleteSupportTicketMutation();
 
     const isAdmin = user?.type === 'Admin';
-    const canDeleteTicket = usePermission("support_tickets.delete");
+    const canViewPlatformTicket = usePermission("admin.support_tickets.view");
+    const canManageTicket = usePermission("admin.support_tickets.update");
+    const canDeletePlatformTicket = usePermission("admin.support_tickets.delete");
+    const isSupportStaff = isAdmin && canViewPlatformTicket;
+    const canDeleteTicket = isAdmin && canDeletePlatformTicket;
+    const { data: eventsRes } = useGetSupportTicketEventsQuery(id, {
+        skip: !id || !isSupportStaff,
+    });
 
     const [messageText, setMessageText] = useState("");
     const [selectedFiles, setSelectedFiles] = useState([]);
@@ -52,8 +60,12 @@ function SupportTicketDetailsPage() {
 
     const ticket = ticketRes?.data;
     const messages = useMemo(() => messagesRes?.data || [], [messagesRes?.data]);
-    // Admins can still reply on resolved tickets; subscribers cannot
-    const isClosed = ticket?.status === 'closed' || (!isAdmin && ticket?.status === 'resolved');
+    const events = useMemo(() => eventsRes?.data || [], [eventsRes?.data]);
+    const assigneeId = String(ticket?.admin_id?._id || ticket?.admin_id || "");
+    const assigneeName = ticket?.admin_id?.name || ticket?.admin?.name || "";
+    const isAssignedToMe = assigneeId && assigneeId === String(user?._id || "");
+    // Support staff can follow up on resolved tickets; customers cannot.
+    const isClosed = ticket?.status === 'closed' || (!isSupportStaff && ticket?.status === 'resolved');
 
     const getAttachmentUrl = (url) => {
         if (!url) return "";
@@ -148,7 +160,7 @@ function SupportTicketDetailsPage() {
         if (confirmed) {
             try {
                 await deleteTicket(id).unwrap();
-                setApiResponse({ isOpen: true, status: "success", message: t("Ticket deleted successfully!") });
+                setApiResponse({ isOpen: true, status: "success", message: t("Ticket archived successfully!") });
                 setTimeout(() => router.push("/support-tickets"), 1500);
             } catch (err) {
                 setApiResponse({ isOpen: true, status: "error", message: err?.data?.message || t("Failed to delete ticket.") });
@@ -184,7 +196,7 @@ function SupportTicketDetailsPage() {
                         <div className="flex flex-col gap-3">
                             <div className="flex justify-between items-center">
                                 <span className="text-sm text-cell-secondary">{t("Status")}</span>
-                                {isAdmin ? (
+                                {isAdmin && canManageTicket ? (
                                     <select
                                         value={ticket.status}
                                         onChange={(e) => handleStatusChange(e.target.value)}
@@ -193,6 +205,8 @@ function SupportTicketDetailsPage() {
                                     >
                                         <option value="open">{t("open")}</option>
                                         <option value="in-progress">{t("in-progress")}</option>
+                                        <option value="waiting-for-customer">{t("waiting-for-customer")}</option>
+                                        <option value="on-hold">{t("on-hold")}</option>
                                         <option value="resolved">{t("resolved")}</option>
                                         <option value="closed">{t("closed")}</option>
                                     </select>
@@ -212,6 +226,24 @@ function SupportTicketDetailsPage() {
                                 <span className="text-sm text-cell-secondary">{t("Created At")}</span>
                                 <span className="text-sm text-cell-primary">{translateDate(ticket.created_at)}</span>
                             </div>
+                            {isSupportStaff && (
+                                <>
+                                    <div className="flex justify-between items-center gap-3">
+                                        <span className="text-sm text-cell-secondary">{t("Assignee")}</span>
+                                        <span className="text-sm font-semibold text-cell-primary text-end">
+                                            {assigneeName || t("Unassigned")}
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between items-center gap-3">
+                                        <span className="text-sm text-cell-secondary">{t("First Response Due")}</span>
+                                        <span className="text-sm text-cell-primary text-end">{ticket.first_response_at ? t("Completed") : ticket.first_response_due_at ? format(new Date(ticket.first_response_due_at), "PPp") : "—"}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center gap-3">
+                                        <span className="text-sm text-cell-secondary">{t("Resolution Due")}</span>
+                                        <span className="text-sm text-cell-primary text-end">{ticket.resolved_at ? t("Completed") : ticket.resolution_due_at ? format(new Date(ticket.resolution_due_at), "PPp") : "—"}</span>
+                                    </div>
+                                </>
+                            )}
                         </div>
 
                         <div className="mt-4">
@@ -219,7 +251,7 @@ function SupportTicketDetailsPage() {
                             <p className="text-sm text-cell-secondary whitespace-pre-wrap">{ticket.description}</p>
                         </div>
 
-                        {isAdmin && ticket.ai_summary && (
+                        {isSupportStaff && ticket.ai_summary && (
                             <div className="mt-2 rounded-xl border border-primary-200 bg-primary-50/50 p-3 dark:border-primary-800 dark:bg-primary-900/10">
                                 <h3 className="text-sm font-semibold text-cell-primary mb-2">{t("AI Support Summary")}</h3>
                                 <p className="text-sm text-cell-secondary whitespace-pre-wrap">{ticket.ai_summary}</p>
@@ -231,22 +263,58 @@ function SupportTicketDetailsPage() {
                             </div>
                         )}
 
+                        {isSupportStaff && (
+                            <div className="mt-2 border-t border-status-border pt-4">
+                                <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-cell-primary">
+                                    <History size={16} />
+                                    {t("Activity History")}
+                                </h3>
+                                {events.length === 0 ? (
+                                    <p className="text-xs text-cell-secondary">{t("No activity recorded yet.")}</p>
+                                ) : (
+                                    <ol className="max-h-56 space-y-3 overflow-y-auto pe-1 custom-scrollbar">
+                                        {events.map((event) => (
+                                            <li key={event._id} className="relative border-s-2 border-status-border ps-3 text-xs">
+                                                <p className="font-medium text-cell-primary">
+                                                    {event.event_type === "ticket_archived" ? t("Ticket archived") : t("Ticket updated")}
+                                                </p>
+                                                {Object.entries(event.changes || {}).map(([field, value]) => (
+                                                    <p key={field} className="mt-1 text-cell-secondary">
+                                                        {t(field)}: {value.from ? t(String(value.from)) : "—"} → {value.to ? t(String(value.to)) : "—"}
+                                                    </p>
+                                                ))}
+                                                <p className="mt-1 text-[10px] text-sub-500">
+                                                    {event.actor_id?.name || t(event.actor_type)} · {translateDate(event.created_at)}
+                                                </p>
+                                            </li>
+                                        ))}
+                                    </ol>
+                                )}
+                            </div>
+                        )}
+
                         {canDeleteTicket && (
                             <button
                                 onClick={() => setIsOpenDeleteAlert(true)}
                                 className="mt-2 w-full px-4 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 dark:text-red-400 rounded-xl transition-colors"
                             >
-                                {t("Delete Ticket")}
+                                {t("Archive Ticket")}
                             </button>
                         )}
-                        {isAdmin && String(ticket.admin_id?._id || ticket.admin_id || "") !== String(user?._id || "") && (
+                        {isAdmin && canManageTicket && !assigneeId && (
                             <button
                                 onClick={() => updateStatus({ id, admin_id: user._id }).unwrap().catch((error) => setApiResponse({ isOpen: true, status: "error", message: error?.data?.message || t("Failed to assign ticket.") }))}
                                 disabled={isUpdatingStatus}
-                                className="w-full px-4 py-2 text-sm font-medium text-primary-600 border border-primary-300 hover:bg-primary-50 dark:text-primary-300 dark:border-primary-700 dark:hover:bg-primary-900/20 rounded-xl transition-colors disabled:opacity-50"
+                                className="w-full px-4 py-2 text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 rounded-xl transition-colors disabled:opacity-50"
                             >
-                                {t("Assign to me")}
+                                {isUpdatingStatus ? t("Assigning...") : t("Take ownership")}
                             </button>
+                        )}
+                        {isSupportStaff && assigneeId && (
+                            <div className={`flex items-center justify-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium ${isAssignedToMe ? "border-green-200 bg-green-50 text-green-700 dark:border-green-800 dark:bg-green-900/20 dark:text-green-300" : "border-status-border bg-status-bg text-cell-secondary"}`}>
+                                <UserCheck size={17} />
+                                {isAssignedToMe ? t("Assigned to you") : `${t("Assigned to")} ${assigneeName || t("Support agent")}`}
+                            </div>
                         )}
                     </div>
                 </div>
@@ -255,7 +323,7 @@ function SupportTicketDetailsPage() {
                 <div className="w-full lg:w-2/3 bg-surface rounded-2xl border border-status-border flex flex-col overflow-hidden">
 
                     {/* Header */}
-                    <div className="p-4 border-b border-status-border" style={{ backgroundColor: 'var(--bg-main)' }}>
+                    <div className="p-4 border-b border-status-border bg-surface">
                         <h3 className="font-semibold text-cell-primary">{t("Conversation")}</h3>
                     </div>
 
@@ -263,7 +331,7 @@ function SupportTicketDetailsPage() {
                     <div
                         ref={scrollRef}
                         className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar"
-                        style={{ backgroundColor: 'var(--bg-main)' }}
+                        style={{ backgroundColor: 'var(--support-chat-bg)' }}
                     >
                         {isLoadingMessages ? (
                             <div className="flex items-center justify-center h-full">
@@ -298,8 +366,7 @@ function SupportTicketDetailsPage() {
                                             {/* Avatar */}
                                             {!isMe && (
                                                 <div
-                                                    className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold ${showAvatar ? "opacity-100" : "opacity-0"}`}
-                                                    style={{ backgroundColor: 'var(--bg-main)' }}
+                                                    className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold border border-status-border bg-surface ${showAvatar ? "opacity-100" : "opacity-0"}`}
                                                 >
                                                     <span className="text-cell-secondary">{senderName?.charAt(0) || "U"}</span>
                                                 </div>
@@ -381,19 +448,6 @@ function SupportTicketDetailsPage() {
 
                     {/* Input Area */}
                     <div className="flex flex-col bg-surface border-t border-status-border">
-                        {isAdmin && !isClosed && (
-                            <div className="flex flex-wrap gap-2 px-4 pt-3">
-                                {[
-                                    t("We received your request and are reviewing it."),
-                                    t("Could you share the exact steps that caused the issue?"),
-                                    t("The issue has been resolved. Please try again."),
-                                ].map((reply) => (
-                                    <button key={reply} type="button" onClick={() => setMessageText(reply)} className="rounded-full border border-status-border bg-status-bg px-3 py-1.5 text-xs text-cell-primary hover:border-primary-400">
-                                        {reply}
-                                    </button>
-                                ))}
-                            </div>
-                        )}
                         {/* Selected Files Preview */}
                         {selectedFiles.length > 0 && (
                             <div className="flex flex-wrap gap-2 px-4 pt-3">
@@ -449,9 +503,9 @@ function SupportTicketDetailsPage() {
                                             : t("Type a message...")
                                     }
                                     disabled={isSending || isClosed}
-                                    className="w-full px-4 py-3 bg-main border-none rounded-2xl text-sm text-cell-primary focus:ring-2 focus:ring-primary-500/50 outline-none transition-all disabled:opacity-50"
+                                    className="w-full ps-4 pe-11 py-3 bg-main border-none rounded-2xl text-sm text-cell-primary focus:ring-2 focus:ring-primary-500/50 outline-none transition-all disabled:opacity-50"
                                 />
-                                <div className="absolute right-3 top-1/2 -translate-y-1/2" ref={emojiPickerRef}>
+                                <div className="absolute end-3 top-1/2 -translate-y-1/2" ref={emojiPickerRef}>
                                     <button
                                         type="button"
                                         disabled={isClosed}
@@ -461,7 +515,7 @@ function SupportTicketDetailsPage() {
                                         <Smile size={18} />
                                     </button>
                                     {showEmojiPicker && (
-                                        <div className="absolute bottom-full right-0 mb-2 z-50 animate-in fade-in slide-in-from-bottom-2 duration-200">
+                                        <div className="absolute bottom-full end-0 mb-2 z-50 animate-in fade-in slide-in-from-bottom-2 duration-200">
                                             <EmojiPicker
                                                 onEmojiClick={(emojiData) => setMessageText(prev => prev + emojiData.emoji)}
                                                 autoFocusSearch={false}
@@ -499,10 +553,10 @@ function SupportTicketDetailsPage() {
                 type="delete"
                 isOpen={isOpenDeleteAlert}
                 onClose={() => setIsOpenDeleteAlert(false)}
-                title={t("Delete Ticket")}
-                message={t("Are you sure you want to delete this ticket? This action cannot be undone.")}
+                title={t("Archive Ticket")}
+                message={t("Are you sure you want to archive this ticket? It will be removed from active views but retained for audit purposes.")}
                 isBtns={true}
-                titleSubmitBtn={t("Yes, Delete")}
+                titleSubmitBtn={t("Yes, Archive")}
                 titleCancelBtn={t("Cancel")}
                 onSubmit={handleDelete}
             />
