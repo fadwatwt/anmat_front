@@ -4,6 +4,7 @@ import { ImSpinner2 } from "react-icons/im";
 
 const AnalyticsCard = ({
     title,
+    compact = false,
     children,
     showDropdowns = false,
     dropdown1Label = "Filter",
@@ -18,14 +19,15 @@ const AnalyticsCard = ({
     const { t } = useTranslation();
 
     return (
-        <div className="bg-surface px-6 pt-6 pb-10 rounded-[24px] shadow-sm border border-status-border flex flex-col min-h-[400px] relative">
-            <div className="flex justify-between items-center mb-6">
+        <div className={`bg-surface p-4 sm:p-6 rounded-2xl shadow-sm border border-status-border flex flex-col min-w-0 relative ${compact ? "" : "min-h-[340px]"}`}>
+            <div className="flex flex-col xl:flex-row justify-between items-start gap-3 mb-5">
                 <h3 className="font-bold text-table-title text-lg">{t(title)}</h3>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2 min-w-0 max-w-full">
                     {showDropdowns && (
                         <div className="relative flex items-center">
                             <select
-                                className="appearance-none text-xs bg-status-bg border border-status-border rounded-lg pl-3 pr-8 py-1.5 outline-none text-cell-secondary font-medium cursor-pointer"
+                                className="appearance-none text-xs bg-status-bg border border-status-border rounded-lg ps-3 pe-8 max-w-full py-1.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 text-cell-secondary font-medium cursor-pointer"
+                                aria-label={t(dropdown1Label)}
                                 value={selectedFilter}
                                 onChange={(e) => onFilterChange?.(e.target.value)}
                             >
@@ -34,21 +36,22 @@ const AnalyticsCard = ({
                                     <option key={i} value={opt.id}>{opt.value}</option>
                                 ))}
                             </select>
-                            <RiArrowDownSLine className="size-4 absolute right-2 text-cell-secondary pointer-events-none" />
+                            <RiArrowDownSLine className="size-4 absolute end-2 text-cell-secondary pointer-events-none" />
                         </div>
                     )}
                     {timeRangeOptions.length > 0 && (
                         <div className="relative flex items-center">
                             <select
-                                className="appearance-none text-xs bg-status-bg border border-status-border rounded-lg pl-3 pr-8 py-1.5 outline-none text-cell-secondary font-medium cursor-pointer"
+                                className="appearance-none text-xs bg-status-bg border border-status-border rounded-lg ps-3 pe-8 max-w-full py-1.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 text-cell-secondary font-medium cursor-pointer"
+                                aria-label={t("Time Range")}
                                 value={selectedTimeRange}
                                 onChange={(e) => onTimeRangeChange?.(e.target.value)}
                             >
                                 {timeRangeOptions.map((opt, i) => (
-                                    <option key={i} value={opt.value}>{opt.label}</option>
+                                    <option key={i} value={opt.value}>{t(opt.label)}</option>
                                 ))}
                             </select>
-                            <RiArrowDownSLine className="size-4 absolute right-2 text-cell-secondary pointer-events-none" />
+                            <RiArrowDownSLine className="size-4 absolute end-2 text-cell-secondary pointer-events-none" />
                         </div>
                     )}
                 </div>

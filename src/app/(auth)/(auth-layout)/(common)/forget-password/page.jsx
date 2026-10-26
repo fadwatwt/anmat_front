@@ -1,13 +1,9 @@
 "use client";
 
-import { setToken } from "@/utils/tokenStorage";
-
 import { useState } from "react";
 import { GoMail } from "react-icons/go";
 import { useRouter } from "next/navigation";
-import { useLoginMutation } from "@/redux/auth/authAPI";
-import { useDispatch, useSelector } from "react-redux";
-import { loginSuccess, loginFailure } from "@/redux/auth/authSlice";
+import { useForgotPasswordMutation } from "@/redux/auth/authAPI";
 import { RiUserSettingsLine } from "@remixicon/react";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
@@ -15,23 +11,18 @@ import { useTranslation } from "react-i18next";
 function ForgetPasswordPage() {
     const { t } = useTranslation();
     const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [login, { isLoading }] = useLoginMutation();
-    const { error } = useSelector((state) => state.auth);
-    const dispatch = useDispatch();
+    const [forgotPassword, { isLoading }] = useForgotPasswordMutation();
+    const [error, setError] = useState("");
     const router = useRouter();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError("");
         try {
-            const response = await login({ email, password }).unwrap();
-            dispatch(loginSuccess(response));
-            if (typeof window !== 'undefined') {
-                setToken(response.token, true);
-            }
-            router.push("/dashboard");
+            await forgotPassword({ email }).unwrap();
+            router.push("/forget-password/sent");
         } catch (err) {
-            dispatch(loginFailure(err.data?.message || t("Login failed")));
+            setError(err.data?.message || t("Failed to send password reset link"));
         }
     };
 
@@ -76,9 +67,14 @@ function ForgetPasswordPage() {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full rounded-lg bg-primary-base dark:bg-primary-200 text-white dark:text-black py-1.5"
+                            className="w-full min-h-11 rounded-lg bg-primary-base dark:bg-primary-200 text-white dark:text-black py-1.5 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                         >
-                            {isLoading ? t("Loading...") : t("Get Reset Link")}
+                            {isLoading ? (
+                                <>
+                                    <span className="size-4 rounded-full border-2 border-current border-t-transparent animate-spin" aria-hidden="true" />
+                                    {t("Sending...")}
+                                </>
+                            ) : t("Get Reset Link")}
                         </button>
                         <Link
                             href="/sign-in"

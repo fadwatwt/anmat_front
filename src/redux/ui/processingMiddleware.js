@@ -22,6 +22,11 @@ const SILENT_ENDPOINTS = new Set([
     // Support chat has its own send-button spinner. Blocking the whole screen
     // for each message makes the conversation feel like a form submission.
     "addSupportTicketMessage",
+    // Authentication forms render loading feedback directly inside their
+    // submit buttons; a full-screen overlay is disruptive here.
+    "forgotPassword",
+    "resetPassword",
+    "createEmployeeInvitationShareLink",
 ]);
 
 const isMutationAction = (action) =>

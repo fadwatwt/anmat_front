@@ -35,6 +35,19 @@ export const analyticsApi = apiSlice.injectEndpoints({
       },
       providesTags: ["Analytics"],
     }),
+    getWorkforceAnalytics: builder.query({
+      query: (filters = {}) => {
+        const params = {};
+        if (filters.startDate) params.startDate = filters.startDate;
+        if (filters.endDate) params.endDate = filters.endDate;
+        if (filters.departmentId) params.departmentId = filters.departmentId;
+        return {
+          url: "/api/subscriber/organization/analytics/workforce",
+          params,
+        };
+      },
+      providesTags: ["Analytics"],
+    }),
   }),
 });
 
@@ -42,4 +55,5 @@ export const {
   useGetAdminAnalyticsQuery,
   useGetSubscriberAnalyticsQuery,
   useGetEmployeeAnalyticsQuery,
+  useGetWorkforceAnalyticsQuery,
 } = analyticsApi;

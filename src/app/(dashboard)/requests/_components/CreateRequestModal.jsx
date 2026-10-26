@@ -17,6 +17,7 @@ import { selectUserId } from "@/redux/auth/authSlice";
 import { useProcessing } from "@/app/providers";
 import FileUpload from "@/components/Form/FileUpload";
 import { useUploadRequestAttachmentMutation } from "@/redux/employees/employeeRequestsApi";
+import { useGetMyLeaveBalancesQuery } from "@/redux/leaves/leavesApi";
 
 function CreateRequestModal({ isOpen, onClose }) {
     const { t } = useTranslation();
@@ -24,6 +25,7 @@ function CreateRequestModal({ isOpen, onClose }) {
     const userId = useSelector(selectUserId);
     const [createRequest, { isLoading }] = useCreateEmployeeRequestMutation();
     const [uploadRequestAttachment] = useUploadRequestAttachmentMutation();
+    const { data: leaveBalances = [], isLoading: isLoadingBalances } = useGetMyLeaveBalancesQuery(undefined, { skip: !isOpen });
     const [attachment, setAttachment] = useState(null);
     const [apiResponse, setApiResponse] = useState({ isOpen: false, status: "", message: "" });
     const [alertConfig, setAlertConfig] = useState({
@@ -51,6 +53,7 @@ function CreateRequestModal({ isOpen, onClose }) {
             old_salary_amount: "",
             vacation_date: "",
             vacation_end_date: "",
+            leave_policy_id: "",
             leave_date: "",
             leave_start_time: "",
             leave_end_time: "",
@@ -84,6 +87,11 @@ function CreateRequestModal({ isOpen, onClose }) {
                     t("Vacation date must be after today")
                 ).required(t("Vacation start date is required")),
                 otherwise: (schema) => schema.nullable().strip(),
+            }),
+            leave_policy_id: Yup.string().when("type", {
+                is: "DAY_OFF",
+                then: (schema) => schema.required(t("Leave policy is required")),
+                otherwise: (schema) => schema.strip(),
             }),
             vacation_end_date: Yup.date().when("type", {
                 is: "DAY_OFF",
@@ -140,6 +148,7 @@ function CreateRequestModal({ isOpen, onClose }) {
                         } else if (values.type === "DAY_OFF") {
                             payload.vacation_date = values.vacation_date;
                             payload.vacation_end_date = values.vacation_end_date;
+                            payload.leave_policy_id = values.leave_policy_id;
                         } else if (values.type === "SHORT_LEAVE") {
                             payload.leave_date = values.leave_date;
                             payload.leave_start_time = values.leave_start_time;
@@ -270,6 +279,23 @@ function CreateRequestModal({ isOpen, onClose }) {
 
                     {formik.values.type === "DAY_OFF" && (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="md:col-span-2">
+                                <ElementsSelect
+                                    title={t("Leave Policy")}
+                                    options={leaveBalances
+                                        .filter(item => item.policy?.is_active)
+                                        .map(item => ({
+                                            id: item.policy._id,
+                                            element: `${item.policy.name} — ${item.balance} ${t("days available")}`,
+                                        }))}
+                                    onChange={(selection) => formik.setFieldValue("leave_policy_id", selection[0]?.id || "")}
+                                    placeholder={isLoadingBalances ? t("Loading...") : t("Select leave policy")}
+                                    error={formik.touched.leave_policy_id && formik.errors.leave_policy_id}
+                                />
+                                {!isLoadingBalances && leaveBalances.length === 0 && (
+                                    <p className="mt-2 text-xs text-red-500">{t("No leave policy or opening balance is available. Contact HR.")}</p>
+                                )}
+                            </div>
                             <InputAndLabel
                                 title={t("Vacation Start Date")}
                                 name="vacation_date"

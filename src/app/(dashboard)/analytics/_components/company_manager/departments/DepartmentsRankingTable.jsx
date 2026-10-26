@@ -11,7 +11,7 @@ const DepartmentsRankingTable = ({ rows: rowsProp = [] }) => {
         { label: t("Department"), width: "400px" },
         { label: t("Rank"), width: "" },
         { label: t("Rating"), width: "" },
-        { label: t("Head Points"), width: "" },
+        { label: t("Manager Points"), width: "" },
         { label: t("Performance"), width: "" },
         { label: t("Attendance"), width: "" },
     ];
@@ -31,7 +31,7 @@ const DepartmentsRankingTable = ({ rows: rowsProp = [] }) => {
             </React.Fragment>,
             String(dept.rank),
             String(dept.rating ?? 0),
-            String(dept.headPoints ?? 0),
+            String(dept.managerPoints ?? 0),
             `${dept.performance ?? 0}%`,
             `${dept.attendance ?? 0}%`,
         ]);
@@ -42,7 +42,7 @@ const DepartmentsRankingTable = ({ rows: rowsProp = [] }) => {
     const scoringItems = [
         { icon: "🏅", label: t("Rank"), text: t("scoring.rank_explanation") },
         { icon: "⭐", label: t("Rating"), text: t("scoring.rating_explanation") },
-        { icon: "👤", label: t("Head Points"), text: t("scoring.head_points_explanation") },
+        { icon: "👤", label: t("Manager Points"), text: t("scoring.manager_points_explanation") },
         { icon: "📈", label: t("Performance"), text: t("scoring.performance_explanation") },
         { icon: "✅", label: t("Attendance"), text: t("scoring.attendance_explanation") },
     ];

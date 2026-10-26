@@ -23,6 +23,7 @@ function EditAnEmployeeModal({ isOpen, onClose, employeeData }) {
         email: "",
         name: "",
         phone: "",
+        change_reason: "",
         employee_detail: {
             department_id: null,
             position_id: null,
@@ -33,7 +34,9 @@ function EditAnEmployeeModal({ isOpen, onClose, employeeData }) {
             yearly_day_offs: 0,
             weekend_days: [],
             date_of_birth: "",
-            roles_ids: []
+            roles_ids: [],
+            employee_number: "", hire_date: "", employment_status: "ACTIVE",
+            employment_type: "FULL_TIME", manager_id: null, work_location: "", legal_entity: ""
         }
     });
 
@@ -43,7 +46,16 @@ function EditAnEmployeeModal({ isOpen, onClose, employeeData }) {
                 email: employeeData.user?.email || "",
                 name: employeeData.user?.name || "",
                 phone: employeeData.user?.phone || "",
+                change_reason: "",
                 employee_detail: {
+                    user_id: employeeData.user_id,
+                    employee_number: employeeData.employee_number || "",
+                    hire_date: employeeData.hire_date ? new Date(employeeData.hire_date).toISOString().split('T')[0] : "",
+                    employment_status: employeeData.employment_status || "ACTIVE",
+                    employment_type: employeeData.employment_type || "FULL_TIME",
+                    manager_id: employeeData.manager_id?._id || employeeData.manager_id || null,
+                    work_location: employeeData.work_location || "",
+                    legal_entity: employeeData.legal_entity || "",
                     department_id: employeeData.department_id?._id || employeeData.department_id || null,
                     position_id: employeeData.position_id?._id || employeeData.position_id || null,
                     country: employeeData.country || "",
@@ -94,6 +106,7 @@ function EditAnEmployeeModal({ isOpen, onClose, employeeData }) {
                 id: employeeData.user_id,
                 name: formData.name,
                 phone: formData.phone,
+                change_reason: formData.change_reason.trim() || "Employee record updated",
                 employee_details: {
                     ...formData.employee_detail,
                     work_hours: Number(formData.employee_detail.work_hours),
@@ -114,6 +127,12 @@ function EditAnEmployeeModal({ isOpen, onClose, employeeData }) {
             }
             if (!payload.employee_details.position_id) {
                 delete payload.employee_details.position_id;
+            }
+            if (!payload.employee_details.employee_number) {
+                delete payload.employee_details.employee_number;
+            }
+            if (!payload.employee_details.hire_date) {
+                delete payload.employee_details.hire_date;
             }
             if (!payload.employee_details.date_of_birth) {
                 delete payload.employee_details.date_of_birth;

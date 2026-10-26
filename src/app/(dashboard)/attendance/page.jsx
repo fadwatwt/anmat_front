@@ -10,6 +10,8 @@ import {
     useGetMyAttendancesQuery,
     useCheckInMutation,
     useCheckOutMutation,
+    useGetMyAttendanceCorrectionsQuery,
+    useCreateAttendanceCorrectionMutation,
 } from "@/redux/attendance/employeeAttendanceApi";
 import { useProcessing } from "@/app/providers";
 import ApprovalAlert from "@/components/Alerts/ApprovalAlert";
@@ -163,6 +165,9 @@ export default function EmployeeAttendancePage() {
     const { data: attendances = [], isLoading } = useGetMyAttendancesQuery();
     const [checkIn, { isLoading: isCheckingIn }] = useCheckInMutation();
     const [checkOut, { isLoading: isCheckingOut }] = useCheckOutMutation();
+    const { data: corrections = [] } = useGetMyAttendanceCorrectionsQuery();
+    const [createCorrection, { isLoading: isSubmittingCorrection }] = useCreateAttendanceCorrectionMutation();
+    const [correction, setCorrection] = useState({ attendance_id: "", start_time: "", end_time: "", end_date: "", break_minutes: 0, reason: "" });
 
     /* ── Derived State ── */
     // Employee is considered "checked in" when today has a record with start_time but no end_time
@@ -262,11 +267,24 @@ export default function EmployeeAttendancePage() {
         }
     };
 
+    const submitCorrection = async (event) => {
+        event.preventDefault();
+        try {
+            await createCorrection({ ...correction, break_minutes: Number(correction.break_minutes), end_date: correction.end_date || undefined }).unwrap();
+            setCorrection({ attendance_id: "", start_time: "", end_time: "", end_date: "", break_minutes: 0, reason: "" });
+            setApiResponse({ isOpen: true, status: "success", message: t("Attendance correction submitted") });
+        } catch (err) {
+            setApiResponse({ isOpen: true, status: "error", message: t(err?.data?.message || "Failed to submit correction") });
+        }
+    };
+
     /* ── Table definition ── */
     const headers = [
         { label: t("Date"), width: "150px" },
         { label: t("Check In"), width: "120px" },
         { label: t("Check Out"), width: "120px" },
+        { label: t("Worked"), width: "120px" },
+        { label: t("Overtime"), width: "120px" },
     ];
 
     const rows = useMemo(() => {
@@ -283,7 +301,7 @@ export default function EmployeeAttendancePage() {
 
             <span key={`end-${record._id}`} className="text-sm text-cell-primary font-medium">
                 {record.end_time ? (
-                    record.end_time
+                    `${record.end_time}${record.end_date && record.end_date !== record.date ? ` (${record.end_date})` : ""}`
                 ) : (
                     <span className="inline-flex items-center gap-1.5 text-amber-700 dark:text-orange-300 text-xs font-medium">
                         <span className="w-1.5 h-1.5 rounded-full bg-amber-600 dark:bg-orange-400 animate-pulse" />
@@ -291,6 +309,8 @@ export default function EmployeeAttendancePage() {
                     </span>
                 )}
             </span>,
+            <span key={`worked-${record._id}`} className="text-sm text-cell-primary">{Math.floor((record.worked_minutes || 0) / 60)}h {(record.worked_minutes || 0) % 60}m</span>,
+            <span key={`overtime-${record._id}`} className="text-sm text-cell-primary">{record.overtime_minutes || 0}m</span>,
         ]);
     }, [attendances, t]);
 
@@ -339,6 +359,27 @@ export default function EmployeeAttendancePage() {
                         classContainer="w-full"
                     />
                 )}
+
+                <form onSubmit={submitCorrection} className="grid gap-3 rounded-2xl border border-status-border bg-surface p-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <div className="sm:col-span-2 lg:col-span-3">
+                        <h2 className="font-bold text-cell-primary">{t("Request Attendance Correction")}</h2>
+                        <p className="text-sm text-cell-secondary">{t("The corrected times are applied only after approval.")}</p>
+                    </div>
+                    <select required value={correction.attendance_id} onChange={e => {
+                        const record = attendances.find(item => item._id === e.target.value);
+                        setCorrection(current => ({ ...current, attendance_id: e.target.value, start_time: record?.start_time || "", end_time: record?.end_time || "", end_date: record?.end_date || record?.date || "" }));
+                    }} className="rounded-lg border border-status-border bg-surface p-2 text-cell-primary">
+                        <option value="">{t("Select attendance record")}</option>
+                        {attendances.filter(item => item.end_time).map(item => <option key={item._id} value={item._id}>{item.date} — {item.start_time} / {item.end_time}</option>)}
+                    </select>
+                    <input required type="time" value={correction.start_time} onChange={e => setCorrection(current => ({ ...current, start_time: e.target.value }))} className="rounded-lg border border-status-border bg-surface p-2 text-cell-primary" />
+                    <input required type="time" value={correction.end_time} onChange={e => setCorrection(current => ({ ...current, end_time: e.target.value }))} className="rounded-lg border border-status-border bg-surface p-2 text-cell-primary" />
+                    <input type="date" value={correction.end_date} onChange={e => setCorrection(current => ({ ...current, end_date: e.target.value }))} className="rounded-lg border border-status-border bg-surface p-2 text-cell-primary" />
+                    <input type="number" min="0" value={correction.break_minutes} onChange={e => setCorrection(current => ({ ...current, break_minutes: e.target.value }))} placeholder={t("Break minutes")} className="rounded-lg border border-status-border bg-surface p-2 text-cell-primary" />
+                    <input required value={correction.reason} onChange={e => setCorrection(current => ({ ...current, reason: e.target.value }))} placeholder={t("Reason")} className="rounded-lg border border-status-border bg-surface p-2 text-cell-primary" />
+                    <button disabled={isSubmittingCorrection} className="rounded-lg bg-primary-base px-4 py-2 font-semibold text-white disabled:opacity-50">{t("Submit Correction")}</button>
+                    {corrections.length > 0 && <p className="text-sm text-cell-secondary sm:col-span-2">{t("Latest correction status")}: {t(corrections[0].status)}</p>}
+                </form>
             </div>
 
             {/* ── Check-In Approval Alert ── */}

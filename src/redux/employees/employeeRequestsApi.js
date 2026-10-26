@@ -19,6 +19,29 @@ export const employeeRequestsApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["EmployeeRequests"],
         }),
+        getApprovalDefinitions: builder.query({
+            query: () => ({ url: "api/subscriber/organization/approval-definitions", method: "GET" }),
+            transformResponse: (response) => response.data,
+            providesTags: ["EmployeeRequests"],
+        }),
+        getApprovalInbox: builder.query({
+            query: () => ({ url: "api/subscriber/organization/approval-inbox", method: "GET" }),
+            transformResponse: (response) => response.data,
+            providesTags: ["EmployeeRequests"],
+        }),
+        getTeamLeaveCalendar: builder.query({
+            query: (params) => ({ url: "api/subscriber/organization/team-leave-calendar", method: "GET", params }),
+            transformResponse: (response) => response.data,
+            providesTags: ["EmployeeRequests"],
+        }),
+        createApprovalDefinition: builder.mutation({
+            query: (body) => ({ url: "api/subscriber/organization/approval-definitions", method: "POST", body }),
+            invalidatesTags: ["EmployeeRequests"],
+        }),
+        decideEmployeeRequestApproval: builder.mutation({
+            query: ({ id, ...body }) => ({ url: `api/subscriber/organization/employees-requests/${id}/approval`, method: "PUT", body }),
+            invalidatesTags: ["EmployeeRequests", "LeaveBalances"],
+        }),
         deleteEmployeeRequest: builder.mutation({
             query: (id) => ({
                 url: `api/subscriber/organization/employees-requests/${id}`,
@@ -62,6 +85,11 @@ export const employeeRequestsApi = apiSlice.injectEndpoints({
 export const {
     useGetEmployeeRequestsQuery,
     useUpdateEmployeeRequestStatusMutation,
+    useGetApprovalDefinitionsQuery,
+    useGetApprovalInboxQuery,
+    useGetTeamLeaveCalendarQuery,
+    useCreateApprovalDefinitionMutation,
+    useDecideEmployeeRequestApprovalMutation,
     useDeleteEmployeeRequestMutation,
     useRestoreEmployeeRequestMutation,
     useGetRequestAttachmentsQuery,

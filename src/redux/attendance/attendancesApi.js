@@ -34,6 +34,24 @@ export const attendancesApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["Attendances"],
         }),
+        getAttendanceCorrections: builder.query({
+            query: () => ({ url: "api/subscriber/organization/attendance-corrections", method: "GET" }),
+            transformResponse: (response) => response.data,
+            providesTags: ["AttendanceCorrections"],
+        }),
+        getShiftAssignments: builder.query({
+            query: (params) => ({ url: "api/subscriber/organization/shift-assignments", method: "GET", params }),
+            transformResponse: (response) => response.data,
+            providesTags: ["Attendances"],
+        }),
+        createShiftAssignment: builder.mutation({
+            query: (body) => ({ url: "api/subscriber/organization/shift-assignments", method: "POST", body }),
+            invalidatesTags: ["Attendances"],
+        }),
+        reviewAttendanceCorrection: builder.mutation({
+            query: ({ id, ...body }) => ({ url: `api/subscriber/organization/attendance-corrections/${id}/review`, method: "PATCH", body }),
+            invalidatesTags: ["AttendanceCorrections", "Attendances"],
+        }),
     }),
 });
 
@@ -42,4 +60,8 @@ export const {
     useCreateAttendanceMutation,
     useUpdateAttendanceMutation,
     useDeleteAttendanceMutation,
+    useGetAttendanceCorrectionsQuery,
+    useReviewAttendanceCorrectionMutation,
+    useGetShiftAssignmentsQuery,
+    useCreateShiftAssignmentMutation,
 } = attendancesApi;

@@ -22,7 +22,8 @@ import { usePermission } from "@/Hooks/usePermission";
 
 function DepartmentsPage() {
     const { t } = useTranslation();
-    const { data: departments = [], isLoading: isDepartmentsLoading } = useGetDepartmentsQuery();
+    const { data: departments = [], isLoading: isDepartmentsLoading } =
+        useGetDepartmentsQuery(undefined, { refetchOnMountOrArgChange: true });
     const [deleteDepartment, { isLoading: isDeleting }] = useDeleteDepartmentMutation();
     const [deleteManyDepartments] = useDeleteManyDepartmentsMutation();
 

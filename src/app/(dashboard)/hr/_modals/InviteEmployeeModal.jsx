@@ -7,19 +7,21 @@ import PropTypes from "prop-types";
 import Modal from "@/components/Modal/Modal.jsx";
 import InputAndLabel from "@/components/Form/InputAndLabel.jsx";
 import DefaultButton from "@/components/Form/DefaultButton";
-import { useInviteEmployeeMutation } from "@/redux/employees/employeesApi";
-import { IoCopyOutline, IoCheckmarkCircle } from "react-icons/io5";
+import { useCreateEmployeeInvitationShareLinkMutation, useInviteEmployeeMutation } from "@/redux/employees/employeesApi";
+import { IoCheckmarkCircle, IoCopyOutline } from "react-icons/io5";
 import { useTranslation } from "react-i18next";
 
 function InviteEmployeeModal({ isOpen, onClose }) {
     const { t } = useTranslation();
     const [inviteEmployee, { isLoading }] = useInviteEmployeeMutation();
+    const [createShareLink, { isLoading: isCreatingShareLink }] = useCreateEmployeeInvitationShareLinkMutation();
     const [apiError, setApiError] = useState("");
 
     // Success modal state
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [invitationData, setInvitationData] = useState(null);
     const [isCopied, setIsCopied] = useState(false);
+    const [copyError, setCopyError] = useState("");
 
     const formik = useFormik({
         initialValues: {
@@ -36,7 +38,14 @@ function InviteEmployeeModal({ isOpen, onClose }) {
                 const response = await inviteEmployee({ email: values.email }).unwrap();
 
                 if (response.status === "success") {
-                    setInvitationData(response.data);
+                    let shareLink = "";
+                    try {
+                        const shareResponse = await createShareLink(response.data.invitation_id).unwrap();
+                        shareLink = shareResponse?.data?.link || "";
+                    } catch (error) {
+                        setCopyError(error?.data?.message || t("Failed to create share link"));
+                    }
+                    setInvitationData({ ...response.data, share_link: shareLink });
                     setShowSuccessModal(true);
                     resetForm();
                 }
@@ -51,23 +60,31 @@ function InviteEmployeeModal({ isOpen, onClose }) {
         enableReinitialize: true,
     });
 
-    const handleCopyLink = async () => {
-        if (invitationData?.link) {
-            try {
-                await navigator.clipboard.writeText(invitationData.link);
-                setIsCopied(true);
-                setTimeout(() => setIsCopied(false), 2000);
-            } catch (err) {
-                console.error("Failed to copy link:", err);
-            }
-        }
-    };
-
     const handleCloseSuccessModal = () => {
         setShowSuccessModal(false);
         setInvitationData(null);
         setIsCopied(false);
+        setCopyError("");
         onClose();
+    };
+
+    const handleCopyShareLink = async () => {
+        if (!invitationData?.invitation_id) return;
+        try {
+            setCopyError("");
+            let link = invitationData.share_link;
+            if (!link) {
+                const response = await createShareLink(invitationData.invitation_id).unwrap();
+                link = response?.data?.link;
+                setInvitationData((current) => ({ ...current, share_link: link }));
+            }
+            if (!link) throw new Error("Share link was not returned");
+            await navigator.clipboard.writeText(link);
+            setIsCopied(true);
+            window.setTimeout(() => setIsCopied(false), 2000);
+        } catch (error) {
+            setCopyError(error?.data?.message || t("Failed to copy link"));
+        }
     };
 
     const handleCloseInviteModal = () => {
@@ -113,7 +130,7 @@ function InviteEmployeeModal({ isOpen, onClose }) {
                 </form>
             </Modal>
 
-            {/* Success Modal with Copy Registration URL */}
+            {/* Success Modal */}
             <Modal
                 isOpen={showSuccessModal}
                 onClose={handleCloseSuccessModal}
@@ -144,44 +161,47 @@ function InviteEmployeeModal({ isOpen, onClose }) {
                         )}
                     </div>
 
-                    {/* Registration Link Section */}
-                    <div className="bg-status-bg rounded-xl p-4">
-                        <label className="text-sm font-medium text-cell-secondary mb-2 block">
-                            {t("Registration URL")}
+                    <div className="rounded-xl border border-status-border bg-status-bg p-4">
+                        <label className="mb-2 block text-sm font-medium text-cell-primary">
+                            {t("Shareable registration link")}
                         </label>
-                        <div className="flex items-center gap-2">
-                            <div className="flex-1 bg-surface border border-status-border rounded-lg p-3 overflow-hidden">
-                                <p className="text-sm text-cell-secondary truncate">
-                                    {invitationData?.link}
-                                </p>
-                            </div>
+                        <p className="mb-3 text-sm text-cell-secondary">
+                            {t("The copied link requires the employee to verify their email before activation.")}
+                        </p>
+                        <div className="flex items-stretch gap-2">
+                            <input
+                                type="text"
+                                readOnly
+                                dir="ltr"
+                                value={invitationData?.share_link || ""}
+                                placeholder={isCreatingShareLink ? t("Creating link...") : ""}
+                                className="min-w-0 flex-1 rounded-lg border border-status-border bg-surface px-3 text-sm text-cell-secondary outline-none"
+                                onFocus={(event) => event.target.select()}
+                            />
                             <button
-                                onClick={handleCopyLink}
-                                className={`flex items-center gap-2 px-4 py-3 rounded-lg font-medium transition-all ${isCopied
-                                    ? 'bg-green-500 text-white'
-                                    : 'bg-primary-500 dark:bg-primary-200 text-white dark:text-black hover:opacity-90'
-                                    }`}
+                                type="button"
+                                onClick={handleCopyShareLink}
+                                disabled={isCreatingShareLink}
+                                className="flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-primary-500 px-4 py-2 text-white disabled:cursor-not-allowed disabled:opacity-70 dark:bg-primary-200 dark:text-black"
                             >
-                                {isCopied ? (
-                                    <>
-                                        <IoCheckmarkCircle size={18} />
-                                        <span>{t("Copied!")}</span>
-                                    </>
+                                {isCreatingShareLink ? (
+                                    <span className="size-4 rounded-full border-2 border-current border-t-transparent animate-spin" aria-hidden="true" />
+                                ) : isCopied ? (
+                                    <IoCheckmarkCircle size={18} />
                                 ) : (
-                                    <>
-                                        <IoCopyOutline size={18} />
-                                        <span>{t("Copy URL")}</span>
-                                    </>
+                                    <IoCopyOutline size={18} />
                                 )}
+                                {isCopied ? t("Copied!") : t("Copy")}
                             </button>
                         </div>
+                        {copyError && <p className="mt-2 text-sm text-red-500">{copyError}</p>}
                     </div>
 
                     {/* Close Button */}
                     <div className="flex justify-center pb-2">
                         <DefaultButton
                             type="button"
-                            title={t("Done")}
+                            title={t("Close")}
                             onClick={handleCloseSuccessModal}
                             className="bg-primary-500 dark:bg-primary-200 dark:text-black text-white font-medium px-8"
                         />

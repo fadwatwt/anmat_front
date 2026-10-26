@@ -9,8 +9,10 @@ import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import {
   useGetEmployeesQuery,
   useDeleteEmployeeMutation,
+  useCancelEmployeeInvitationMutation,
   useDeleteManyEmployeesMutation,
   useToggleEmployeeActivityMutation,
+  useCreateEmployeeInvitationShareLinkMutation,
 } from "@/redux/employees/employeesApi";
 import { useUnassignEmployeesFromDepartmentMutation } from "@/redux/departments/departmentsApi";
 import { RiEditLine, RiNotification4Line, RiBuilding2Line, RiLogoutBoxLine, RiToggleLine, RiToggleFill, RiDeleteBin7Line } from "@remixicon/react";
@@ -46,8 +48,10 @@ function EmployeesTap() {
   const { data: chatsData } = useGetChatsQuery();
   const [createChat] = useCreateChatMutation();
   const [deleteEmployee] = useDeleteEmployeeMutation();
+  const [cancelEmployeeInvitation] = useCancelEmployeeInvitationMutation();
   const [deleteManyEmployees] = useDeleteManyEmployeesMutation();
   const [toggleActivity] = useToggleEmployeeActivityMutation();
+  const [createShareLink, { isLoading: isCreatingShareLink }] = useCreateEmployeeInvitationShareLinkMutation();
   const [unassignEmployees] = useUnassignEmployeesFromDepartmentMutation();
 
   const [isOpenEditModal, setIsOpenEditModal] = useState(false);
@@ -76,9 +80,9 @@ function EmployeesTap() {
   const [selectedToggleEmployee, setSelectedToggleEmployee] = useState(null);
   const [isToggleApprovalOpen, setIsToggleApprovalOpen] = useState(false);
   const [toggleApiResponse, setToggleApiResponse] = useState({ isOpen: false, status: "", message: "" });
+  const [copyApiResponse, setCopyApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
   // Copy invitation link feedback
-  const [copyApiResponse, setCopyApiResponse] = useState({ isOpen: false, status: "", message: "" });
 
   const hasEmployeeActions = canUpdateEmployee || canDeleteEmployee || canSendNotification || canInitiateChat;
 
@@ -98,10 +102,11 @@ function EmployeesTap() {
   const getEmployeeActions = (actualRowIndex) => {
     const employee = filteredEmployees[actualRowIndex];
     if (!employee) return null;
+    const isPendingInvitation = employee.registration_status === 'pending';
     const hasDepartment = !!(employee?.department || employee?.department_id);
 
     const statesActions = [];
-    if (canUpdateEmployee) {
+    if (canUpdateEmployee && !isPendingInvitation) {
       statesActions.push({
         text: t("Edit"),
         icon: <RiEditLine className="text-primary-400" />,
@@ -111,7 +116,7 @@ function EmployeesTap() {
         },
       });
     }
-    if (canSendNotification) {
+    if (canSendNotification && !isPendingInvitation) {
       statesActions.push({
         text: t("Send Notification"),
         icon: <RiNotification4Line className="text-primary-400" />,
@@ -121,7 +126,7 @@ function EmployeesTap() {
         }
       });
     }
-    if (canUpdateEmployee) {
+    if (canUpdateEmployee && !isPendingInvitation) {
       statesActions.push({
         text: hasDepartment ? t("Change Department") : t("Assign Department"),
         icon: <RiBuilding2Line className="text-green-500" />,
@@ -143,7 +148,7 @@ function EmployeesTap() {
         onClick: () => handleToggleActivity(employee),
       });
     }
-    if (canInitiateChat) {
+    if (canInitiateChat && !isPendingInvitation) {
       statesActions.push({
         text: t("Chat"),
         icon: <RiMessage2Line className="text-blue-500" />,
@@ -230,9 +235,14 @@ function EmployeesTap() {
               </div>
               <button
                 onClick={() => handleCopyInvitationLink(employee)}
-                className="flex items-center gap-1 text-[10px] text-primary-500 hover:underline"
+                disabled={isCreatingShareLink}
+                className="flex items-center gap-1 text-[10px] text-primary-500 hover:underline disabled:opacity-60"
               >
-                <RiFileCopyLine size={12} />
+                {isCreatingShareLink ? (
+                  <span className="size-3 rounded-full border border-current border-t-transparent animate-spin" aria-hidden="true" />
+                ) : (
+                  <RiFileCopyLine size={12} />
+                )}
                 {t("Copy Link")}
               </button>
             </div>
@@ -255,16 +265,43 @@ function EmployeesTap() {
     setIsOpenDeleteAlert(true);
   };
 
+  const handleCopyInvitationLink = async (employee) => {
+    try {
+      const response = await createShareLink(employee._id).unwrap();
+      const link = response?.data?.link;
+      if (!link) throw new Error("Share link was not returned");
+      await navigator.clipboard.writeText(link);
+      setCopyApiResponse({
+        isOpen: true,
+        status: "success",
+        message: t("Invitation link copied to clipboard"),
+      });
+    } catch (error) {
+      setCopyApiResponse({
+        isOpen: true,
+        status: "error",
+        message: error?.data?.message || t("Failed to copy link"),
+      });
+    }
+  };
+
   const onConfirmDelete = async () => {
     if (!selectedDeleteEmployee) return;
 
     showProcessing(t("Deleting Employee..."));
     try {
-      await deleteEmployee(selectedDeleteEmployee.user_id).unwrap();
+      const isPendingInvitation = selectedDeleteEmployee.registration_status === 'pending';
+      if (isPendingInvitation) {
+        await cancelEmployeeInvitation(selectedDeleteEmployee._id).unwrap();
+      } else {
+        await deleteEmployee(selectedDeleteEmployee.user_id).unwrap();
+      }
       setDeleteApiResponse({
         isOpen: true,
         status: "success",
-        message: t("Employee deleted successfully")
+        message: t(isPendingInvitation
+          ? "Employee invitation cancelled successfully"
+          : "Employee deleted successfully")
       });
       setIsOpenDeleteAlert(false);
     } catch (err) {
@@ -419,22 +456,6 @@ function EmployeesTap() {
     } finally {
       hideProcessing();
     }
-  };
-
-  const handleCopyInvitationLink = (employee) => {
-    if (!employee.invitation_token) return;
-
-    const frontendUrl = window.location.origin;
-    const link = `${frontendUrl}/register/employee#reg_emp_t=${employee.invitation_token}#org=${employee.organization_id}`;
-
-    navigator.clipboard.writeText(link)
-      .then(() => {
-        setCopyApiResponse({ isOpen: true, status: "success", message: t("Invitation link copied to clipboard") });
-      })
-      .catch((err) => {
-        console.error("Failed to copy link:", err);
-        setCopyApiResponse({ isOpen: true, status: "error", message: t("Failed to copy link") });
-      });
   };
 
   if (isLoading) return <div className="p-4">{t("Loading...")}</div>;

@@ -32,6 +32,15 @@ export const employeeAttendanceApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["Attendances"],
         }),
+        getMyAttendanceCorrections: builder.query({
+            query: () => ({ url: "api/employee/attendance-corrections", method: "GET" }),
+            transformResponse: (response) => response.data,
+            providesTags: ["AttendanceCorrections"],
+        }),
+        createAttendanceCorrection: builder.mutation({
+            query: (body) => ({ url: "api/employee/attendance-corrections", method: "POST", body }),
+            invalidatesTags: ["AttendanceCorrections"],
+        }),
     }),
 });
 
@@ -39,4 +48,6 @@ export const {
     useGetMyAttendancesQuery,
     useCheckInMutation,
     useCheckOutMutation,
+    useGetMyAttendanceCorrectionsQuery,
+    useCreateAttendanceCorrectionMutation,
 } = employeeAttendanceApi;

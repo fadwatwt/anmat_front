@@ -9,6 +9,7 @@ import LeavesTab from "@/app/(dashboard)/hr/employees/tabs/LeavesTab";
 
 import { usePermission } from "@/Hooks/usePermission";
 import { selectUserType } from "@/redux/auth/authSlice";
+import LeavePoliciesPanel from "./LeavePoliciesPanel";
 
 function LeavesAdminPage() {
     const { t } = useTranslation();
@@ -16,6 +17,7 @@ function LeavesAdminPage() {
     const userType = useSelector(selectUserType);
     const canTrackAll = usePermission("leaves.track_all");
     const canTrackDept = usePermission("leaves.track_department");
+    const canManagePolicies = usePermission("leave_policies.manage_settings");
 
     const isAuthorized = canTrackAll || canTrackDept;
     const scope = canTrackAll ? "track_all" : "track_department";
@@ -32,6 +34,7 @@ function LeavesAdminPage() {
     return (
         <Page title={t("HR — Leaves Management")}>
             <div className="flex flex-col gap-4">
+                {canManagePolicies && <LeavePoliciesPanel />}
                 <LeavesTab />
             </div>
         </Page>

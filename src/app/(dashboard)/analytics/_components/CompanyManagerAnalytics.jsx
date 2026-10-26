@@ -5,6 +5,8 @@ import AnalyticsCard from './AnalyticsCard';
 
 import PerformanceBar from "@/app/(dashboard)/analytics/_components/charts/PerformanceBar";
 import TimelineLine from "@/app/(dashboard)/analytics/_components/charts/TimelineLine";
+import { attendanceDateRange } from "./attendanceDateRange";
+import DistributionBars from "./charts/DistributionBars";
 import GaugeChart from "@/app/(dashboard)/analytics/_components/charts/GaugeChart";
 import SimpleLineChart from "@/app/(dashboard)/analytics/_components/charts/SimpleLineChart";
 import DynamicDoughnut from "@/app/(dashboard)/analytics/_components/charts/SummaryDoughnut.";
@@ -26,11 +28,12 @@ import { formatSubscriberAnalytics, exportAsPdf, exportCsv, exportXlsx } from '.
 import AnalyticsExportMenu from './AnalyticsExportMenu';
 import AnalyticsPageSkeleton from './AnalyticsPageSkeleton';
 import usePersistedAnalyticsFilter from './usePersistedAnalyticsFilter';
+import WorkforceAnalyticsSection from './WorkforceAnalyticsSection';
 
 const SUMMARY_COLORS = ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#0EA5E9', '#EC4899'];
 const RATING_COLORS = { 'High Rating': '#10B981', 'Medium Rating': '#FBBF24', 'Low Rating': '#EF4444', 'No Ratings': '#9CA3AF' };
-const ATTENDANCE_COLORS = { 'Attended': '#4F46E5', 'Absent': '#FBBF24', 'On Time': '#10B981', 'Late': '#F59E0B' };
-const DEPARTMENT_COLORS = { 'On Time': '#4F46E5', 'Late': '#FBBF24', 'Completed on time': '#10B981', 'Overdue': '#EF4444' };
+const ATTENDANCE_COLORS = { 'Attended': '#10B981', 'Absent': '#EF4444', 'On Time': '#10B981', 'Late': '#F59E0B' };
+const DEPARTMENT_COLORS = { 'On Time': '#10B981', 'Late': '#F59E0B', 'Completed on time': '#10B981', 'Overdue': '#EF4444' };
 
 const TIME_RANGE_MONTHS = { "1m": 1, "3m": 3, "6m": 6, "12m": 12 };
 
@@ -51,6 +54,7 @@ const sliceMonthly = (arr, timeRange) => {
 
 function CompanyManagerAnalytics() {
     const { t, i18n } = useTranslation();
+    const [activeTab, setActiveTab] = useState("business");
 
     // --- Global filters (triggers API) ---
     const [sectionFilter, setSectionFilter] = usePersistedAnalyticsFilter("analytics:subscriber:section");
@@ -101,9 +105,10 @@ function CompanyManagerAnalytics() {
     const { data: tasksSummaryApiData, isFetching: tasksSummaryFetching } = useGetSubscriberAnalyticsQuery(tasksSummaryFilters, { skip: !tasksSummaryEmployee });
 
     const attFilters = useMemo(() => ({
+        ...attendanceDateRange(attendanceTimeRange),
         ...(attendanceEmployee ? { employeeId: attendanceEmployee } : {}),
-    }), [attendanceEmployee]);
-    const { data: attApiData, isFetching: attFetching } = useGetSubscriberAnalyticsQuery(attFilters, { skip: !attendanceEmployee });
+    }), [attendanceEmployee, attendanceTimeRange]);
+    const { currentData: attApiData, isFetching: attFetching } = useGetSubscriberAnalyticsQuery(attFilters);
 
     const perfFilters = useMemo(() => ({
         ...(performanceEmployee ? { employeeId: performanceEmployee } : {}),
@@ -156,7 +161,8 @@ function CompanyManagerAnalytics() {
             value: dept.name,
         })), [departmentsData]);
 
-    const showSection = (section) => !sectionFilter || sectionFilter === section;
+    const sectionCharts = { tasks: ['bar', 'line', 'doughnut'], projects: ['bar', 'line'], employees: ['bar', 'line', 'gauge'], departments: ['bar'], subscription: ['gauge'] };
+    const showSection = (section) => (!sectionFilter || sectionFilter === section) && (!chartTypeFilter || sectionCharts[section]?.includes(chartTypeFilter));
     const isChartTypeVisible = (type) => !chartTypeFilter || chartTypeFilter === type;
 
     const formatBytes = (bytes) => {
@@ -170,7 +176,7 @@ function CompanyManagerAnalytics() {
 
     // --- Data resolution: use entity API data if filter is active, else main data ---
     const data = analyticsData?.data || {};
-    const attSrc = attendanceEmployee ? (attApiData?.data || data) : data;
+    const attSrc = attApiData?.data || {};
     const perfSrc = performanceEmployee ? (perfApiData?.data || data) : data;
     const accompSrc = accomplishmentEmployee ? (accompApiData?.data || data) : data;
     const adherSrc = adherenceEmployee ? (adherApiData?.data || data) : data;
@@ -211,9 +217,10 @@ function CompanyManagerAnalytics() {
     const employeeRatingData = perfSrc.employeePerformanceWeeks || [];
 
     const subUsage = data.subscriptionUsage || { employees: { current: 0, max: 'Unlimited', percentage: 0 }, storage: { currentBytes: 0, maxBytes: 'Unlimited', percentage: 0 } };
-    const employeesUsageFooter = [
-        { text: t("Current Employees: {{count}}", { count: subUsage.employees.current }), color: '#10B981' },
-        { text: t("Allowed in Plan: {{max}}", { max: subUsage.employees.max }), color: '#E5E7EB' }
+    const employeesStatusBreakdown = [
+        { name: t("Active"), value: subUsage.employees.active ?? 0, color: '#10B981' },
+        { name: t("Inactive"), value: subUsage.employees.inactive ?? 0, color: '#EF4444' },
+        { name: t("Incomplete / Not Registered"), value: subUsage.employees.registrationPending ?? 0, color: '#F59E0B' },
     ];
     const storageUsageFooter = [
         { text: t("Used Storage: {{storage}}", { storage: formatBytes(subUsage.storage.currentBytes) }), color: '#4F46E5' },
@@ -227,7 +234,7 @@ function CompanyManagerAnalytics() {
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
                     <h1 className="text-2xl font-bold text-page-title">{t("All Analytics Overview")}</h1>
-                    <div className="flex flex-wrap gap-2 justify-center md:justify-end">
+                    {activeTab === "business" && <div className="flex flex-wrap gap-2 justify-center md:justify-end">
                         <AnalyticsExportMenu onExport={handleExport} />
                         <div className="relative flex items-center">
                             <select className="appearance-none bg-status-bg border border-status-border rounded-xl px-4 py-2 text-sm shadow-sm outline-none text-cell-secondary font-medium cursor-pointer pr-9" value={chartTypeFilter} onChange={(e) => setChartTypeFilter(e.target.value)}>
@@ -239,17 +246,51 @@ function CompanyManagerAnalytics() {
                                 {SECTION_OPTIONS.map((opt) => (<option key={opt.value} value={opt.value}>{t(opt.label)}</option>))}
                             </select>
                         </div>
-                    </div>
+                    </div>}
                 </div>
 
-                {/* Subscription Usage */}
-                {showSection('subscription') && (
-                    <section>
-                        <h2 className="text-sm font-bold text-cell-secondary mb-6 uppercase tracking-widest px-1">{t("Subscription Usage")}</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                            <AnalyticsCard title={t("Employees Quota")}><GaugeChart percentage={subUsage.employees.percentage} label={t("EMPLOYEES")} primaryColor="#10B981" footerData={employeesUsageFooter} /></AnalyticsCard>
-                            <AnalyticsCard title={t("Storage Quota")}><GaugeChart percentage={subUsage.storage.percentage} label={t("STORAGE")} primaryColor="#4F46E5" footerData={storageUsageFooter} /></AnalyticsCard>
-                        </div>
+                <div
+                    className="flex w-full gap-1 rounded-2xl border border-status-border bg-status-bg p-1 sm:w-fit"
+                    role="tablist"
+                    aria-label={t("Analytics Sections")}
+                >
+                    {[
+                        { id: "business", label: t("Business Analytics") },
+                        { id: "workforce", label: t("Workforce Analytics") },
+                    ].map((tab) => (
+                        <button
+                            key={tab.id}
+                            type="button"
+                            role="tab"
+                            id={`${tab.id}-analytics-tab`}
+                            aria-selected={activeTab === tab.id}
+                            aria-controls={`${tab.id}-analytics-panel`}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`flex-1 rounded-xl px-5 py-2.5 text-sm font-semibold transition-colors sm:flex-none ${
+                                activeTab === tab.id
+                                    ? "bg-primary-base text-white shadow-sm"
+                                    : "text-cell-secondary hover:bg-surface hover:text-page-title"
+                            }`}
+                        >
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
+
+                {activeTab === "business" ? <div
+                    id="business-analytics-panel"
+                    role="tabpanel"
+                    aria-labelledby="business-analytics-tab"
+                    className="space-y-9"
+                >
+                {!sectionFilter && (
+                    <section className="grid grid-cols-2 xl:grid-cols-4 gap-4" aria-label={t("All Analytics Overview")}>
+                        {[["Projects", data.overview?.totalProjects], ["Tasks", data.overview?.totalTasks], ["Employees", data.overview?.totalEmployees], ["Departments", data.overview?.totalDepartments]].map(([label, value]) => (
+                            <div key={label} className="rounded-2xl border border-status-border bg-surface p-5">
+                                <p className="text-sm text-cell-secondary">{t(label)}</p>
+                                <p className="mt-2 text-3xl font-bold text-page-title">{value ?? 0}</p>
+                            </div>
+                        ))}
                     </section>
                 )}
 
@@ -273,9 +314,9 @@ function CompanyManagerAnalytics() {
                                     <TimelineLine data={data.tasksTimelineMonthly || []} />
                                 </AnalyticsCard>
                             )}
-                            {isChartTypeVisible('doughnut') && (
+                            {isChartTypeVisible('bar') && (
                                 <AnalyticsCard title={t("Tasks Rating")} isFetching={tasksRatingFetching} showDropdowns={true} dropdown1Label={t("Department")} dropdown1Options={departmentOptions} selectedFilter={tasksRatingDepartment} onFilterChange={setTasksRatingDepartment}>
-                                    <DynamicDoughnut data={tasksRatingData} centerTitle={t("TASKS")} centerValue={sumValues(tasksRatingData)} />
+                                    <DistributionBars data={tasksRatingData} />
                                 </AnalyticsCard>
                             )}
                         </div>
@@ -298,16 +339,16 @@ function CompanyManagerAnalytics() {
                                 </AnalyticsCard>
                             )}
                         </div>
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        {!chartTypeFilter && <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                             <div className="lg:col-span-2">
                                 <AnalyticsCard title={t("Projects Performance")}><ProjectsPerformanceList projects={data.projectsProgress || []} /></AnalyticsCard>
                             </div>
                             <div className="lg:col-span-1">
-                                <AnalyticsCard title={t("Last 4 Projects")} showDropdowns={true} dropdown1Label={t("Performance")} dropdown1Options={[{ id: "asc", value: t("Ascending") }, { id: "desc", value: t("Descending") }]} selectedFilter={performanceSort} onFilterChange={setPerformanceSort}>
+                                <AnalyticsCard title={t("Last 4 Projects")}>
                                     <RecentProjectsList projects={data.recentProjects || []} />
                                 </AnalyticsCard>
                             </div>
-                        </div>
+                        </div>}
                     </section>
                 )}
 
@@ -316,9 +357,9 @@ function CompanyManagerAnalytics() {
                     <section>
                         <h2 className="text-sm font-bold text-cell-secondary mb-6 uppercase tracking-widest px-1">{t("Employees Analytics")}</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-                            {isChartTypeVisible('doughnut') && (
-                                <AnalyticsCard title={t("Employee Attendance")} isFetching={attFetching} showDropdowns={true} dropdown1Label={t("Employee Name")} dropdown1Options={employeeOptions} selectedFilter={attendanceEmployee} onFilterChange={setAttendanceEmployee} timeRangeOptions={TIME_RANGE_OPTIONS} selectedTimeRange={attendanceTimeRange} onTimeRangeChange={setAttendanceTimeRange}>
-                                    <DynamicDoughnut data={employeeAttendance} centerTitle={t("DAYS")} centerValue={sumValues(employeeAttendance)} />
+                            {isChartTypeVisible('bar') && (
+                                <AnalyticsCard title={t("Employee Attendance")} isFetching={attFetching} showDropdowns={true} dropdown1Label={t("Employee Name")} dropdown1Options={employeeOptions} selectedFilter={attendanceEmployee} onFilterChange={setAttendanceEmployee} timeRangeOptions={TIME_RANGE_OPTIONS.filter(option => option.value !== "all")} selectedTimeRange={attendanceTimeRange} onTimeRangeChange={setAttendanceTimeRange}>
+                                    <DistributionBars data={employeeAttendance} />
                                 </AnalyticsCard>
                             )}
                             {isChartTypeVisible('line') && (
@@ -331,9 +372,9 @@ function CompanyManagerAnalytics() {
                                     <TimelineLine data={accompSrc.accomplishmentMonthly || []} />
                                 </AnalyticsCard>
                             )}
-                            {isChartTypeVisible('doughnut') && (
+                            {isChartTypeVisible('bar') && (
                                 <AnalyticsCard title={t("Employee Adherence")} isFetching={adherFetching} showDropdowns={true} dropdown1Label={t("Employee Name")} dropdown1Options={employeeOptions} selectedFilter={adherenceEmployee} onFilterChange={setAdherenceEmployee}>
-                                    <DynamicDoughnut data={employeeAdherence} centerTitle={t("RECORDS")} centerValue={sumValues(employeeAdherence)} />
+                                    <DistributionBars data={employeeAdherence} />
                                 </AnalyticsCard>
                             )}
                             {isChartTypeVisible('gauge') && (
@@ -341,9 +382,9 @@ function CompanyManagerAnalytics() {
                                     <GaugeChart percentage={tasksDelay.percentage} label={t("DELAY")} footerData={tasksDelayFooter} />
                                 </AnalyticsCard>
                             )}
-                            <AnalyticsCard title={t("Top 3 Employees")} showDropdowns={true} dropdown1Label={t("Performance")} dropdown1Options={[{ id: "asc", value: t("Ascending") }, { id: "desc", value: t("Descending") }]} selectedFilter={performanceSort} onFilterChange={setPerformanceSort}>
+                            {!chartTypeFilter && <AnalyticsCard title={t("Top 3 Employees")} showDropdowns={true} dropdown1Label={t("Performance")} dropdown1Options={[{ id: "asc", value: t("Ascending") }, { id: "desc", value: t("Descending") }]} selectedFilter={performanceSort} onFilterChange={setPerformanceSort}>
                                 <TopEmployeesList employees={sortedTopEmployees} />
-                            </AnalyticsCard>
+                            </AnalyticsCard>}
                         </div>
                     </section>
                 )}
@@ -353,24 +394,40 @@ function CompanyManagerAnalytics() {
                     <section className="pb-10">
                         <h2 className="text-sm font-bold text-cell-secondary mb-6 uppercase tracking-widest px-1">{t("Department Analytics")}</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {isChartTypeVisible('doughnut') && (
-                                <AnalyticsCard title={t("Department Adherence")} isFetching={deptAdhFetching} showDropdowns={true} dropdown1Label={t("Department Name")} dropdown1Options={departmentOptions} selectedFilter={deptAdherenceDepartment} onFilterChange={setDeptAdherenceDepartment}>
-                                    <DynamicDoughnut data={departmentAdherence} centerTitle={t("Tasks")} centerValue={sumValues(departmentAdherence)} />
+                            {isChartTypeVisible('bar') && (
+                                <AnalyticsCard title={t("Department Attendance Adherence")} isFetching={deptAdhFetching} showDropdowns={true} dropdown1Label={t("Department Name")} dropdown1Options={departmentOptions} selectedFilter={deptAdherenceDepartment} onFilterChange={setDeptAdherenceDepartment}>
+                                    <DistributionBars data={departmentAdherence} />
                                 </AnalyticsCard>
                             )}
-                            {isChartTypeVisible('doughnut') && (
+                            {isChartTypeVisible('bar') && (
                                 <AnalyticsCard title={t("Department Performance")} isFetching={deptPerfFetching} showDropdowns={true} dropdown1Label={t("Department Name")} dropdown1Options={departmentOptions} selectedFilter={deptPerformanceDepartment} onFilterChange={setDeptPerformanceDepartment}>
-                                    <DynamicDoughnut data={departmentPerformance} centerTitle={t("TASKS")} centerValue={sumValues(departmentPerformance)} />
+                                    <DistributionBars data={departmentPerformance} />
                                 </AnalyticsCard>
                             )}
                         </div>
                     </section>
                 )}
-                <div className="flex pt- flex-col md:flex-row items-stretch gap-4 justify-between w-full">
-                    <div className="w-full md:w-full">
-                        <DepartmentsRankingTable rows={data.departmentsRanking || []} />
-                    </div>
-                </div>
+                {showSection('departments') && !chartTypeFilter && (
+                    <section><DepartmentsRankingTable rows={data.departmentsRanking || []} /></section>
+                )}
+                {/* Subscription Usage */}
+                {showSection('subscription') && (!chartTypeFilter || chartTypeFilter === 'gauge') && (
+                    <section>
+                        <h2 className="text-sm font-bold text-cell-secondary mb-6 uppercase tracking-widest px-1">{t("Subscription Usage")}</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <AnalyticsCard compact title={t("Employees Quota")}><GaugeChart percentage={subUsage.employees.percentage} label={t("EMPLOYEES")} compact primaryColor="#10B981" footerData={[{ text: `${subUsage.employees.current} / ${subUsage.employees.max === "Unlimited" ? t("Unlimited") : subUsage.employees.max}` }]} breakdownData={employeesStatusBreakdown} /></AnalyticsCard>
+                            <AnalyticsCard compact title={t("Storage Quota")}><GaugeChart percentage={subUsage.storage.percentage} label={t("STORAGE")} compact primaryColor="#4F46E5" footerData={storageUsageFooter} /></AnalyticsCard>
+                        </div>
+                    </section>
+                )}
+                </div> : <div
+                    id="workforce-analytics-panel"
+                    role="tabpanel"
+                    aria-labelledby="workforce-analytics-tab"
+                >
+                    <WorkforceAnalyticsSection departmentOptions={departmentOptions} />
+                </div>}
+
             </div>
         </Page>
     );

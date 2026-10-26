@@ -34,6 +34,29 @@ export const leavesApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["Leaves", "EmployeeRequests"],
         }),
+        getLeavePolicies: builder.query({
+            query: () => ({ url: "api/subscriber/organization/leave-policies", method: "GET" }),
+            transformResponse: (response) => response.data,
+            providesTags: ["LeavePolicies"],
+        }),
+        createLeavePolicy: builder.mutation({
+            query: (body) => ({ url: "api/subscriber/organization/leave-policies", method: "POST", body }),
+            invalidatesTags: ["LeavePolicies"],
+        }),
+        getMyLeaveBalances: builder.query({
+            query: () => ({ url: "api/employee/leave-balances", method: "GET" }),
+            transformResponse: (response) => response.data,
+            providesTags: ["LeaveBalances"],
+        }),
+        getEmployeeLeaveBalances: builder.query({
+            query: (employeeId) => ({ url: `api/subscriber/organization/employees/${employeeId}/leave-balances`, method: "GET" }),
+            transformResponse: (response) => response.data,
+            providesTags: (result, error, employeeId) => [{ type: "LeaveBalances", id: employeeId }],
+        }),
+        addLeaveBalanceEntry: builder.mutation({
+            query: (body) => ({ url: "api/subscriber/organization/leave-balances/entries", method: "POST", body }),
+            invalidatesTags: ["LeaveBalances"],
+        }),
     }),
 });
 
@@ -42,4 +65,9 @@ export const {
     useCreateLeaveMutation,
     useUpdateLeaveMutation,
     useDeleteLeaveMutation,
+    useGetLeavePoliciesQuery,
+    useCreateLeavePolicyMutation,
+    useGetMyLeaveBalancesQuery,
+    useGetEmployeeLeaveBalancesQuery,
+    useAddLeaveBalanceEntryMutation,
 } = leavesApi;

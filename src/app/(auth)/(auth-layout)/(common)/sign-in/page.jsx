@@ -20,6 +20,9 @@ import { getToken, clearToken } from "@/utils/tokenStorage";
 const getLoginErrorMessage = (err, t) => {
     const status = err?.status;
     const serverMessage = err?.data?.message || "";
+    if (/not activated|account disabled|verify your email/i.test(serverMessage)) {
+        return t("Account is not activated yet. Please verify your email or contact your administrator.");
+    }
     if (status === 401 || /invalid|incorrect|wrong credential|bad credential/i.test(serverMessage)) {
         return t("Incorrect email or password.");
     }

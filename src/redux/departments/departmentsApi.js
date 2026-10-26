@@ -9,7 +9,9 @@ export const departmentsApi = apiSlice.injectEndpoints({
                 params,
             }),
             transformResponse: (response) => response.data,
-            providesTags: ["Departments"],
+            // Department rows include live employee/project/task counters.
+            // Refetch them whenever any of those source collections changes.
+            providesTags: ["Departments", "Employees", "Projects", "Tasks"],
         }),
         createDepartment: builder.mutation({
             query: (newDept) => ({

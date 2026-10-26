@@ -1,38 +1,46 @@
 "use client";
 
-import { setToken } from "@/utils/tokenStorage";
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoIosLock } from "react-icons/io";
 import { useRouter } from "next/navigation";
-import { useLoginMutation } from "@/redux/auth/authAPI";
-import { useDispatch, useSelector } from "react-redux";
-import { loginSuccess, loginFailure } from "@/redux/auth/authSlice";
+import { useResetPasswordMutation } from "@/redux/auth/authAPI";
 import { RiUserSettingsLine } from "@remixicon/react";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
 
 function ResetPasswordPage() {
     const { t } = useTranslation();
-    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [rememberMe, setRememberMe] = useState(false);
-    const [login, { isLoading }] = useLoginMutation();
-    const { error } = useSelector((state) => state.auth);
-    const dispatch = useDispatch();
+    const [passwordConfirmation, setPasswordConfirmation] = useState("");
+    const [token, setResetToken] = useState("");
+    const [error, setError] = useState("");
+    const [resetPassword, { isLoading }] = useResetPasswordMutation();
     const router = useRouter();
+
+    useEffect(() => {
+        setResetToken(new URLSearchParams(window.location.search).get("token") || "");
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError("");
+        if (!token) {
+            setError(t("Invalid or expired password reset link"));
+            return;
+        }
+        if (password !== passwordConfirmation) {
+            setError(t("Passwords must match"));
+            return;
+        }
         try {
-            const response = await login({ email, password }).unwrap();
-            dispatch(loginSuccess(response));
-            if (typeof window !== 'undefined') {
-                setToken(response.token, true);
-            }
-            router.push("/dashboard");
+            await resetPassword({
+                token,
+                password,
+                password_confirmation: passwordConfirmation,
+            }).unwrap();
+            router.push("/sign-in?passwordReset=success");
         } catch (err) {
-            dispatch(loginFailure(err.data?.message || t("Login failed")));
+            setError(err.data?.message || t("Failed to reset password"));
         }
     };
 
@@ -65,6 +73,8 @@ function ResetPasswordPage() {
                                     type="password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
+                                    autoComplete="new-password"
+                                    minLength={8}
                                     placeholder="*"
                                     className="w-full py-3 px-2 outline-none bg-transparent dark:bg-gray-800 text-cell-primary dark:text-gray-100"
                                     required
@@ -77,8 +87,10 @@ function ResetPasswordPage() {
                                 <IoIosLock className="text-cell-secondary w-10" size={18} />
                                 <input
                                     type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
+                                    value={passwordConfirmation}
+                                    onChange={(e) => setPasswordConfirmation(e.target.value)}
+                                    autoComplete="new-password"
+                                    minLength={8}
                                     placeholder="*"
                                     className="w-full py-3 px-2 outline-none bg-transparent dark:bg-gray-800 text-cell-primary dark:text-gray-100"
                                     required
@@ -91,9 +103,14 @@ function ResetPasswordPage() {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full rounded-lg bg-primary-base dark:bg-primary-200 text-white dark:text-black py-1.5"
+                            className="w-full min-h-11 rounded-lg bg-primary-base dark:bg-primary-200 text-white dark:text-black py-1.5 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                         >
-                            {isLoading ? t("Loading...") : t("Reset")}
+                            {isLoading ? (
+                                <>
+                                    <span className="size-4 rounded-full border-2 border-current border-t-transparent animate-spin" aria-hidden="true" />
+                                    {t("Resetting...")}
+                                </>
+                            ) : t("Reset")}
                         </button>
                         <Link
                             href="/sign-in"

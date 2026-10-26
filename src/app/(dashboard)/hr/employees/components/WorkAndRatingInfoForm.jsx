@@ -6,12 +6,14 @@ import { useGetSubscriberRolesQuery } from "@/redux/roles/subscriberRolesApi";
 import MultiSelect from "@/components/Form/MultiSelect";
 import { useMemo } from "react";
 import PropTypes from "prop-types";
+import { useGetEmployeesQuery } from "@/redux/employees/employeesApi";
 
-function WorkAndRatingInfoForm({ formData, updateFormData, errors = {} }) {
+function WorkAndRatingInfoForm({ formData, updateFormData, errors = {}, isEdit = false }) {
     const { t } = useTranslation();
 
     const { data: departmentsData, isLoading: isDeptsLoading } = useGetDepartmentsQuery();
     const { data: rolesData, isLoading: isRolesLoading } = useGetSubscriberRolesQuery();
+    const { data: employeesData = [], isLoading: isEmployeesLoading } = useGetEmployeesQuery();
 
     const roleOptions = useMemo(() => {
         const roles = (Array.isArray(rolesData) ? rolesData : rolesData?.data || []) || [];
@@ -45,12 +47,84 @@ function WorkAndRatingInfoForm({ formData, updateFormData, errors = {} }) {
         { id: "HOURS", element: t("Flexible Hours") },
         { id: "FIXED_SHIFT", element: t("Fixed Shift") },
     ];
+    const employmentStatusOptions = [
+        { id: "ACTIVE", element: t("Active") },
+        { id: "PROBATION", element: t("Probation") },
+        { id: "ON_LEAVE", element: t("On Leave") },
+        { id: "SUSPENDED", element: t("Suspended") },
+        { id: "TERMINATED", element: t("Terminated") },
+    ];
+    const employmentTypeOptions = [
+        { id: "FULL_TIME", element: t("Full Time") },
+        { id: "PART_TIME", element: t("Part Time") },
+        { id: "CONTRACTOR", element: t("Contractor") },
+        { id: "INTERN", element: t("Intern") },
+        { id: "TEMPORARY", element: t("Temporary") },
+    ];
+    const managerOptions = [
+        { id: "none", element: t("No Manager") },
+        ...employeesData
+            .filter(employee => employee.registration_status !== "pending" && employee.user_id !== formData.employee_detail.user_id)
+            .map(employee => ({ id: employee.user_id, element: employee.user?.name || employee.user?.email })),
+    ];
 
     return (
         <div className={"flex flex-col gap-6 max-h-full pb-3"}>
             <div className="bg-surface p-4 rounded-xl border border-status-border shadow-sm flex flex-col gap-4">
                 <h3 className="text-sm font-bold text-cell-primary mb-1 border-l-4 border-primary-base pl-2">{t("Employment Details")}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <InputAndLabel
+                        type="text"
+                        title={t("Employee Number")}
+                        placeholder={t("EMP-001")}
+                        value={formData.employee_detail.employee_number || ""}
+                        error={errors.employee_number}
+                        onChange={(e) => updateFormData("employee_number", e.target.value.toUpperCase(), true)}
+                    />
+                    <InputAndLabel
+                        type="date"
+                        title={t("Hire Date")}
+                        value={formData.employee_detail.hire_date || ""}
+                        error={errors.hire_date}
+                        onChange={(e) => updateFormData("hire_date", e.target.value, true)}
+                    />
+                    <ElementsSelect
+                        title={t("Employment Status")}
+                        options={employmentStatusOptions}
+                        defaultValue={employmentStatusOptions.find(opt => opt.id === formData.employee_detail.employment_status)}
+                        onChange={(val) => updateFormData("employment_status", val[0]?.id || "ACTIVE", true)}
+                        name="employment_status"
+                        classNameContainer="w-full"
+                    />
+                    <ElementsSelect
+                        title={t("Employment Type")}
+                        options={employmentTypeOptions}
+                        defaultValue={employmentTypeOptions.find(opt => opt.id === formData.employee_detail.employment_type)}
+                        onChange={(val) => updateFormData("employment_type", val[0]?.id || "FULL_TIME", true)}
+                        name="employment_type"
+                        classNameContainer="w-full"
+                    />
+                    <ElementsSelect
+                        title={t("Direct Manager")}
+                        options={managerOptions}
+                        placeholder={isEmployeesLoading ? t("Loading...") : t("Select Manager")}
+                        defaultValue={managerOptions.find(opt => opt.id === (formData.employee_detail.manager_id || "none"))}
+                        onChange={(val) => updateFormData("manager_id", val[0]?.id === "none" ? null : val[0]?.id, true)}
+                        name="manager_id"
+                        classNameContainer="w-full"
+                    />
+                    <InputAndLabel
+                        type="text"
+                        title={t("Work Location")}
+                        value={formData.employee_detail.work_location || ""}
+                        onChange={(e) => updateFormData("work_location", e.target.value, true)}
+                    />
+                    <InputAndLabel
+                        type="text"
+                        title={t("Legal Entity")}
+                        value={formData.employee_detail.legal_entity || ""}
+                        onChange={(e) => updateFormData("legal_entity", e.target.value, true)}
+                    />
                     <ElementsSelect
                         title={t("Department")}
                         options={departmentOptions}
@@ -84,6 +158,20 @@ function WorkAndRatingInfoForm({ formData, updateFormData, errors = {} }) {
                     />
                 </div>
             </div>
+
+            {isEdit && (
+                <div className="bg-surface p-4 rounded-xl border border-status-border shadow-sm">
+                    <InputAndLabel
+                        type="text"
+                        title={t("Change Reason")}
+                        isRequired={true}
+                        placeholder={t("Explain why the employment record is changing")}
+                        value={formData.change_reason || ""}
+                        error={errors.change_reason}
+                        onChange={(e) => updateFormData("change_reason", e.target.value, false)}
+                    />
+                </div>
+            )}
 
             <div className="bg-surface p-4 rounded-xl border border-status-border shadow-sm flex flex-col gap-4">
                 <h3 className="text-sm font-bold text-cell-primary mb-1 border-l-4 border-primary-base pl-2">{t("Financial & Schedule")}</h3>
@@ -190,6 +278,7 @@ WorkAndRatingInfoForm.propTypes = {
     }).isRequired,
     updateFormData: PropTypes.func.isRequired,
     errors: PropTypes.object,
+    isEdit: PropTypes.bool,
 };
 
 export default WorkAndRatingInfoForm;

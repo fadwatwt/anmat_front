@@ -34,6 +34,13 @@ export const employeesApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["Employees"],
         }),
+        cancelEmployeeInvitation: builder.mutation({
+            query: (invitationId) => ({
+                url: `api/subscriber/employee-invitations/${invitationId}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: ["Employees"],
+        }),
         deleteManyEmployees: builder.mutation({
             query: (ids) => ({
                 url: "api/subscriber/organization/employees/delete-many",
@@ -56,6 +63,12 @@ export const employeesApi = apiSlice.injectEndpoints({
                 body: data,
             }),
         }),
+        createEmployeeInvitationShareLink: builder.mutation({
+            query: (invitationId) => ({
+                url: `api/subscriber/employee-invitations/${invitationId}/share-link`,
+                method: "POST",
+            }),
+        }),
         getNewEmployees: builder.query({
             query: () => ({
                 url: "api/subscriber/organization/employees/new",
@@ -71,6 +84,14 @@ export const employeesApi = apiSlice.injectEndpoints({
             }),
             transformResponse: (response) => response.data,
             providesTags: (result, error, id) => [{ type: "Employees", id }],
+        }),
+        getEmploymentHistory: builder.query({
+            query: (id) => ({
+                url: `api/subscriber/organization/employees/${id}/employment-history`,
+                method: "GET",
+            }),
+            transformResponse: (response) => response.data,
+            providesTags: (result, error, id) => [{ type: "Employees", id: `history-${id}` }],
         }),
         createEmployeeDetail: builder.mutation({
             query: (data) => ({
@@ -126,12 +147,15 @@ export const {
     useCreateEmployeeMutation,
     useUpdateEmployeeMutation,
     useDeleteEmployeeMutation,
+    useCancelEmployeeInvitationMutation,
     useDeleteManyEmployeesMutation,
     useToggleEmployeeActivityMutation,
     useInviteEmployeeMutation,
+    useCreateEmployeeInvitationShareLinkMutation,
     useGetNewEmployeesQuery,
     useCreateEmployeeDetailMutation,
     useGetEmployeeProfileQuery,
+    useGetEmploymentHistoryQuery,
     useGetInvitationInfoQuery,
     useGetEmployeeDocumentsQuery,
     useUploadEmployeeDocumentMutation,

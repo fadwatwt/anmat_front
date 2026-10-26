@@ -26,11 +26,11 @@ export const resolveTimeRange = (value) => {
 
 export const SECTION_OPTIONS = [
     { label: "All Sections", value: "" },
-    { label: "Subscription Usage", value: "subscription" },
     { label: "Tasks Analytics", value: "tasks" },
     { label: "Projects Analytics", value: "projects" },
     { label: "Employees Analytics", value: "employees" },
     { label: "Department Analytics", value: "departments" },
+    { label: "Subscription Usage", value: "subscription" },
 ];
 
 export const CHART_TYPE_OPTIONS = [

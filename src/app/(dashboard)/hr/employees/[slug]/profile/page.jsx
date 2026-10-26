@@ -13,7 +13,7 @@ import {
     RiUserLine, RiBriefcaseLine, RiBuilding2Line, RiPhoneLine,
     RiCalendarEventLine, RiDatabase2Line
 } from "@remixicon/react";
-import { useGetEmployeeProfileQuery, useUpdateEmployeeMutation } from '@/redux/employees/employeesApi';
+import { useGetEmployeeProfileQuery, useGetEmploymentHistoryQuery, useUpdateEmployeeMutation } from '@/redux/employees/employeesApi';
 import { useGetSubscriberOrganizationQuery } from '@/redux/organizations/organizationsApi';
 import { RiMore2Fill, RiEditLine } from "@remixicon/react";
 import { translateDate } from '@/functions/Days';
@@ -56,6 +56,7 @@ function SingleEmployeeProfile() {
     const { t, i18n } = useTranslation()
     const { slug: employeeId } = useParams();
     const { data: employee, isLoading, error } = useGetEmployeeProfileQuery(employeeId);
+    const { data: employmentHistory = [] } = useGetEmploymentHistoryQuery(employeeId, { skip: !employeeId });
     const { data: orgData } = useGetSubscriberOrganizationQuery();
     const [updateEmployee] = useUpdateEmployeeMutation();
     const employeeUserId = employee?.user_id || employee?.user?._id;
@@ -448,7 +449,7 @@ function SingleEmployeeProfile() {
                                         <p className={"text-cell-primary text-sm font-semibold"}>{employee?.position?.name || employee?.position_id?.title || "-"}</p>
                                     </div>
                                 </div>
-                                <div className={"name-profile flex items-center gap-2"}>
+                                {canViewSalary && <div className={"name-profile flex items-center gap-2"}>
                                     <div className="p-2 bg-yellow-50 dark:bg-yellow-500/10 rounded-lg">
                                         <RiMoneyDollarCircleLine size={18} className={"text-yellow-500"} />
                                     </div>
@@ -456,7 +457,7 @@ function SingleEmployeeProfile() {
                                         <span className={"text-cell-secondary text-xs"}>{t("Salary")}</span>
                                         <p className={"text-cell-primary text-sm font-semibold"}>${employee?.salary || "0"}/{t("month")}</p>
                                     </div>
-                                </div>
+                                </div>}
                                 <div className={"name-profile flex items-center gap-2"}>
                                     <div className="p-2 bg-purple-50 dark:bg-purple-500/10 rounded-lg">
                                         <RiTimeLine size={18} className={"text-purple-500"} />
@@ -495,6 +496,25 @@ function SingleEmployeeProfile() {
                                         </p>
                                     </div>
                                 </div>
+                                {[
+                                    ["Employee Number", employee?.employee_number],
+                                    ["Hire Date", employee?.hire_date ? translateDate(employee.hire_date) : null],
+                                    ["Employment Status", employee?.employment_status],
+                                    ["Employment Type", employee?.employment_type],
+                                    ["Direct Manager", employee?.manager?.name],
+                                    ["Work Location", employee?.work_location],
+                                    ["Legal Entity", employee?.legal_entity],
+                                ].map(([label, value]) => (
+                                    <div key={label} className="name-profile flex items-center gap-2">
+                                        <div className="p-2 bg-primary-50 dark:bg-primary-500/10 rounded-lg">
+                                            <RiBriefcaseLine size={18} className="text-primary-500" />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <span className="text-cell-secondary text-xs">{t(label)}</span>
+                                            <p className="text-cell-primary text-sm font-semibold">{value ? t(String(value)) : "-"}</p>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>
@@ -548,6 +568,30 @@ function SingleEmployeeProfile() {
                                 }
                             />
                         )}
+                    </div>
+
+                    <div className="col-span-12 mt-6">
+                        <ContentCard
+                            title={t("Employment History")}
+                            main={
+                                <div className="flex flex-col divide-y divide-status-border">
+                                    {employmentHistory.length === 0 ? (
+                                        <p className="py-4 text-sm text-cell-secondary">{t("No employment changes recorded yet")}</p>
+                                    ) : employmentHistory.map(item => (
+                                        <div key={item._id} className="py-3 flex flex-col gap-1">
+                                            <div className="flex flex-wrap items-center justify-between gap-2">
+                                                <span className="text-sm font-semibold text-cell-primary">{item.reason}</span>
+                                                <span className="text-xs text-cell-secondary">{translateDate(item.effective_at)}</span>
+                                            </div>
+                                            <span className="text-xs text-cell-secondary">
+                                                {Object.keys(item.changes || {}).map(key => t(key)).join(" • ")}
+                                                {item.changed_by?.name ? ` — ${item.changed_by.name}` : ""}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+                            }
+                        />
                     </div>
 
                     <div className={"col-span-12 mt-6"}>

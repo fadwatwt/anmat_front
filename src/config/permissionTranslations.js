@@ -39,6 +39,7 @@ const permissionTranslations = {
   "leaves.delete": { en: "Delete Leave", ar: "حذف إجازة" },
   "leaves.track_all": { en: "Manage All Leaves", ar: "إدارة جميع الإجازات" },
   "leaves.track_department": { en: "Manage Department Leaves", ar: "إدارة إجازات القسم" },
+  "leave_policies.manage_settings": { en: "Manage Leave Policies and Balances", ar: "إدارة سياسات وأرصدة الإجازات" },
 
   // ── Salary Transactions ──
   "salary_transactions.create": { en: "Create Salary Transaction", ar: "إنشاء معاملة راتب" },
@@ -47,6 +48,8 @@ const permissionTranslations = {
   "salary_transactions.delete": { en: "Delete Salary Transaction", ar: "حذف معاملة راتب" },
   "salary_transactions.track_all": { en: "Manage All Salary Transactions", ar: "إدارة جميع معاملات الرواتب" },
   "salary_transactions.track_department": { en: "Manage Department Salary Transactions", ar: "إدارة معاملات رواتب القسم" },
+  "employee_compensation.view": { en: "View Employee Compensation", ar: "عرض تعويضات الموظفين" },
+  "employee_compensation.update": { en: "Update Employee Compensation", ar: "تعديل تعويضات الموظفين" },
 
   // ── Employee Requests ──
   "employee_requests.list": { en: "List Requests", ar: "عرض الطلبات" },

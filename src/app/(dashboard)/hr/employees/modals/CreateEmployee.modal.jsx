@@ -17,6 +17,8 @@ const createInitialFormData = () => ({
         work_hours: 8, shift_type: "HOURS", shift_start_time: "", shift_end_time: "",
         salary: "", yearly_day_offs: 14, weekend_days: [], date_of_birth: "",
         roles_ids: [], storage_quota: ""
+        , employee_number: "", hire_date: "", employment_status: "ACTIVE",
+        employment_type: "FULL_TIME", manager_id: null, work_location: "", legal_entity: ""
     }
 });
 
@@ -67,6 +69,7 @@ function CreateEmployeeModal({ isOpen, onClose }) {
             }
             if (Number(details.yearly_day_offs) < 0 || Number(details.yearly_day_offs) > 365) nextErrors.yearly_day_offs = t("Yearly days off must be between 0 and 365");
             if (details.storage_quota !== "" && Number(details.storage_quota) < 0) nextErrors.storage_quota = t("Storage quota cannot be negative");
+            if (details.employee_number && !/^[A-Za-z0-9_-]+$/.test(details.employee_number)) nextErrors.employee_number = t("Employee number may contain letters, numbers, dashes, and underscores only");
         }
         setErrors(nextErrors);
         return Object.keys(nextErrors).length === 0;
@@ -83,6 +86,8 @@ function CreateEmployeeModal({ isOpen, onClose }) {
             cleansedData.phone = cleansedData.phone.trim();
             if (!cleansedData.employee_detail.department_id || cleansedData.employee_detail.department_id === "none") delete cleansedData.employee_detail.department_id;
             if (!cleansedData.employee_detail.position_id) delete cleansedData.employee_detail.position_id;
+            if (!cleansedData.employee_detail.employee_number) delete cleansedData.employee_detail.employee_number;
+            if (!cleansedData.employee_detail.hire_date) delete cleansedData.employee_detail.hire_date;
             if (cleansedData.employee_detail.shift_type === "HOURS") {
                 delete cleansedData.employee_detail.shift_start_time;
                 delete cleansedData.employee_detail.shift_end_time;
