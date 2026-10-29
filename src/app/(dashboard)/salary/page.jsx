@@ -6,10 +6,15 @@ import Page from "@/components/Page.jsx";
 import Table from "@/components/Tables/Table.jsx";
 import { useGetEmployeeSalaryTransactionsQuery } from "@/redux/financial/employeeSalariesApi";
 import { translateDate } from "@/functions/Days";
+import { useSelector } from "react-redux";
+import { selectUserType } from "@/redux/auth/authSlice";
+import { useGetMyPayslipsQuery } from "@/redux/employees/payrollRunsApi";
 
 export default function EmployeeSalaryPage() {
     const { t } = useTranslation();
+    const userType = useSelector(selectUserType);
     const { data: transactions = [], isLoading, isError } = useGetEmployeeSalaryTransactionsQuery();
+    const { data: payslips = [], isLoading: loadingPayslips, error: payslipsError } = useGetMyPayslipsQuery(undefined, { skip: userType !== "Employee" });
 
     const headers = [
         { label: t("Employees"), width: "250px" },
@@ -55,21 +60,37 @@ export default function EmployeeSalaryPage() {
         ]);
     }, [transactions, t]);
 
-    if (isError) {
-        return (
-            <Page title={t("Salary Transactions")}>
-                <div className="text-center text-red-error mt-8 font-medium">
-                    {t("Failed to load salary transactions. Please try again later.")}
-                </div>
-            </Page>
-        );
-    }
-
     return (
         <Page title={t("Salary Transactions")}>
             <div className="flex flex-col gap-6">
+                {userType === "Employee" && <section className="rounded-2xl border border-status-border bg-surface p-5">
+                    <h2 className="mb-3 text-lg font-semibold text-cell-primary">{t("My payslips")}</h2>
+                    {loadingPayslips && <p className="text-cell-secondary">{t("Loading...")}</p>}
+                    {payslipsError && <p role="alert" className="text-red-error">{t("Failed to load payslips")}</p>}
+                    {!loadingPayslips && !payslipsError && !payslips.length && <p className="text-cell-secondary">{t("No payslips yet")}</p>}
+                    <div className="space-y-2">{payslips.map((payslip) => {
+                        const snapshot = payslip.immutable_snapshot;
+                        const run = snapshot?.run;
+                        const item = snapshot?.item;
+                        const digits = run?.currency_minor_unit_digits ?? (run?.currency
+                            ? new Intl.NumberFormat("en", { style: "currency", currency: run.currency }).resolvedOptions().maximumFractionDigits
+                            : 2);
+                        const money = (value) => run?.currency
+                            ? new Intl.NumberFormat(undefined, { style: "currency", currency: run.currency, minimumFractionDigits: digits, maximumFractionDigits: digits }).format((value || 0) / 10 ** digits)
+                            : value;
+                        return <details key={payslip._id} className="rounded-lg bg-status-bg p-3 text-sm text-cell-primary">
+                            <summary className="cursor-pointer font-medium">{run?.name || t("Payslip")} · {new Date(payslip.issued_at).toLocaleDateString()} · {money(item?.net_minor)}</summary>
+                            <p className="mt-2">{t("Gross")}: {money(item?.gross_minor)} · {t("Deductions")}: {money(item?.deductions_minor)} · {t("Net")}: {money(item?.net_minor)}</p>
+                            <ul className="mt-1">{item?.components?.map((component) => <li key={component.code}>{component.name}: {money(component.amount_minor)}</li>)}</ul>
+                        </details>;
+                    })}</div>
+                </section>}
                 <div className="flex flex-col gap-2 h-full">
-                    {isLoading ? (
+                    {isError ? (
+                        <div role="alert" className="text-center text-red-error mt-8 font-medium">
+                            {t("Failed to load salary transactions. Please try again later.")}
+                        </div>
+                    ) : isLoading ? (
                         <div className="flex items-center justify-center h-64 bg-surface rounded-2xl border border-status-border">
                             <div className="text-primary-base animate-pulse font-bold text-lg flex items-center gap-3">
                                 <div className="w-3 h-3 bg-primary-base rounded-full animate-bounce"></div>

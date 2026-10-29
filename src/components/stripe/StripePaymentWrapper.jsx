@@ -19,22 +19,26 @@ const StripePaymentWrapper = ({ amount, onFinish, userEmail, userName, userPhone
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        // Create PaymentIntent or Subscription as soon as the component mounts
+        if (!token) return undefined;
+        const controller = new AbortController();
         setLoading(true);
+        setError(null);
+        setClientSecret("");
         fetch(`${RootRoute}/api/subscriptions/subscriber/create-setup-intent`, {
             method: "POST",
+            signal: controller.signal,
             headers: { 
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
             },
         })
-            .then((res) => res.json())
-            .then((result) => {
+            .then(async (res) => ({ ok: res.ok, result: await res.json() }))
+            .then(({ ok, result }) => {
                 const data = result.data || result;
-                if (data.clientSecret) {
+                if (ok && data.clientSecret) {
                     setClientSecret(data.clientSecret);
                     setLoading(false);
-                } else if (data.error || result.status === 'error') {
+                } else if (!ok || data.error || result.status === 'error' || result.status === 'failed') {
                     const errMsg = typeof data.error === 'string' ? data.error : (data.error?.message || result.message || t("Failed to initialize secure checkout."));
                     setError(errMsg);
                     setLoading(false);
@@ -43,11 +47,13 @@ const StripePaymentWrapper = ({ amount, onFinish, userEmail, userName, userPhone
                     setLoading(false);
                 }
             })
-            .catch(() => {
+            .catch((fetchError) => {
+                if (fetchError?.name === 'AbortError') return;
                 setError(t("Failed to initialize payment."));
                 setLoading(false);
             });
-    }, [amount, userEmail, userName, userPhone, priceId, trialDays, onFinish, token]);
+        return () => controller.abort();
+    }, [token]);
 
     const appearance = {
         theme: "stripe",

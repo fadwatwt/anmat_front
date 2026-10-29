@@ -15,6 +15,7 @@ import { useCreatePositionMutation } from "@/redux/positions/positionsApi";
 const validationSchema = Yup.object({
     title: Yup.string().required("required"),
     description: Yup.string(),
+    level: Yup.number().integer().min(1).max(30).required("required"),
 });
 
 function CreatePositionModal({ isOpen, onClose }) {
@@ -31,6 +32,7 @@ function CreatePositionModal({ isOpen, onClose }) {
         initialValues: {
             title: "",
             description: "",
+            level: 1,
         },
         validationSchema,
         onSubmit: async (values) => {
@@ -40,7 +42,7 @@ function CreatePositionModal({ isOpen, onClose }) {
 
     const handleConfirm = async () => {
         try {
-            const response = await createPosition(formik.values).unwrap();
+            const response = await createPosition({ ...formik.values, level: Number(formik.values.level) }).unwrap();
             setResponseAlert({
                 isOpen: true,
                 status: "success",
@@ -109,6 +111,10 @@ function CreatePositionModal({ isOpen, onClose }) {
                                     : ""
                             }
                         />
+                        <label className="flex flex-col gap-1">{t("Position level")}
+                            <input type="number" min="1" max="30" name="level" className="rounded-lg border p-2" value={formik.values.level} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                            {formik.touched.level && formik.errors.level && <span className="text-red-500">{t(formik.errors.level)}</span>}
+                        </label>
                     </form>
                 </div>
             </Modal>

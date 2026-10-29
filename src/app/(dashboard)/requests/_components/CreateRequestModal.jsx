@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import PropTypes from "prop-types";
@@ -190,6 +190,12 @@ function CreateRequestModal({ isOpen, onClose }) {
         },
     });
 
+    useEffect(() => {
+        if (!isOpen || formik.values.type !== "DAY_OFF" || formik.values.leave_policy_id) return;
+        const defaultBalance = leaveBalances.find((item) => item.policy?.is_active && item.policy?.is_default);
+        if (defaultBalance) formik.setFieldValue("leave_policy_id", defaultBalance.policy._id, false);
+    }, [isOpen, formik.values.type, formik.values.leave_policy_id, formik.setFieldValue, leaveBalances]);
+
     const handleCloseModal = () => {
         if (isLoading) return;
         formik.resetForm();
@@ -286,8 +292,9 @@ function CreateRequestModal({ isOpen, onClose }) {
                                         .filter(item => item.policy?.is_active)
                                         .map(item => ({
                                             id: item.policy._id,
-                                            element: `${item.policy.name} — ${item.balance} ${t("days available")}`,
+                                            element: `${item.policy.name}${item.policy.is_default ? ` (${t("Default")})` : ""} — ${item.balance} ${t("days available")}`,
                                         }))}
+                                    defaultValue={leaveBalances.filter(item => item.policy?._id === formik.values.leave_policy_id).map(item => ({ id: item.policy._id, element: `${item.policy.name}${item.policy.is_default ? ` (${t("Default")})` : ""} — ${item.balance} ${t("days available")}` }))}
                                     onChange={(selection) => formik.setFieldValue("leave_policy_id", selection[0]?.id || "")}
                                     placeholder={isLoadingBalances ? t("Loading...") : t("Select leave policy")}
                                     error={formik.touched.leave_policy_id && formik.errors.leave_policy_id}

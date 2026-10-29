@@ -8,11 +8,13 @@ import { createPortal } from "react-dom";
 
 function ElementsSelect({
     title,
+    isTitle = true,
     options,
     onChange,
     isOption = false,
     placeholder,
     classNameContainer,
+    className,
     isMultiple = false,
     defaultValue = [],
     classNameItemSelected,
@@ -147,14 +149,14 @@ function ElementsSelect({
 
     return (
         <div className={classNameContainer}>
-            <label className="text-sm text-start text-cell-primary flex items-center gap-1 mb-2 font-medium">
+            {isTitle && title && <label className="text-sm text-start text-cell-primary flex items-center gap-1 mb-2 font-medium">
                 <span>{t(title)}</span>
                 {isOption && (
                     <span className="text-xs text-cell-secondary flex items-center gap-1">
                         ({t("Option")}) <FaCircleInfo className="text-cell-secondary" size={14} />
                     </span>
                 )}
-            </label>
+            </label>}
 
             <div className="max-w-full w-full relative">
                 <div
@@ -163,7 +165,7 @@ function ElementsSelect({
                         calculateDropdownPosition();
                     }}
                     ref={selectTriggerRef}
-                    className={`flex items-center gap-2 min-h-[40px] bg-status-bg border rounded-[10px] p-[10px] box-border text-xs cursor-pointer focus-within:ring-2 focus-within:ring-primary-500 dark:focus-within:ring-primary-500 transition-colors ${error ? "border-red-500" : "border-status-border dark:focus-within:border-primary-500"}`}
+                    className={`flex items-center gap-2 min-h-[40px] bg-status-bg border rounded-[10px] p-[10px] box-border text-xs cursor-pointer focus-within:ring-2 focus-within:ring-primary-500 dark:focus-within:ring-primary-500 transition-colors ${error ? "border-red-500" : "border-status-border dark:focus-within:border-primary-500"} ${className || ""}`}
                 >
                     <div className="flex-1 flex gap-1 overflow-x-auto whitespace-nowrap overflow-y-hidden custom-scrollbar">
                         {selectedOptions.length > 0 ? (
@@ -247,11 +249,13 @@ function ElementsSelect({
 }
 
 ElementsSelect.propTypes = {
-    title: PropTypes.string.isRequired,
+    title: PropTypes.string,
+    isTitle: PropTypes.bool,
     options: PropTypes.array.isRequired,
     onChange: PropTypes.func,
     isOption: PropTypes.bool,
     classNameContainer: PropTypes.string,
+    className: PropTypes.string,
     placeholder: PropTypes.string,
     isMultiple: PropTypes.bool,
     defaultValue: PropTypes.array,

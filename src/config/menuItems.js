@@ -1,5 +1,5 @@
 // dashboardSideMenuItems.js
-import { Setting, Share, Messages1, Category, Profile2User, TaskSquare, NoteText, Chart2, Cpu, PercentageCircle, Stickynote, Setting4, Setting5, ReceiptText, Category2, Tag, EmptyWallet, Calendar, CalendarTick, Notification as NotificationIcon, LanguageSquare } from 'iconsax-react';
+import { Setting, Share, Messages1, Category, Profile2User, TaskSquare, NoteText, Chart2, Cpu, PercentageCircle, Stickynote, Setting4, Setting5, ReceiptText, Category2, Tag, EmptyWallet, Calendar, CalendarTick, Book1, Notification as NotificationIcon, LanguageSquare } from 'iconsax-react';
 
 // ['Admin', 'Subscriber', 'Employee']
 //
@@ -39,6 +39,22 @@ export const dashboardSideMenuItems = [
         title: 'My Tasks',
         path: '/employee/tasks',
         icon: <TaskSquare />,
+    },
+    {
+        section: 'My Work',
+        allowed_to: ['Employee'],
+        title: 'Learning and skills',
+        path: '/employee/learning',
+        icon: <Book1 />,
+        permission: 'learning.view',
+    },
+    {
+        section: 'My Work',
+        allowed_to: ['Employee'],
+        title: 'Surveys',
+        path: '/employee/surveys',
+        icon: <Stickynote />,
+        permission: 'surveys.view',
     },
     {
         section: 'My Work',
@@ -120,6 +136,9 @@ export const dashboardSideMenuItems = [
             'positions.list',
             'meetings.list',
             'holidays.list',
+            'leaves.track_all',
+            'leaves.track_department',
+            'leave_policies.manage_settings',
         ],
         children: [
             {
@@ -151,6 +170,21 @@ export const dashboardSideMenuItems = [
                 title: 'Holidays',
                 path: '/hr/holidays',
                 permission_any_of: ['holidays.list'],
+            },
+            {
+                title: 'Leave Policies',
+                path: '/hr/leaves',
+                permission_any_of: ['leave_policies.manage_settings'],
+            },
+            {
+                title: 'Employee leave balances',
+                path: '/hr/leave-balances',
+                permission_any_of: ['leave_policies.manage_settings'],
+            },
+            {
+                title: 'Short Leaves',
+                path: '/hr/short-leaves',
+                permission_any_of: ['leaves.track_all', 'leaves.track_department'],
             },
         ]
     },

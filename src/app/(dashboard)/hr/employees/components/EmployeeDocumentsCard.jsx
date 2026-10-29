@@ -62,13 +62,15 @@ function EmployeeDocumentsCard({ employeeId }) {
     const { t } = useTranslation();
     const fileInputRef = useRef(null);
     const [category, setCategory] = useState("CONTRACT");
+    const [expiresAt, setExpiresAt] = useState("");
     const [errorMsg, setErrorMsg] = useState("");
     const [deleteTarget, setDeleteTarget] = useState(null); // attachmentId to confirm
 
-    const canManage = usePermission("employee_details.update");
+    const canView = usePermission("employee_contracts.view");
+    const canManage = usePermission("employee_contracts.update");
 
     const { data: documents = [], isLoading } =
-        useGetEmployeeDocumentsQuery(employeeId, { skip: !employeeId });
+        useGetEmployeeDocumentsQuery(employeeId, { skip: !employeeId || !canView });
     const [uploadDocument, { isLoading: isUploading }] =
         useUploadEmployeeDocumentMutation();
     const [deleteDocument] = useDeleteEmployeeDocumentMutation();
@@ -92,7 +94,9 @@ function EmployeeDocumentsCard({ employeeId }) {
             const formData = new FormData();
             formData.append("file", file);
             formData.append("category", category);
+            if (expiresAt) formData.append("expires_at", `${expiresAt}T00:00:00.000Z`);
             await uploadDocument({ employeeId, formData }).unwrap();
+            setExpiresAt("");
         } catch (err) {
             console.error("Failed to upload document:", err);
             setErrorMsg(err?.data?.message || t("Failed to upload document"));
@@ -114,6 +118,8 @@ function EmployeeDocumentsCard({ employeeId }) {
         }
     };
 
+    if (!canView) return null;
+
     return (
         <div className={"bg-surface rounded-2xl p-4 gap-4 flex flex-col w-full"}>
             <div className={"flex flex-wrap justify-between items-center gap-3 w-full"}>
@@ -131,6 +137,9 @@ function EmployeeDocumentsCard({ employeeId }) {
                                 <option key={c.value} value={c.value}>{t(c.label)}</option>
                             ))}
                         </select>
+                        <label className="text-sm text-cell-primary">{t("Document expiry")}
+                            <input type="date" className="ml-2 rounded-lg border border-status-border bg-surface px-2 py-2" value={expiresAt} onChange={(e) => setExpiresAt(e.target.value)} />
+                        </label>
                         <input
                             ref={fileInputRef}
                             type="file"
@@ -190,6 +199,7 @@ function EmployeeDocumentsCard({ employeeId }) {
                                         <span className={"text-xs text-cell-secondary"}>
                                             {formatSize(doc.size)}
                                             {doc.createdAt ? ` · ${translateDate(doc.createdAt)}` : ""}
+                                            {doc.expires_at ? ` · ${t("Expires")}: ${translateDate(doc.expires_at)}` : ""}
                                         </span>
                                     </div>
                                 </div>

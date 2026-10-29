@@ -85,7 +85,7 @@ module.exports = defineConfig({
     // 2) الصفحات العامة (دخول، هبوط) — بدون جلسة محفوظة
     {
       name: 'chromium-public',
-      testMatch: /(login|landing|visual-public)\.spec\.js/,
+      testMatch: /(login|login-no-subscription|landing|visual-public)\.spec\.js/,
       use: {
         ...devices['Desktop Chrome'],
       },

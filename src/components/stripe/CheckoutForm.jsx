@@ -25,6 +25,15 @@ const CheckoutForm = ({ amount, onFinish, clientSecret, userName, userEmail, use
     const [message, setMessage] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [elementReady, setElementReady] = useState(false);
+    const [elementError, setElementError] = useState(null);
+
+    useEffect(() => {
+        if (elementReady || elementError) return undefined;
+        const timeout = window.setTimeout(() => {
+            setElementError(t("Payment fields are taking too long to load. Please close checkout and try again."));
+        }, 30000);
+        return () => window.clearTimeout(timeout);
+    }, [elementReady, elementError, t]);
 
     useEffect(() => {
         if (!stripe) {
@@ -204,7 +213,7 @@ const CheckoutForm = ({ amount, onFinish, clientSecret, userName, userEmail, use
 
     return (
         <div className="w-full max-w-md mx-auto">
-            {!elementReady && (
+            {!elementReady && !elementError && (
                 <div className="flex flex-col items-center justify-center p-12 gap-4">
                     <RiLoader4Line className="animate-spin text-primary-base dark:text-primary-200" size={40} />
                     <p className="text-gray-400 font-medium italic dark:text-gray-500">{t("Loading secure payment...")}</p>
@@ -214,7 +223,7 @@ const CheckoutForm = ({ amount, onFinish, clientSecret, userName, userEmail, use
             <form
                 id="payment-form"
                 onSubmit={handleSubmit}
-                className={`p-6 bg-white rounded-2xl shadow-xl border border-gray-100 transition-opacity duration-300 dark:bg-gray-800 dark:border-gray-700 ${elementReady ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden'}`}
+                className="p-6 bg-white rounded-2xl shadow-xl border border-gray-100 dark:bg-gray-800 dark:border-gray-700"
             >
                 <div className="mb-6 text-center">
                     <h2 className="text-2xl font-bold text-gray-800 mb-2 dark:text-gray-100">{t("Complete Payment")}</h2>
@@ -227,11 +236,20 @@ const CheckoutForm = ({ amount, onFinish, clientSecret, userName, userEmail, use
                 <PaymentElement
                     id="payment-element"
                     options={paymentElementOptions}
-                    onReady={() => setElementReady(true)}
+                    onReady={() => {
+                        setElementError(null);
+                        setElementReady(true);
+                    }}
+                    onLoadError={({ error }) => {
+                        setElementError(error?.message || t("Failed to load secure payment fields."));
+                        setElementReady(false);
+                    }}
                 />
 
+                {elementError && <p role="alert" className="mt-4 text-sm text-red-600">{elementError}</p>}
+
                 <button
-                    disabled={isLoading || !stripe || !elements}
+                    disabled={isLoading || !stripe || !elements || !elementReady || !!elementError}
                     id="submit"
                     className={`mt-8 w-full py-4 px-6 rounded-xl font-bold text-white transition-all duration-300 flex items-center justify-center gap-2 ${isLoading ? "bg-gray-400 cursor-not-allowed dark:bg-gray-600" : "bg-primary-base hover:bg-primary-700 shadow-lg hover:shadow-primary-100 dark:bg-primary-200 dark:text-black"
                         }`}

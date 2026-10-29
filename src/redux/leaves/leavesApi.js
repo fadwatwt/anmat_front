@@ -43,6 +43,10 @@ export const leavesApi = apiSlice.injectEndpoints({
             query: (body) => ({ url: "api/subscriber/organization/leave-policies", method: "POST", body }),
             invalidatesTags: ["LeavePolicies"],
         }),
+        setDefaultLeavePolicy: builder.mutation({
+            query: (policyId) => ({ url: `api/subscriber/organization/leave-policies/${policyId}/default`, method: "PATCH" }),
+            invalidatesTags: ["LeavePolicies", "LeaveBalances"],
+        }),
         getMyLeaveBalances: builder.query({
             query: () => ({ url: "api/employee/leave-balances", method: "GET" }),
             transformResponse: (response) => response.data,
@@ -50,6 +54,11 @@ export const leavesApi = apiSlice.injectEndpoints({
         }),
         getEmployeeLeaveBalances: builder.query({
             query: (employeeId) => ({ url: `api/subscriber/organization/employees/${employeeId}/leave-balances`, method: "GET" }),
+            transformResponse: (response) => response.data,
+            providesTags: (result, error, employeeId) => [{ type: "LeaveBalances", id: employeeId }],
+        }),
+        getEmployeeLeaveBalanceHistory: builder.query({
+            query: (employeeId) => ({ url: `api/subscriber/organization/employees/${employeeId}/leave-balance-history`, method: "GET" }),
             transformResponse: (response) => response.data,
             providesTags: (result, error, employeeId) => [{ type: "LeaveBalances", id: employeeId }],
         }),
@@ -67,7 +76,9 @@ export const {
     useDeleteLeaveMutation,
     useGetLeavePoliciesQuery,
     useCreateLeavePolicyMutation,
+    useSetDefaultLeavePolicyMutation,
     useGetMyLeaveBalancesQuery,
     useGetEmployeeLeaveBalancesQuery,
+    useGetEmployeeLeaveBalanceHistoryQuery,
     useAddLeaveBalanceEntryMutation,
 } = leavesApi;

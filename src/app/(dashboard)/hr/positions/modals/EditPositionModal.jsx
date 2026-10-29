@@ -15,6 +15,7 @@ import { useUpdatePositionMutation } from "@/redux/positions/positionsApi";
 const validationSchema = Yup.object({
     title: Yup.string().required("required"),
     description: Yup.string(),
+    level: Yup.number().integer().min(1).max(30).required("required"),
 });
 
 function EditPositionModal({ isOpen, onClose, position }) {
@@ -31,6 +32,7 @@ function EditPositionModal({ isOpen, onClose, position }) {
         initialValues: {
             title: "",
             description: "",
+            level: 1,
         },
         validationSchema,
         onSubmit: async (values) => {
@@ -43,13 +45,14 @@ function EditPositionModal({ isOpen, onClose, position }) {
             formik.setValues({
                 title: position.title || "",
                 description: position.description || "",
+                level: position.level || 1,
             });
         }
     }, [position, isOpen]);
 
     const handleConfirm = async () => {
         try {
-            await updatePosition({ id: position._id, ...formik.values }).unwrap();
+            await updatePosition({ id: position._id, ...formik.values, level: Number(formik.values.level) }).unwrap();
             setResponseAlert({
                 isOpen: true,
                 status: "success",
@@ -119,6 +122,10 @@ function EditPositionModal({ isOpen, onClose, position }) {
                                     : ""
                             }
                         />
+                        <label className="flex flex-col gap-1">{t("Position level")}
+                            <input type="number" min="1" max="30" name="level" className="rounded-lg border p-2" value={formik.values.level} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                            {formik.touched.level && formik.errors.level && <span className="text-red-500">{t(formik.errors.level)}</span>}
+                        </label>
                     </form>
                 </div>
             </Modal>

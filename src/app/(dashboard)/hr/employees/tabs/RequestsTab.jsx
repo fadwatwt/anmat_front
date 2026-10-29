@@ -175,8 +175,8 @@ function RequestsTab() {
                     <span className="text-[10px] text-cell-secondary">{req.employee?.email || "N/A"}</span>
                 </div>
             </div>,
-            <div key={req.id + "_created_at"} className="text-cell-secondary">
-                {req.created_at ? format(new Date(req.created_at), "dd MMM yyyy", { locale: getDateLocale() }) : "N/A"}
+            <div key={req.id + "_created_at"} className="whitespace-nowrap text-cell-secondary" dir="ltr">
+                {req.created_at ? format(new Date(req.created_at), "yyyy-MM-dd") : "N/A"}
             </div>
         ];
 
@@ -284,7 +284,7 @@ function RequestsTab() {
                         onClick={() => handleEdit(rowIndex)}
                         className="w-full px-4 py-2 text-sm text-cell-primary flex gap-3 items-center text-left hover:bg-status-bg transition-colors"
                     >
-                        {isLocked || !canUpdate ? t("View Details") : t("Update Status")}
+                        {isLocked || !canUpdate ? t("View Details") : t("Edit")}
                     </button>
                 )}
                 {canDelete && !showArchived && (
@@ -346,7 +346,7 @@ function RequestsTab() {
                         placeholder={t("All Departments")}
                         onChange={(selection) => setDepartmentFilter(selection[0] || null)}
                         isTitle={false}
-                        className="!py-0 !border-none !shadow-none"
+                        className="!min-h-0 !h-8 !p-2 !border-none !shadow-none"
                     />
                 </div>
                 <div className="min-w-[140px] border-l border-status-border">
@@ -355,7 +355,7 @@ function RequestsTab() {
                         placeholder={t("All Statuses")}
                         onChange={(selection) => setStatusFilter(selection[0] || null)}
                         isTitle={false}
-                        className="!py-0 !border-none !shadow-none"
+                        className="!min-h-0 !h-8 !p-2 !border-none !shadow-none"
                     />
                 </div>
             </div>

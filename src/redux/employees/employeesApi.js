@@ -125,6 +125,7 @@ export const employeesApi = apiSlice.injectEndpoints({
                 body: formData,
             }),
             invalidatesTags: (result, error, { employeeId }) => [
+                "EmployeeDocuments",
                 { type: "EmployeeDocuments", id: employeeId },
                 { type: "Employees", id: employeeId },
             ],
@@ -135,6 +136,7 @@ export const employeesApi = apiSlice.injectEndpoints({
                 method: "DELETE",
             }),
             invalidatesTags: (result, error, { employeeId }) => [
+                "EmployeeDocuments",
                 { type: "EmployeeDocuments", id: employeeId },
                 { type: "Employees", id: employeeId },
             ],

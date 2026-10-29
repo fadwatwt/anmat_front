@@ -4,6 +4,7 @@ import SearchInput from "./Form/SearchInput.jsx";
 import MenuItem from "./Menu/MenuItem.jsx";
 import { useTranslation } from "react-i18next";
 import React from "react"
+import { usePermission } from "@/Hooks/usePermission";
 import {
     // Setting,
     // Edit ,
@@ -11,12 +12,13 @@ import {
     // Messages1,
     TaskSquare, NoteText, HambergerMenu,
     Chart21,
-    Setting, Messages1
+    Setting, Messages1, Book1
 } from 'iconsax-react';
 
 
 const MenuEmployee = React.memo(({ isSlidebarOpen, taggleSlidebarOpen }) => {
     const { t, i18n } = useTranslation()
+    const canViewLearning = usePermission("learning.view");
 
     // const tweet = {
     //     images: [
@@ -65,6 +67,7 @@ const MenuEmployee = React.memo(({ isSlidebarOpen, taggleSlidebarOpen }) => {
                         <MenuItem path={"/employee/analytics"} icon={<Chart21 />} title={"Analytics"} />
                         <MenuItem path={"/employee/projects"} icon={<NoteText />} title={"Projects"} />
                         <MenuItem path={"/employee/tasks"} icon={<TaskSquare />} title={"Tasks"} />
+                        {canViewLearning && <MenuItem path={"/employee/learning"} icon={<Book1 />} title={"Learning and skills"} />}
                         <MenuItem path={"/employee/conversations"} icon={<Messages1 />}
                             title={"Conversations"} />
                         <MenuItem path={"/settings"} icon={<Setting />} title={"Settings"} />

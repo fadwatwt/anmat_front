@@ -74,7 +74,7 @@ function SignIn() {
         const safeNext = getSafeNext();
         if (userData?.type === 'Subscriber') {
             if (userData.has_subscription_access === false || !userData.active_subscription_id) {
-                toast.info(t("Your subscription has expired. Redirecting to plans to renew."));
+                toast(t("Your subscription has expired. Redirecting to plans to renew."));
                 router.push("/account-setup/subscriber/plans");
                 return;
             }
@@ -175,9 +175,22 @@ function SignIn() {
             const loginResponse = await login({ email, password }).unwrap();
             const token = loginResponse.data?.access_token;
 
-            // Get fresh user data after login
-            const userResponse = await triggerGetUser(token).unwrap();
-            const userData = userResponse.data || userResponse;
+            if (!token || !loginResponse.data?.user) {
+                throw new Error("Login response is missing session data");
+            }
+
+            // Login already succeeded. A temporary profile request failure must not
+            // turn a valid login into an incorrect-credentials message.
+            let userData = loginResponse.data.user;
+            try {
+                const userResponse = await triggerGetUser(token).unwrap();
+                userData = userResponse.data || userResponse;
+            } catch (profileError) {
+                if (profileError?.status === 401 || profileError?.status === 403) {
+                    throw { ...profileError, postLoginSessionError: true };
+                }
+                console.warn("Profile refresh failed after successful login; using login response", profileError);
+            }
 
             if (userData?.type === 'Admin') {
                 await performLogout(token);
@@ -210,6 +223,12 @@ function SignIn() {
                 setIsSubmitting(false);
             }
         } catch (err) {
+            if (err?.postLoginSessionError) {
+                clearToken();
+                dispatch(loginFailure(t("Sign in succeeded, but the session could not be verified. Please try again.")));
+                setIsSubmitting(false);
+                return;
+            }
             // Check for "Already logged in" case in error response
             if (err.data?.status === 'failed' && err.data?.message === 'Already logged in' && err.data?.data?.access_token) {
                 try {
