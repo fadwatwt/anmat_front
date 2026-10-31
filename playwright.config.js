@@ -109,7 +109,7 @@ module.exports = defineConfig({
     },
     {
       name: 'chromium-subscriber',
-      testMatch: /(^|[\\/])subscriber-check\.spec\.js$/,
+      testMatch: /(^|[\\/])(subscriber-check|subscriber-operations)\.spec\.js$/,
       use: {
         ...devices['Desktop Chrome'],
         storageState: 'e2e/.auth/subscriber.json',
@@ -134,7 +134,7 @@ module.exports = defineConfig({
         storageState: 'e2e/.auth/admin.json',
       },
       dependencies: ['setup'],
-      testIgnore: /(login|landing|visual-public|employee-check|subscriber-check|mobile-smoke)\.spec\.js|(^|[\\/]).*auth\.setup\.js$/,
+      testIgnore: /(login|landing|visual-public|employee-check|subscriber-check|subscriber-operations|mobile-smoke)\.spec\.js|(^|[\\/]).*auth\.setup\.js$/,
     },
   ],
 });

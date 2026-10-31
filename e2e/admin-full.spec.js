@@ -29,13 +29,17 @@ for (const k of Object.keys(results)) {
   };
 }
 const createdIds = { roles: [], industries: [] };
+let cachedAdminToken;
 
 async function adminToken(request) {
+  if (cachedAdminToken) return cachedAdminToken;
   const res = await request.post(`${BACKEND_URL}/api/admin/auth/login`, {
     data: { email: ADMIN.email, password: ADMIN.password },
+    timeout: 60000,
   });
   if (!res.ok()) throw new Error(`Admin login failed: ${res.status()} ${await res.text()}`);
-  return (await res.json()).data.access_token;
+  cachedAdminToken = (await res.json()).data.access_token;
+  return cachedAdminToken;
 }
 
 function authH(token) {

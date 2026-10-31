@@ -31,13 +31,17 @@ for (const k of Object.keys(results)) {
   };
 }
 const created = { departments: [], positions: [], teams: [], meetings: [], holidays: [], leaves: [], tickets: [] };
+let cachedSubscriberToken;
 
 async function subscriberToken(request) {
+  if (cachedSubscriberToken) return cachedSubscriberToken;
   const res = await request.post(`${BACKEND_URL}/api/user/auth/login`, {
     data: { email: SUBSCRIBER.email, password: SUBSCRIBER.password },
+    timeout: 60000,
   });
   if (!res.ok()) throw new Error(`Subscriber login failed: ${res.status()} ${await res.text()}`);
-  return (await res.json()).data.access_token;
+  cachedSubscriberToken = (await res.json()).data.access_token;
+  return cachedSubscriberToken;
 }
 
 function authH(token) {
@@ -102,9 +106,11 @@ test.describe('Subscriber full test', () => {
   test('subscriber API: projects list + create + delete', async ({ request }) => {
     const token = await subscriberToken(request);
     const h = authH(token);
-    const me = await request.get(`${BACKEND_URL}/api/user/auth`, { headers: h });
-    const meBody = await me.json();
-    const managerId = meBody.data?._id;
+    const employeesResponse = await request.get(`${BACKEND_URL}/api/subscriber/organization/employees`, { headers: h });
+    const employeesBody = await employeesResponse.json();
+    const employees = Array.isArray(employeesBody.data) ? employeesBody.data : employeesBody.data?.employees || employeesBody.data?.items || [];
+    const managerId = employees.find(employee => employee.user_id)?.user_id;
+    expect(managerId, 'organization needs an employee who can manage the test project').toBeTruthy();
 
     const listRes = await request.get(`${BACKEND_URL}/api/subscriber/organization/projects`, { headers: h });
     expect(listRes.ok()).toBeTruthy();

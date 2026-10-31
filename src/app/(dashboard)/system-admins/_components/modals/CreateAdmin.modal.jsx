@@ -6,7 +6,8 @@ import PasswordInput from "@/components/Form/PasswordInput";
 import TagInput from "@/components/Form/TagInput";
 import Switch2 from "@/components/Form/Switch2";
 import { useEffect, useState } from "react";
-import { useCreateAdminMutation, useGetAdminRolesQuery } from "@/redux/system-admins/systemAdminsAPI";
+import { useCreateAdminMutation } from "@/redux/system-admins/systemAdminsAPI";
+import { useGetAdminRolesQuery } from "@/redux/roles/adminRolesAPI";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import { useTranslation } from "react-i18next";
 

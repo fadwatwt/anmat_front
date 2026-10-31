@@ -9,13 +9,6 @@ export const systemAdminsApi = apiSlice.injectEndpoints({
             }),
             providesTags: ["SystemAdmins"],
         }),
-        getAdminRoles: builder.query({
-            query: () => ({
-                url: "api/admin/roles",
-                method: "GET",
-            }),
-            providesTags: ["AdminRoles"],
-        }),
         createAdmin: builder.mutation({
             query: (newAdmin) => ({
                 url: "api/admin/admins",
@@ -30,5 +23,4 @@ export const systemAdminsApi = apiSlice.injectEndpoints({
 export const {
     useGetAdminsQuery,
     useCreateAdminMutation,
-    useGetAdminRolesQuery,
 } = systemAdminsApi;

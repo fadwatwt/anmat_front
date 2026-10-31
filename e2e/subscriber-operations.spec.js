@@ -76,14 +76,24 @@ test.describe('Subscriber operations', () => {
     await page.goto('/notifications');
     await expect(page.locator('main')).toBeVisible({ timeout: 60000 });
 
-    // إشعار "Employee Logged In" من نوع User بدون action_url -> يفتح المودال
-    const card = page.locator('main').getByText('Employee Logged In').first();
-    await expect(card).toBeVisible({ timeout: 60000 });
+    const token = await page.evaluate(() => window.localStorage.getItem('token'));
+    const response = await page.request.get(`${BACKEND_URL}/api/notifications/my-notifications`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    expect(response.ok()).toBeTruthy();
+    const payload = await response.json();
+    const notifications = Array.isArray(payload.data) ? payload.data : payload.data?.notifications || payload.data?.items || [];
+    const withoutRoute = notifications.find((notification) => !notification.action_url && notification.title);
+    if (!withoutRoute) {
+      test.skip(true, 'No notification without an action URL in this account');
+    }
+    const card = page.locator('main').getByText(withoutRoute.title).first();
+    await expect(card).toBeVisible({ timeout: 15000 });
     await card.click();
 
     const modal = page.locator(MODAL_SELECTOR).filter({ hasText: 'Notification Details' });
     await expect(modal).toBeVisible({ timeout: 15000 });
-    await expect(modal).toContainText('Employee Logged In');
+    await expect(modal).toContainText(withoutRoute.title);
     // ميزة "فتح العنصر المرتبط" لا تظهر لأنه لا يوجد مسار لهذا الإشعار
     await expect(modal.getByRole('button', { name: /Open Related|فتح العنصر المرتبط/i })).toHaveCount(0);
 

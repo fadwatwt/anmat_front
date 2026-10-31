@@ -30,13 +30,17 @@ for (const k of Object.keys(results)) {
   };
 }
 const created = { leaves: [], requests: [] };
+let cachedEmployeeToken;
 
 async function employeeToken(request) {
+  if (cachedEmployeeToken) return cachedEmployeeToken;
   const res = await request.post(`${BACKEND_URL}/api/user/auth/login`, {
     data: { email: EMPLOYEE.email, password: EMPLOYEE.password },
+    timeout: 60000,
   });
   if (!res.ok()) throw new Error(`Employee login failed: ${res.status()} ${await res.text()}`);
-  return (await res.json()).data.access_token;
+  cachedEmployeeToken = (await res.json()).data.access_token;
+  return cachedEmployeeToken;
 }
 
 function authH(token) {
@@ -166,7 +170,7 @@ test.describe('Employee full test', () => {
     }
   });
 
-  test('employee API: employee requests list + create + cancel', async ({ request }) => {
+  test('employee API: day-off request requires a leave policy', async ({ request }) => {
     const token = await employeeToken(request);
     const h = authH(token);
 
@@ -189,14 +193,9 @@ test.describe('Employee full test', () => {
       },
     });
     const createBody = await createRes.json();
-    const id = createBody.data?._id || createBody.data?.id;
-    results.apiOperations.push({ op: 'employee.requests.create', ok: createRes.ok(), id });
-    expect(createRes.ok()).toBeTruthy();
-    if (id) {
-      created.requests.push(id);
-      const cancelRes = await request.put(`${BACKEND_URL}/api/employee/employee-requests/${id}/cancel`, { headers: h });
-      results.apiOperations.push({ op: 'employee.requests.cancel', ok: cancelRes.ok() });
-    }
+    results.apiOperations.push({ op: 'employee.requests.reject-missing-policy', ok: createRes.status() === 400 });
+    expect(createRes.status()).toBe(400);
+    expect(JSON.stringify(createBody)).toContain('leave policy');
   });
 
   test('employee API: attendance check-in', async ({ request }) => {

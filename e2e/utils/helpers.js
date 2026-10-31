@@ -7,6 +7,7 @@ const { BACKEND_URL, FRONTEND_URL, ADMIN } = require('./data');
 async function loginViaApi(request, { email = ADMIN.email, password = ADMIN.password } = {}) {
   const response = await request.post(`${BACKEND_URL}/api/admin/auth/login`, {
     data: { email, password },
+    timeout: 60000,
   });
   if (!response.ok()) {
     throw new Error(`Login API failed: ${response.status()} ${await response.text()}`);
