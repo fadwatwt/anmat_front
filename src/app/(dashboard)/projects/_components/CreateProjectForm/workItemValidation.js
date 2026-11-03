@@ -26,4 +26,5 @@ export const createTaskValidationSchema = (t) => Yup.object({
   due_date: optionalDate().min(Yup.ref("start_date"), t("Due date cannot be before start date")),
   end_date: optionalDate().min(Yup.ref("start_date"), t("End date cannot be before start date")),
   progress: progress(t),
+  estimated_hours: Yup.number().typeError(t("Estimated hours must be a number")).min(0, t("Estimated hours cannot be negative")).max(10000, t("Estimated hours exceed the allowed limit")),
 });

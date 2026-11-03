@@ -10,6 +10,7 @@ import { useSelector } from "react-redux";
 import { selectUser } from "@/redux/auth/authSlice";
 import { useGetSubscriberSubscriptionPlansQuery } from "@/redux/plans/subscriptionPlansApi";
 import { RiLoader4Line } from "@remixicon/react";
+import { getFinalPlanPrice } from "@/functions/planPrice";
 
 const PLAN_INTERVAL_KEY = "anmat_plan_interval";
 
@@ -45,7 +46,9 @@ function Page() {
     const handlePlanSelect = (plan, pricingIndex) => {
         setSelectedPlanInfo({
             plan,
-            price: plan.pricing[pricingIndex].price,
+            price: getFinalPlanPrice(plan.pricing[pricingIndex]),
+            originalPrice: plan.pricing[pricingIndex].price,
+            discount: plan.pricing[pricingIndex].discount || 0,
             priceId: getStripePriceId(plan, pricingIndex),
             trialDays: plan.trial?.is_active ? plan.trial?.trial_days : 0,
         });
@@ -124,7 +127,8 @@ function Page() {
                                     <h3 className="text-xl font-bold text-cell-primary">{selectedPlanInfo.plan.name}</h3>
                                 </div>
                                 <div className="text-right">
-                                    <p className="text-2xl font-black text-cell-primary">${selectedPlanInfo.price}</p>
+                                    <p className="text-2xl font-black text-cell-primary">${selectedPlanInfo.price.toFixed(2)}</p>
+                                    {selectedPlanInfo.discount > 0 && <p className="text-xs text-cell-secondary line-through">${Number(selectedPlanInfo.originalPrice).toFixed(2)}</p>}
                                     <p className="text-xs text-cell-secondary font-medium">{t("Billed recurringly")}</p>
                                 </div>
                             </div>

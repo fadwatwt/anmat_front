@@ -5,11 +5,12 @@ import { useTranslation } from "react-i18next";
 import { ImSpinner2 } from "react-icons/im";
 import { Profile2User, InfoCircle } from "iconsax-react";
 
-function AccountQuotaCard({ used = 0, limit = 0, unlimited = false, isLoading, className = "" }) {
+function AccountQuotaCard({ used = null, limit = 0, unlimited = false, isLoading, className = "" }) {
     const { t } = useTranslation();
+    const usageUnavailable = used === null;
 
-    const pct = unlimited || limit <= 0 ? 0 : Math.min(100, Math.round((used / limit) * 100));
-    const isFull = !unlimited && limit > 0 && used >= limit;
+    const pct = usageUnavailable || unlimited || limit <= 0 ? 0 : Math.min(100, Math.round((used / limit) * 100));
+    const isFull = !usageUnavailable && !unlimited && limit > 0 && used >= limit;
     const barColor = unlimited
         ? "bg-primary-500"
         : isFull
@@ -36,7 +37,7 @@ function AccountQuotaCard({ used = 0, limit = 0, unlimited = false, isLoading, c
                 <>
                     <div className="flex justify-between items-baseline">
                         <p className="text-2xl font-bold text-cell-primary">
-                            {used}
+                            {usageUnavailable ? "—" : used}
                             <span className="text-cell-secondary text-base font-normal mx-1">/</span>
                             <span className="text-cell-secondary text-base font-normal">
                                 {unlimited ? "∞" : limit}
@@ -49,12 +50,14 @@ function AccountQuotaCard({ used = 0, limit = 0, unlimited = false, isLoading, c
                         )}
                     </div>
 
-                    <div className="w-full h-2 bg-status-bg rounded-full overflow-hidden">
+                    {!usageUnavailable && <div className="w-full h-2 bg-status-bg rounded-full overflow-hidden">
                         <div
                             className={`h-full ${barColor} transition-all duration-300`}
                             style={{ width: unlimited ? "100%" : `${pct}%` }}
                         />
-                    </div>
+                    </div>}
+
+                    {usageUnavailable && <p className="text-xs text-amber-600 dark:text-amber-400">{t("Account usage unavailable while integration is offline")}</p>}
 
                     {isFull && (
                         <div className="flex items-start gap-2 text-xs text-cell-secondary bg-status-bg rounded-lg p-2">

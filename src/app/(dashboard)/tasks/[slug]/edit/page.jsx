@@ -17,10 +17,13 @@ import RecordPageState from "@/app/(dashboard)/_components/RecordPageState";
 import UnsavedChangesGuard from "@/app/(dashboard)/_components/UnsavedChangesGuard";
 import { createTaskValidationSchema } from "@/app/(dashboard)/projects/_components/CreateProjectForm/workItemValidation";
 import PropTypes from "prop-types";
+import { useSelector } from "react-redux";
+import { selectUser } from "@/redux/auth/authSlice.js";
 import { buildTaskUpdatePayload } from "../../taskUpdatePayload";
 
 function EditTask({ params }) {
   const { t } = useTranslation();
+  const user = useSelector(selectUser);
   const router = useRouter();
   const resolvedParams = use(params);
   const slug = resolvedParams?.slug;
@@ -71,6 +74,7 @@ function EditTask({ params }) {
       due_date: formatDateForInput(taskData.due_date),
       end_date: formatDateForInput(taskData.end_date),
       progress: taskData.progress || 0,
+      estimated_hours: taskData.estimated_hours || 0,
       is_template: taskData.is_template || false,
       stages: (taskData.stages || []).map((stage) => ({
         ...stage,
@@ -229,7 +233,10 @@ function EditTask({ params }) {
           onClose={() => setIsApprovalOpen(false)}
           onConfirm={handleConfirmUpdate}
           title={t("Confirm Task Update")}
-          message={t("Are you sure you want to update this task?")}
+          message={user?.type === "Subscriber" && pendingValues?.due_date &&
+            (!taskData?.due_date || pendingValues.due_date > taskData.due_date.slice(0, 10))
+              ? t("Delaying this task will reschedule unfinished dependent tasks and their stages")
+              : t("Are you sure you want to update this task?")}
           isSubmitting={isUpdating}
         />
 

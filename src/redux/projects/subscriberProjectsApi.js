@@ -3,9 +3,10 @@ import { apiSlice } from "../api/apiSlice";
 export const subscriberProjectsApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getSubscriberProjects: builder.query({
-            query: () => ({
+            query: (filters) => ({
                 url: "api/subscriber/organization/projects",
                 method: "GET",
+                params: filters || undefined,
             }),
             providesTags: ["Projects"],
             transformResponse: (response) => response.data || response,

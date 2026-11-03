@@ -3,6 +3,7 @@ import { RiCopperDiamondLine, RiCheckboxCircleFill } from "@remixicon/react";
 import PropTypes from "prop-types";
 import { useState } from "react";
 import { getPlanFeatureTitle, getPlanFeatureValue } from "@/functions/planFeatures";
+import { getFinalPlanPrice } from "@/functions/planPrice";
 
 function PlanCard({
     name = "",
@@ -110,8 +111,9 @@ function PlanCard({
                                 </div>
                                 <div className="flex flex-col items-end">
                                     <span className="text-lg font-black text-cell-primary">
-                                        ${item.price}
+                                        ${getFinalPlanPrice(item).toFixed(2)}
                                     </span>
+                                    {item.discount > 0 && <span className="text-xs text-cell-secondary line-through">${Number(item.price).toFixed(2)}</span>}
                                     <span className="text-[10px] text-cell-secondary font-medium">
                                         /{t(item.interval === 'month' ? 'mth' : 'yr')}
                                     </span>

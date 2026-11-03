@@ -318,7 +318,7 @@ function TweeterTab() {
 
                 <div className="sm:flex-1 md:order-2 w-full md:w-auto order-1 flex flex-col gap-4">
                     <AccountQuotaCard
-                        used={quota?.used ?? 0}
+                        used={quota?.used ?? null}
                         limit={quota?.limit ?? 0}
                         unlimited={!!quota?.unlimited}
                         isLoading={quotaLoading}

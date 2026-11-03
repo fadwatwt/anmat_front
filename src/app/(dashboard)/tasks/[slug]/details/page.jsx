@@ -14,14 +14,15 @@ import { filterAndSortTasks } from "@/functions/functionsForTasks.js";
 import { useRouter } from "next/navigation";
 import { filterOptions } from "@/functions/FactoryData.jsx";
 import { useGetTaskLogsQuery } from "@/redux/activity-logs/activityLogsApi";
-import { useGetSubscriberTaskDetailsQuery, useAddSubscriberTaskCommentMutation, useDeleteSubscriberTaskCommentMutation, useEditSubscriberTaskCommentMutation, useEvaluateSubscriberTaskStageMutation, useEvaluateSubscriberTaskMutation, useUploadSubscriberTaskAttachmentMutation, useDeleteSubscriberTaskAttachmentMutation } from "@/redux/tasks/subscriberTasksApi";
-import { useGetEmployeeTaskDetailsQuery, useAddEmployeeTaskCommentMutation, useDeleteEmployeeTaskCommentMutation, useEditEmployeeTaskCommentMutation, useUploadEmployeeTaskAttachmentMutation, useDeleteEmployeeTaskAttachmentMutation } from "@/redux/tasks/employeeTasksApi";
+import { useGetSubscriberTaskDetailsQuery, useGetSubscriberTasksQuery, useGetTaskDependencyGraphQuery, useReplaceTaskDependenciesMutation, useAddSubscriberTaskCommentMutation, useDeleteSubscriberTaskCommentMutation, useEditSubscriberTaskCommentMutation, useEvaluateSubscriberTaskStageMutation, useEvaluateSubscriberTaskMutation, useUploadSubscriberTaskAttachmentMutation, useDeleteSubscriberTaskAttachmentMutation } from "@/redux/tasks/subscriberTasksApi";
+import { useGetEmployeeTaskDetailsQuery, useGetEmployeeTasksQuery, useAddEmployeeTaskCommentMutation, useDeleteEmployeeTaskCommentMutation, useEditEmployeeTaskCommentMutation, useUploadEmployeeTaskAttachmentMutation, useDeleteEmployeeTaskAttachmentMutation } from "@/redux/tasks/employeeTasksApi";
 import { useSelector } from 'react-redux';
 import { selectUser } from '@/redux/auth/authSlice.js';
 import { usePermission } from '@/Hooks/usePermission';
 import StarRating from "@/components/StarRating";
 import EvaluationDetailsModal from "@/components/Modal/EvaluationDetailsModal";
 import RecordPageState from "@/app/(dashboard)/_components/RecordPageState";
+import TaskDependencies from "./TaskDependencies";
 import PropTypes from "prop-types";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import { getApiErrorMessage } from "@/functions/apiErrorMessage";
@@ -42,6 +43,10 @@ function TaskDetailsPage({ params }) {
     const { data: task, isLoading, isError, error, refetch } = useGetDetails(taskId, {
         skip: !taskId || !authUserType
     });
+    const { data: dependencyGraph } = useGetTaskDependencyGraphQuery(taskId, { skip: !taskId || !task });
+    const { data: subscriberTasks = [] } = useGetSubscriberTasksQuery(undefined, { skip: authUserType !== "Subscriber" });
+    const { data: employeeTasks = [] } = useGetEmployeeTasksQuery(undefined, { skip: authUserType !== "Employee" });
+    const [replaceDependencies, { isLoading: isUpdatingDependencies }] = useReplaceTaskDependenciesMutation();
 
     const { data: taskLogsData, isLoading: isLogsLoading } = useGetTaskLogsQuery(
         { taskId, limit: 10 },
@@ -66,6 +71,17 @@ function TaskDetailsPage({ params }) {
 
     const showOperationResponse = (status, message) => {
         setOperationResponse({ isOpen: true, status, message });
+    };
+
+    const handleReplaceDependencies = async (blockedByIds) => {
+        try {
+            await replaceDependencies({ id: taskId, blocked_by_ids: blockedByIds }).unwrap();
+            await refetch();
+            return true;
+        } catch (caught) {
+            showOperationResponse("error", getApiErrorMessage(caught, t("Failed to update dependencies")));
+            return false;
+        }
     };
 
     const [loadingComments, setLoadingComments] = useState({});
@@ -277,6 +293,18 @@ function TaskDetailsPage({ params }) {
                 <div className="w-full grid grid-cols-1 xl:grid-cols-[minmax(0,1.7fr)_minmax(300px,1fr)] gap-5 xl:gap-6 items-start">
                     <main className="min-w-0 flex flex-col gap-5">
                         <InfoCard type={"task"} data={infoCardData} handelEditAction={canEditTask ? handleEditPageNavigation : undefined} />
+                        <section className="rounded-[24px] border border-status-border bg-surface p-4 shadow-sm sm:p-5">
+                            <h2 className="text-lg font-bold text-table-title">{t("Time estimate and actual")}</h2>
+                            <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
+                                <div className="rounded-xl bg-status-bg p-3"><span className="text-cell-secondary">{t("Estimated hours")}</span><p className="mt-1 font-semibold text-cell-primary">{Number(task.estimated_hours || 0).toFixed(1)}</p></div>
+                                <div className="rounded-xl bg-status-bg p-3"><span className="text-cell-secondary">{t("Tracked hours")}</span><p className="mt-1 font-semibold text-cell-primary">{((task.time_tracks || []).reduce((sum, track) => {
+                                    const start = new Date(track.started_at).getTime();
+                                    const end = track.ended_at ? new Date(track.ended_at).getTime() : NaN;
+                                    return sum + (Number.isFinite(start) && Number.isFinite(end) && end > start ? (end - start) / 3600000 : 0);
+                                }, 0)).toFixed(1)}</p></div>
+                            </div>
+                        </section>
+                        <TaskDependencies task={task} tasks={[...subscriberTasks, ...employeeTasks]} graph={dependencyGraph} canEdit={canEditTask} isUpdating={isUpdatingDependencies} onReplace={handleReplaceDependencies} />
                         <section className="p-4 sm:p-5 bg-surface rounded-[24px] border border-status-border shadow-sm w-full flex flex-col gap-4 min-h-72">
                             <div className="title-header pb-3 w-full flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-status-border">
                                 <div>

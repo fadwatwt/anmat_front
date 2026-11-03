@@ -38,6 +38,7 @@ function CreateTask() {
         due_date: "",
         end_date: "",
         progress: 0,
+        estimated_hours: 0,
         is_template: false,
         stages: [],
     };
@@ -65,6 +66,7 @@ function CreateTask() {
                 due_date: pendingValues.due_date ? new Date(pendingValues.due_date).toISOString() : undefined,
                 end_date: pendingValues.end_date ? new Date(pendingValues.end_date).toISOString() : undefined,
                 progress: Number(pendingValues.progress) || 0,
+                estimated_hours: Number(pendingValues.estimated_hours) || 0,
                 is_template: pendingValues.is_template,
                 stages: pendingValues.stages.map(stage => ({
                     ...stage,

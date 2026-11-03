@@ -46,7 +46,9 @@ function MyLeavesPage() {
         { label: "", width: "40px" },
     ];
 
-    const sortedLeaves = [...(leavesData || [])].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    const sortedLeaves = [...(leavesData || [])].sort((a, b) =>
+      String(b.date || '').localeCompare(String(a.date || '')) ||
+      new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
 
     const formatTime = (time) => {
         if (!time) return "-";

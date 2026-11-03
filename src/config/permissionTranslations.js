@@ -44,6 +44,7 @@ const permissionTranslations = {
   // ── Salary Transactions ──
   "salary_transactions.create": { en: "Create Salary Transaction", ar: "إنشاء معاملة راتب" },
   "salary_transactions.update": { en: "Update Salary Transaction", ar: "تعديل معاملة راتب" },
+  "salary_transactions.approve": { en: "Approve and Lock Payroll Runs", ar: "اعتماد كشوف الرواتب وقفلها" },
   "salary_transactions.list": { en: "List Salary Transactions", ar: "عرض معاملات الرواتب" },
   "salary_transactions.delete": { en: "Delete Salary Transaction", ar: "حذف معاملة راتب" },
   "salary_transactions.track_all": { en: "Manage All Salary Transactions", ar: "إدارة جميع معاملات الرواتب" },

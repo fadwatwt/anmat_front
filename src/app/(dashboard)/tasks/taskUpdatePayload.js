@@ -15,6 +15,7 @@ export function buildTaskUpdatePayload(taskId, values) {
     due_date: toIsoDate(values.due_date),
     end_date: toIsoDate(values.end_date),
     progress: Number(values.progress) || 0,
+    estimated_hours: Number(values.estimated_hours) || 0,
     is_template: values.is_template,
     stages: (values.stages || []).map((stage) => ({
       ...(stage._id ? { _id: stage._id } : {}),

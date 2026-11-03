@@ -3,9 +3,19 @@ import { apiSlice } from "../api/apiSlice";
 export const subscriberTasksApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getSubscriberTasks: builder.query({
-            query: () => ({
+            query: (filters) => ({
                 url: "api/subscriber/organization/tasks",
                 method: "GET",
+                params: filters || undefined,
+            }),
+            providesTags: ["Tasks"],
+            transformResponse: (response) => response.data || response,
+        }),
+        getTaskWorkload: builder.query({
+            query: (week) => ({
+                url: "api/subscriber/organization/tasks/workload",
+                method: "GET",
+                params: week ? { week } : undefined,
             }),
             providesTags: ["Tasks"],
             transformResponse: (response) => response.data || response,
@@ -40,6 +50,19 @@ export const subscriberTasksApi = apiSlice.injectEndpoints({
                 body: data,
             }),
             invalidatesTags: (result, error, { id }) => ["Tasks", { type: "Tasks", id }, "ActivityLogs"],
+        }),
+        replaceTaskDependencies: builder.mutation({
+            query: ({ id, blocked_by_ids }) => ({
+                url: `api/subscriber/organization/tasks/${id}/dependencies`,
+                method: "PUT",
+                body: { blocked_by_ids },
+            }),
+            invalidatesTags: (result, error, { id }) => ["Tasks", { type: "Tasks", id }],
+        }),
+        getTaskDependencyGraph: builder.query({
+            query: (id) => ({ url: `api/tasks/${id}/dependency-graph`, method: "GET" }),
+            providesTags: ["Tasks"],
+            transformResponse: (response) => response.data || response,
         }),
         getSubscriberTaskStatisticsStatus: builder.query({
             query: () => ({
@@ -107,10 +130,13 @@ export const subscriberTasksApi = apiSlice.injectEndpoints({
 
 export const {
     useGetSubscriberTasksQuery,
+    useGetTaskWorkloadQuery,
     useCreateSubscriberTaskMutation,
     useDeleteSubscriberTaskMutation,
     useGetSubscriberTaskDetailsQuery,
     useUpdateSubscriberTaskMutation,
+    useReplaceTaskDependenciesMutation,
+    useGetTaskDependencyGraphQuery,
     useGetSubscriberTaskStatisticsStatusQuery,
     useAddSubscriberTaskCommentMutation,
     useDeleteSubscriberTaskCommentMutation,

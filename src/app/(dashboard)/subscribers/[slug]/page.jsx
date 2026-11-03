@@ -433,7 +433,7 @@ function AdminProfile() {
                                         </div>
                                         <div className="flex items-baseline gap-1">
                                             <span className="text-2xl font-bold text-primary-500">
-                                                {isSocialQuotaLoading ? "…" : (socialQuota?.used ?? 0)}
+                                                {isSocialQuotaLoading ? "…" : (socialQuota?.used ?? "—")}
                                             </span>
                                             <span className="text-sm text-cell-secondary">
                                                 / {socialQuota?.unlimited ? t("unlimited") : (socialQuota?.limit ?? 0)}

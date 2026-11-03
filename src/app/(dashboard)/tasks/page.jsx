@@ -8,7 +8,7 @@ import Page from "@/components/Page.jsx";
 import Table from "@/components/Tables/Table.jsx";
 import { useSelector } from "react-redux";
 import { selectUserType } from "@/redux/auth/authSlice";
-import { usePermission } from "@/Hooks/usePermission";
+import { usePermission, useHasAnyPermission } from "@/Hooks/usePermission";
 import { taskDetailsPath } from "@/functions/AnotherFunctions";
 import { translateDate } from "@/functions/Days";
 import {
@@ -36,6 +36,7 @@ import { useProcessing } from "@/app/providers";
 import CreateAppointmentFromTaskModal from "@/components/Appointments/CreateAppointmentFromTaskModal";
 import ViewToggle from "./_components/ViewToggle";
 import KanbanBoard from "./_components/KanbanBoard";
+import WorkloadPanel from "./_components/WorkloadPanel";
 
 // ✅ Lazy-loaded components
 const NameAndDescription = dynamic(
@@ -69,6 +70,7 @@ function TasksPage() {
   const canCreateTask = usePermission("tasks.create");
   const canEditTask = usePermission("tasks.update");
   const canDeleteTask = usePermission("tasks.delete");
+  const canViewWorkload = useHasAnyPermission(["tasks.track_all", "tasks.track_department"]);
 
   const {
     data: subscriberTasks = [],
@@ -477,6 +479,7 @@ function TasksPage() {
         }
       >
         <div className="flex flex-col gap-6">
+          {canViewWorkload && <WorkloadPanel />}
           <div className="flex flex-col gap-2 h-full">
             {isLoading ? (
               <div className="text-center py-6">{t("Loading tasks...")}</div>

@@ -4,6 +4,7 @@ import Page from "@/components/Page.jsx";
 import ProjectMembers from "@/app/(dashboard)/projects/[slug]/_components/ProjectMembers.jsx";
 import SelectWithoutLabel from "@/components/Form/SelectWithoutLabel.jsx";
 import TasksList from "@/app/(dashboard)/projects/[slug]/_components/TasksList.jsx";
+import ProjectTimeline from "@/app/(dashboard)/projects/[slug]/_components/ProjectTimeline.jsx";
 import TaskComments from "@/app/(dashboard)/projects/[slug]/_components/TaskComments.jsx";
 import CommentInput from "@/components/CommentInput.jsx";
 import AttachmentsList from "@/app/(dashboard)/projects/[slug]/_components/AttachmentsList.jsx";
@@ -153,12 +154,14 @@ function ProjectDetailsPage() {
 
     const [isOpenEditModal, setIsOpenEditModal] = useState(false);
     const [filterTasks, setFilterTasks] = useState([]);
+    const [taskView, setTaskView] = useState("list");
     const [alertInfo, setAlertInfo] = useState({ isOpen: false, status: "", message: "" });
 
     const canDeleteAttachments = usePermission("attachments.delete");
     const canUploadAttachments = usePermission("attachments.upload");
     const canEvaluate = usePermission("projects.evaluate");
     const canEditProject = usePermission("projects.update");
+    const canEditTaskDates = usePermission("tasks.update");
     const canComment = usePermission("projects.comment");
     const canManageTeam = usePermission("tasks.manage_participants");
 
@@ -206,9 +209,7 @@ function ProjectDetailsPage() {
     }) || [], [project?.tasks, project?.assignees]);
 
     useEffect(() => {
-        if (mappedTasks.length > 0) {
-            setFilterTasks(mappedTasks);
-        }
+        setFilterTasks(mappedTasks);
     }, [mappedTasks]);
 
     const breadcrumbItems = [
@@ -316,14 +317,19 @@ function ProjectDetailsPage() {
                                 <h2 className="text-lg font-bold text-table-title">{t("Project Tasks")}</h2>
                                 <p className="text-xs text-cell-secondary mt-1">{tasks.length} {t("Tasks")}</p>
                             </div>
-                            <SelectWithoutLabel onChange={handelChangeFilterTask} options={filterOptions} title={"Filter by"} className="w-full sm:w-[150px] h-[40px]" />
+                            <div className="flex flex-wrap items-center gap-2">
+                                <div className="flex rounded-lg border border-status-border p-1" role="group" aria-label={t("Task view")}>
+                                    {["list", "timeline"].map((view) => <button key={view} type="button" onClick={() => setTaskView(view)} aria-pressed={taskView === view} className={`rounded-md px-3 py-1.5 text-sm ${taskView === view ? "bg-primary-500 text-white" : "text-cell-secondary"}`}>{t(view === "list" ? "List" : "Timeline")}</button>)}
+                                </div>
+                                {taskView === "list" && <SelectWithoutLabel onChange={handelChangeFilterTask} options={filterOptions} title={"Filter by"} className="w-full sm:w-[150px] h-[40px]" />}
+                            </div>
                         </div>
-                        <TasksList 
+                        {taskView === "list" ? <TasksList
                             tasks={filterTasks} 
                             isAssignedDate={true} 
                             isEmployeeView={true} 
                             onStatusChange={handleStatusChange} 
-                        />
+                        /> : <ProjectTimeline tasks={tasks} canEditDates={canEditTaskDates} />}
                     </section>
                     {canComment && <section className="bg-surface rounded-[24px] border border-status-border shadow-sm w-full flex flex-col gap-3 overflow-hidden">
                         <div className="p-4 sm:p-5 flex flex-col gap-3">

@@ -185,6 +185,15 @@ function TaskMainInfo({ type = "project", values, handleChange, handleBlur, setF
       </div>
 
       {/* Assignees / Assignee_id */}
+      {type === "task" && <div className="flex flex-col gap-1">
+        <label htmlFor="estimated_hours" className="text-sm font-medium text-cell-primary">{t("Estimated hours")}</label>
+        <input id="estimated_hours" name="estimated_hours" type="number" min="0" max="10000" step="0.5"
+          value={values?.estimated_hours ?? 0} onChange={handleChange} onBlur={handleBlur}
+          className="rounded-lg border border-status-border bg-surface px-3 py-2 text-cell-primary" />
+        {touched?.estimated_hours && errors?.estimated_hours && <span className="text-xs text-red-500">{errors.estimated_hours}</span>}
+      </div>}
+
+      {/* Assignees / Assignee_id */}
       {type === "task" ? (
         <DefaultSelect
           title={t("Assignee")}

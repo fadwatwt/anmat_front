@@ -32,9 +32,10 @@ const formatAmount = (minor, run) => new Intl.NumberFormat(undefined, {
 
 export default function PayrollRunsPanel() {
   const { t, i18n } = useTranslation();
-  const { token } = useSelector(selectAuth);
+  const { token, user } = useSelector(selectAuth);
   const canCreate = usePermission("salary_transactions.create");
   const canUpdate = usePermission("salary_transactions.update");
+  const canApprove = usePermission("salary_transactions.approve");
   const canManageSettings = usePermission("salary_transactions.manage_settings");
   const canListEmployees = usePermission("employee_details.list");
   const { data: runs = [], isLoading, error } = useGetPayrollRunsQuery();
@@ -62,6 +63,9 @@ export default function PayrollRunsPanel() {
   const [busy, setBusy] = useState(false);
   const [feedback, setFeedback] = useState("");
   const run = runs.find((entry) => entry._id === selectedId);
+  const nextRunStatus = run ? nextStatus[run.status] : undefined;
+  const canAdvance = nextRunStatus === "UNDER_REVIEW" ? canUpdate : canApprove;
+  const isOwnRunApproval = nextRunStatus === "APPROVED" && user?._id && String(run?.created_by) === String(user._id);
   const { data: accountingDelivery, error: accountingError, refetch: refreshAccounting } = useGetAccountingDeliveryQuery(selectedId, {
     skip: !selectedId || !["LOCKED", "PAYMENT_RECORDED"].includes(run?.status),
   });
@@ -162,9 +166,9 @@ export default function PayrollRunsPanel() {
     {run && <section className="space-y-5 rounded-xl border border-gray-200 p-4 dark:border-gray-700">
       <div className="flex flex-wrap justify-between gap-2"><h2 className="text-lg font-semibold text-cell-primary">{run.name}</h2><span className="text-cell-secondary">{t(run.status)} · {run.currency} · {run.employee_count} {t("employees")}</span></div>
       <p className="text-sm text-cell-secondary">{t("Gross")}: {formatAmount(run.gross_minor, run)} · {t("Deductions")}: {formatAmount(run.deductions_minor, run)} · {t("Net")}: {formatAmount(run.net_minor, run)}</p>
-      {canUpdate && <div className="flex flex-wrap items-center gap-2">
-        {run.status === "DRAFT" && <button type="button" className={button} disabled={busy} onClick={() => execute(() => calculateRun(run._id).unwrap(), "Payroll calculated")}>{t("Calculate")}</button>}
-        {nextStatus[run.status] && <><button type="button" className={button} disabled={busy || (run.status === "LOCKED" && !paymentReference.trim())} onClick={advance}>{t(nextStatus[run.status])}</button>{run.status === "LOCKED" && <input className={field} required maxLength={150} value={paymentReference} onChange={(event) => setPaymentReference(event.target.value)} placeholder={t("Payment reference")} aria-label={t("Payment reference")} />}</>}
+      {(canUpdate || canApprove) && <div className="flex flex-wrap items-center gap-2">
+        {run.status === "DRAFT" && canUpdate && <button type="button" className={button} disabled={busy} onClick={() => execute(() => calculateRun(run._id).unwrap(), "Payroll calculated")}>{t("Calculate")}</button>}
+        {nextRunStatus && canAdvance && !isOwnRunApproval && <><button type="button" className={button} disabled={busy || (run.status === "LOCKED" && !paymentReference.trim())} onClick={advance}>{t(nextRunStatus)}</button>{run.status === "LOCKED" && <input className={field} required maxLength={150} value={paymentReference} onChange={(event) => setPaymentReference(event.target.value)} placeholder={t("Payment reference")} aria-label={t("Payment reference")} />}</>}
       </div>}
       <div className="space-y-2"><h3 className="font-semibold text-cell-primary">{t("Payroll items")}</h3>
         {!items.length && <p className="text-cell-secondary">{t("No payroll items yet")}</p>}
