@@ -205,7 +205,7 @@ function ElementsSelect({
                     </div>
                     <IoIosArrowDown className="text-cell-secondary shrink-0" size={16} />
                 </div>
-                {error && <p role="alert" className="text-red-500 text-xs mt-1">{error}</p>}
+                {error && <p role="alert" className="text-red-500 text-xs mt-1">{t(error)}</p>}
 
                 {isDropdownOpen &&
                     createPortal(

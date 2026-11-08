@@ -60,7 +60,7 @@ function EditSalaryModal({ isOpen, onClose, onSubmit, data }) {
                     )}
 
                     <InputWithIcon
-                        title={t("Salary Amount")}
+                        title={t("Additional payment")}
                         name="salary"
                         type="number"
                         value={formik.values.salary}

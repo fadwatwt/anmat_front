@@ -24,7 +24,7 @@ function TextAreaWithLabel({ title, placeholder, className, value, name, onChang
             >
             </textarea>
             <div className="w-full flex justify-between items-center">
-                {error ? <p className="text-red-500 text-xs mt-1">{error}</p> : <div></div>}
+                {error ? <p className="text-red-500 text-xs mt-1">{t(error)}</p> : <div></div>}
                 {maxLength && (
                     <span className="text-xs text-gray-400 dark:text-gray-500">
                         {value?.length || 0}/{maxLength}

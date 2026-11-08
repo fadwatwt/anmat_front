@@ -29,14 +29,14 @@ export const dashboardSideMenuItems = [
     {
         section: 'My Work',
         allowed_to: ['Employee'],
-        title: 'My Projects',
+        title: 'Projects',
         path: '/employee/projects',
         icon: <NoteText />,
     },
     {
         section: 'My Work',
         allowed_to: ['Employee'],
-        title: 'My Tasks',
+        title: 'Tasks',
         path: '/employee/tasks',
         icon: <TaskSquare />,
     },
@@ -59,35 +59,35 @@ export const dashboardSideMenuItems = [
     {
         section: 'My Work',
         allowed_to: ['Employee'],
-        title: 'My Appointments',
+        title: 'Appointments',
         path: '/appointments',
         icon: <CalendarTick />,
     },
     {
         section: 'My Work',
         allowed_to: ['Employee'],
-        title: 'My Attendance',
+        title: 'Employee Menu Attendance',
         path: '/attendance',
         icon: <Calendar />
     },
     {
         section: 'My Work',
         allowed_to: ['Employee'],
-        title: 'My Salary',
+        title: 'Salary',
         path: '/salary',
         icon: <EmptyWallet />
     },
     {
         section: 'My Work',
         allowed_to: ['Employee'],
-        title: 'My Short Leaves',
+        title: 'Short Leaves',
         path: '/leaves',
         icon: <Stickynote size={20} />
     },
     {
         section: 'My Work',
         allowed_to: ['Employee'],
-        title: 'My Requests',
+        title: 'Requests',
         path: '/requests',
         icon: <Stickynote />
     },
@@ -168,23 +168,8 @@ export const dashboardSideMenuItems = [
             },
             {
                 title: 'Holidays',
-                path: '/hr/holidays',
-                permission_any_of: ['holidays.list'],
-            },
-            {
-                title: 'Leave Policies',
-                path: '/hr/leaves',
-                permission_any_of: ['leave_policies.manage_settings'],
-            },
-            {
-                title: 'Employee leave balances',
-                path: '/hr/leave-balances',
-                permission_any_of: ['leave_policies.manage_settings'],
-            },
-            {
-                title: 'Short Leaves',
-                path: '/hr/short-leaves',
-                permission_any_of: ['leaves.track_all', 'leaves.track_department'],
+                path: '/hr/time-off',
+                permission_any_of: ['holidays.list', 'leaves.track_all', 'leaves.track_department', 'leave_policies.manage_settings'],
             },
         ]
     },

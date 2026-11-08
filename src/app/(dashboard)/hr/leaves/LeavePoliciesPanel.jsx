@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useCreateLeavePolicyMutation, useGetLeavePoliciesQuery, useSetDefaultLeavePolicyMutation } from "@/redux/leaves/leavesApi";
 
 const initialForm = {
-    code: "ANNUAL",
+    code: "",
     name: "",
     annual_allowance: "",
     carryover_limit: 0,
@@ -19,12 +19,19 @@ const initialForm = {
     is_default: false,
 };
 
+const policyTemplates = {
+    annual: { code: "ANNUAL", counting_mode: "WORKING_DAYS", accrual_frequency: "YEARLY", exclude_public_holidays: true },
+    sick: { code: "SICK", counting_mode: "WORKING_DAYS", accrual_frequency: "NONE", exclude_public_holidays: true },
+    custom: { code: "", counting_mode: "WORKING_DAYS", accrual_frequency: "NONE", exclude_public_holidays: true },
+};
+
 export default function LeavePoliciesPanel() {
     const { t } = useTranslation();
     const { data: policies = [], isLoading, isError } = useGetLeavePoliciesQuery();
     const [createPolicy, { isLoading: isSaving }] = useCreateLeavePolicyMutation();
     const [setDefaultPolicy, { isLoading: isChangingDefault }] = useSetDefaultLeavePolicyMutation();
     const [form, setForm] = useState(initialForm);
+    const [template, setTemplate] = useState("custom");
     const [showForm, setShowForm] = useState(false);
     const [selectedPolicyId, setSelectedPolicyId] = useState(null);
     const [message, setMessage] = useState(null);
@@ -52,7 +59,8 @@ export default function LeavePoliciesPanel() {
                 policy_year_start_day: Number(form.policy_year_start_day),
             }).unwrap();
             setMessage({ text: t("Leave policy created successfully"), error: false });
-            setForm({ ...initialForm, code: "" });
+            setForm(initialForm);
+            setTemplate("custom");
             setShowForm(false);
         } catch (error) {
             setMessage({ text: t(error?.data?.message || "Failed to create leave policy"), error: true });
@@ -127,6 +135,14 @@ export default function LeavePoliciesPanel() {
                 <h3 className="font-semibold text-cell-primary">{t("Create a leave policy")}</h3>
                 <p className="text-sm text-cell-secondary">{t("Choose the yearly allowance for this organization. No allowance is set automatically.")}</p>
             </div>
+            <label className="text-sm text-cell-secondary sm:col-span-2">{t("Policy template")}
+                <select value={template} onChange={(e) => { const selected = e.target.value; setTemplate(selected); setForm({ ...initialForm, ...policyTemplates[selected] }); }} className="mt-1 w-full rounded-lg border border-status-border bg-surface p-2 text-cell-primary">
+                    <option value="custom">{t("Custom policy")}</option>
+                    <option value="annual">{t("Annual leave template")}</option>
+                    <option value="sick">{t("Sick leave template")}</option>
+                </select>
+                <span className="mt-1 block text-xs">{t("Templates fill the structure only. Enter and approve the allowance for your organization.")}</span>
+            </label>
             <label className="text-sm text-cell-secondary">{t("Policy Name")}
                 <input required value={form.name} onChange={(e) => update("name", e.target.value)} className="mt-1 w-full rounded-lg border border-status-border bg-surface p-2 text-cell-primary" />
             </label>

@@ -74,7 +74,7 @@ function SingleEmployeeProfile() {
     const notifications = notificationsData?.data?.data || [];
     const notificationsCount = notificationsData?.data?.pagination?.total ?? notifications.length;
 
-    const { data: employeeLogsData } = useGetEmployeeLogsQuery({ employeeId: employeeId, limit: 10 }, { skip: !employeeId });
+    const { data: employeeLogsData } = useGetEmployeeLogsQuery({ employeeId: employeeId, limit: 50 }, { skip: !employeeId });
     const activityLogs = employeeLogsData?.data || [];
 
     const [isOpenSendNotifyModal, setIsOpenSendNotifyModal] = useState(false);

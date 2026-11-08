@@ -19,14 +19,20 @@ function ApprovalSettings() {
     const { data: definitions = [] } = useGetApprovalDefinitionsQuery(undefined, { skip: !canUpdate });
     const [createDefinition, { isLoading }] = useCreateApprovalDefinitionMutation();
     const [form, setForm] = useState({ request_type: "DAY_OFF", name: "Leave approval" });
-    const [stages, setStages] = useState([{ name: "Manager", approver_id: "", delegate_id: "", escalation_hours: 48 }]);
+    const [stages, setStages] = useState([{ name: "Manager", approver_id: "", delegate_id: "", delegate_starts_at: "", delegate_ends_at: "", escalation_hours: 48 }]);
     if (!canUpdate) return null;
     const submit = async event => {
         event.preventDefault();
         await createDefinition({
             request_type: form.request_type,
             name: form.name,
-            stages: stages.map(stage => ({ ...stage, delegate_id: stage.delegate_id || undefined, escalation_hours: Number(stage.escalation_hours) })),
+            stages: stages.map(stage => ({
+                ...stage,
+                delegate_id: stage.delegate_id || undefined,
+                delegate_starts_at: stage.delegate_starts_at ? new Date(stage.delegate_starts_at).toISOString() : undefined,
+                delegate_ends_at: stage.delegate_ends_at ? new Date(stage.delegate_ends_at).toISOString() : undefined,
+                escalation_hours: Number(stage.escalation_hours),
+            })),
         }).unwrap();
     };
     return <section className="rounded-2xl border border-status-border bg-surface p-4">
@@ -45,14 +51,22 @@ function ApprovalSettings() {
                 <option value="">{t("Select approver")}</option>
                 {employees.map(employee => <option key={employee.user_id} value={employee.user_id}>{employee.user?.name}</option>)}
             </select>
-            <select value={stage.delegate_id} onChange={e => setStages(items => items.map((item, i) => i === index ? { ...item, delegate_id: e.target.value } : item))} className="rounded-lg border border-status-border bg-surface p-2 text-cell-primary">
+            <select value={stage.delegate_id} onChange={e => setStages(items => items.map((item, i) => i === index ? { ...item, delegate_id: e.target.value, ...(!e.target.value ? { delegate_starts_at: "", delegate_ends_at: "" } : {}) } : item))} className="rounded-lg border border-status-border bg-surface p-2 text-cell-primary">
                 <option value="">{t("No escalation delegate")}</option>
                 {employees.map(employee => <option key={employee.user_id} value={employee.user_id}>{employee.user?.name}</option>)}
             </select>
             <input type="number" min="1" max="720" value={stage.escalation_hours} onChange={e => setStages(items => items.map((item, i) => i === index ? { ...item, escalation_hours: e.target.value } : item))} className="rounded-lg border border-status-border bg-surface p-2 text-cell-primary" />
+            {stage.delegate_id && <>
+                <label className="grid gap-1 text-xs text-cell-secondary">{t("Delegation starts")}
+                    <input type="datetime-local" value={stage.delegate_starts_at} onChange={e => setStages(items => items.map((item, i) => i === index ? { ...item, delegate_starts_at: e.target.value } : item))} className="rounded-lg border border-status-border bg-surface p-2 text-cell-primary" />
+                </label>
+                <label className="grid gap-1 text-xs text-cell-secondary">{t("Delegation ends")}
+                    <input type="datetime-local" min={stage.delegate_starts_at || undefined} value={stage.delegate_ends_at} onChange={e => setStages(items => items.map((item, i) => i === index ? { ...item, delegate_ends_at: e.target.value } : item))} className="rounded-lg border border-status-border bg-surface p-2 text-cell-primary" />
+                </label>
+            </>}
             <button type="button" disabled={stages.length === 1} onClick={() => setStages(items => items.filter((_, i) => i !== index))} className="rounded-lg border border-status-border px-3 py-2 text-sm text-cell-secondary disabled:opacity-40">{t("Remove")}</button>
             </div>)}
-            <button type="button" onClick={() => setStages(items => [...items, { name: "", approver_id: "", delegate_id: "", escalation_hours: 48 }])} className="rounded-lg border border-primary-base px-4 py-2 text-sm font-semibold text-primary-base">{t("Add Approval Stage")}</button>
+            <button type="button" onClick={() => setStages(items => [...items, { name: "", approver_id: "", delegate_id: "", delegate_starts_at: "", delegate_ends_at: "", escalation_hours: 48 }])} className="rounded-lg border border-primary-base px-4 py-2 text-sm font-semibold text-primary-base">{t("Add Approval Stage")}</button>
             <button disabled={isLoading} className="rounded-lg bg-primary-base px-4 py-2 font-semibold text-white disabled:opacity-50">{t("Activate Workflow")}</button>
         </form>
         <div className="mt-3 flex flex-wrap gap-2">{definitions.filter(item => item.is_active).map(item => <span key={item._id} className="rounded-full bg-status-bg px-3 py-1 text-xs text-cell-secondary">{item.request_type}: {item.name}</span>)}</div>

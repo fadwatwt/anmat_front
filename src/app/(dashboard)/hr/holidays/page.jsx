@@ -7,6 +7,7 @@ import i18n from "i18next";
 import { HiPlus } from "react-icons/hi";
 import AddHolidayModal from "./modals/AddHolidayModal";
 import DeleteHolidayModal from "./modals/DeleteHolidayModal";
+import GroupHolidayForm from "./GroupHolidayForm";
 import {
     useGetHolidaysQuery,
     useCreateHolidayMutation,
@@ -117,6 +118,7 @@ function HolidaysPage() {
                     isCheckInput={true}
                     hideSearchInput={false}
                 />
+                <GroupHolidayForm />
             </Page>
 
             <AddHolidayModal

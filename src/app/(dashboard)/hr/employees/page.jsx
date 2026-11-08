@@ -58,7 +58,7 @@ function HRPage() {
             content: <RequestsTab />,
         }] : []),
         ...(!isEmployee && canViewSalary ? [{
-            title: t("Salary"),
+            title: t("Employee financial adjustments"),
             content: <SalaryTab />,
         }] : []),
         ...(canViewAttendances ? [{

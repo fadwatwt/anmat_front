@@ -11,6 +11,50 @@ export const subscriberTasksApi = apiSlice.injectEndpoints({
             providesTags: ["Tasks"],
             transformResponse: (response) => response.data || response,
         }),
+        getSavedTaskFilters: builder.query({
+            query: () => ({ url: "api/subscriber/organization/task-filters", method: "GET" }),
+            providesTags: ["SavedTaskFilters"],
+            transformResponse: (response) => response.data || response,
+        }),
+        saveTaskFilter: builder.mutation({
+            query: (data) => ({ url: "api/subscriber/organization/task-filters", method: "POST", body: data }),
+            invalidatesTags: ["SavedTaskFilters"],
+        }),
+        deleteSavedTaskFilter: builder.mutation({
+            query: (id) => ({ url: `api/subscriber/organization/task-filters/${id}`, method: "DELETE" }),
+            invalidatesTags: ["SavedTaskFilters"],
+        }),
+        getTaskRecurrences: builder.query({
+            query: () => ({ url: "api/subscriber/organization/task-recurrences", method: "GET" }),
+            providesTags: ["TaskRecurrences"],
+            transformResponse: (response) => response.data || response,
+        }),
+        configureTaskRecurrence: builder.mutation({
+            query: ({ taskId, ...data }) => ({ url: `api/subscriber/organization/task-recurrences/${taskId}`, method: "POST", body: data }),
+            invalidatesTags: ["TaskRecurrences"],
+        }),
+        stopTaskRecurrence: builder.mutation({
+            query: (taskId) => ({ url: `api/subscriber/organization/task-recurrences/${taskId}`, method: "DELETE" }),
+            invalidatesTags: ["TaskRecurrences"],
+        }),
+        getTaskAutomations: builder.query({
+            query: () => ({ url: "api/subscriber/organization/task-automations", method: "GET" }),
+            providesTags: ["TaskAutomations"],
+            transformResponse: (response) => response.data || response,
+        }),
+        getTaskAutomationHistory: builder.query({
+            query: () => ({ url: "api/subscriber/organization/task-automations/history", method: "GET" }),
+            providesTags: ["TaskAutomationHistory"],
+            transformResponse: (response) => response.data || response,
+        }),
+        createTaskAutomation: builder.mutation({
+            query: (data) => ({ url: "api/subscriber/organization/task-automations", method: "POST", body: data }),
+            invalidatesTags: ["TaskAutomations"],
+        }),
+        stopTaskAutomation: builder.mutation({
+            query: (id) => ({ url: `api/subscriber/organization/task-automations/${id}`, method: "DELETE" }),
+            invalidatesTags: ["TaskAutomations"],
+        }),
         getTaskWorkload: builder.query({
             query: (week) => ({
                 url: "api/subscriber/organization/tasks/workload",
@@ -130,6 +174,16 @@ export const subscriberTasksApi = apiSlice.injectEndpoints({
 
 export const {
     useGetSubscriberTasksQuery,
+    useGetSavedTaskFiltersQuery,
+    useSaveTaskFilterMutation,
+    useDeleteSavedTaskFilterMutation,
+    useGetTaskRecurrencesQuery,
+    useConfigureTaskRecurrenceMutation,
+    useStopTaskRecurrenceMutation,
+    useGetTaskAutomationsQuery,
+    useGetTaskAutomationHistoryQuery,
+    useCreateTaskAutomationMutation,
+    useStopTaskAutomationMutation,
     useGetTaskWorkloadQuery,
     useCreateSubscriberTaskMutation,
     useDeleteSubscriberTaskMutation,

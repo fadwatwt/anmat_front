@@ -40,7 +40,7 @@ export default function SalaryTab() {
 
   const headers = [
     { label: t("Employees"), width: "250px" },
-    { label: t("Salary Amount"), width: "120px" },
+    { label: t("Additional payment"), width: "120px" },
     { label: t("Bonus"), width: "100px" },
     { label: t("Deduction"), width: "100px" },
     { label: t("Comment"), width: "200px" },
@@ -188,7 +188,7 @@ export default function SalaryTab() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2 h-full">
         <Table
-          title={t("Salary Transactions")}
+          title={t("Employee financial adjustments")}
           headers={headers}
           rows={rows}
           isCheckInput={true}
@@ -216,7 +216,7 @@ export default function SalaryTab() {
                 onClick={() => setIsAddModalOpen(true)}
               >
                 <GoPlus size={18} />
-                {t("Add Transaction")}
+                {t("Add financial adjustment")}
               </button>
             ) : null
           }

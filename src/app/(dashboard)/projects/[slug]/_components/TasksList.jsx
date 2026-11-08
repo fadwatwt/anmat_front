@@ -12,6 +12,7 @@ import { useGetSubscriberOrganizationQuery } from "@/redux/organizations/organiz
 import { translateDate } from "@/functions/Days.js";
 import { RiArrowDownSLine, RiFlag2Line, RiStackLine } from "react-icons/ri";
 import { useEvaluateSubscriberTaskStageMutation, useEvaluateSubscriberTaskMutation } from "@/redux/tasks/subscriberTasksApi";
+import { availableTaskStatuses } from "@/functions/taskStatusTransitions";
 
 // Evaluation Modal components
 import Modal from "@/components/Modal/Modal";
@@ -169,6 +170,7 @@ function TasksList({ tasks = [], isAssignedDate = false, isEmployeeView = false,
     const user = useSelector(selectUser);
     const canEvaluate = usePermission("tasks.evaluate");
     const canUpdateTasks = useHasAnyPermission(["tasks.update", "tasks.track_all", "tasks.track_department"]);
+    const canManageStatuses = usePermission("tasks.update");
 
     const [evaluateStage] = useEvaluateSubscriberTaskStageMutation();
     const [evaluateTask] = useEvaluateSubscriberTaskMutation();
@@ -285,7 +287,7 @@ function TasksList({ tasks = [], isAssignedDate = false, isEmployeeView = false,
                                                             onClick={() => setActiveStatusId(null)}
                                                         />
                                                         <div className="absolute top-full left-0 mt-1 w-32 bg-surface border border-status-border rounded-lg shadow-xl z-50 py-1">
-                                                            {statusOptions.map((opt) => (
+                                                            {statusOptions.filter((opt) => availableTaskStatuses(task.delivery || task.status, user?.type === "Subscriber" || canManageStatuses).includes(opt.id) && (opt.id !== "done" || user?.type !== "Employee" || canEvaluate)).map((opt) => (
                                                                 <button
                                                                     key={opt.id}
                                                                     onClick={() => handleStatusChange(task._id, opt.id)}

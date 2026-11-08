@@ -5,6 +5,8 @@ import ProjectMembers from "@/app/(dashboard)/projects/[slug]/_components/Projec
 import SelectWithoutLabel from "@/components/Form/SelectWithoutLabel.jsx";
 import TasksList from "@/app/(dashboard)/projects/[slug]/_components/TasksList.jsx";
 import ProjectTimeline from "@/app/(dashboard)/projects/[slug]/_components/ProjectTimeline.jsx";
+import ProjectScheduleSummary from "@/app/(dashboard)/projects/[slug]/_components/ProjectScheduleSummary.jsx";
+import BulkTaskEstimates from "@/app/(dashboard)/projects/[slug]/_components/BulkTaskEstimates.jsx";
 import TaskComments from "@/app/(dashboard)/projects/[slug]/_components/TaskComments.jsx";
 import CommentInput from "@/components/CommentInput.jsx";
 import AttachmentsList from "@/app/(dashboard)/projects/[slug]/_components/AttachmentsList.jsx";
@@ -311,6 +313,8 @@ function ProjectDetailsPage() {
                         rate={project.overall_rating || 0}
                         onRate={canEvaluate ? handleEvaluateProject : null}
                     />
+                    <ProjectScheduleSummary project={project} />
+                    {authUserType === "Subscriber" && <BulkTaskEstimates project={project} />}
                     <section className="p-4 sm:p-5 bg-surface rounded-[24px] border border-status-border shadow-sm w-full flex flex-col gap-4">
                         <div className="title-header pb-3 w-full flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-status-border">
                             <div>

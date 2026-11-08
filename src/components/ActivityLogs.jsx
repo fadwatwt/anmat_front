@@ -28,6 +28,9 @@ const TITLE_MAP = {
     'project.deleted': 'activity.project.deleted',
     'employee.created': 'activity.employee.created',
     'employee.updated': 'activity.employee.updated',
+    'salary_transaction.created': 'activity.salary_transaction.created',
+    'salary_transaction.updated': 'activity.salary_transaction.updated',
+    'salary_transaction.deleted': 'activity.salary_transaction.deleted',
     'employee.deleted': 'activity.employee.deleted',
     'employee.invited': 'activity.employee.invited',
     'user.login': 'activity.user.login',
@@ -109,7 +112,11 @@ export const mapBackendLogToFrontend = (log, t) => {
     const target = targetName || (log.target_type && log.target_type !== "Task" ? log.target_type : "");
     const project = log.meta?.project_name ? ` ${t("in project")} ${log.meta.project_name}` : "";
 
-    if (action === "task.created") {
+    if (action === "salary_transaction.created" && log.meta?.historical_import) {
+        description = t("Historical financial adjustment imported");
+    } else if (action.startsWith("salary_transaction.")) {
+        description = `${actor} — ${title}.`;
+    } else if (action === "task.created") {
         description = `${actor} ${t("created task")} "${log.meta?.title || t("Untitled")}"${project}.`;
     } else if (action === "task.comment_added") {
         description = `${actor} ${t("added a comment to task")} "${target}"${project}.`;

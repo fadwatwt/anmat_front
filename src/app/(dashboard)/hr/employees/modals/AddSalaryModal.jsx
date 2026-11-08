@@ -21,13 +21,12 @@ function AddSalaryModal({ isOpen, onClose, onSubmit }) {
 
     const validationSchema = Yup.object().shape({
         employee_id: Yup.string().required(t("Employee is required")),
-        amount: Yup.number()
-            .required(t("Amount is required"))
-            .min(0, t("Amount must be at least 0")),
+        amount: Yup.number().min(0, t("Amount must be at least 0")),
         bonus: Yup.number().min(0, t("Bonus must be at least 0")),
         discount: Yup.number().min(0, t("Discount must be at least 0")),
         comment: Yup.string(),
-    });
+    }).test("has-adjustment", t("Enter a bonus or deduction"), values =>
+        Number(values?.bonus || 0) > 0 || Number(values?.discount || 0) > 0);
 
     const formik = useFormik({
         initialValues: {
@@ -73,7 +72,7 @@ function AddSalaryModal({ isOpen, onClose, onSubmit }) {
                 btnCancelTitle={t("Cancel")}
                 onClick={() => formik.handleSubmit()}
                 className="lg:w-4/12 md:w-8/12 sm:w-6/12 w-11/12 px-3"
-                title={t("Add an employee salary transaction")}
+                title={t("Add financial adjustment")}
             >
                 <div className="px-1 overflow-visible">
                     <div className="flex flex-col gap-4">
@@ -94,22 +93,8 @@ function AddSalaryModal({ isOpen, onClose, onSubmit }) {
                             <p className="text-red-500 text-xs mt-[-10px]">{formik.errors.employee_id}</p>
                         )}
 
-                        <InputWithIcon
-                            title={t("Salary Amount")}
-                            name="amount"
-                            type="number"
-                            value={formik.values.amount}
-                            onChange={(e) => {
-                                const val = parseFloat(e.target.value);
-                                if (val >= 0 || e.target.value === "") {
-                                    formik.handleChange(e);
-                                }
-                            }}
-                            icon={<span className="text-gray-500 dark:text-gray-400">$</span>}
-                            placeholder="0"
-                            isRequired={true}
-                            error={formik.touched.amount && formik.errors.amount}
-                        />
+                        <p className="text-sm text-cell-secondary">{t("The base salary is set in employee compensation. Enter only an extra bonus or deduction here.")}</p>
+                        {formik.errors && typeof formik.errors === "string" && <p role="alert" className="text-sm text-red-600">{formik.errors}</p>}
 
                         <InputWithIcon
                             title={t("Bonus Amount")}

@@ -12,6 +12,7 @@ import { RiEditLine, RiDeleteBin7Line } from "@remixicon/react";
 
 import Page from "@/components/Page.jsx";
 import CreatePositionModal from "./modals/CreatePositionModal.jsx";
+import ImportPositionsModal from "./modals/ImportPositionsModal.jsx";
 import EditPositionModal from "./modals/EditPositionModal.jsx";
 
 import {
@@ -22,7 +23,7 @@ import {
 import { usePermission } from "@/Hooks/usePermission";
 
 function PositionsPage() {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const { showProcessing, hideProcessing } = useProcessing();
     const { data: positions = [], isLoading } = useGetPositionsQuery();
     const [deletePosition] = useDeletePositionMutation();
@@ -44,6 +45,7 @@ function PositionsPage() {
         message: "",
     });
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
     const headers = [
         { label: t("Positions"), width: "30%" },
@@ -135,6 +137,11 @@ function PositionsPage() {
     const headerActions = (
         <>
             {canCreatePosition ? (
+                <button onClick={() => setIsImportModalOpen(true)} className="rounded-lg border border-status-border px-4 py-2 text-sm font-semibold">
+                    {i18n.language?.startsWith("ar") ? "استيراد المناصب" : "Import positions"}
+                </button>
+            ) : null}
+            {canCreatePosition ? (
                 <button onClick={handleCreatePosition} className="flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg transition-all text-sm font-semibold shadow-sm">
                     <GoPlus size={18} />
                     {t("Create a Position")}
@@ -190,6 +197,7 @@ function PositionsPage() {
                     isOpen={isCreateModalOpen}
                     onClose={() => setIsCreateModalOpen(false)}
                 />
+                <ImportPositionsModal isOpen={isImportModalOpen} onClose={() => setIsImportModalOpen(false)} existingPositions={positions} />
 
                 <EditPositionModal
                     isOpen={isEditModalOpen}

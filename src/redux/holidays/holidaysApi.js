@@ -11,6 +11,22 @@ export const holidaysApi = apiSlice.injectEndpoints({
             transformResponse: (response) => response.data,
             providesTags: ["Holidays"],
         }),
+        getGroupHolidays: builder.query({
+            query: () => ({ url: "api/subscriber/organization/group-holidays", method: "GET" }),
+            transformResponse: (response) => response.data,
+            providesTags: ["Holidays"],
+        }),
+        previewGroupHoliday: builder.mutation({
+            query: (body) => ({ url: "api/subscriber/organization/group-holidays/preview", method: "POST", body }),
+        }),
+        createGroupHoliday: builder.mutation({
+            query: (body) => ({ url: "api/subscriber/organization/group-holidays", method: "POST", body }),
+            invalidatesTags: ["Holidays"],
+        }),
+        cancelGroupHoliday: builder.mutation({
+            query: ({ id, reason }) => ({ url: `api/subscriber/organization/group-holidays/${id}/cancel`, method: "POST", body: { reason } }),
+            invalidatesTags: ["Holidays"],
+        }),
         createHoliday: builder.mutation({
             query: (body) => ({
                 url: "api/subscriber/organization/holidays",
@@ -39,6 +55,10 @@ export const holidaysApi = apiSlice.injectEndpoints({
 
 export const {
     useGetHolidaysQuery,
+    useGetGroupHolidaysQuery,
+    usePreviewGroupHolidayMutation,
+    useCreateGroupHolidayMutation,
+    useCancelGroupHolidayMutation,
     useCreateHolidayMutation,
     useUpdateHolidayMutation,
     useDeleteHolidayMutation,

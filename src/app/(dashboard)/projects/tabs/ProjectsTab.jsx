@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import Table from "@/components/Tables/Table.jsx";
@@ -36,15 +36,30 @@ import {
     RiStarLine,
 } from "@remixicon/react";
 import dayjs from "dayjs";
+import ProjectScheduleOverview from "@/app/(dashboard)/projects/_components/ProjectScheduleOverview";
 
 function ProjectsTab() {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const canEvaluate = usePermission("projects.evaluate");
     const canEditProject = usePermission("projects.update");
     const canDeleteProject = usePermission("projects.delete");
 
-    const { data: projectsData, isLoading, isError, error } = useGetSubscriberProjectsQuery();
-    const projects = projectsData || [];
+    const [searchInput, setSearchInput] = useState("");
+    const [search, setSearch] = useState("");
+    const [fetchPage, setFetchPage] = useState(1);
+    const [projects, setProjects] = useState([]);
+    const [hasMore, setHasMore] = useState(true);
+    useEffect(() => {
+        if (searchInput.trim() === search) return;
+        const timer = setTimeout(() => { setSearch(searchInput.trim()); setFetchPage(1); setProjects([]); setHasMore(true); setSelectedIds([]); setTableKey((key) => key + 1); }, 350);
+        return () => clearTimeout(timer);
+    }, [searchInput, search]);
+    const { currentData: projectsData, isLoading, isFetching, isError, error } = useGetSubscriberProjectsQuery({ page: fetchPage, page_size: 100, ...(search ? { search } : {}) });
+    useEffect(() => {
+        if (!projectsData) return;
+        setHasMore(projectsData.length === 100);
+        setProjects((previous) => fetchPage === 1 ? projectsData : [...previous, ...projectsData.filter((project) => !previous.some((item) => item._id === project._id))]);
+    }, [projectsData, fetchPage]);
 
     const [updateProject, { isLoading: isUpdating }] = useUpdateSubscriberProjectMutation();
     const [uploadProjectAttachment] = useUploadSubscriberProjectAttachmentMutation();
@@ -317,11 +332,18 @@ function ProjectsTab() {
 
     return (
         <div>
+            <ProjectScheduleOverview />
+            <div className="mb-3 flex flex-wrap items-center gap-3">
+                <input aria-label={t("Search projects")} value={searchInput} onChange={(event) => setSearchInput(event.target.value.slice(0, 100))} placeholder={t("Search projects")} className="rounded-lg border border-status-border bg-surface px-3 py-2 text-sm" />
+                <span className="text-sm text-cell-secondary">{i18n.language?.startsWith("ar") ? "المشاريع المحمّلة" : "Loaded projects"}: {projects.length}</span>
+            </div>
             <Table
                 key={tableKey}
                 title={t("All Projects")}
                 headers={headers}
                 rows={rows}
+                hideSearchInput={true}
+                showExport={!hasMore && !isFetching}
                 currentPage={pagination.currentPage}
                 totalPages={pagination.totalPages}
                 rowsPerPage={pagination.rowsPerPage}
@@ -343,6 +365,7 @@ function ProjectsTab() {
                     ) : null
                 }
             />
+            {hasMore && <button type="button" disabled={isFetching} onClick={() => setFetchPage((current) => current + 1)} className="mt-3 rounded-lg border border-primary-500 px-4 py-2 text-primary-600 disabled:opacity-50">{isFetching ? t("Loading projects...") : (i18n.language?.startsWith("ar") ? "تحميل المزيد من المشاريع" : "Load more projects")}</button>}
 
             {selectedProject && (
                 <EditProjectModal

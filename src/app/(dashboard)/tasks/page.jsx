@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
@@ -18,8 +18,12 @@ import {
   RiCalendarCheckLine,
 } from "react-icons/ri";
 import StatusActions from "@/components/Dropdowns/StatusActions";
+import { availableTaskStatuses } from "@/functions/taskStatusTransitions";
 import {
   useGetSubscriberTasksQuery,
+  useGetSavedTaskFiltersQuery,
+  useSaveTaskFilterMutation,
+  useDeleteSavedTaskFilterMutation,
   useDeleteSubscriberTaskMutation,
   useUpdateSubscriberTaskMutation,
   useUploadSubscriberTaskAttachmentMutation,
@@ -61,22 +65,51 @@ const ApiResponseAlert = dynamic(
 );
 
 function TasksPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
 
   const authUserType = useSelector(selectUserType);
+  const [taskFilters, setTaskFilters] = useState({ search: "", status: "", priority: "" });
+  const [activeView, setActiveView] = useState(() => typeof window !== "undefined" ? localStorage.getItem("tasks-view-mode") || "table" : "table");
+  const [serverFilters, setServerFilters] = useState(taskFilters);
+  const [fetchPage, setFetchPage] = useState(1);
+  const [loadedTasks, setLoadedTasks] = useState([]);
+  const [hasMoreTasks, setHasMoreTasks] = useState(true);
+  useEffect(() => {
+    if (taskFilters.search === serverFilters.search && taskFilters.status === serverFilters.status && taskFilters.priority === serverFilters.priority) return;
+    const timer = setTimeout(() => { setServerFilters(taskFilters); setFetchPage(1); setLoadedTasks([]); setHasMoreTasks(true); }, 350);
+    return () => clearTimeout(timer);
+  }, [taskFilters, serverFilters]);
+  const { data: savedTaskFilters = [] } = useGetSavedTaskFiltersQuery(undefined, { skip: !authUserType });
+  const [saveTaskFilterMutation] = useSaveTaskFilterMutation();
+  const [deleteSavedTaskFilter] = useDeleteSavedTaskFilterMutation();
+  const [filterName, setFilterName] = useState("");
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("task_search") || params.has("task_status") || params.has("task_priority")) {
+      setTaskFilters({ search: (params.get("task_search") || "").slice(0, 100), status: params.get("task_status") || "", priority: params.get("task_priority") || "" });
+    }
+  }, []);
   const isEmployee = authUserType === "Employee";
   const isSubscriber = authUserType === "Subscriber";
   const canCreateTask = usePermission("tasks.create");
   const canEditTask = usePermission("tasks.update");
+  const canEvaluateTask = usePermission("tasks.evaluate");
   const canDeleteTask = usePermission("tasks.delete");
   const canViewWorkload = useHasAnyPermission(["tasks.track_all", "tasks.track_department"]);
 
   const {
-    data: subscriberTasks = [],
+    currentData: subscriberTasksPage,
     isLoading: isSubscriberLoading,
+    isFetching: isSubscriberFetching,
     isError: isSubscriberError,
-  } = useGetSubscriberTasksQuery(undefined, { skip: !isSubscriber });
+  } = useGetSubscriberTasksQuery({ page: fetchPage, page_size: 100, ...serverFilters }, { skip: !isSubscriber || activeView === "kanban" });
+  const { data: kanbanTasks = [], isLoading: isKanbanLoading, isError: isKanbanError } = useGetSubscriberTasksQuery(undefined, { skip: !isSubscriber || activeView !== "kanban" });
+  useEffect(() => {
+    if (!subscriberTasksPage) return;
+    setHasMoreTasks(subscriberTasksPage.length === 100);
+    setLoadedTasks((previous) => fetchPage === 1 ? subscriberTasksPage : [...previous, ...subscriberTasksPage.filter((task) => !previous.some((item) => item._id === task._id))]);
+  }, [subscriberTasksPage, fetchPage]);
   const {
     data: rawEmployeeTasks = [],
     isLoading: isEmployeeLoading,
@@ -85,13 +118,34 @@ function TasksPage() {
 
   // The employee API already applies the authorization scope and intentionally
   // includes tasks from projects the employee manages or belongs to.
-  const tasks = isEmployee ? rawEmployeeTasks : subscriberTasks;
+  const tasks = isEmployee ? rawEmployeeTasks : activeView === "kanban" ? kanbanTasks : loadedTasks;
+  const filteredTasks = useMemo(() => tasks.filter((task) => {
+    const search = taskFilters.search.trim().toLocaleLowerCase();
+    return (!search || String(task.title || "").toLocaleLowerCase().includes(search)) &&
+      (!taskFilters.status || task.status === taskFilters.status) &&
+      (!taskFilters.priority || task.priority === taskFilters.priority);
+  }), [tasks, taskFilters]);
+  const saveTaskFilter = async () => {
+    const name = filterName.trim().slice(0, 50);
+    if (!name) return;
+    try { await saveTaskFilterMutation({ name, ...taskFilters }).unwrap(); setFilterName(""); }
+    catch { setApiResponse({ isOpen: true, status: "error", message: t("Could not save filter") }); }
+  };
+  const shareTaskFilter = async () => {
+    const url = new URL(window.location.href);
+    for (const key of ["task_search", "task_status", "task_priority"]) url.searchParams.delete(key);
+    if (taskFilters.search) url.searchParams.set("task_search", taskFilters.search);
+    if (taskFilters.status) url.searchParams.set("task_status", taskFilters.status);
+    if (taskFilters.priority) url.searchParams.set("task_priority", taskFilters.priority);
+    try { await navigator.clipboard.writeText(url.toString()); setApiResponse({ isOpen: true, status: "success", message: t("Filter link copied") }); }
+    catch { setApiResponse({ isOpen: true, status: "error", message: t("Could not copy filter link") }); }
+  };
   const isLoading = authUserType
     ? isEmployee
       ? isEmployeeLoading
-      : isSubscriberLoading
+      : activeView === "kanban" ? isKanbanLoading : isSubscriberLoading
     : true;
-  const isError = isEmployee ? isEmployeeError : isSubscriberError;
+  const isError = isEmployee ? isEmployeeError : activeView === "kanban" ? isKanbanError : isSubscriberError;
 
   const [deleteSubscriberTask] = useDeleteSubscriberTaskMutation();
   const [updateTaskStatus] = useUpdateTaskStatusMutation();
@@ -100,13 +154,6 @@ function TasksPage() {
     useUploadSubscriberTaskAttachmentMutation();
   const [uploadEmployeeAttachment] = useUploadEmployeeTaskAttachmentMutation();
   const { showProcessing, hideProcessing } = useProcessing();
-
-  const [activeView, setActiveView] = useState(() => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("tasks-view-mode") || "table";
-    }
-    return "table";
-  });
 
   const handleViewChange = (view) => {
     setActiveView(view);
@@ -120,6 +167,12 @@ function TasksPage() {
         status: "error",
         message: t("You don't have permission to perform this action."),
       });
+      return;
+    }
+
+    const task = tasks.find((item) => String(item._id) === String(taskId));
+    if (!task || !availableTaskStatuses(task.status, canEditTask).includes(newStatus)) {
+      setApiResponse({ isOpen: true, status: "error", message: t("Task status transition is not allowed") });
       return;
     }
 
@@ -363,7 +416,7 @@ function TasksPage() {
   };
 
   const taskRowTable = useMemo(() => {
-    return tasks.map((task) => [
+    return filteredTasks.map((task) => [
       <NameAndDescription
         key={`name-${task._id}`}
         path={taskDetailsPath(task)}
@@ -451,7 +504,7 @@ function TasksPage() {
         {task.due_date ? translateDate(task.due_date) : "-"}
       </p>,
     ]);
-  }, [tasks, t, isEmployee]);
+  }, [filteredTasks, t, isEmployee]);
 
   if (isError) {
     return (
@@ -480,12 +533,26 @@ function TasksPage() {
       >
         <div className="flex flex-col gap-6">
           {canViewWorkload && <WorkloadPanel />}
+          <div className="rounded-xl border border-status-border bg-surface p-4">
+            <h2 className="mb-3 font-semibold text-cell-primary">{t("Search and saved filters")}</h2>
+            <div className="flex flex-wrap gap-2">
+              <input aria-label={t("Search tasks")} value={taskFilters.search} onChange={(event) => setTaskFilters((current) => ({ ...current, search: event.target.value.slice(0, 100) }))} placeholder={t("Search tasks")} className="min-w-44 flex-1 rounded-lg border border-status-border bg-surface px-3 py-2 text-sm" />
+              <select aria-label={t("Task status")} value={taskFilters.status} onChange={(event) => setTaskFilters((current) => ({ ...current, status: event.target.value }))} className="rounded-lg border border-status-border bg-surface px-3 py-2 text-sm"><option value="">{t("All statuses")}</option>{allStatuses.map((status) => <option key={status} value={status}>{t(status)}</option>)}</select>
+              <select aria-label={t("Task priority")} value={taskFilters.priority} onChange={(event) => setTaskFilters((current) => ({ ...current, priority: event.target.value }))} className="rounded-lg border border-status-border bg-surface px-3 py-2 text-sm"><option value="">{t("All priorities")}</option>{["low", "medium", "high", "urgent"].map((priority) => <option key={priority} value={priority}>{t(priority)}</option>)}</select>
+              <button type="button" onClick={shareTaskFilter} className="rounded-lg border border-primary-500 px-3 py-2 text-sm text-primary-600">{t("Share filter")}</button>
+            </div>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <input aria-label={t("Filter name")} value={filterName} onChange={(event) => setFilterName(event.target.value)} placeholder={t("Filter name")} className="min-w-40 rounded-lg border border-status-border bg-surface px-3 py-2 text-sm" />
+              <button type="button" disabled={!filterName.trim()} onClick={saveTaskFilter} className="rounded-lg bg-primary-500 px-3 py-2 text-sm text-white disabled:opacity-50">{t("Save filter")}</button>
+              {savedTaskFilters.map((saved) => <span key={saved._id} className="inline-flex items-center rounded-lg border border-status-border"><button type="button" onClick={() => setTaskFilters({ search: saved.search || "", status: saved.status || "", priority: saved.priority || "" })} className="px-2 py-1 text-sm text-cell-primary">{saved.name}</button><button type="button" aria-label={`${t("Delete filter")}: ${saved.name}`} onClick={() => deleteSavedTaskFilter(saved._id)} className="px-2 text-red-600">×</button></span>)}
+            </div>
+          </div>
           <div className="flex flex-col gap-2 h-full">
             {isLoading ? (
               <div className="text-center py-6">{t("Loading tasks...")}</div>
             ) : activeView === "kanban" ? (
               <KanbanBoard
-                tasks={tasks}
+                tasks={filteredTasks}
                 onStatusChange={handleKanbanStatusChange}
                 allowedColumns={kanbanColumns}
               />
@@ -495,18 +562,21 @@ function TasksPage() {
                 title={t("All Tasks")}
                 headers={headers}
                 rows={taskRowTable}
+                hideSearchInput={true}
+                showExport={isEmployee || (!hasMoreTasks && !isSubscriberFetching)}
                 isCheckInput={true}
                 customActions={customActions}
-                showStatusFilter={true}
+                showStatusFilter={false}
                 statusOptions={taskStatusOptions}
                 exportFileName="tasks-table"
                 isActions={false}
                 onRowClick={(index) => {
-                  const path = taskDetailsPath(tasks[index]);
+                  const path = taskDetailsPath(filteredTasks[index]);
                   if (path) router.push(path);
                 }}
               />
             )}
+            {!isEmployee && activeView === "table" && hasMoreTasks && <button type="button" disabled={isSubscriberFetching} onClick={() => setFetchPage((page) => page + 1)} className="mt-3 rounded-lg border border-primary-500 px-4 py-2 text-primary-600 disabled:opacity-50">{isSubscriberFetching ? t("Loading tasks...") : (i18n.language?.startsWith("ar") ? "تحميل المزيد من المهام" : "Load more tasks")}</button>}
           </div>
         </div>
       </Page>
@@ -537,7 +607,7 @@ function TasksPage() {
         className="w-11/12 md:w-1/3 p-4"
       >
         <div className="flex flex-col gap-2 p-4">
-          {allowedStatuses.map((status) => (
+          {availableTaskStatuses(taskToUpdateStatus?.status, canEditTask).filter((status) => allowedStatuses.includes(status) && (status !== "done" || !isEmployee || canEvaluateTask)).map((status) => (
             <button
               key={status}
               onClick={() => handleStatusUpdate(status)}

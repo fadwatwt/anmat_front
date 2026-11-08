@@ -23,6 +23,11 @@ export const subscriberProjectsApi = apiSlice.injectEndpoints({
             ],
             transformResponse: (response) => response.data || response,
         }),
+        getProjectScheduleOverview: builder.query({
+            query: () => ({ url: "api/subscriber/organization/project-schedules", method: "GET" }),
+            providesTags: ["Projects"],
+            transformResponse: (response) => response.data || response,
+        }),
         createSubscriberProject: builder.mutation({
             query: (newProject) => ({
                 url: "api/subscriber/organization/projects",
@@ -38,6 +43,14 @@ export const subscriberProjectsApi = apiSlice.injectEndpoints({
                 body: data,
             }),
             invalidatesTags: (result, error, { id }) => ["Projects", { type: "Projects", id }, "ActivityLogs"],
+        }),
+        bulkEstimateProjectTasks: builder.mutation({
+            query: ({ id, estimates, apply }) => ({
+                url: `api/subscriber/organization/projects/${id}/task-estimates`,
+                method: "POST",
+                body: { estimates, apply },
+            }),
+            invalidatesTags: (result, error, { id, apply }) => apply ? ["Projects", { type: "Projects", id }] : [],
         }),
         addSubscriberProjectComment: builder.mutation({
             query: ({ projectId, text }) => ({
@@ -98,8 +111,10 @@ export const subscriberProjectsApi = apiSlice.injectEndpoints({
 export const {
     useGetSubscriberProjectsQuery,
     useGetSubscriberProjectDetailsQuery,
+    useGetProjectScheduleOverviewQuery,
     useCreateSubscriberProjectMutation,
     useUpdateSubscriberProjectMutation,
+    useBulkEstimateProjectTasksMutation,
     useDeleteSubscriberProjectMutation,
     useDeleteManySubscriberProjectsMutation,
     useAddSubscriberProjectCommentMutation,

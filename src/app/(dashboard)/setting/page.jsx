@@ -10,6 +10,8 @@ import TasksTab from "./Tabs/TasksTab/Tasks.tab.jsx";
 import ProfileSecurityTab from "./Tabs/Profile&SecurityTab/ProfileSecurity.tab.jsx";
 import NotificationsTab from "./Tabs/NotificationsTab/NotificationsTab.jsx";
 import AiSettingsTab from "./Tabs/AiSettings.tab.jsx";
+import LeavePoliciesPanel from "@/app/(dashboard)/hr/leaves/LeavePoliciesPanel";
+import { usePermission } from "@/Hooks/usePermission";
 import { RiSettings3Line } from "@remixicon/react";
 import { RiCloseLine } from "react-icons/ri";
 import { useSelector } from "react-redux";
@@ -17,6 +19,7 @@ import { useSelector } from "react-redux";
 function SettingPage() {
   const { t } = useTranslation();
   const user = useSelector((state) => state.auth.user);
+  const canManageLeavePolicies = usePermission("leave_policies.manage_settings");
   const [searchQuery, setSearchQuery] = useState("");
 
   const tabsData = useMemo(() => {
@@ -50,6 +53,7 @@ function SettingPage() {
         title: t("Tasks"),
         content: <TasksTab />,
       },
+      ...(canManageLeavePolicies ? [{ title: t("Leave Policies"), content: <LeavePoliciesPanel /> }] : []),
         commonTabs[1],
       ];
     }
@@ -65,7 +69,7 @@ function SettingPage() {
     }
 
     return commonTabs;
-  }, [t, user?.type]);
+  }, [t, user?.type, canManageLeavePolicies]);
 
   // Filter tabs by the search query (matches the translated tab title)
   const visibleTabs = useMemo(() => {

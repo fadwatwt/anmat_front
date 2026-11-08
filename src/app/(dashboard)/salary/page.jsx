@@ -11,7 +11,8 @@ import { selectUserType } from "@/redux/auth/authSlice";
 import { useGetMyPayslipsQuery } from "@/redux/employees/payrollRunsApi";
 
 export default function EmployeeSalaryPage() {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+    const ar = i18n.language?.startsWith("ar");
     const userType = useSelector(selectUserType);
     const { data: transactions = [], isLoading, isError } = useGetEmployeeSalaryTransactionsQuery();
     const { data: payslips = [], isLoading: loadingPayslips, error: payslipsError } = useGetMyPayslipsQuery(undefined, { skip: userType !== "Employee" });
@@ -25,8 +26,15 @@ export default function EmployeeSalaryPage() {
         { label: t("Date"), width: "120px" },
     ];
 
+    const sortedTransactions = useMemo(() => [...transactions].sort((a, b) =>
+        (new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()) || String(b._id || "").localeCompare(String(a._id || ""))
+    ), [transactions]);
+    const sortedPayslips = useMemo(() => [...payslips].sort((a, b) =>
+        (new Date(b.issued_at || 0).getTime() - new Date(a.issued_at || 0).getTime()) || String(b._id || "").localeCompare(String(a._id || ""))
+    ), [payslips]);
+
     const rows = useMemo(() => {
-        return transactions.map((transaction, index) => [
+        return sortedTransactions.map((transaction, index) => [
             <div key={`employee-${transaction._id || index}`} className="flex items-center gap-3">
                 <img
                     src={`https://ui-avatars.com/api/?name=${encodeURIComponent(transaction.employee?.name || "User")}`}
@@ -58,17 +66,18 @@ export default function EmployeeSalaryPage() {
                 {transaction.created_at ? translateDate(transaction.created_at) : "-"}
             </p>,
         ]);
-    }, [transactions, t]);
+    }, [sortedTransactions, t]);
 
     return (
         <Page title={t("Salary Transactions")}>
             <div className="flex flex-col gap-6">
                 {userType === "Employee" && <section className="rounded-2xl border border-status-border bg-surface p-5">
                     <h2 className="mb-3 text-lg font-semibold text-cell-primary">{t("My payslips")}</h2>
+                    <p className="mb-3 text-sm text-cell-secondary">{ar ? "قسيمة الراتب تعرض تفاصيل مستحقاتك وخصوماتك وصافي راتبك لفترة صرف معتمدة. تصدرها المؤسسة بعد إقفال دورة الرواتب." : "A payslip shows your earnings, deductions, and net pay for an approved payroll period. Your organization issues it when the payroll run is locked."}</p>
                     {loadingPayslips && <p className="text-cell-secondary">{t("Loading...")}</p>}
                     {payslipsError && <p role="alert" className="text-red-error">{t("Failed to load payslips")}</p>}
-                    {!loadingPayslips && !payslipsError && !payslips.length && <p className="text-cell-secondary">{t("No payslips yet")}</p>}
-                    <div className="space-y-2">{payslips.map((payslip) => {
+                    {!loadingPayslips && !payslipsError && !sortedPayslips.length && <p className="text-cell-secondary">{t("No payslips yet")}</p>}
+                    <div className="space-y-2">{sortedPayslips.map((payslip) => {
                         const snapshot = payslip.immutable_snapshot;
                         const run = snapshot?.run;
                         const item = snapshot?.item;

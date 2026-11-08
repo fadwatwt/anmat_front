@@ -17,7 +17,7 @@ export const salariesApi = apiSlice.injectEndpoints({
                 method: "POST",
                 body: newTransaction,
             }),
-            invalidatesTags: ["Salaries"],
+            invalidatesTags: ["Salaries", "ActivityLogs"],
         }),
         updateSalaryTransaction: builder.mutation({
             query: ({ id, ...updatedTransaction }) => ({
@@ -25,14 +25,14 @@ export const salariesApi = apiSlice.injectEndpoints({
                 method: "PATCH",
                 body: updatedTransaction,
             }),
-            invalidatesTags: ["Salaries"],
+            invalidatesTags: ["Salaries", "ActivityLogs"],
         }),
         deleteSalaryTransaction: builder.mutation({
             query: (id) => ({
                 url: `api/subscriber/organization/employees-salary-transactions/${id}`,
                 method: "DELETE",
             }),
-            invalidatesTags: ["Salaries"],
+            invalidatesTags: ["Salaries", "ActivityLogs"],
         }),
     }),
 });

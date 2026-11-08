@@ -37,7 +37,7 @@ export default function OpeningBalanceForm({ employeeId, onDone, onCancel }) {
         </div>
         {policiesLoading && <p className="text-sm text-cell-secondary sm:col-span-2">{t("Loading...")}</p>}
         {policiesError && <p role="alert" className="text-sm text-red-600 sm:col-span-2">{t("Could not load leave policies")}</p>}
-        {!policiesLoading && !policiesError && policies.length === 0 && <p className="text-sm text-cell-secondary sm:col-span-2">{t("No leave policies configured")} <Link href="/hr/leaves" className="text-primary-600 underline">{t("Create Policy")}</Link></p>}
+        {!policiesLoading && !policiesError && policies.length === 0 && <p className="text-sm text-cell-secondary sm:col-span-2">{t("No leave policies configured")} <Link href="/setting" className="text-primary-600 underline">{t("Create Policy")}</Link></p>}
         <label className="text-sm text-cell-secondary">{t("Leave Policy")}
             <select required value={form.policy_id} onChange={(event) => setForm((current) => ({ ...current, policy_id: event.target.value }))} className="mt-1 w-full rounded-lg border border-status-border bg-surface p-2 text-cell-primary">
                 <option value="">{t("Select leave policy")}</option>

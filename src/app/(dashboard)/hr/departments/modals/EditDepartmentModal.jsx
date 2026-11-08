@@ -17,7 +17,7 @@ import { useGetPositionsQuery } from "@/redux/positions/positionsApi";
 const validationSchema = Yup.object({
     name: Yup.string().required("required"),
     description: Yup.string().required("required"),
-    rate: Yup.number().required("required").min(0).max(5),
+    rate: Yup.number().transform((value, originalValue) => originalValue === "" ? undefined : value).optional().min(0).max(5),
     positions_ids: Yup.array().min(1, "At least one position is required"),
 });
 
@@ -37,7 +37,7 @@ function EditDepartmentModal({ isOpen, onClose, department }) {
         initialValues: {
             name: "",
             description: "",
-            rate: 0,
+            rate: "",
             positions_ids: [],
         },
         validationSchema,
@@ -51,7 +51,7 @@ function EditDepartmentModal({ isOpen, onClose, department }) {
             formik.setValues({
                 name: department.name || "",
                 description: department.description || "",
-                rate: department.rate || 0,
+                rate: department.rate ?? "",
                 positions_ids: (department.positions_ids || []).map(pos => ({
                     id: pos._id,
                     element: pos.title
@@ -66,7 +66,7 @@ function EditDepartmentModal({ isOpen, onClose, department }) {
                 id: department._id,
                 name: formik.values.name,
                 description: formik.values.description,
-                rate: formik.values.rate,
+                rate: formik.values.rate === "" ? undefined : Number(formik.values.rate),
                 positions_ids: formik.values.positions_ids.map(p => p.id)
             };
             await updateDepartment(payload).unwrap();
@@ -139,14 +139,13 @@ function EditDepartmentModal({ isOpen, onClose, department }) {
                         )}
 
                         <InputAndLabel
-                            title={t("Rate")}
+                            title={t("Rating")}
                             name="rate"
                             type="number"
                             value={formik.values.rate}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             placeholder={t("Enter rate (0 - 5)")}
-                            isRequired={true}
                             disabled={isLoading}
                             min={0}
                             max={5}

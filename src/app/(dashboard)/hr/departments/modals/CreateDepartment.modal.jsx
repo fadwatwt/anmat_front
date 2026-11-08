@@ -17,7 +17,7 @@ import { useGetPositionsQuery } from "@/redux/positions/positionsApi";
 const validationSchema = Yup.object({
     name: Yup.string().required("required"),
     description: Yup.string().required("required"),
-    rate: Yup.number().required("required").min(0).max(5),
+    rate: Yup.number().transform((value, originalValue) => originalValue === "" ? undefined : value).optional().min(0).max(5),
     positions_ids: Yup.array().min(1, "At least one position is required"),
 });
 
@@ -37,7 +37,7 @@ function CreateDepartmentModal({ isOpen, onClose }) {
         initialValues: {
             name: "",
             description: "",
-            rate: 0,
+            rate: "",
             positions_ids: [],
         },
         validationSchema,
@@ -51,6 +51,7 @@ function CreateDepartmentModal({ isOpen, onClose }) {
             // Transform positions_ids from array of objects to array of strings (ids)
             const payload = {
                 ...formik.values,
+                rate: formik.values.rate === "" ? undefined : Number(formik.values.rate),
                 positions_ids: formik.values.positions_ids.map(p => p.id)
             };
             await createDepartment(payload).unwrap();
@@ -123,14 +124,13 @@ function CreateDepartmentModal({ isOpen, onClose }) {
                         )}
 
                         <InputAndLabel
-                            title={t("Rate")}
+                            title={t("Rating")}
                             name="rate"
                             type="number"
                             value={formik.values.rate}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             placeholder={t("Enter rate (0 - 5)")}
-                            isRequired={true}
                             min={0}
                             max={5}
                             step={0.01}

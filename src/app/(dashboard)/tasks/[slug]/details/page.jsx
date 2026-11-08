@@ -23,6 +23,7 @@ import StarRating from "@/components/StarRating";
 import EvaluationDetailsModal from "@/components/Modal/EvaluationDetailsModal";
 import RecordPageState from "@/app/(dashboard)/_components/RecordPageState";
 import TaskDependencies from "./TaskDependencies";
+import TaskRecurrencePanel from "./TaskRecurrencePanel";
 import PropTypes from "prop-types";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
 import { getApiErrorMessage } from "@/functions/apiErrorMessage";
@@ -293,6 +294,7 @@ function TaskDetailsPage({ params }) {
                 <div className="w-full grid grid-cols-1 xl:grid-cols-[minmax(0,1.7fr)_minmax(300px,1fr)] gap-5 xl:gap-6 items-start">
                     <main className="min-w-0 flex flex-col gap-5">
                         <InfoCard type={"task"} data={infoCardData} handelEditAction={canEditTask ? handleEditPageNavigation : undefined} />
+                        {authUserType === "Subscriber" && <TaskRecurrencePanel taskId={taskId} />}
                         <section className="rounded-[24px] border border-status-border bg-surface p-4 shadow-sm sm:p-5">
                             <h2 className="text-lg font-bold text-table-title">{t("Time estimate and actual")}</h2>
                             <div className="mt-3 grid grid-cols-2 gap-3 text-sm">

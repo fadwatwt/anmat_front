@@ -130,13 +130,19 @@ const EmployeeDashboard = () => {
     ]);
 
     return (
-        <Page
-            title={t("Dashboard")}
-            isBtn={false}
-        >
-            {/* Companies Analytics */}
-            <div className="flex flex-col items-start justify-start gap-4">
+        <Page isTitle={false}>
+            <div className="flex flex-col gap-6 w-full min-w-0">
                 {hasLoadError && <DashboardErrorBanner onRetry={retryDashboard} />}
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h1 className="text-2xl font-bold text-table-title">{t("Dashboard")}</h1>
+                        <p className="mt-1 text-sm text-cell-secondary">{t("My Tasks")} · {t("My Requests")}</p>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                        <button type="button" onClick={() => router.push("/employee/tasks")} className="rounded-lg bg-primary-500 px-4 py-2 text-sm font-semibold text-white">{t("My Tasks")}</button>
+                        <button type="button" onClick={() => router.push("/requests")} className="rounded-lg border border-status-border bg-surface px-4 py-2 text-sm font-semibold text-cell-primary">{t("My Requests")}</button>
+                    </div>
+                </div>
                 {isStatsLoading ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 w-full">
                         {[1, 2, 3, 4].map(item => <div key={item} className="h-28 animate-pulse rounded-[24px] bg-status-bg border border-status-border" />)}
@@ -149,25 +155,27 @@ const EmployeeDashboard = () => {
                         <SummaryCard title={t("Overdue")} value={overdueTasks} icon={RiAlarmWarningLine} color="bg-red-500" />
                     </div>
                 )}
-                <div className="flex flex-col md:flex-row items-stretch gap-4 justify-between w-full">
-                    <div className="w-full md:w-1/2">
+                <div className={`grid grid-cols-1 ${canViewAnalytics ? "lg:grid-cols-2" : ""} gap-4 w-full min-w-0`}>
+                    <div className="min-w-0">
                         {isStatsLoading ? <div className="h-72 animate-pulse rounded-[24px] bg-status-bg border border-status-border" /> : <TasksSummaryChart data={chartData} />}
                     </div>
                     {canViewAnalytics && (
-                        <div className="w-full md:w-1/2">
+                        <div className="min-w-0">
                             {isAnalyticsLoading ? <div className="h-72 animate-pulse rounded-[24px] bg-status-bg border border-status-border" /> : <TasksPerformanceChart monthlyData={analyticsData.tasksPerformanceMonthly || []} />}
                         </div>
                     )}
                 </div>
-                <div className="flex flex-col md:flex-row items-stretch gap-4 justify-between w-full">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 w-full min-w-0">
+                    <div className="min-w-0 lg:col-span-2">
                     <Table
                         title={t("My Tasks")}
                         headers={headers}
                         rows={rows}
                         isCheckInput={false}
                         isTitle={true}
-                        classContainer={"w-full md:w-2/3"}
+                        classContainer={"w-full h-full"}
                         isLoading={isTasksLoading}
+                        hideSearchInput={true}
                         toolbarCustomContent={
                             <button
                                 onClick={() => router.push("/employee/tasks")}
@@ -177,7 +185,8 @@ const EmployeeDashboard = () => {
                             </button>
                         }
                     />
-                    <div className="w-full md:w-1/3">
+                    </div>
+                    <div className="min-w-0">
                         <ActivityLogs
                             activityLogs={activityLogs}
                             className={"max-h-[30rem]"}
@@ -185,7 +194,7 @@ const EmployeeDashboard = () => {
                         />
                     </div>
                 </div>
-                <div className="w-full">
+                <div className="w-full min-w-0">
                     <EmployeeRequests />
                 </div>
             </div>

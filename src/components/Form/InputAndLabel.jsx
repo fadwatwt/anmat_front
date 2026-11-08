@@ -36,7 +36,7 @@ function InputAndLabel({
           }`}
         {...rest}
       />
-      {error && <p role="alert" className="text-red-500 text-xs mt-0.5">{error}</p>}
+      {error && <p role="alert" className="text-red-500 text-xs mt-0.5">{t(error)}</p>}
     </div>
   );
 }

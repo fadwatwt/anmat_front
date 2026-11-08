@@ -25,7 +25,7 @@ function DateInput({ className, id, classNameLabel, classNameInput, onChange, on
                 <input ref={inputDateRef} type={"date"} className={`custom-date-input bg-transparent w-full ${classNameInput ? classNameInput : "py-3 px-2"} outline-none appearance-none focus:outline-none peer text-cell-primary ` + (i18n.language === 'ar' && "text-end")} name={name} value={value}
                     onChange={onChange} onBlur={onBlur} aria-invalid={Boolean(error)} />
             </label>
-            {error && <p role="alert" className="text-red-500 text-xs mt-1">{error}</p>}
+            {error && <p role="alert" className="text-red-500 text-xs mt-1">{t(error)}</p>}
 
         </div>
     );
