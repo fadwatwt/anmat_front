@@ -1,3 +1,4 @@
+import ClockTime from "@/components/ClockTime";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { usePermission } from "@/Hooks/usePermission";
@@ -210,7 +211,7 @@ function RequestsTab() {
                     {req.leave_date || "N/A"}
                 </div>,
                 <div key={req.id + "_leave_time"} className="text-cell-secondary text-xs">
-                    {req.leave_start_time || ""} - {req.leave_end_time || ""}
+                    <ClockTime value={req.leave_start_time} /> - <ClockTime value={req.leave_end_time} />
                 </div>,
                 <div key={req.id + "_reason"} className="text-cell-secondary truncate max-w-[200px]" title={req.reason}>{req.reason || "N/A"}</div>
             ];

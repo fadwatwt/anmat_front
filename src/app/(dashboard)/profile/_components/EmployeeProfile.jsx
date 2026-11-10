@@ -1,4 +1,5 @@
 "use client";
+import ClockTime from "@/components/ClockTime";
 import UserChatAvatar from "@/components/UserChatAvatar";
 import Table from "@/components/Tables/Table.jsx";
 import Page from "@/components/Page.jsx";
@@ -184,8 +185,8 @@ function EmployeeProfile() {
             .map(req => [
                 req.created_at ? translateDate(req.created_at) : "-",
                 <span key={`date-${req._id}`}>{req.leave_date ? translateDate(req.leave_date) : "-"}</span>,
-                <span key={`from-${req._id}`} dir="ltr">{req.leave_start_time || "-"}</span>,
-                <span key={`to-${req._id}`} dir="ltr">{req.leave_end_time || "-"}</span>,
+                <span key={`from-${req._id}`} dir="ltr"><ClockTime value={req.leave_start_time} /></span>,
+                <span key={`to-${req._id}`} dir="ltr"><ClockTime value={req.leave_end_time} /></span>,
                 <Status key={`status-${req._id}`} type={req.status} title={req.status === "open" ? t("Under Review") : t(req.status)} />,
                 <div key={`actions-${req._id}`} className="flex items-center gap-2">
                     <button onClick={() => setSelectedRequest(req)} className="px-3 py-1.5 rounded-lg border border-primary-200 text-primary-base text-xs font-medium">

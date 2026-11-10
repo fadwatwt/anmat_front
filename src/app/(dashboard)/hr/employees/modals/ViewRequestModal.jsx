@@ -1,8 +1,9 @@
 "use client";
+import ClockTime from "@/components/ClockTime";
 import Modal from "@/components/Modal/Modal.jsx";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
-import { useEffect, useState } from "react";
+import { isValidElement, useEffect, useState } from "react";
 import ElementsSelect from "@/components/Form/ElementsSelect.jsx";
 import { useUpdateEmployeeRequestStatusMutation, useGetRequestAttachmentsQuery, useUploadRequestAttachmentMutation, useDeleteRequestAttachmentMutation } from "@/redux/employees/employeeRequestsApi";
 import ApiResponseAlert from "@/components/Alerts/ApiResponseAlert";
@@ -153,8 +154,8 @@ function ViewRequestModal({ isOpen, onClose, request, readOnly = false, initialS
             case "SHORT_LEAVE":
                 return [
                     [t("Date"), request.leave_date ? translateDate(request.leave_date) : null],
-                    [t("Start Time"), request.leave_start_time],
-                    [t("End Time"), request.leave_end_time],
+                    [t("Start Time"), <ClockTime key="start-time" value={request.leave_start_time} />],
+                    [t("End Time"), <ClockTime key="end-time" value={request.leave_end_time} />],
                 ];
             default:
                 return [];
@@ -199,7 +200,7 @@ function ViewRequestModal({ isOpen, onClose, request, readOnly = false, initialS
                                 {requestDetails.map(([label, value]) => (
                                     <div key={label} className="rounded-lg bg-status-bg p-3">
                                         <p className="text-xs text-cell-secondary">{label}</p>
-                                        <p className="mt-1 text-sm font-medium text-cell-primary" dir="auto">{String(value)}</p>
+                                        <p className="mt-1 text-sm font-medium text-cell-primary" dir="auto">{isValidElement(value) ? value : String(value)}</p>
                                     </div>
                                 ))}
                             </div>

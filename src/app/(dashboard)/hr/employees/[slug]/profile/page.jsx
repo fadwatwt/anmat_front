@@ -1,4 +1,5 @@
 "use client";
+import ClockTime from "@/components/ClockTime";
 import { useParams } from 'next/navigation';
 import Table from "@/components/Tables/Table.jsx";
 import Page from "@/components/Page.jsx";
@@ -165,8 +166,8 @@ function SingleEmployeeProfile() {
             .map(req => [
                 req.created_at ? translateDate(req.created_at) : "-",
                 <span key={`date-${req._id}`} className="text-cell-primary">{req.leave_date ? translateDate(req.leave_date) : "-"}</span>,
-                <span key={`from-${req._id}`} dir="ltr" className="text-cell-primary">{req.leave_start_time || "-"}</span>,
-                <span key={`to-${req._id}`} dir="ltr" className="text-cell-primary">{req.leave_end_time || "-"}</span>,
+                <span key={`from-${req._id}`} dir="ltr" className="text-cell-primary"><ClockTime value={req.leave_start_time} /></span>,
+                <span key={`to-${req._id}`} dir="ltr" className="text-cell-primary"><ClockTime value={req.leave_end_time} /></span>,
                 <Status key={`status-${req._id}`} type={req.status} title={req.status === "open" ? t("Under Review") : t(req.status)} />,
                 <div key={`actions-${req._id}`} className="flex items-center gap-2">
                     <button
