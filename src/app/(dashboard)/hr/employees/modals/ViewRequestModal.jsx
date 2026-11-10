@@ -200,7 +200,7 @@ function ViewRequestModal({ isOpen, onClose, request, readOnly = false, initialS
                                 {requestDetails.map(([label, value]) => (
                                     <div key={label} className="rounded-lg bg-status-bg p-3">
                                         <p className="text-xs text-cell-secondary">{label}</p>
-                                        <p className="mt-1 text-sm font-medium text-cell-primary" dir="auto">{isValidElement(value) ? value : String(value)}</p>
+                                        <p className={`mt-1 text-sm font-medium text-cell-primary ${locale === "ar" ? "text-right" : "text-left"}`} dir={locale === "ar" ? "rtl" : "ltr"}>{isValidElement(value) ? value : String(value)}</p>
                                     </div>
                                 ))}
                             </div>
