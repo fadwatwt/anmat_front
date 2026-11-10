@@ -1,6 +1,8 @@
 // Keep production as the default while allowing local/E2E builds to target the
 // backend that was started for that environment.
-export const RootRoute = process.env.NEXT_PUBLIC_API_URL || "https://api.anmaat.com";
+import { resolveApiBaseUrl } from "./config/apiBaseUrl";
+
+export const RootRoute = resolveApiBaseUrl(process.env.NEXT_PUBLIC_API_URL);
 // export const RootRoute = "http://127.0.0.1:3000";
 
 // export const RootRoute = "https://anmat-backend-system-2.onrender.com";
