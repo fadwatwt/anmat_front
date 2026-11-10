@@ -1,3 +1,4 @@
+import UserChatAvatar from "@/components/UserChatAvatar";
 "use client"
 import {
     RiBriefcaseLine,
@@ -46,8 +47,7 @@ function AdminProfile() {
                                 className={"flex md:items-center md:flex-row md:justify-center flex-col justify-between gap-3 flex-1"}>
                                 <div className={"flex justify-between items-center"}>
                                     <div className={"relative h-[72px] w-[72px]"}>
-                                        <img className={"rounded-full h-[72px] w-[72px] max-w-full"}
-                                            src={user?.avatar || "/images/userProfile.dark.png"} alt={"image-user"} />
+                                        <UserChatAvatar user={user} size="72px" fontSize="text-2xl" />
                                         <RiCheckboxCircleFill size="23"
                                             className="absolute top-0 right-0 bg-surface rounded-full text-cyan-500" />
                                     </div>

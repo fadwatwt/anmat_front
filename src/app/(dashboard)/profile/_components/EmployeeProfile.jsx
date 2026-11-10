@@ -1,4 +1,5 @@
 "use client";
+import UserChatAvatar from "@/components/UserChatAvatar";
 import Table from "@/components/Tables/Table.jsx";
 import Page from "@/components/Page.jsx";
 import Status from "@/app/(dashboard)/projects/_components/TableInfo/Status.jsx";
@@ -325,12 +326,7 @@ function EmployeeProfile() {
                             <div className={"flex md:items-center md:flex-row md:justify-center flex-col justify-between gap-6 flex-1"}>
                                 <div className={"flex justify-between items-center"}>
                                     <div className={"relative h-[72px] w-[72px]"}>
-                                        <img className={"rounded-full h-[72px] w-[72px] max-w-full object-cover border-2 border-primary-500"}
-                                            onError={(event) => {
-                                                event.currentTarget.onerror = null;
-                                                event.currentTarget.src = "/images/userProfile.png";
-                                            }}
-                                            src={user?.imageProfile || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || "U")}&background=random`} alt={"image-user"} />
+                                        <UserChatAvatar user={user} size="72px" fontSize="text-2xl" />
                                         {user?.is_active && (
                                             <RiCheckboxCircleFill size="23" className="absolute top-0 right-0 bg-surface rounded-full text-cyan-500" />
                                         )}

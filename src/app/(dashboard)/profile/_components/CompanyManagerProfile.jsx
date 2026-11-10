@@ -1,4 +1,5 @@
 "use client";
+import UserChatAvatar from "@/components/UserChatAvatar";
 import {
     RiBriefcaseLine,
     RiBuilding2Line,
@@ -49,8 +50,7 @@ function CompanyManagerProfile() {
                                 {/* Avatar and Name/Role mobile view? No, standard view */}
                                 <div className={"flex justify-between items-start"}>
                                     <div className={"relative h-[80px] w-[80px]"}>
-                                        <img className={"rounded-full h-[80px] w-[80px] object-cover border-4 border-surface"}
-                                            src={user?.avatar || "/images/userProfile.dark.png"} alt={"image-user"} />
+                                        <UserChatAvatar user={user} size="80px" fontSize="text-2xl" />
                                         <RiCheckboxCircleFill size="24"
                                             className="absolute top-0 right-0 bg-surface rounded-full text-blue-500" />
                                     </div>
