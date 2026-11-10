@@ -62,6 +62,10 @@ function Status({ type, title }) {
       icon: <FaCircleCheck className="text-green-600 dark:text-green-400" />,
       border: "border-green-400 dark:border-green-600",
     },
+    accepted: {
+      icon: <FaCircleCheck className="text-green-600 dark:text-green-400" />,
+      border: "border-green-200 dark:border-green-800",
+    },
     rejected: {
       icon: <RiCloseCircleFill size={15} className="text-red-500" />,
       border: "border-red-300 dark:border-red-500",
@@ -86,20 +90,21 @@ function Status({ type, title }) {
 
   const normalizedType = type?.toLowerCase() || "inactive";
   const status = statusStyles[normalizedType] || statusStyles.inactive; // Default to "Inactive"
-  const label = title || { "in-progress": "In Progress", "in progress": "In Progress" }[normalizedType] || capitalize(type);
+  const label = (title && title.toLowerCase() !== normalizedType ? title : null) || { "in-progress": "In Progress", "in progress": "In Progress" }[normalizedType] || capitalize(type);
 
   return (
     <div
-      className={`rounded-md text-nowrap text-xs border inline-flex py-1 px-2 gap-1 items-center bg-status-bg border-status-border`}
+      className={`rounded-md text-nowrap text-xs border inline-flex py-1 px-2 gap-1 items-center ${normalizedType === "accepted" ? "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800" : "bg-status-bg border-status-border text-cell-primary"}`}
     >
       {status.icon}
-      <span className="text-cell-primary">{t(label)}</span>
+      <span>{t(label)}</span>
     </div>
   );
 }
 
 Status.propTypes = {
   type: PropTypes.oneOf([
+    "accepted",
     "Active",
     "Inactive",
     "Delayed",
