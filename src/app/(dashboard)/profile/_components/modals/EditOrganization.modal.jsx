@@ -1,4 +1,5 @@
 "use client";
+import { getCountryOptions, getCityOptions } from "@/data/countriesAndCities";
 import { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -27,26 +28,6 @@ function EditOrganizationModal({ isOpen, onClose, organization }) {
         status: null,
         message: "",
     });
-
-    const countries = [
-        { _id: "Palestine", name: t("Palestine") },
-        { _id: "Jordan", name: t("Jordan") },
-        { _id: "Egypt", name: t("Egypt") },
-        { _id: "UAE", name: t("UAE") },
-        { _id: "Saudi Arabia", name: t("Saudi Arabia") },
-    ];
-
-    const cities = [
-        { _id: "Gaza", name: t("Gaza") },
-        { _id: "Ramallah", name: t("Ramallah") },
-        { _id: "Jerusalem", name: t("Jerusalem") },
-        { _id: "Nablus", name: t("Nablus") },
-        { _id: "Hebron", name: t("Hebron") },
-        { _id: "Amman", name: t("Amman") },
-        { _id: "Cairo", name: t("Cairo") },
-        { _id: "Dubai", name: t("Dubai") },
-        { _id: "Riyadh", name: t("Riyadh") },
-    ];
 
     const industries = industriesData?.map(ind => ({
         _id: ind._id,
@@ -77,6 +58,11 @@ function EditOrganizationModal({ isOpen, onClose, organization }) {
             setIsApprovalOpen(true);
         },
     });
+
+    const countries = getCountryOptions();
+    const cities = getCityOptions(formik.values.country);
+    if (formik.values.country && !countries.some(item => item._id === formik.values.country)) countries.push({ _id: formik.values.country, name: formik.values.country });
+    if (formik.values.city && !cities.some(item => item._id === formik.values.city)) cities.push({ _id: formik.values.city, name: formik.values.city });
 
     const handleConfirmUpdate = async () => {
         setIsApprovalOpen(false);
@@ -180,7 +166,7 @@ function EditOrganizationModal({ isOpen, onClose, organization }) {
                             name="country"
                             value={formik.values.country}
                             options={countries}
-                            onChange={(val) => formik.setFieldValue("country", val)}
+                            onChange={(val) => { formik.setFieldValue("country", val); formik.setFieldValue("city", ""); }}
                             onBlur={() => formik.setFieldTouched("country", true)}
                             error={formik.touched.country && formik.errors.country ? formik.errors.country : ""}
                             isRequired={true}

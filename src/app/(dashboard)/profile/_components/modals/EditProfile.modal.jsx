@@ -1,3 +1,4 @@
+import { getCountryOptions, getCityOptions } from "@/data/countriesAndCities";
 import Modal from "@/components/Modal/Modal.jsx";
 import InputAndLabel from "@/components/Form/InputAndLabel.jsx";
 import SelectAndLabel from "@/components/Form/SelectAndLabel.jsx";
@@ -24,32 +25,6 @@ function EditProfileModal({ isOpen, onClose, user, updateProfile, isLoading }) {
     const [showApproval, setShowApproval] = useState(false);
 
     const isEmployee = user?.type === "Employee";
-
-    // Mock data for selects - in a real app, these might come from an API
-    const countries = [
-        { _id: "Egypt", name: "Egypt" },
-        { _id: "Saudi Arabia", name: "Saudi Arabia" },
-        { _id: "UAE", name: "UAE" },
-        { _id: "Jordan", name: "Jordan" }
-    ];
-
-    const cities = {
-        "Egypt": [
-            { _id: "Cairo", name: "Cairo" },
-            { _id: "Alexandria", name: "Alexandria" },
-            { _id: "Giza", name: "Giza" }
-        ],
-        "Saudi Arabia": [
-            { _id: "Riyadh", name: "Riyadh" },
-            { _id: "Jeddah", name: "Jeddah" },
-            { _id: "Dammam", name: "Dammam" }
-        ],
-        // Default cities if country not matched
-        "default": [
-            { _id: "Dubai", name: "Dubai" },
-            { _id: "Amman", name: "Amman" }
-        ]
-    };
 
     const formik = useFormik({
         initialValues: {
@@ -115,8 +90,10 @@ function EditProfileModal({ isOpen, onClose, user, updateProfile, isLoading }) {
         }
     };
 
-    const countryOptions = countries;
-    const cityOptions = cities[formik.values.country] || cities["default"];
+    const countryOptions = getCountryOptions();
+    if (formik.values.country && !countryOptions.some(item => item._id === formik.values.country)) countryOptions.push({ _id: formik.values.country, name: formik.values.country });
+    const cityOptions = getCityOptions(formik.values.country);
+    if (formik.values.city && !cityOptions.some(item => item._id === formik.values.city)) cityOptions.push({ _id: formik.values.city, name: formik.values.city });
 
     return (
         <>
