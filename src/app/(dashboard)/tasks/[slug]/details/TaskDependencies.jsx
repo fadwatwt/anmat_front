@@ -6,11 +6,12 @@ import { useTranslation } from "react-i18next";
 
 const isFinished = (status) => status === "completed" || status === "done";
 
-export default function TaskDependencies({ task, tasks = [], graph, canEdit, isUpdating, onReplace }) {
+export default function TaskDependencies({ task, tasks = [], graph, canEdit, isUpdating, onReplace, onPickerOpenChange, onSearchChange, isSearching = false, searchError = false }) {
     const { t, i18n } = useTranslation();
     const [isAdding, setIsAdding] = useState(false);
     const [search, setSearch] = useState("");
-    const blockedByIds = task.blocked_by_ids || [];
+    const closePicker = () => { setIsAdding(false); setSearch(""); onSearchChange?.(""); onPickerOpenChange?.(false); };
+    const blockedByIds = useMemo(() => task.blocked_by_ids || [], [task.blocked_by_ids]);
     const taskById = useMemo(() => new Map(tasks.map((item) => [String(item._id), item])), [tasks]);
     const dependencies = graph?.predecessors || blockedByIds.map((id) => {
         const item = taskById.get(String(id));
@@ -69,14 +70,14 @@ export default function TaskDependencies({ task, tasks = [], graph, canEdit, isU
             })}</div>}
 
         {canEdit && <div className="border-t border-status-border pt-4">
-            <button type="button" aria-expanded={isAdding} onClick={() => setIsAdding((value) => !value)} className="rounded-lg border border-primary-500 px-3 py-2 text-sm font-semibold text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-950">{isAdding ? t("Cancel") : `+ ${t("Add dependency")}`}</button>
+            <button type="button" aria-expanded={isAdding} onClick={() => { if (isAdding) closePicker(); else { setIsAdding(true); onPickerOpenChange?.(true); } }} className="rounded-lg border border-primary-500 px-3 py-2 text-sm font-semibold text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-950">{isAdding ? t("Cancel") : `+ ${t("Add dependency")}`}</button>
             {isAdding && <div className="mt-3 space-y-2">
                 <label className="block text-xs font-medium text-cell-secondary" htmlFor="dependency-search">{t("Search for a task")}</label>
-                <input id="dependency-search" type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t("Search for a task")} className="w-full rounded-lg border border-status-border bg-surface px-3 py-2 text-sm text-cell-primary outline-none focus:border-primary-500" />
+                <input id="dependency-search" type="search" maxLength={100} value={search} onChange={(event) => { setSearch(event.target.value); onSearchChange?.(event.target.value); }} placeholder={t("Search for a task")} className="w-full rounded-lg border border-status-border bg-surface px-3 py-2 text-sm text-cell-primary outline-none focus:border-primary-500" />
                 <div className="max-h-56 overflow-y-auto rounded-lg border border-status-border divide-y divide-status-border">
-                    {candidates.length ? candidates.map((item) => <div key={item._id} className="flex items-center justify-between gap-3 px-3 py-2">
+                    {isSearching ? <p role="status" className="px-3 py-4 text-sm text-cell-secondary">{t("Loading tasks...")}</p> : searchError ? <p role="alert" className="px-3 py-4 text-sm text-red-600">{t("Failed to load tasks. Please try again later.")}</p> : candidates.length ? candidates.map((item) => <div key={item._id} className="flex items-center justify-between gap-3 px-3 py-2">
                         <div className="min-w-0"><p className="truncate text-sm font-medium text-cell-primary">{item.title}</p><p className="text-xs text-cell-secondary">{isFinished(item.status) ? t("Completed") : t("Blocking")}</p></div>
-                        <button type="button" disabled={isUpdating} onClick={async () => { if (await onReplace([...blockedByIds, item._id])) { setSearch(""); setIsAdding(false); } }} className="shrink-0 rounded-lg bg-primary-500 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50">{t("Add")}</button>
+                        <button type="button" disabled={isUpdating} onClick={async () => { if (await onReplace([...blockedByIds, item._id])) closePicker(); }} className="shrink-0 rounded-lg bg-primary-500 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50">{t("Add")}</button>
                     </div>) : <p className="px-3 py-4 text-sm text-cell-secondary">{t("No matching tasks")}</p>}
                 </div>
             </div>}

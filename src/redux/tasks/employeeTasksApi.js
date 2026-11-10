@@ -3,9 +3,10 @@ import { apiSlice } from "../api/apiSlice";
 export const employeeTasksApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getEmployeeTasks: builder.query({
-            query: () => ({
+            query: (filters) => ({
                 url: "api/employee/tasks",
                 method: "GET",
+                params: filters || undefined,
             }),
             providesTags: ["Tasks"],
             transformResponse: (response) => response.data || response,

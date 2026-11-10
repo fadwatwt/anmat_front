@@ -103,25 +103,32 @@ function TasksPage() {
     isLoading: isSubscriberLoading,
     isFetching: isSubscriberFetching,
     isError: isSubscriberError,
-  } = useGetSubscriberTasksQuery({ page: fetchPage, page_size: 100, ...serverFilters }, { skip: !isSubscriber || activeView === "kanban" });
-  const { data: kanbanTasks = [], isLoading: isKanbanLoading, isError: isKanbanError } = useGetSubscriberTasksQuery(undefined, { skip: !isSubscriber || activeView !== "kanban" });
-  useEffect(() => {
-    if (!subscriberTasksPage) return;
-    setHasMoreTasks(subscriberTasksPage.length === 100);
-    setLoadedTasks((previous) => fetchPage === 1 ? subscriberTasksPage : [...previous, ...subscriberTasksPage.filter((task) => !previous.some((item) => item._id === task._id))]);
-  }, [subscriberTasksPage, fetchPage]);
+  } = useGetSubscriberTasksQuery({ page: fetchPage, page_size: 100, ...serverFilters }, { skip: !isSubscriber });
   const {
-    data: rawEmployeeTasks = [],
+    currentData: employeeTasksPage,
     isLoading: isEmployeeLoading,
+    isFetching: isEmployeeFetching,
     isError: isEmployeeError,
-  } = useGetEmployeeTasksQuery(undefined, { skip: !isEmployee });
+  } = useGetEmployeeTasksQuery({ page: fetchPage, page_size: 100, ...serverFilters }, { skip: !isEmployee });
+  const taskPage = isEmployee ? employeeTasksPage : subscriberTasksPage;
+  const isFetchingTasks = isEmployee ? isEmployeeFetching : isSubscriberFetching;
+  useEffect(() => {
+    if (!taskPage) return;
+    setHasMoreTasks(taskPage.length === 100);
+    setLoadedTasks((previous) => {
+      if (fetchPage === 1) return taskPage;
+      const merged = new Map(previous.map((task) => [task._id, task]));
+      taskPage.forEach((task) => merged.set(task._id, task));
+      return [...merged.values()];
+    });
+  }, [taskPage, fetchPage]);
 
   // The employee API already applies the authorization scope and intentionally
   // includes tasks from projects the employee manages or belongs to.
-  const tasks = isEmployee ? rawEmployeeTasks : activeView === "kanban" ? kanbanTasks : loadedTasks;
+  const tasks = loadedTasks;
   const filteredTasks = useMemo(() => tasks.filter((task) => {
     const search = taskFilters.search.trim().toLocaleLowerCase();
-    return (!search || String(task.title || "").toLocaleLowerCase().includes(search)) &&
+    return (!search || [task.title, task.description].some((value) => String(value || "").toLocaleLowerCase().includes(search))) &&
       (!taskFilters.status || task.status === taskFilters.status) &&
       (!taskFilters.priority || task.priority === taskFilters.priority);
   }), [tasks, taskFilters]);
@@ -143,9 +150,9 @@ function TasksPage() {
   const isLoading = authUserType
     ? isEmployee
       ? isEmployeeLoading
-      : activeView === "kanban" ? isKanbanLoading : isSubscriberLoading
+      : isSubscriberLoading
     : true;
-  const isError = isEmployee ? isEmployeeError : activeView === "kanban" ? isKanbanError : isSubscriberError;
+  const isError = isEmployee ? isEmployeeError : isSubscriberError;
 
   const [deleteSubscriberTask] = useDeleteSubscriberTaskMutation();
   const [updateTaskStatus] = useUpdateTaskStatusMutation();
@@ -167,13 +174,13 @@ function TasksPage() {
         status: "error",
         message: t("You don't have permission to perform this action."),
       });
-      return;
+      throw new Error('Task update permission denied');
     }
 
     const task = tasks.find((item) => String(item._id) === String(taskId));
     if (!task || !availableTaskStatuses(task.status, canEditTask).includes(newStatus)) {
       setApiResponse({ isOpen: true, status: "error", message: t("Task status transition is not allowed") });
-      return;
+      throw new Error('Task status transition is not allowed');
     }
 
     try {
@@ -182,6 +189,8 @@ function TasksPage() {
       } else {
         await updateSubscriberTask({ id: taskId, status: newStatus }).unwrap();
       }
+      setLoadedTasks((previous) => previous.map((item) => item._id === taskId ? { ...item, status: newStatus } : item));
+      setFetchPage(1);
     } catch (err) {
       setApiResponse({
         isOpen: true,
@@ -288,6 +297,8 @@ function TasksPage() {
       showProcessing(t("Deleting Task..."));
       try {
         const res = await deleteSubscriberTask(taskToDelete._id).unwrap();
+        setLoadedTasks((previous) => previous.filter((item) => item._id !== taskToDelete._id));
+        setFetchPage(1);
         setApiResponse({
           isOpen: true,
           status: "success",
@@ -325,6 +336,8 @@ function TasksPage() {
           Object.assign(payload, evaluationPayload);
         }
         const res = await updateTaskStatus(payload).unwrap();
+        setLoadedTasks((previous) => previous.map((item) => item._id === payload.id ? { ...item, status } : item));
+        setFetchPage(1);
         setApiResponse({
           isOpen: true,
           status: "success",
@@ -360,7 +373,7 @@ function TasksPage() {
   };
 
   const customActions = (index) => {
-    const task = tasks[index];
+    const task = filteredTasks[index];
     if (!task) return null;
 
     const actions = [];
@@ -416,6 +429,7 @@ function TasksPage() {
   };
 
   const taskRowTable = useMemo(() => {
+    if (activeView !== "table") return [];
     return filteredTasks.map((task) => [
       <NameAndDescription
         key={`name-${task._id}`}
@@ -504,7 +518,7 @@ function TasksPage() {
         {task.due_date ? translateDate(task.due_date) : "-"}
       </p>,
     ]);
-  }, [filteredTasks, t, isEmployee]);
+  }, [filteredTasks, t, isEmployee, activeView]);
 
   if (isError) {
     return (
@@ -548,6 +562,7 @@ function TasksPage() {
             </div>
           </div>
           <div className="flex flex-col gap-2 h-full">
+            {activeView === "kanban" && hasMoreTasks && <p role="status" className="text-sm text-cell-secondary">{i18n.language?.startsWith("ar") ? "تعرض اللوحة المهام المحملة فقط. حمّل المزيد لاستكمال النتائج وأعداد الأعمدة." : "The board shows loaded tasks only. Load more to complete results and column counts."}</p>}
             {isLoading ? (
               <div className="text-center py-6">{t("Loading tasks...")}</div>
             ) : activeView === "kanban" ? (
@@ -563,7 +578,7 @@ function TasksPage() {
                 headers={headers}
                 rows={taskRowTable}
                 hideSearchInput={true}
-                showExport={isEmployee || (!hasMoreTasks && !isSubscriberFetching)}
+                showExport={!hasMoreTasks && !isFetchingTasks}
                 isCheckInput={true}
                 customActions={customActions}
                 showStatusFilter={false}
@@ -576,7 +591,7 @@ function TasksPage() {
                 }}
               />
             )}
-            {!isEmployee && activeView === "table" && hasMoreTasks && <button type="button" disabled={isSubscriberFetching} onClick={() => setFetchPage((page) => page + 1)} className="mt-3 rounded-lg border border-primary-500 px-4 py-2 text-primary-600 disabled:opacity-50">{isSubscriberFetching ? t("Loading tasks...") : (i18n.language?.startsWith("ar") ? "تحميل المزيد من المهام" : "Load more tasks")}</button>}
+            {hasMoreTasks && <button type="button" disabled={isFetchingTasks} onClick={() => setFetchPage((page) => page + 1)} className="mt-3 rounded-lg border border-primary-500 px-4 py-2 text-primary-600 disabled:opacity-50">{isFetchingTasks ? t("Loading tasks...") : (i18n.language?.startsWith("ar") ? "تحميل المزيد من المهام" : "Load more tasks")}</button>}
           </div>
         </div>
       </Page>

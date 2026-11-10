@@ -1,4 +1,6 @@
 {
+  "Repeat end must not precede first occurrence": "Repeat end must not precede first occurrence",
+  "Could not stop recurring task": "Could not stop recurring task",
   "Task automation": "Task automation",
   "Public and group holidays": "Public and group holidays",
   "Change task priority automatically when its status changes.": "Change task priority automatically when its status changes.",

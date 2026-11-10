@@ -9,7 +9,7 @@ import AttachmentsList from "@/app/(dashboard)/projects/[slug]/_components/Attac
 import ActivityLogs from "@/components/ActivityLogs.jsx";
 import { useTranslation } from "react-i18next";
 import InfoCard from "@/app/(dashboard)/_components/InfoCard.jsx";
-import { useState, useMemo, use } from "react";
+import { useState, useMemo, useEffect, use } from "react";
 import { filterAndSortTasks } from "@/functions/functionsForTasks.js";
 import { useRouter } from "next/navigation";
 import { filterOptions } from "@/functions/FactoryData.jsx";
@@ -45,8 +45,16 @@ function TaskDetailsPage({ params }) {
         skip: !taskId || !authUserType
     });
     const { data: dependencyGraph } = useGetTaskDependencyGraphQuery(taskId, { skip: !taskId || !task });
-    const { data: subscriberTasks = [] } = useGetSubscriberTasksQuery(undefined, { skip: authUserType !== "Subscriber" });
-    const { data: employeeTasks = [] } = useGetEmployeeTasksQuery(undefined, { skip: authUserType !== "Employee" });
+    const [dependencyPickerOpen, setDependencyPickerOpen] = useState(false);
+    const [dependencySearch, setDependencySearch] = useState("");
+    const [debouncedDependencySearch, setDebouncedDependencySearch] = useState("");
+    useEffect(() => {
+        const timer = setTimeout(() => setDebouncedDependencySearch(dependencySearch), 350);
+        return () => clearTimeout(timer);
+    }, [dependencySearch]);
+    const dependencyQuery = { page: 1, page_size: 50, search: debouncedDependencySearch };
+    const { currentData: subscriberTasks = [], isFetching: searchingSubscriberTasks, isError: subscriberSearchError } = useGetSubscriberTasksQuery(dependencyQuery, { skip: !dependencyPickerOpen || authUserType !== "Subscriber" });
+    const { currentData: employeeTasks = [], isFetching: searchingEmployeeTasks, isError: employeeSearchError } = useGetEmployeeTasksQuery(dependencyQuery, { skip: !dependencyPickerOpen || authUserType !== "Employee" });
     const [replaceDependencies, { isLoading: isUpdatingDependencies }] = useReplaceTaskDependenciesMutation();
 
     const { data: taskLogsData, isLoading: isLogsLoading } = useGetTaskLogsQuery(
@@ -306,7 +314,10 @@ function TaskDetailsPage({ params }) {
                                 }, 0)).toFixed(1)}</p></div>
                             </div>
                         </section>
-                        <TaskDependencies task={task} tasks={[...subscriberTasks, ...employeeTasks]} graph={dependencyGraph} canEdit={canEditTask} isUpdating={isUpdatingDependencies} onReplace={handleReplaceDependencies} />
+                        <TaskDependencies task={task} tasks={[...subscriberTasks, ...employeeTasks]} graph={dependencyGraph} canEdit={canEditTask} isUpdating={isUpdatingDependencies} onReplace={handleReplaceDependencies}
+                            onPickerOpenChange={setDependencyPickerOpen} onSearchChange={setDependencySearch}
+                            isSearching={searchingSubscriberTasks || searchingEmployeeTasks || dependencySearch !== debouncedDependencySearch}
+                            searchError={authUserType === "Subscriber" ? subscriberSearchError : employeeSearchError} />
                         <section className="p-4 sm:p-5 bg-surface rounded-[24px] border border-status-border shadow-sm w-full flex flex-col gap-4 min-h-72">
                             <div className="title-header pb-3 w-full flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-status-border">
                                 <div>

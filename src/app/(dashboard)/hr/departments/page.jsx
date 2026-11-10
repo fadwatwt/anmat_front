@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 // استيراد المودالات خاصة بالأقسام
 import CreateDepartmentModal from "@/app/(dashboard)/hr/departments/modals/CreateDepartment.modal";
+import ImportDepartmentsModal from "@/app/(dashboard)/hr/departments/modals/ImportDepartmentsModal";
 import CreateChatGroupModal from "@/app/(dashboard)/hr/departments/modals/CreateChatGroup.modal";
 import EditDepartmentModal from "@/app/(dashboard)/hr/departments/modals/EditDepartmentModal";
 import AccountDetails from "@/app/(dashboard)/projects/_components/TableInfo/AccountDetails.jsx";
@@ -21,7 +22,7 @@ import { useGetDepartmentsQuery, useDeleteDepartmentMutation, useDeleteManyDepar
 import { usePermission } from "@/Hooks/usePermission";
 
 function DepartmentsPage() {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const { data: departments = [], isLoading: isDepartmentsLoading } =
         useGetDepartmentsQuery(undefined, { refetchOnMountOrArgChange: true });
     const [deleteDepartment, { isLoading: isDeleting }] = useDeleteDepartmentMutation();
@@ -35,6 +36,7 @@ function DepartmentsPage() {
 
     const [isOpenEditModal, setIsOpenEditModal] = useState(false);
     const [isOpenCreateModal, setIsOpenCreateModal] = useState(false);
+    const [isOpenImportModal, setIsOpenImportModal] = useState(false);
     const [isOpenCreateChatGroupModal, setIsOpenCreateChatGroupModal] = useState(false);
     const [isOpenSendNotifyModal, setIsOpenSendNotifyModal] = useState(false);
 
@@ -236,6 +238,13 @@ function DepartmentsPage() {
                                 )}
                                 {canCreateDepartment && (
                                     <button
+                                        onClick={() => setIsOpenImportModal(true)}
+                                        className="rounded-lg border border-status-border bg-surface px-4 py-2 text-sm font-semibold text-cell-primary">
+                                        {i18n.language?.startsWith("ar") ? "استيراد الأقسام" : "Import departments"}
+                                    </button>
+                                )}
+                                {canCreateDepartment && (
+                                    <button
                                         onClick={() => setIsOpenCreateModal(true)}
                                         className="bg-primary-500 text-white hover:bg-primary-600 px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm">
                                         {t("Create a Department")}
@@ -253,6 +262,7 @@ function DepartmentsPage() {
                 isOpen={isOpenCreateModal}
                 onClose={() => setIsOpenCreateModal(false)}
             />
+            <ImportDepartmentsModal isOpen={isOpenImportModal} onClose={() => setIsOpenImportModal(false)} departments={departments} />
 
             <CreateChatGroupModal
                 isOpen={isOpenCreateChatGroupModal}

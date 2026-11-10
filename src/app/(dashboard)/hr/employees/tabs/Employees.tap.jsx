@@ -32,6 +32,8 @@ import { usePermission } from "@/Hooks/usePermission";
 import BulkDeleteButton from "@/components/Tables/BulkDeleteButton.jsx";
 import EmployeeOnboardingModal from "@/app/(dashboard)/hr/employees/modals/EmployeeOnboardingModal.jsx";
 
+import ImportEmployeesModal from "../modals/ImportEmployeesModal";
+
 function EmployeesTap() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
@@ -39,6 +41,8 @@ function EmployeesTap() {
   const dispatch = useDispatch();
 
   const canCreateEmployee = usePermission("employee_details.create");
+  const canSetCompensation = usePermission("employee_compensation.update");
+  const [isImportOpen, setIsImportOpen] = useState(false);
   const canUpdateEmployee = usePermission("employee_details.update");
   const canDeleteEmployee = usePermission("employee_details.delete");
   const canSendNotification = usePermission("notifications.create");
@@ -488,6 +492,7 @@ function EmployeesTap() {
                     {t("Send Notification")}
                   </button>
                 )}
+                {canCreateEmployee && canSetCompensation && <button type="button" onClick={() => setIsImportOpen(true)} className="border border-primary-500 px-4 py-2 rounded-lg text-sm">{i18n.language?.startsWith("ar") ? "استيراد الموظفين" : "Import employees"}</button>}
                 {canCreateEmployee && (
                   <button
                     onClick={() => setIsOpenOnboardingModal(true)}
@@ -509,6 +514,7 @@ function EmployeesTap() {
         onInvite={() => setIsOpenInviteModal(true)}
       />
 
+      {isImportOpen && canCreateEmployee && canSetCompensation && <ImportEmployeesModal employees={employees} onClose={() => setIsImportOpen(false)} />}
       <CreateEmployeeModal
         isOpen={isOpenCreateModal}
         onClose={() => setIsOpenCreateModal(false)}

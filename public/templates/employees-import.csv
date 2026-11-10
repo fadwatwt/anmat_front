@@ -1,0 +1,2 @@
+name,email,phone,password,date_of_birth,salary,employee_number,department,position,work_hours,yearly_day_offs
+Example Employee,employee@example.test,+970599123456,ReplaceWithTemporaryPassword,1995-02-14,2000,EMP-001,,,8,14

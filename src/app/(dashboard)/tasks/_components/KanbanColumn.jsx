@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useDroppable } from "@dnd-kit/core";
 import { useTranslation } from "react-i18next";
 import PropTypes from "prop-types";
@@ -18,7 +19,8 @@ const COLUMN_ICONS = {
 };
 
 function KanbanColumn({ column, tasks }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const [visibleCount, setVisibleCount] = useState(30);
   const [theme] = useTheme();
   const isDark = theme === "dark";
 
@@ -75,10 +77,11 @@ function KanbanColumn({ column, tasks }) {
             </p>
           </div>
         ) : (
-          tasks.map((task) => (
+          tasks.slice(0, visibleCount).map((task) => (
             <KanbanTaskCard key={task._id} task={task} />
           ))
         )}
+        {tasks.length > visibleCount && <button type="button" onClick={() => setVisibleCount((count) => count + 30)} className="rounded-lg border border-status-border p-2 text-sm text-cell-secondary">{i18n.language?.startsWith("ar") ? "عرض المزيد من البطاقات" : "Show more cards"}</button>}
       </div>
     </div>
   );

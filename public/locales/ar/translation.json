@@ -1,4 +1,6 @@
 {
+  "Repeat end must not precede first occurrence": "يجب ألا يسبق تاريخ نهاية التكرار أول موعد",
+  "Could not stop recurring task": "تعذر إيقاف تكرار المهمة",
   "Task automation": "أتمتة المهام",
   "Public and group holidays": "العطل الرسمية والجماعية",
   "Change task priority automatically when its status changes.": "تغيير أولوية المهمة تلقائيًا عند تغيير حالتها.",

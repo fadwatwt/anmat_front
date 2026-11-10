@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 import { DndContext, DragOverlay, PointerSensor, KeyboardSensor, useSensor, useSensors } from "@dnd-kit/core";
 import PropTypes from "prop-types";
 import KanbanColumn from "./KanbanColumn";
@@ -10,6 +10,16 @@ import { KANBAN_COLUMNS } from "./kanbanConstants";
 function KanbanBoard({ tasks = [], onStatusChange, allowedColumns }) {
   const [activeTask, setActiveTask] = useState(null);
   const [optimisticTasks, setOptimisticTasks] = useState({});
+  useEffect(() => {
+    setOptimisticTasks((previous) => {
+      const next = { ...previous };
+      let changed = false;
+      for (const task of tasks) {
+        if (next[task._id] === task.status) { delete next[task._id]; changed = true; }
+      }
+      return changed ? next : previous;
+    });
+  }, [tasks]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -35,7 +45,7 @@ function KanbanBoard({ tasks = [], onStatusChange, allowedColumns }) {
       const status = overriddenStatus || task.status || "open";
       if (grouped[status]) {
         grouped[status].push({ ...task, status });
-      } else {
+      } else if (grouped["open"] && !KANBAN_COLUMNS.some((column) => column.id === status)) {
         grouped["open"].push({ ...task, status: "open" });
       }
     });
