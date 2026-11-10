@@ -13,7 +13,7 @@ function Rating({ rating, maxRating = 5 }) {
                 {[...Array(fullStars)].map((_, i) => (
                     <RiStarFill key={`full-${i}`} size={16} />
                 ))}
-                {hasHalfStar && <RiStarHalfFill size={16} />}
+                {hasHalfStar && <RiStarHalfFill size={16} className="rtl:-scale-x-100" />}
                 {[...Array(emptyStars)].map((_, i) => (
                     <RiStarLine key={`empty-${i}`} size={16} className="text-gray-300 dark:text-gray-600" />
                 ))}

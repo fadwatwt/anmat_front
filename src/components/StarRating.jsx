@@ -23,7 +23,7 @@ const StarRating = ({ rating, onClickRate }) => {
             if (rating >= i) {
                 stars.push(<IoStar key={i} className="text-yellow-500 text-sm" />); // نجمة كاملة
             } else if (rating >= i - 0.5) {
-                stars.push(<IoStarHalf key={i} className="text-yellow-500 text-sm" />); // نصف نجمة
+                stars.push(<IoStarHalf key={i} className="text-yellow-500 text-sm rtl:-scale-x-100" />); // نصف نجمة
             } else {
                 stars.push(<IoStarOutline key={i} className="text-gray-300 text-sm" />); // نجمة فارغة
             }

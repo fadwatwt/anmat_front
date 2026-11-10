@@ -9,7 +9,7 @@ const Rating = ({ value, showPercentage = true }) => {
     if (roundedValue >= index + 1) {
       return <FaStar key={index} className="text-yellow-400" />;
     } else if (roundedValue > index && roundedValue < index + 1) {
-      return <FaStarHalfAlt key={index} className="text-yellow-400" />;
+      return <FaStarHalfAlt key={index} className="text-yellow-400 rtl:-scale-x-100" />;
     } else {
       return <FaRegStar key={index} className="text-yellow-400" />;
     }
