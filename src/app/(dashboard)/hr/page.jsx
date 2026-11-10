@@ -18,7 +18,6 @@ import ContractsPanel from "./ContractsPanel";
 import RecruitmentPanel from "./RecruitmentPanel";
 import OrgStructurePanel from "./OrgStructurePanel";
 import LearningPanel from "./LearningPanel";
-import SurveysPanel from "./SurveysPanel";
 import HROverview from "./HROverview";
 import { usePermission } from "@/Hooks/usePermission";
 import { useSelector } from "react-redux";
@@ -55,9 +54,6 @@ function HRPage() {
     const canViewOwnLearning = usePermission("learning.view");
     const canListLearning = usePermission("learning.list");
     const canViewLearning = canViewOwnLearning || canListLearning;
-    const canViewOwnSurveys = usePermission("surveys.view");
-    const canListSurveys = usePermission("surveys.list");
-    const canViewSurveys = canViewOwnSurveys || canListSurveys;
 
     const sections = [
         ...(canViewEmployees ? [{
@@ -117,7 +113,6 @@ function HRPage() {
         }] : []),
         ...(canViewEmployees ? [{ key: "organization", title: t("Organization chart"), content: <OrgStructurePanel /> }] : []),
         ...(canViewLearning ? [{ key: "learning", title: t("Learning and skills"), content: <LearningPanel /> }] : []),
-        ...(canViewSurveys ? [{ key: "surveys", title: t("Surveys"), content: <SurveysPanel /> }] : []),
         // Rotations and Notifications removed from HR — available as dedicated pages/tabs:
         // Rotations is accessible via attendance management, Notifications via /notifications
         ...(canViewAttendances ? [{

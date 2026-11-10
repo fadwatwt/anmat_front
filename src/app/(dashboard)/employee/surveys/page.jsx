@@ -1,10 +1,6 @@
-"use client";
+import { notFound } from "next/navigation";
 
-import Page from "@/components/Page.jsx";
-import SurveysPanel from "@/app/(dashboard)/hr/SurveysPanel";
-import { usePermission } from "@/Hooks/usePermission";
-
+// Deferred until the surveys feature is ready for release.
 export default function EmployeeSurveysPage() {
-  const canViewSurveys = usePermission("surveys.view");
-  return <Page title="Surveys">{canViewSurveys && <SurveysPanel />}</Page>;
+  notFound();
 }

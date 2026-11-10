@@ -51,14 +51,6 @@ export const dashboardSideMenuItems = [
     {
         section: 'My Work',
         allowed_to: ['Employee'],
-        title: 'Surveys',
-        path: '/employee/surveys',
-        icon: <Stickynote />,
-        permission: 'surveys.view',
-    },
-    {
-        section: 'My Work',
-        allowed_to: ['Employee'],
         title: 'Appointments',
         path: '/appointments',
         icon: <CalendarTick />,
