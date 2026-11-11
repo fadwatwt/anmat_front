@@ -3950,5 +3950,8 @@
   "Custom policy": "Custom policy",
   "Annual leave template": "Annual leave template",
   "Sick leave template": "Sick leave template",
-  "Templates fill the structure only. Enter and approve the allowance for your organization.": "Templates fill the structure only. Enter and approve the allowance for your organization."
+  "Templates fill the structure only. Enter and approve the allowance for your organization.": "Templates fill the structure only. Enter and approve the allowance for your organization.",
+  "Social media shown": "Shown to subscriber",
+  "Social media hidden": "Hidden from subscriber",
+  "Social media access explanation": "Hiding this feature blocks the subscriber and their employees from social media pages and account creation. Existing accounts are preserved."
 }

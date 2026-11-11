@@ -6,6 +6,7 @@ import MenuItem from "./Menu/MenuItem.jsx";
 import { useTranslation } from "react-i18next";
 import React, { useState, useMemo } from "react"
 import { HambergerMenu, ArrowDown2 } from 'iconsax-react';
+import { hasSocialMediaGrant, isSocialMediaMenuItem } from '@/functions/socialMediaAccess';
 import { dashboardSideMenuItems } from '@/config/menuItems.js';
 import { useSelector } from 'react-redux';
 import { selectUserType, selectPermissions, selectPermissionsLoaded, selectSocialMediaGrants } from '@/redux/auth/authSlice';
@@ -93,23 +94,9 @@ const Menu = React.memo(({ isSlidebarOpen, toggleSlidebarOpen }) => {
     const userHasPermission = (perm) =>
         Array.isArray(userPermissions) && userPermissions.includes(perm);
 
-    // A menu item targets social media management when it declares any
-    // social_media_* permission.
-    const isSocialMediaItem = (item) =>
-        (Array.isArray(item.permission_any_of) &&
-            item.permission_any_of.some((p) => String(p).startsWith('social_media_'))) ||
-        (item.permission && String(item.permission).startsWith('social_media_'));
-
-    // Twitter is the only platform currently implemented; subscribers are
-    // blocked from social media features until an admin grants them access.
-    const hasSocialMediaGrant = () => {
-        if (authUserType !== 'Subscriber' && authUserType !== 'Employee') return true;
-        return Array.isArray(socialMediaGrants) && socialMediaGrants.includes('twitter');
-    };
-
     const isItemAllowed = (item) => {
         if (!item.allowed_to || !item.allowed_to.includes(authUserType)) return false;
-        if (isSocialMediaItem(item) && !hasSocialMediaGrant()) return false;
+        if (isSocialMediaMenuItem(item) && !hasSocialMediaGrant(authUserType, socialMediaGrants)) return false;
         if (hasWildcard) return true;
 
         const hasSingle = item.permission ? userHasPermission(item.permission) : null;
@@ -220,8 +207,7 @@ const Menu = React.memo(({ isSlidebarOpen, toggleSlidebarOpen }) => {
                                             path={item.path}
                                             icon={item.icon}
                                             title={item.title}
-                                            children={item.children}
-                                        />
+                                        >{item.children}</MenuItem>
                                     ))}
                                 </div>
                             );

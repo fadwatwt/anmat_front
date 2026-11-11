@@ -2,8 +2,13 @@
 // Uses the anmat backend (RootRoute) via the shared apiSlice.
 import { apiSlice } from "../api/apiSlice";
 
-export const socialMediaAccessApi = apiSlice.injectEndpoints({
+export const socialMediaAccessApi = apiSlice.enhanceEndpoints({ addTagTypes: ["SocialMediaAccess"] }).injectEndpoints({
     endpoints: (builder) => ({
+        getMySocialMediaAccess: builder.query({
+            query: () => ({ url: "api/user/auth/me", method: "GET" }),
+            transformResponse: (response) => response?.data || response,
+            providesTags: ["SocialMediaAccess"],
+        }),
         // Admin: read the platforms (account types) granted to a subscriber.
         getSubscriberSocialMediaAccess: builder.query({
             query: (subscriberId) => ({
@@ -30,6 +35,7 @@ export const socialMediaAccessApi = apiSlice.injectEndpoints({
 });
 
 export const {
+    useGetMySocialMediaAccessQuery,
     useGetSubscriberSocialMediaAccessQuery,
     useUpdateSubscriberSocialMediaAccessMutation,
 } = socialMediaAccessApi;

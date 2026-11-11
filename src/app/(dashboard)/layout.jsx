@@ -12,9 +12,10 @@ import PropTypes from "prop-types";
 import DashboardSideMenu from "@/components/DashboardSideMenu";
 import DashboardFloatingButton from "@/components/DashboardFloatingButton";
 import { useSelector, useDispatch } from "react-redux";
-import { selectAuth, loadAuthState, logout, setUser, setPermissions, setSocialMediaGrants } from "@/redux/auth/authSlice";
+import { selectAuth, loadAuthState, logout, setUser, setPermissions } from "@/redux/auth/authSlice";
 import { useLazyGetUserQuery } from "@/redux/auth/authAPI";
 import { useLazyGetMyPermissionsQuery } from "@/redux/permissions/subscriberPermissionsApi";
+import useSocialMediaAccess from "@/Hooks/useSocialMediaAccess";
 import useDarkMode from "@/Hooks/useDarkMode";
 import DashboardTour from "@/components/DashboardTour";
 
@@ -23,6 +24,7 @@ const MainLayout = ({ children }) => {
     const [mounted, setMounted] = useState(false);
     const { t } = useTranslation();
     useDarkMode();
+    useSocialMediaAccess();
     const router = useRouter();
     const pathname = usePathname();
     const dispatch = useDispatch();
@@ -139,18 +141,10 @@ const MainLayout = ({ children }) => {
                         ? data
                         : data?.permissions || [];
                     dispatch(setPermissions(perms));
-                    dispatch(
-                        setSocialMediaGrants(
-                            Array.isArray(data?.social_media_grants)
-                                ? data.social_media_grants
-                                : [],
-                        ),
-                    );
                 })
                 .catch((err) => {
                     console.error("Failed to fetch permissions:", err);
                     dispatch(setPermissions([]));
-                    dispatch(setSocialMediaGrants([]));
                 });
         }
     }, [user, permissionsLoaded, getMyPermissions, dispatch]);

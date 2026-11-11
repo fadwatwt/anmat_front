@@ -4075,5 +4075,8 @@
   "Custom policy": "سياسة مخصصة",
   "Annual leave template": "قالب إجازة سنوية",
   "Sick leave template": "قالب إجازة مرضية",
-  "Templates fill the structure only. Enter and approve the allowance for your organization.": "القالب يملأ الإعدادات فقط. أدخل استحقاق مؤسستك واعتمده قبل الحفظ."
+  "Templates fill the structure only. Enter and approve the allowance for your organization.": "القالب يملأ الإعدادات فقط. أدخل استحقاق مؤسستك واعتمده قبل الحفظ.",
+  "Social media shown": "ظاهر للمشترك",
+  "Social media hidden": "مخفي عن المشترك",
+  "Social media access explanation": "إخفاء الميزة يمنع المشترك وموظفيه من فتح صفحات التواصل أو إضافة الحسابات. تبقى الحسابات الحالية محفوظة."
 }

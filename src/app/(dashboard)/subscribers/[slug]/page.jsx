@@ -65,9 +65,9 @@ function AdminProfile() {
     const { data: socialQuota, isLoading: isSocialQuotaLoading } =
         useGetSubscriberSocialMediaQuotaQuery(slug, { skip: !slug });
 
-    const { data: socialMediaAccess } =
+    const { data: socialMediaAccess, isLoading: isLoadingSocialAccess, isError: isSocialAccessError } =
         useGetSubscriberSocialMediaAccessQuery(slug, { skip: !slug });
-    const [updateSocialMediaAccess] =
+    const [updateSocialMediaAccess, { isLoading: isUpdatingSocialAccess }] =
         useUpdateSubscriberSocialMediaAccessMutation();
     const [isSocialMediaRevokeOpen, setIsSocialMediaRevokeOpen] = useState(false);
 
@@ -76,13 +76,19 @@ function AdminProfile() {
         : [];
     const twitterGranted = grantedPlatforms.includes("twitter");
 
-    const handleToggleSocialMediaAccess = (granted) => {
+    const handleToggleSocialMediaAccess = async (granted) => {
+        if (isUpdatingSocialAccess || isLoadingSocialAccess || isSocialAccessError) return;
         if (granted) {
-            updateSocialMediaAccess({
-                subscriberId: slug,
-                platforms: ["twitter"],
-                granted: true,
-            }).unwrap().catch(() => { });
+            try {
+                await updateSocialMediaAccess({
+                    subscriberId: slug,
+                    platforms: ["twitter"],
+                    granted: true,
+                }).unwrap();
+            } catch (err) {
+                setApiResponse({ status: "error", message: err?.data?.message || t("Failed to grant Twitter access.") });
+                setIsResponseOpen(true);
+            }
             return;
         }
         setIsSocialMediaRevokeOpen(true);
@@ -391,7 +397,8 @@ function AdminProfile() {
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="p-4 rounded-xl border border-status-border bg-gray-50/30 dark:bg-white/5 flex flex-col gap-1">
                                     <span className="text-xs text-cell-secondary uppercase tracking-wider font-semibold">{t("Employees")}</span>
-                                    <div className="flex items-baseline gap-1">
+                                    <p className="mt-2 text-xs leading-relaxed text-cell-secondary">{t("Social media access explanation")}</p>
+                                        <div className="flex items-baseline gap-1">
                                         <span className="text-2xl font-bold text-primary-500">{subscriber?.total_users || 0}</span>
                                         <span className="text-sm text-cell-secondary">/ {subscriber?.plan_limits?.employees?.max === 'Unlimited' ? t("unlimited") : (subscriber?.plan_limits?.employees?.max ?? "N/A")}</span>
                                     </div>
@@ -408,12 +415,12 @@ function AdminProfile() {
                                         </span>
                                     </div>
                                 </div>
-                                <PermissionGuard permission="admin.social_media_quota.view" fallback={null}>
+                                <PermissionGuard anyOf={["admin.social_media_quota.view", "admin.social_media_access.grant"]} fallback={null}>
                                     <div className="p-4 rounded-xl border border-status-border bg-gray-50/30 dark:bg-white/5 flex flex-col gap-1 sm:col-span-2">
                                         <div className="flex items-center justify-between">
                                             <span className="text-xs text-cell-secondary uppercase tracking-wider font-semibold flex items-center gap-1">
                                                 <Share size={12} className="text-primary-500" />
-                                                {t("Twitter Accounts")}
+                                                {t("Social Media Management")}
                                             </span>
                                             <div className="flex items-center gap-2">
                                                 <PermissionGuard permission="admin.social_media_access.grant" fallback={null}>
@@ -421,12 +428,7 @@ function AdminProfile() {
                                                         <span className="text-[10px] text-cell-secondary uppercase">
                                                             {t("Access")}
                                                         </span>
-                                                        <Switch2
-                                                            isOn={twitterGranted}
-                                                            handleToggle={() =>
-                                                                handleToggleSocialMediaAccess(!twitterGranted)
-                                                            }
-                                                        />
+                                                        <button type="button" role="switch" aria-checked={twitterGranted} aria-label={t("Social Media Management")} disabled={isUpdatingSocialAccess || isLoadingSocialAccess || isSocialAccessError} onClick={() => handleToggleSocialMediaAccess(!twitterGranted)} className="rounded-lg border border-status-border px-3 py-1 text-xs font-semibold text-cell-primary disabled:opacity-50">{twitterGranted ? t("Social media shown") : t("Social media hidden")}</button>
                                                     </div>
                                                 </PermissionGuard>
                                             </div>
