@@ -1,4 +1,5 @@
 "use client"
+import EvaluationModal from "@/components/Modal/EvaluationModal";
 import Page from "@/components/Page.jsx";
 import ProjectMembers from "@/app/(dashboard)/projects/[slug]/_components/ProjectMembers.jsx";
 import SelectWithoutLabel from "@/components/Form/SelectWithoutLabel.jsx";
@@ -39,6 +40,8 @@ function EmployeeProjectDetailsPage() {
     const [updateTaskStatus] = useUpdateTaskStatusMutation();
 
     const [loadingComments, setLoadingComments] = useState({});
+    const [isEvaluationOpen, setIsEvaluationOpen] = useState(false);
+    const [isEvaluating, setIsEvaluating] = useState(false);
     const [alertInfo, setAlertInfo] = useState({ isOpen: false, status: 'success', message: '' });
     const [filterTasks, setFilterTasks] = useState([]);
     const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
@@ -192,8 +195,10 @@ function EmployeeProjectDetailsPage() {
     };
 
     const handleEvaluateProject = async (evaluationData) => {
+        setIsEvaluating(true);
         try {
             await evaluateProject({ projectId: project._id, data: evaluationData }).unwrap();
+            setIsEvaluationOpen(false);
             setAlertInfo({
                 isOpen: true,
                 status: 'success',
@@ -206,6 +211,8 @@ function EmployeeProjectDetailsPage() {
                 status: 'error',
                 message: error?.data?.message || t('Failed to evaluate project'),
             });
+        } finally {
+            setIsEvaluating(false);
         }
     };
 
@@ -222,7 +229,7 @@ function EmployeeProjectDetailsPage() {
                         data={projectInfoData} 
                         isEditBtn={false} 
                         rate={project?.overall_rating || 0}
-                        onRate={canEvaluate ? handleEvaluateProject : null}
+                        onRate={canEvaluate ? () => setIsEvaluationOpen(true) : null}
                     />
                     <div className={"p-4 bg-surface rounded-2xl w-full flex flex-col gap-3"}>
                         <div className={"title-header pb-3 w-full flex items-center justify-between "}>
@@ -291,6 +298,13 @@ function EmployeeProjectDetailsPage() {
                     onClose={() => setAlertInfo(prev => ({ ...prev, isOpen: false }))}
                 />
             )}
+            <EvaluationModal
+                isOpen={isEvaluationOpen}
+                onClose={() => { if (!isEvaluating) setIsEvaluationOpen(false); }}
+                onSubmit={handleEvaluateProject}
+                type="project"
+                isSubmitting={isEvaluating}
+            />
         </Page>
     );
 }

@@ -1,4 +1,5 @@
 "use client"
+import EvaluationModal from "@/components/Modal/EvaluationModal";
 // import propTypes from "prop-types"
 import Page from "@/components/Page.jsx";
 import ProjectMembers from "@/app/(dashboard)/projects/[slug]/_components/ProjectMembers.jsx";
@@ -157,6 +158,8 @@ function ProjectDetailsPage() {
     const [isOpenEditModal, setIsOpenEditModal] = useState(false);
     const [filterTasks, setFilterTasks] = useState([]);
     const [taskView, setTaskView] = useState("list");
+    const [isEvaluationOpen, setIsEvaluationOpen] = useState(false);
+    const [isEvaluating, setIsEvaluating] = useState(false);
     const [alertInfo, setAlertInfo] = useState({ isOpen: false, status: "", message: "" });
 
     const canDeleteAttachments = usePermission("attachments.delete");
@@ -243,12 +246,14 @@ function ProjectDetailsPage() {
     };
 
     const handleEvaluateProject = async (evaluationData) => {
+        setIsEvaluating(true);
         try {
             if (authUserType === "Subscriber") {
                 await updateSubscriberProject({ id: project._id, data: evaluationData }).unwrap();
             } else {
                 await evaluateEmployeeProject({ projectId: project._id, data: evaluationData }).unwrap();
             }
+            setIsEvaluationOpen(false);
             setAlertInfo({
                 isOpen: true,
                 status: 'success',
@@ -260,6 +265,8 @@ function ProjectDetailsPage() {
                 status: 'error',
                 message: getApiErrorMessage(error, t('Failed to evaluate project')),
             });
+        } finally {
+            setIsEvaluating(false);
         }
     };
 
@@ -311,7 +318,7 @@ function ProjectDetailsPage() {
                         data={projectInfoData} 
                         handelEditAction={canEditProject ? handelEditModal : undefined}
                         rate={project.overall_rating || 0}
-                        onRate={canEvaluate ? handleEvaluateProject : null}
+                        onRate={canEvaluate ? () => setIsEvaluationOpen(true) : null}
                     />
                     <ProjectScheduleSummary project={project} />
                     {authUserType === "Subscriber" && <BulkTaskEstimates project={project} />}
@@ -380,6 +387,13 @@ function ProjectDetailsPage() {
                 status={alertInfo.status}
                 message={alertInfo.message}
                 onClose={() => setAlertInfo(prev => ({ ...prev, isOpen: false }))}
+            />
+            <EvaluationModal
+                isOpen={isEvaluationOpen}
+                onClose={() => { if (!isEvaluating) setIsEvaluationOpen(false); }}
+                onSubmit={handleEvaluateProject}
+                type="project"
+                isSubmitting={isEvaluating}
             />
         </Page>
     );
