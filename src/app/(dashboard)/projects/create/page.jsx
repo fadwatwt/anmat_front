@@ -12,8 +12,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { useProcessing } from "@/app/providers";
 import { Formik, Form } from 'formik';
-import { FaCheckCircle, FaProjectDiagram } from 'react-icons/fa';
-import { translateDate } from "@/functions/Days";
+import ProjectCreatedSummary from "@/app/(dashboard)/projects/_components/ProjectCreatedSummary";
 import PermissionGuard from "@/components/PermissionGuard";
 import { createProjectValidationSchema, createTaskValidationSchema } from "@/app/(dashboard)/projects/_components/CreateProjectForm/workItemValidation";
 
@@ -41,12 +40,13 @@ function CreateProjectPage() {
     const [isProjectCreated, setIsProjectCreated] = useState(false);
 
     // Task creation state
-    const [taskCount, setTaskCount] = useState(0);
+    const [createdTasks, setCreatedTasks] = useState([]);
+    const taskCount = createdTasks.length;
     const [showTaskForm, setShowTaskForm] = useState(false);
 
     const breadcrumbItems = [
         { title: t('Projects'), path: '/projects' },
-        { title: t('Create a project'), path: '' }
+        { title: t(isProjectCreated ? 'Project Created Successfully' : 'Create a project'), path: '' }
     ];
 
     const projectInitialValues = useMemo(() => ({
@@ -121,6 +121,7 @@ function CreateProjectPage() {
             hideProcessing();
             const projectData = response?.data || response;
             setCreatedProject(projectData);
+            setCreatedTasks(Array.isArray(projectData.tasks) ? projectData.tasks.filter(task => task && typeof task === "object") : []);
             setIsProjectCreated(true);
 
             setApiResponse({
@@ -173,9 +174,10 @@ function CreateProjectPage() {
             };
 
             showProcessing(t("Creating task..."));
-            await createTask(payload).unwrap();
+            const taskResponse = await createTask(payload).unwrap();
+            const savedTask = taskResponse?.data || taskResponse;
             hideProcessing();
-            setTaskCount(prev => prev + 1);
+            setCreatedTasks(prev => [...prev, { ...payload, ...savedTask }]);
             setShowTaskForm(false); // Hide form after successful creation
 
             setApiResponse({
@@ -206,7 +208,7 @@ function CreateProjectPage() {
     };
 
     const handleFinish = () => {
-        router.push("/projects");
+        router.push("/projects/" + (createdProject._id || createdProject.id) + "/details");
     };
 
     const handleAddNewTask = () => {
@@ -215,50 +217,18 @@ function CreateProjectPage() {
 
     return (
         <PermissionGuard permission="projects.create">
-        <Page title={t("Create a project")} isBreadcrumbs={true} breadcrumbs={breadcrumbItems}>
+        <Page title={t(isProjectCreated ? "Project Created Successfully" : "Create a project")} isBreadcrumbs={true} breadcrumbs={breadcrumbItems}>
             <div className={"max-w-4xl w-full mx-auto flex flex-col gap-6"}>
-                {/* Project Details Header (shown after project creation) */}
-                {isProjectCreated && createdProject && (
-                    <div className="bg-surface p-6 rounded-2xl border border-status-border shadow-sm">
-                        <div className="flex items-start gap-4">
-                            <div className="p-3 bg-primary-100 dark:bg-primary-900/30 rounded-xl">
-                                <FaProjectDiagram size={28} className="text-primary-500 dark:text-primary-300" />
-                            </div>
-                            <div className="flex-1">
-                                <div className="flex items-center gap-2 mb-1">
-                                    <FaCheckCircle className="text-green-500" size={18} />
-                                    <span className="text-sm font-medium text-green-600 dark:text-green-400">{t("Project Created Successfully")}</span>
-                                </div>
-                                <h2 className="text-2xl font-bold mb-2 text-table-title">{createdProject.name}</h2>
-                                {createdProject.description && (
-                                    <p className="text-gray-500 dark:text-gray-400 text-sm mb-3">{createdProject.description}</p>
-                                )}
-                                <div className="flex flex-wrap gap-4 text-sm">
-                                    {createdProject.start_date && (
-                                        <div>
-                                            <span className="text-gray-400 dark:text-gray-500">{t("Start Date")}:</span>{" "}
-                                            <span className="font-medium text-gray-700 dark:text-gray-300">{translateDate(createdProject.start_date)}</span>
-                                        </div>
-                                    )}
-                                    {createdProject.due_date && (
-                                        <div>
-                                            <span className="text-gray-400 dark:text-gray-500">{t("Due Date")}:</span>{" "}
-                                            <span className="font-medium text-gray-700 dark:text-gray-300">{translateDate(createdProject.due_date)}</span>
-                                        </div>
-                                    )}
-                                    {taskCount > 0 && (
-                                        <div className="bg-primary-100 dark:bg-primary-900/30 px-3 py-1 rounded-full">
-                                            <span className="font-medium text-primary-600 dark:text-primary-300">{taskCount} {t("Task(s) Added")}</span>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
+                {isProjectCreated && createdProject && <ProjectCreatedSummary
+                    project={createdProject}
+                    tasks={createdTasks}
+                    onViewProject={handleFinish}
+                    onAddTask={handleAddNewTask}
+                    showActions={!showTaskForm}
+                />}
 
                 {/* Main Form Container */}
-                <div className="bg-surface p-5 rounded-2xl shadow-sm border border-status-border">
+                <div className={!isProjectCreated || showTaskForm ? "bg-surface p-4 sm:p-5 rounded-2xl shadow-sm border border-status-border" : "hidden"}>
                     {/* Step 1: Project Info Form */}
                     {!isProjectCreated && (
                         <Formik 
@@ -296,34 +266,6 @@ function CreateProjectPage() {
                                 </Form>
                             )}
                         </Formik>
-                    )}
-
-                    {/* Step 2: Task Creation (Optional) */}
-                    {isProjectCreated && !showTaskForm && (
-                        <div className="flex flex-col items-center gap-6 py-8">
-                            <div className="text-center">
-                                <h3 className="text-xl font-semibold dark:text-gray-200 mb-2">
-                                    {taskCount === 0 ? t("Would you like to add tasks to this project?") : t("Add another task?")}
-                                </h3>
-                                <p className="text-gray-500 dark:text-gray-400">
-                                    {t("You can add tasks now or finish and add them later.")}
-                                </p>
-                            </div>
-                            <div className="flex gap-4">
-                                <button
-                                    onClick={handleAddNewTask}
-                                    className="bg-primary-base dark:bg-primary-200 dark:text-black min-w-[160px] text-white p-[12px] rounded-[10px] flex items-center justify-center gap-2"
-                                >
-                                    <span>+</span> {t("Add Task")}
-                                </button>
-                                <button
-                                    onClick={handleFinish}
-                                    className="border border-gray-300 text-gray-600 dark:border-gray-600 dark:text-gray-300 min-w-[160px] p-[12px] rounded-[10px]"
-                                >
-                                    {taskCount === 0 ? t("Skip & Finish") : t("Finish")}
-                                </button>
-                            </div>
-                        </div>
                     )}
 
                     {/* Task Form */}
