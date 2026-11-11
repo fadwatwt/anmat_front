@@ -19,9 +19,9 @@ function CreateTemplatePage() {
     const [apiResponse, setApiResponse] = useState({ isOpen: false, status: null, message: "" });
 
     const breadcrumbItems = [
-        { title: 'Projects', path: '/projects' },
-        { title: 'Templates', path: '/projects?tab=1' },
-        { title: 'Create a Template', path: '' }
+        { title: t('Projects'), path: '/projects' },
+        { title: t('Templates'), path: '/projects?tab=1' },
+        { title: t('Create a Template'), path: '' }
     ];
 
     const initialSteps = [
@@ -111,12 +111,12 @@ function CreateTemplatePage() {
     };
 
     return (
-        <Page title={"Creating a Templates"} isBreadcrumbs={true} breadcrumbs={breadcrumbItems}>
+        <Page title={t("Create a Template")} isBreadcrumbs={true} breadcrumbs={breadcrumbItems}>
             <div className={"max-w-4xl w-full mx-auto bg-white dark:bg-white-0 p-5 rounded-2xl"}>
                 <StepsComponent
-                    steps={steps}
+                    steps={steps.map((step, index) => ({ ...step, title: index === 0 ? t("Project Info") : t("Task") + " (" + index + ")" }))}
                     handelCreateProject={handleCreateTemplate}
-                    buttonText="Create Template"
+                    buttonText="Create a Template"
                     initialValues={{
                         dueDate: "",
                         assignedDate: "",
